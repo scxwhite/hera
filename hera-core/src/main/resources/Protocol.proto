@@ -1,0 +1,111 @@
+
+package com.dfire.protocol;
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.serialize";
+option java_outer_classname = "Protocol";
+
+
+enum Status { //相应状态
+	OK = 0;	//成功
+	ERROR = 1; //失败
+}
+
+enum ExecuteKind{
+	ScheduleKind=0;
+	ManualKind=1;
+	DebugKind=2;
+}
+
+message SocketMessage{
+	enum Kind{
+		REQUEST=0;
+		RESPONSE=1;
+		WEB_REUQEST=2;
+		WEB_RESPONSE=3;
+	}
+	required Kind kind=1;
+	optional bytes body=2;
+}
+
+//web界面的worker与server交互
+enum WebOperate{
+	UpdateJob=1;//更新job
+	ExecuteJob=2;//手动执行或者手动恢复job
+	CancelJob=3;//手动取消任务
+	ExecuteDebug=4;//调试任务
+}
+
+message WebRequest{
+	enum Trigger{
+		MANUAL=0;
+		MANUAL_RECOVER=1;
+	}
+	required sint32 rid=1;
+	required WebOperate operate=2;
+	required ExecuteKind ek=3;
+	required string id=4;// update 时 id=jobId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
+	optional string executor=5;
+	optional bytes body=6;
+}
+
+message WebResponse{
+	required Status status=1;
+	required sint32 rid=2;
+	required WebOperate operate=3;
+	optional string errorText=4;
+	optional bytes body=5;
+}
+
+enum Operate{
+	HeartBeat=0;//心跳 worker->server
+	Schedule=1;//调度执行命令 server->worker
+	Cancel=2;//取消命令 server->worker
+	Debug=3;//调试命令 server->worker
+	Manual=4;//手动执行命令
+}
+
+//request
+message Request {
+	required sint32 rid = 1; //request id 唯一标识一个请求
+	required Operate operate = 2; //操作类型
+	optional bytes body = 3; //请求体
+}
+
+//response
+message Response {
+	required Status status = 1; //状态码
+	required sint32 rid = 2; // request id,响应时原封不动返回,提供给client配对.
+	required Operate operate=3;
+	optional string errorText = 4; //如果出错,会有出错信息.纯文本形式.client自行包装
+	optional bytes body = 5; //响应体
+}
+
+message HeartBeatMessage{
+	repeated string runnings=1;//正在运行的job
+	repeated string debugRunnings=2;
+	repeated string manualRunnings=3;
+	optional int64 timestamp=4;//时间戳
+	optional float mem_rate=5;//内存占用比例
+	optional string host=6;//发送心跳的主机
+	optional float cpu_load_per_core=7;//每个核心的cpu负载
+	optional float mem_total=4096; //总内存大小，默认4096M
+}
+
+message ExecuteMessage{
+	required string jobId=1;
+	optional sint32 exitCode=2;
+}
+message CancelMessage{
+	required ExecuteKind ek=1;
+	required string id=2;
+}
+message DebugMessage{
+	required string debugId=1;
+	optional sint32 exitCode=2;
+}
+message ManualMessage{
+	required string historyId=1;
+	optional sint32 exitCode=2;
+}
+
