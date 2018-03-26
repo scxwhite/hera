@@ -36,6 +36,7 @@
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.9</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
+        <log4j.over.slf4j.version>1.7.9</log4j.over.slf4j.version>
         <logback.version>1.2.3</logback.version>
         <springboot.version>1.5.6.RELEASE</springboot.version>
         <mybatis-spring-boot.version>1.1.1</mybatis-spring-boot.version>
@@ -143,6 +144,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>log4j-over-slf4j</artifactId>
+                <version>${log4j.over.slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
