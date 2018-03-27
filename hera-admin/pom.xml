@@ -134,7 +134,7 @@
 
     <build>
         <!-- 为jar包取名 -->
-        <finalName>zeus</finalName>
+        <finalName>hera</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -26,9 +26,9 @@ import org.springframework.web.context.WebApplicationContext;
 @ComponentScan(basePackages = "com.dfire")
 @MapperScan(basePackages = "com.dfire.common.mapper")
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = TestZeusJobController.class)
+@SpringBootTest(classes = TestHeraJobController.class)
 @WebAppConfiguration
-public class TestZeusJobController {
+public class TestHeraJobController {
 
     private MockMvc mvc;
 

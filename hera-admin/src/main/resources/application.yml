@@ -3,7 +3,7 @@ spring:
     datasource:
         name: default
         type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://localhost/zeus?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+        url: jdbc:mysql://localhost/hera?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
         username: root
         password: syman
         druid:
@@ -30,7 +30,7 @@ server:
 clean:
    path: ${server.context-path}
 
-zeus:
+hera:
    defaultWorkerGroupId : 1 #默认worker的host组id
    preemptionMasterGroupId : 1  #抢占master的host组id
 
@@ -40,8 +40,8 @@ spring:
   profiles: pre
   datasource:
       url: jdbc:mysql://master1401.my.2dfire-inc.com:3306/report_revaluation?useUnicode=true&amp;characterEncoding=UTF-8
-      username: zeus
-      password: zeus@552208
+      username: hera
+      password: hera@552208
 
 
 
@@ -52,5 +52,5 @@ spring:
   profiles: publish
   datasource:
       url: jdbc:mysql://master1401.my.2dfire-inc.com:3306/report_revaluation?useUnicode=true&amp;characterEncoding=UTF-8
-      username: zeus
-      password: zeus@552208
+      username: hera
+      password: hera@552208

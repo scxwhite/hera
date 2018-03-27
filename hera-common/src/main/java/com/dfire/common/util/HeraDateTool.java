@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 17:49 2018/3/22
- * @desc Zeus日期工具类, 用于界面配置项的动态替换
+ * @desc Hera日期工具类, 用于界面配置项的动态替换
  */
 public class HeraDateTool {
 

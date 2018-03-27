@@ -87,11 +87,11 @@ public class QuartzSchedulerService {
 
     public static void createScheduleJob(Scheduler scheduler, Dispatcher dispatcher, HeraJob heraJob) {
 
-        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity("zeus").build();
+        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity("hera").build();
         jobDetail.getJobDataMap().put("jobId", heraJob.getId());
         jobDetail.getJobDataMap().put("dispatcher", dispatcher);
         CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraJob.getCronExpression());
-        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("zeus").withSchedule(scheduleBuilder).build();
+        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("hera").withSchedule(scheduleBuilder).build();
         try {
             scheduler.scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {

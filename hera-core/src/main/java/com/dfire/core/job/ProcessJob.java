@@ -192,7 +192,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
     /**
      * @param command
      * @return
-     * @desc 对zeus中的操作系统命令进行拆分成字符串数组，方便给ProcessBuilder传命令参数，
+     * @desc 对hera中的操作系统命令进行拆分成字符串数组，方便给ProcessBuilder传命令参数，
      * 如："free -m | grep buffers/cache"，成为：{“free”，“-m”，“|”，“grep”，“buffers/cache”}
      */
     public static String[] partitionCommandLine(String command) {

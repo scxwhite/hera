@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @desc
  */
 @Slf4j
-public class ZeusSchedule {
+public class HeraSchedule {
 
     private AtomicBoolean running = new AtomicBoolean(false);
 
@@ -20,7 +20,7 @@ public class ZeusSchedule {
 
     private ApplicationContext applicationContext;
 
-    public ZeusSchedule(ApplicationContext applicationContext) {
+    public HeraSchedule(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 

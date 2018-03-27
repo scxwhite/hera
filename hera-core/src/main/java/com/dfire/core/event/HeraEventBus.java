@@ -11,23 +11,23 @@ import java.util.concurrent.Executors;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 10:54 2018/1/14
- * @desc zeus中的任务事件总线，注册在spring中
+ * @desc hera中的任务事件总线，注册在spring中
  */
 @Slf4j
 @Component
-public class ZeusEventBus {
+public class HeraEventBus {
 
     /**同步事件总线，默认选择方案，后期做性能测试，尝试异步事件总线，提高调度任务事件吞吐*/
-    private static EventBus zeusSyncEventBus;
+    private static EventBus heraSyncEventBus;
 
-    /** 异步zeus任务事件总线 */
-    private AsyncEventBus zeusAsyncEventBus = new AsyncEventBus(Executors.newCachedThreadPool());
+    /** 异步hera任务事件总线 */
+    private AsyncEventBus heraAsyncEventBus = new AsyncEventBus(Executors.newCachedThreadPool());
 
     @PostConstruct
     public EventBus init() {
-        zeusSyncEventBus = new EventBus();
-        log.info("init zeus event bus success");
-        return zeusSyncEventBus;
+        heraSyncEventBus = new EventBus();
+        log.info("init hera event bus success");
+        return heraSyncEventBus;
     }
 
     /**
@@ -36,7 +36,7 @@ public class ZeusEventBus {
      * @param event
      */
     public static void post(Object event) {
-        zeusSyncEventBus.post(event);
+        heraSyncEventBus.post(event);
     }
 
     /**
@@ -45,7 +45,7 @@ public class ZeusEventBus {
      * @param handler
      */
     public static void register(Object handler) {
-        zeusSyncEventBus.register(handler);
+        heraSyncEventBus.register(handler);
     }
 
     /**
@@ -54,7 +54,7 @@ public class ZeusEventBus {
      * @param handler
      */
     public static void unregister(Object handler) {
-        zeusSyncEventBus.unregister(handler);
+        heraSyncEventBus.unregister(handler);
     }
 
 }

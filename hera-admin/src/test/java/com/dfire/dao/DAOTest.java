@@ -45,7 +45,7 @@ public class DAOTest {
 
     }
     @Test
-    public void zeusFileTest() {
+    public void heraFileTest() {
         List<HeraFile> list = heraFileService.getFileListByOwner("biadmin");
         System.out.println(list.get(0));
     }

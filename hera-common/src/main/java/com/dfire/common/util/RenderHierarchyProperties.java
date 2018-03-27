@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 15:40 2018/3/22
- * @desc 层次结构属性解析，zeus时间配置解析
+ * @desc 层次结构属性解析，hera时间配置解析
  */
 @Slf4j
 public class RenderHierarchyProperties extends HierarchyProperties {
@@ -39,7 +39,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
     /**
      * @param template
      * @return
-     * @desc zeus配置日期变量替换, 如：${zdt.addDay(-2).format("yyyyMMdd")}，${zdt.addDay(-1).format("yyyyMMdd")}
+     * @desc  hera配置日期变量替换, 如：${zdt.addDay(-2).format("yyyyMMdd")}，${zdt.addDay(-1).format("yyyyMMdd")}
      */
     public static String render(String template) {
         if (template == null) {
@@ -71,7 +71,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
     /**
      * @param template
      * @param dateStr
-     * @return zeus配置日期变量替换,"${yesterday}"为系统变量
+     * @return hera配置日期变量替换,"${yesterday}"为系统变量
      */
     public static String render(String template, String dateStr) {
         if (template == null) {

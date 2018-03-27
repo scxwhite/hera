@@ -54,7 +54,7 @@ public class LogContent {
         content.append(log).append("\n");
     }
 
-    public void appendZeusException(Exception e) {
+    public void appendHeraException(Exception e) {
         if (e == null) {
             return;
         }

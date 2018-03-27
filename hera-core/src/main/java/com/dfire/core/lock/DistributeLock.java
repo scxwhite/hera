@@ -3,7 +3,7 @@ package com.dfire.core.lock;
 import com.dfire.common.entity.HeraLock;
 import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
-import com.dfire.core.schedule.ZeusSchedule;
+import com.dfire.core.schedule.HeraSchedule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +39,7 @@ public class DistributeLock {
     @Autowired
     private WorkClient workClient;
 
-    private ZeusSchedule zeusSchedule;
+    private HeraSchedule heraSchedule;
 
     private int port = 7979;
 
@@ -53,7 +53,7 @@ public class DistributeLock {
 
     @PostConstruct
     public void init() {
-        zeusSchedule = new ZeusSchedule(applicationContext);
+        heraSchedule = new HeraSchedule(applicationContext);
         ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
         service.scheduleAtFixedRate(new Runnable() {
             @Override
@@ -77,7 +77,7 @@ public class DistributeLock {
             heraLock.setServerUpdate(new Date());
             heraLockService.save(heraLock);
             log.info("hold lock and update  time");
-            zeusSchedule.startup(port);
+            heraSchedule.startup(port);
         } else {
             log.info("not my lock");
             long currentTime = System.currentTimeMillis();
@@ -86,7 +86,7 @@ public class DistributeLock {
             if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
                 log.info("master 发生切换");
             } else {
-                zeusSchedule.shutdown();//非主节点，调度器不执行
+                heraSchedule.shutdown();//非主节点，调度器不执行
             }
             try {
                 workClient.connect(host, port);

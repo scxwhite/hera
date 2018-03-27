@@ -51,6 +51,6 @@ public class RunningJobKeys {
     /**
      * 依赖关系的周期设定
      */
-    public static final String DEPENDENCY_CYCLE="zeus.dependency.cycle";
+    public static final String DEPENDENCY_CYCLE="hera.dependency.cycle";
 
 }

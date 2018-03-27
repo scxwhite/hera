@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @Service("hostGroupServiceImpl")
 @PropertySource(value = "classpath:application.yml", ignoreResourceNotFound = true)
-@ConfigurationProperties("zeus") //// prefix zeus, find app.* values
+@ConfigurationProperties("hera") //// prefix hera, find app.* values
 public class HeraHostGroupServiceImpl implements HeraHostGroupService {
 
     @Value("${defaultWorkerGroupId}")

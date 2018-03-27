@@ -55,10 +55,10 @@ public abstract class AbstractJob implements Job {
     }
     protected void log(Exception e){
         if(jobContext.getHeraJobHistory()!=null){
-            jobContext.getHeraJobHistory().getLog().appendZeusException(e);
+            jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         }
         if(jobContext.getDebugHistory()!=null){
-            jobContext.getDebugHistory().getLog().appendZeusException(e);
+            jobContext.getDebugHistory().getLog().appendHeraException(e);
         }
     }
 }

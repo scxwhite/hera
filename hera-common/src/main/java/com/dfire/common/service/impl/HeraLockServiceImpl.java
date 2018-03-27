@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 14:29 2018/1/12
- * @desc zeus_lock基于数据实现的分布式锁
+ * @desc hera_lock基于数据实现的分布式锁
  */
 @Service("heraLockService")
 public class HeraLockServiceImpl implements HeraLockService {

@@ -23,7 +23,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class JobContext {
 
-    private static final String runPath = "/tmp/zeus";
+    private static final String runPath = "/tmp/hera";
     //调度执行
     public static final int SCHEDULE_RUN = 1;
     //手动执行
@@ -70,7 +70,7 @@ public class JobContext {
         File file = new File(runType + HeraDateTool.getToday());
         if (!file.exists()) {
             if (!file.mkdir()) {
-                throw new SecurityException("create file failed,please check /tmp/zeus ");
+                throw new SecurityException("create file failed,please check /tmp/hera ");
             }
         }
         jobContext.setWorkDir(file.getAbsolutePath());
