@@ -1,6 +1,6 @@
 package com.dfire.controller;
 
-import com.dfire.common.entity.ZeusUser;
+import com.dfire.common.entity.HeraUser;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +9,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.dfire.common.service.ZeusHostGroupService;
-import com.dfire.common.service.ZeusJobService;
-import com.dfire.common.service.ZeusUserService;
+import com.dfire.common.service.HeraHostGroupService;
+import com.dfire.common.service.HeraJobService;
+import com.dfire.common.service.HeraUserService;
 
 
 /**
@@ -24,11 +24,11 @@ import com.dfire.common.service.ZeusUserService;
 public class LoginController {
 
     @Autowired
-    private ZeusUserService zeusUserService;
+    private HeraUserService heraUserService;
     @Autowired
-    private ZeusJobService zeusJobService;
+    private HeraJobService heraJobService;
     @Autowired
-    private ZeusHostGroupService hostGroupService;
+    private HeraHostGroupService hostGroupService;
 
     @RequestMapping("/")
     public String login() {
@@ -43,8 +43,8 @@ public class LoginController {
     @RequestMapping(value="/toLogin", method=RequestMethod.POST)
     @ResponseBody
     public RestfulResponse toLogin(String userName, String password) {
-        zeusJobService.findByName(182);
-        ZeusUser user = zeusUserService.findByName(userName);
+        heraJobService.findByName(182);
+        HeraUser user = heraUserService.findByName(userName);
         String pwd = user.getPassword();
         RestfulResponse response = RestfulResponse
                 .builder().build();

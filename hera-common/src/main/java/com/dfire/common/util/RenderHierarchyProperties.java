@@ -51,7 +51,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             StringWriter sw = new StringWriter();
             try {
                 VelocityContext context = new VelocityContext();
-                context.put("zdt", new ZeusDateTool(new Date()));
+                context.put("zdt", new HeraDateTool(new Date()));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
                     log.error("render fail with target:" + m);
@@ -64,7 +64,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             template = template.replace(m, sw.toString());
             matcher = pt.matcher(template);
         }
-        template = template.replace("${yesterday}", new ZeusDateTool(new Date()).addDay(-1).format("yyyyMMdd"));
+        template = template.replace("${yesterday}", new HeraDateTool(new Date()).addDay(-1).format("yyyyMMdd"));
         return template;
     }
 
@@ -83,7 +83,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             StringWriter sw = new StringWriter();
             try {
                 VelocityContext context = new VelocityContext();
-                context.put("zdt", new ZeusDateTool(ZeusDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")));
+                context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
                     log.error("render fail with target:" + m);
@@ -96,7 +96,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             template = template.replace(m, sw.toString());
             matcher = pt.matcher(template);
         }
-        template = template.replace("${yesterday}", new ZeusDateTool(ZeusDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")).addDay(-1).format("yyyyMMdd"));
+        template = template.replace("${yesterday}", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")).addDay(-1).format("yyyyMMdd"));
         return template;
     }
 

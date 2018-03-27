@@ -44,9 +44,9 @@ public class LogContent {
         }
     }
 
-    public void appendZeus(String log) {
+    public void appendHera(String log) {
         lines++;
-        content.append("ZEUS# ").append(log).append("\n");
+        content.append("HERA# ").append(log).append("\n");
     }
 
     public void append(String log) {
@@ -60,7 +60,7 @@ public class LogContent {
         }
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
-        appendZeus(sw.toString());
+        appendHera(sw.toString());
     }
 
     public void setContent(StringBuffer content) {

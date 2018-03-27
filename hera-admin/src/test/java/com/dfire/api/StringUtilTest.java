@@ -5,6 +5,9 @@ import com.dfire.common.util.StringUtil;
 import com.dfire.core.job.ProcessJob;
 import org.junit.Test;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -41,5 +44,20 @@ public class StringUtilTest {
         System.out.println(Arrays.asList(commands2).stream().collect(Collectors.joining()));
         System.out.println(Arrays.asList(commands3).stream().collect(Collectors.joining()));
 
+    }
+
+    @Test
+    public void testFilePath() {
+        File file = new File("1.txt");
+        System.out.println(file.getAbsolutePath());
+    }
+
+    @Test
+    public void testDateFormat() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("[yyyy-MM-dd][dd/MM/yyyy][MM-dd-yyyy]");
+        LocalDate.parse("2018-09-23", formatter);
+        System.out.println( LocalDate.parse("2018-09-23", formatter));
+        System.out.println( LocalDate.parse("09-23-2018", formatter));
+        System.out.println( LocalDate.parse("23/09/2018", formatter));
     }
 }

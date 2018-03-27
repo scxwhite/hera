@@ -1,9 +1,9 @@
 package com.dfire.core.netty.master;
 
-import com.dfire.common.service.ZeusFileService;
-import com.dfire.common.service.ZeusHostGroupService;
-import com.dfire.common.service.ZeusProfileService;
-import com.dfire.common.vo.ZeusHostGroupVo;
+import com.dfire.common.service.HeraFileService;
+import com.dfire.common.service.HeraHostGroupService;
+import com.dfire.common.service.HeraProfileService;
+import com.dfire.common.vo.HeraHostGroupVo;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.netty.Channel;
 import com.dfire.core.quartz.QuartzSchedulerService;
@@ -36,11 +36,11 @@ import java.util.concurrent.*;
 public class MasterContext {
 
     @Autowired
-    private ZeusHostGroupService zeusHostGroupService;
+    private HeraHostGroupService heraHostGroupService;
     @Autowired
-    private ZeusFileService zeusFileService;
+    private HeraFileService heraFileService;
     @Autowired
-    private ZeusProfileService zeusProfileService;
+    private HeraProfileService heraProfileService;
     @Autowired
     private QuartzSchedulerService quartzSchedulerService;
 
@@ -51,7 +51,7 @@ public class MasterContext {
 
 
     private Dispatcher dispatcher;
-    private Map<String, ZeusHostGroupVo> hostGroupCache;
+    private Map<String, HeraHostGroupVo> hostGroupCache;
     /**
      * @desc
      *      1. quartz发生任务调度的时候，任务会先进入到exceptionQueue队列，等待被扫描调度，随后进入调度队列
@@ -97,13 +97,13 @@ public class MasterContext {
         log.info("destroy master context success");
     }
 
-    public synchronized Map<String,ZeusHostGroupVo> getHostGroupCache() {
+    public synchronized Map<String,HeraHostGroupVo> getHostGroupCache() {
         return hostGroupCache;
     }
 
     public synchronized void refreshHostGroupCache() {
         try {
-            hostGroupCache = zeusHostGroupService.getAllHostGroupInfo();
+            hostGroupCache = heraHostGroupService.getAllHostGroupInfo();
         } catch (Exception e) {
             log.info("refresh host group error");
         }

@@ -1,7 +1,7 @@
 package com.dfire.dao;
 
-import com.dfire.common.entity.ZeusFile;
-import com.dfire.common.entity.ZeusJob;
+import com.dfire.common.entity.HeraFile;
+import com.dfire.common.entity.HeraJob;
 import com.dfire.common.service.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,28 +25,28 @@ import java.util.List;
 public class DAOTest {
 
     @Autowired
-    ZeusHostGroupService hostGroupService;
+    HeraHostGroupService hostGroupService;
     @Autowired
-    ZeusUserService zeusUserService;
+    HeraUserService heraUserService;
     @Autowired
-    ZeusJobService zeusJobService;
+    HeraJobService heraJobService;
     @Autowired
-    ZeusLockService zeusLockService;
+    HeraLockService heraLockService;
     @Autowired
-    ZeusFileService zeusFileService;
+    HeraFileService heraFileService;
 
     @Test
     public void getHostGroupList() {
         String id = "1";
         List<String> list = hostGroupService.getPreemptionGroup(id);
-        ZeusJob zeusJob = zeusJobService.findByName(675);
+        HeraJob heraJob = heraJobService.findByName(675);
         System.out.println(list.size());
-        System.out.println(zeusLockService.getZeusLock("online"));
+        System.out.println(heraLockService.getHeraLock("online"));
 
     }
     @Test
     public void zeusFileTest() {
-        List<ZeusFile> list = zeusFileService.getFileListByOwner("biadmin");
+        List<HeraFile> list = heraFileService.getFileListByOwner("biadmin");
         System.out.println(list.get(0));
     }
 }

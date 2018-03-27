@@ -1,14 +1,14 @@
 package com.dfire.core.lock;
 
-import com.dfire.common.entity.ZeusLock;
-import com.dfire.common.service.ZeusLockService;
+import com.dfire.common.entity.HeraLock;
+import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.ZeusSchedule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import com.dfire.common.service.ZeusHostGroupService;
+import com.dfire.common.service.HeraHostGroupService;
 
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
@@ -31,9 +31,9 @@ public class DistributeLock {
     public static String host = "LOCALHOST";
 
     @Autowired
-    private ZeusHostGroupService hostGroupService;
+    private HeraHostGroupService hostGroupService;
     @Autowired
-    private ZeusLockService zeusLockService;
+    private HeraLockService heraLockService;
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
@@ -64,24 +64,24 @@ public class DistributeLock {
     }
 
     public void getLock() {
-        ZeusLock zeusLock = zeusLockService.getZeusLock("online");
-        if (zeusLock == null) {
-            zeusLock = ZeusLock.builder()
+        HeraLock heraLock = heraLockService.getHeraLock("online");
+        if (heraLock == null) {
+            heraLock = HeraLock.builder()
                     .host(host)
                     .serverUpdate(new Date())
                     .build();
-            zeusLockService.save(zeusLock);
+            heraLockService.save(heraLock);
         }
 
-        if (host.equals(zeusLock.getHost())) {
-            zeusLock.setServerUpdate(new Date());
-            zeusLockService.save(zeusLock);
+        if (host.equals(heraLock.getHost())) {
+            heraLock.setServerUpdate(new Date());
+            heraLockService.save(heraLock);
             log.info("hold lock and update  time");
             zeusSchedule.startup(port);
         } else {
             log.info("not my lock");
             long currentTime = System.currentTimeMillis();
-            long lockTime = zeusLock.getServerUpdate().getTime();
+            long lockTime = heraLock.getServerUpdate().getTime();
             long interval = currentTime - lockTime;//host不匹配，切服务器更新时间间隔超过5s,判断发生master  切换
             if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
                 log.info("master 发生切换");

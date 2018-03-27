@@ -31,8 +31,8 @@ public class CancelHadoopJob extends ProcessJob {
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
         String logContent = null;
-        if(jobContext.getZeusJobHistory() != null) {
-            logContent = jobContext.getZeusJobHistory().getLog().getContent();
+        if(jobContext.getHeraJobHistory() != null) {
+            logContent = jobContext.getHeraJobHistory().getLog().getContent();
         } else if(jobContext.getDebugHistory() != null) {
             logContent = jobContext.getDebugHistory().getLog().getContent();
         }

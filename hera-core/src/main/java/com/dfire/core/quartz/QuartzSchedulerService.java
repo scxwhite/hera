@@ -1,8 +1,8 @@
 package com.dfire.core.quartz;
 
-import com.dfire.common.entity.ZeusJob;
+import com.dfire.common.entity.HeraJob;
 import com.dfire.core.event.Dispatcher;
-import com.dfire.core.schedule.ZeusQuartzJob;
+import com.dfire.core.schedule.HeraQuartzJob;
 import jdk.nashorn.internal.objects.annotations.Constructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
@@ -82,15 +82,15 @@ public class QuartzSchedulerService {
      * 创建定时任务
      *
      * @param scheduler the scheduler
-     * @param zeusJob the job name
+     * @param heraJob the job name
      */
 
-    public static void createScheduleJob(Scheduler scheduler, Dispatcher dispatcher, ZeusJob zeusJob) {
+    public static void createScheduleJob(Scheduler scheduler, Dispatcher dispatcher, HeraJob heraJob) {
 
-        JobDetail jobDetail = JobBuilder.newJob(ZeusQuartzJob.class).withIdentity("zeus").build();
-        jobDetail.getJobDataMap().put("jobId", zeusJob.getId());
+        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity("zeus").build();
+        jobDetail.getJobDataMap().put("jobId", heraJob.getId());
         jobDetail.getJobDataMap().put("dispatcher", dispatcher);
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(zeusJob.getCronExpression());
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraJob.getCronExpression());
         CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("zeus").withSchedule(scheduleBuilder).build();
         try {
             scheduler.scheduleJob(jobDetail, trigger);

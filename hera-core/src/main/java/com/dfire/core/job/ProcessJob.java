@@ -9,7 +9,6 @@ import org.apache.hadoop.conf.Configuration;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,8 +30,12 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
     public abstract List<String> getCommandList();
 
-    private void buildHadoopConf(String jobType) {
-        File dir = new File(jobContext.getWorkDir() + File.separator + "hadoop_conf");
+    /**
+     * @param jobType
+     * @desc 针对hive做系统环境检测，保证任务运行环境可用，首先检测hadoop环境是否正常
+     */
+    private void buildHiveConf(String jobType) {
+        File dir = new File(jobContext.getWorkDir() + File.separator + "hive_conf");
         if (!dir.exists()) {
             dir.mkdir();
         }
@@ -40,6 +43,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         Map<String, String> hdfs = new HashMap<>();
         Map<String, String> mapred = new HashMap<>();
         Map<String, String> yarn = new HashMap<>();
+        Map<String, String> hive = new HashMap<>();
         jobContext.getProperties().getAllProperties().keySet().stream().forEach(key -> {
             if (key.startsWith("core-site.")) {
                 core.put(key.substring("core-site.".length()), jobContext.getProperties().getProperty(key));
@@ -49,6 +53,8 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 mapred.put(key.substring("mapred-site.".length()), jobContext.getProperties().getProperty(key));
             } else if (key.startsWith("yarn-site.")) {
                 yarn.put(key.substring("yarn-site.".length()), jobContext.getProperties().getProperty(key));
+            } else if (key.startsWith("hive-site.")) {
+                hive.put(key.substring("hive-site.".length()), jobContext.getProperties().getProperty(key));
             }
         });
 
@@ -109,24 +115,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             } catch (Exception e) {
                 log.error("create file yarn-site.xml error", e);
             }
-        }
-        //HADOOP_CONF_DIR添加2个路径，分别为 WorkDir/hadoop_conf 和 HADOOP_HOME/conf
-        String HADOOP_CONF_DIR = jobContext.getWorkDir() + File.separator + "hadoop_conf" + File.pathSeparator + ConfUtil.getHadoopConfDir();
-        envMap.put("HADOOP_CONF_DIR", HADOOP_CONF_DIR);
-    }
 
-    private void buildHiveConf(String jobType) {
-        File dir = new File(jobContext.getWorkDir() + File.separator + "hive_conf");
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        Map<String, String> hive = new HashMap<String, String>();
-        for (String key : jobContext.getProperties().getAllProperties().keySet()) {
-            if (key.startsWith("hive-site.")) {
-                hive.put(key.substring("hive-site.".length()), jobContext.getProperties().getProperty(key));
-            }
-        }
-        if (jobType != null && jobType.equals("HiveJob")) {
             Configuration hiveC = ConfUtil.getDefaultHiveSie();
             for (String key : hive.keySet()) {
                 hiveC.set(key, hive.get(key));
@@ -142,17 +131,16 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 log.error("create file hive-site.xml error", e);
             }
         }
-        String HIVE_CONF_DIR = jobContext.getWorkDir() + File.separator + "hive_conf" + File.pathSeparator +
-                ConfUtil.getHiveConfDir();
+        //HADOOP_CONF_DIR添加2个路径，分别为 WorkDir/hadoop_conf 和 HADOOP_HOME/conf
+        String HIVE_CONF_DIR = jobContext.getWorkDir() + File.separator + "hive_conf" + File.pathSeparator + ConfUtil.getHiveConfDir();
         envMap.put("HIVE_CONF_DIR", HIVE_CONF_DIR);
-
     }
+
 
     @Override
     public int run() {
         int exitCode = -999;
         String jobType = jobContext.getProperties().getAllProperties().get(RunningJobKeys.JOB_RUN_TYPE);
-        buildHadoopConf(jobType);
         buildHiveConf(jobType);
         jobContext.getProperties().getAllProperties().keySet().stream()
                 .filter(key -> jobContext.getProperties().getProperty(key) != null && (key.startsWith("instance.") || key.startsWith("secret.")))
@@ -175,8 +163,8 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 e.printStackTrace();
             }
             String threadName = null;
-            if (jobContext.getZeusJobHistory() != null && jobContext.getZeusJobHistory().getJobId() != null) {
-                threadName = "jobId=" + jobContext.getZeusJobHistory().getJobId();
+            if (jobContext.getHeraJobHistory() != null && jobContext.getHeraJobHistory().getJobId() != null) {
+                threadName = "jobId=" + jobContext.getHeraJobHistory().getJobId();
             } else if (jobContext.getDebugHistory() != null && jobContext.getDebugHistory().getId() != null) {
                 threadName = "debugId=" + jobContext.getDebugHistory().getId();
             } else {
@@ -265,7 +253,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             log("WARN Attempting to kill the process ");
             try {
                 process.destroy();
-                int pid=getProcessId();
+                int pid = getProcessId();
                 String st = "sudo sh -c \"cd; pstree " + pid + " -p | grep -o '([0-9]*)' | awk -F'[()]' '{print \\$2}' | xargs kill -9\"";
                 String[] commands = {"sudo", "sh", "-c", st};
                 ProcessBuilder processBuilder = new ProcessBuilder(commands);
@@ -277,8 +265,8 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 }
             } catch (Exception e) {
                 log(e);
-            } finally{
-                process=null;
+            } finally {
+                process = null;
             }
         }
     }
@@ -293,7 +281,6 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         }
         return processId;
     }
-
 
     protected String getProperty(String key, String defaultValue) {
         String value = jobContext.getProperties().getProperty(key);
@@ -311,16 +298,18 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         return jobContext;
     }
 
+    /**
+     * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
+     * @time: Created in 11:01 2018/3/26
+     * @desc job输出流日志接收线程
+     */
     private class StreamThread extends Thread {
-
         private InputStream inputStream;
         private String threadName;
-
         public StreamThread(InputStream inputStream, String threadName) {
             this.inputStream = inputStream;
             this.threadName = threadName;
         }
-
         @Override
         public void run() {
             try {
@@ -335,5 +324,4 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             }
         }
     }
-
 }
