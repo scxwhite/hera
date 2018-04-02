@@ -12,6 +12,6 @@ import org.apache.ibatis.annotations.Select;
  */
 public interface HeraFileMapper {
 
-    @Select("SELECT * FROM HERA_FILE WHERE OWNER = #{owner}")
+    @Select("SELECT * FROM hera_file WHERE OWNER = #{owner}")
     List<HeraFile> getFileListByOwner(@Param("owner") String owner);
 }

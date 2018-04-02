@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.*;
  */
 public interface HeraLockMapper {
 
-    @Select("SELECT * FROM HERA_LOCK WHERE subgroup = #{subGroup}")
+    @Select("SELECT * FROM hera_lock WHERE subgroup = #{subGroup}")
     @Results({
             @Result(id=true, column="id", property = "id"),
             @Result(column="gmt_create", property = "gmtCreate"),

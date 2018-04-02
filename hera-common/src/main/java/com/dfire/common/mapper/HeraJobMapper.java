@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.*;
  */
 public interface HeraJobMapper {
 
-    @Select("SELECT * FROM HERA_JOB WHERE ID = #{id}")
+    @Select("SELECT * FROM hera_job WHERE ID = #{id}")
     @Results({
             @Result(id=true, column="id", property = "id"),
             @Result(column="gmt_create", property = "gmtCreate")

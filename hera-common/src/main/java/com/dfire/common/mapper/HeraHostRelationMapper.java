@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface HeraHostRelationMapper {
 
-    @Select("SELECT * FROM HERA_HOST_RELATION ")
+    @Select("SELECT * FROM hera_host_relation ")
     public List<HeraHostRelation> getAllHostRelationList();
 
 }
