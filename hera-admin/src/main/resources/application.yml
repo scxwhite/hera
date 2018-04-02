@@ -3,9 +3,9 @@ spring:
     datasource:
         name: default
         type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://localhost/hera?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
-        username: root
-        password: syman
+        url: jdbc:mysql://common101.my.2dfire-daily.com/hera?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+        username: twodfire
+        password: 123456
         druid:
                   initial-size: 10
                   max-active: 20       #最大连接池数量

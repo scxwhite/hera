@@ -1,4 +1,5 @@
 $(function(){
+    setInterval(log,1000);
     var setting = {
         edit: {
             enable: true,
@@ -51,5 +52,9 @@ $(function(){
         $.fn.zTree.init($("#documentTree"), setting, zNodes);
 
     });
+
+    function log() {
+        console.log("log.......")
+    }
 
 });

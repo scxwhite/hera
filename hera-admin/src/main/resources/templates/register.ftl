@@ -12,7 +12,7 @@
     <div class="register-box-body">
         <p class="login-box-msg">Register a new membership</p>
         <div class="login-logo">
-            <a><b>宙斯任务</b>调度系统</a>
+            <a><b>赫拉任务</b>调度系统</a>
         </div>
 
         <form id="registerForm" method="post">

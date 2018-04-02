@@ -56,8 +56,8 @@
 <#macro commonHeader>
 	<header class="main-header">
         <a href="/" class="logo">
-            <span class="logo-mini"><b>宙斯</b></span>
-            <span class="logo-lg"><b>宙斯任务调度系统</b></span>
+            <span class="logo-mini"><b>赫拉</b></span>
+            <span class="logo-lg"><b>赫拉任务调度系统</b></span>
         </a>
         <nav class="navbar navbar-static-top" role="navigation">
             <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button"><span
@@ -205,7 +205,7 @@
 
 <#macro commonFooter >
 	<footer class="main-footer">
-        Powered by <b>hera-job-scheduler</b> 1.0.0（快照版本）
+        Powered by <b>hera</b> 1.0.0（快照版本）
         <div class="pull-right hidden-xs">
             <strong>Copyright &copy; 2018-${.now?string('yyyy')} &nbsp;
                 <a href="#" target="_blank">lingxiao</a>

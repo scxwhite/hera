@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/html">
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
@@ -16,52 +16,44 @@
 
     <div class="content-wrapper">
 
-        <section class="content" style="width: 100%; height: 100%;">
+        <section class="content" >
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-3">
+                <div class="row-fluid">
+                    <div class="col-md-3 panel panel-primary" style="height:10px;padding-bottom:70%">
 
-                        <div>
+                        <div >
                             <ul id="documentTree" class="ztree"></ul>
                         </div>
 
                     </div>
 
-                    <div class="col-md-8">
-
-                        <div class="box box-success">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Different Height</h3>
-                            </div>
-                            <div class="box-body">
-                                <input class="form-control input-lg" type="text" placeholder=".input-lg">
-                                <br>
-                                <input class="form-control" type="text" placeholder="Default input">
-                                <br>
-                                <input class="form-control input-sm" type="text" placeholder=".input-sm">
-                            </div>
-                            <!-- /.box-body -->
-                        </div>
+                    <div class="col-md-9 panel panel-primary" style="height:10px;padding-bottom:70%">
 
                         <form>
                             <button type="submit" class="btn btn-success btn-sm">执行</button>
                             <button type="submit" class="btn btn-success btn-sm">执行选中的代码</button>
                         </form>
+                        </br>
 
-                        <div height="600">
-                            <form>
-                                <div class="form-group" >
-                                    <input type="code" class="form-control" id="code" placeholder="code">
-                                </div>
-                            </form>
+                        <div class="row">
+                        <div  class="span8" style="height: 600px;overflow-y:auto">
+                            <div class="box-body pad" >
+                                <form>
+                                    <textarea class="textarea" placeholder="编写脚本" style="width: 100%; height: 500px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                                </form>
+                            </div>
                         </div>
-                        <div height="100">
-                            <form>
-                                <div class="form-group" >
-                                    <input type="log" class="form-control" id="exampleInputEmail1" placeholder="log">
-                                </div>
-                            </form>
+
+                        <div class="span4" >
+                            <div class="box-body pad" >
+                                <form>
+                                    <textarea class="textarea" placeholder="运行日志" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                                </form>
+                            </div>
                         </div>
+
+                        </div>
+
                     </div>
 
                 </div>

@@ -1,4 +1,4 @@
-package com.dfire.common.hierarchy;
+package graph;
 
 import com.dfire.common.kv.Tuple;
 import com.google.common.graph.ElementOrder;

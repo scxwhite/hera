@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.Select;
 public interface HeraUserMapper {
 
     @Select("SELECT * FROM HERA_USER WHERE NAME = #{name}")
-    HeraUser findByName(@Param("name") String name) ;
+    HeraUser findByName(@Param("name") String name);
 
     @Insert("INSERT INTO HERA_USER(NAME, AGE) VALUES(#{name}, #{age})")
     int insert(@Param("name") String name, @Param("age") Integer age);

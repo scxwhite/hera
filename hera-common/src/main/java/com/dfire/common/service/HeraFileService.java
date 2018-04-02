@@ -11,5 +11,7 @@ import java.util.List;
  */
 public interface HeraFileService {
 
-    List<HeraFile> getFileListByOwner(String owner);
+    List<HeraFile> getHeraFileListByOwner(String owner);
+
+    String  buildFileTree(String owner);
 }

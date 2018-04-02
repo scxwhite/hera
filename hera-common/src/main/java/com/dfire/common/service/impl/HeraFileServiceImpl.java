@@ -4,6 +4,7 @@ import com.dfire.common.entity.HeraFile;
 import com.dfire.common.mapper.HeraFileMapper;
 import com.dfire.common.service.HeraFileService;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +16,19 @@ import org.springframework.stereotype.Service;
 @Service("heraFileService")
 public class HeraFileServiceImpl implements HeraFileService {
 
+
     @Autowired
     private HeraFileMapper heraFileMapper;
 
     @Override
-    public List<HeraFile> getFileListByOwner(String owner) {
+    public List<HeraFile> getHeraFileListByOwner(String owner) {
         return heraFileMapper.getFileListByOwner(owner);
+    }
+
+    @Override
+    public String buildFileTree(String owner) {
+        List<HeraFile> list = getHeraFileListByOwner(owner);
+        return "";
+
     }
 }

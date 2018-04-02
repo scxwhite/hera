@@ -3,6 +3,8 @@ package com.dfire.dao;
 import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.service.*;
+import com.dfire.common.tree.TreeHelper;
+import com.dfire.common.tree.TreeNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.annotation.MapperScan;
@@ -12,6 +14,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -44,9 +49,14 @@ public class DAOTest {
         System.out.println(heraLockService.getHeraLock("online"));
 
     }
+
     @Test
     public void heraFileTest() {
-        List<HeraFile> list = heraFileService.getFileListByOwner("biadmin");
-        System.out.println(list.get(0));
+        List<HeraFile> list = heraFileService.getHeraFileListByOwner("biadmin");
+        Map<String, HeraFile> heraFileMap = list.stream().collect(Collectors.toMap(file -> file.getId(), Function.identity(), (v1,v2) -> v2));
+        TreeHelper treeHelper = new TreeHelper();
+        treeHelper.generateTree();
+        TreeNode node = treeHelper.getRoot();
+        node.traverse();
     }
 }
