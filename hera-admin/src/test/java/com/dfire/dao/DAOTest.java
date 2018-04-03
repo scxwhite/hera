@@ -5,6 +5,7 @@ import com.dfire.common.entity.HeraJob;
 import com.dfire.common.service.*;
 import com.dfire.common.tree.TreeHelper;
 import com.dfire.common.tree.TreeNode;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.annotation.MapperScan;
@@ -53,8 +54,21 @@ public class DAOTest {
     @Test
     public void heraFileTest() {
         List<HeraFile> list = heraFileService.getHeraFileListByOwner("biadmin");
+        HeraFile rootFile = list.stream().filter(file -> file.getParent() == null).findAny().get();
+        TreeNode root = TreeNode.builder().id(rootFile.getId()).parentId("").object(rootFile).build();
+        TreeHelper.Convert<HeraFile, TreeNode> convert = (HeraFile file) -> {
+            TreeNode treeNode = new TreeNode();
+            treeNode.setId(file.getId());
+            if(StringUtils.isNotBlank(file.getParent())) {
+                treeNode.setParentId(file.getParent());
+            }
+            treeNode.setObject(file);
+            return treeNode;
+        };
         Map<String, HeraFile> heraFileMap = list.stream().collect(Collectors.toMap(file -> file.getId(), Function.identity(), (v1,v2) -> v2));
         TreeHelper treeHelper = new TreeHelper();
+        treeHelper.setRoot(root);
+        treeHelper.setTempNodeList(treeHelper.convert(list, convert));
         treeHelper.generateTree();
         TreeNode node = treeHelper.getRoot();
         node.traverse();

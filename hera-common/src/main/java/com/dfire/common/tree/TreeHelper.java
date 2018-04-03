@@ -96,15 +96,15 @@ public class TreeHelper {
      * @return
      * @desc 将HeraFile转换为Node
      */
-    public static List<TreeNode> convert(List<HeraFile> list, Convert<HeraFile, TreeNode> convert) {
+    public  List<TreeNode> convert(List<HeraFile> list, Convert<HeraFile, TreeNode> convert) {
         List<TreeNode> tempNodeList = new ArrayList<TreeNode>();
-        list.forEach(file -> tempNodeList.add(convert.convert(file)));
+        list.forEach(file -> tempNodeList.add(convert.transform(file)));
         return tempNodeList;
     }
 
     @FunctionalInterface
     public interface Convert<HeraFile, TreeNode>   {
-         TreeNode convert(HeraFile file);
+         TreeNode transform(HeraFile file);
     }
 
 
