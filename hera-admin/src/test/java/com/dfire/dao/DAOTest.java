@@ -47,6 +47,7 @@ public class DAOTest {
         List<String> list = hostGroupService.getPreemptionGroup(id);
         HeraJob heraJob = heraJobService.findByName(675);
         System.out.println(list.size());
+
         System.out.println(heraLockService.getHeraLock("online"));
 
     }

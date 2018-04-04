@@ -26,6 +26,7 @@ public class JobElement {
 
     private Long triggerTime;
 
+
     public boolean equals(JobElement jobElement) {
        if(!jobElement.getJobId().equals(jobId)) {
            return false;
