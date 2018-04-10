@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface HeraHostGroupMapper {
 
-    @Select("SELECT HOST FROM HERA_HOST_RELATION WHERE host_group_id = #{preemptionMasterGroupId}")
+    @Select("SELECT HOST FROM hera_host_relation WHERE host_group_id = #{preemptionMasterGroupId}")
     List<String> getPreemptionGroup(@Param("preemptionMasterGroupId") String groupId);
 
 

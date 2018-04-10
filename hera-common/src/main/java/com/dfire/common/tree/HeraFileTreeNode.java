@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dfire.common.entity.vo.HeraFileVo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,21 +19,20 @@ import org.apache.commons.lang.StringUtils;
 @Builder
 @Data
 @AllArgsConstructor
-public class TreeNode {
-
+public class HeraFileTreeNode {
     private String id;
     private String parentId;
-    private String nodeName;
-    private Object object;
-    private TreeNode parentNode;
-    private List<TreeNode> childList;
+    private HeraFileTreeNode parentNode;
+    private List<HeraFileTreeNode> childList;
+    private HeraFileVo heraFileVo;
 
-    public TreeNode() {
+    public HeraFileTreeNode() {
         initChildList();
     }
 
-    public TreeNode(TreeNode parentNode) {
-        this.getParentNode();
+    public HeraFileTreeNode(HeraFileVo heraFileVo) {
+        this.id = heraFileVo.getId();
+        this.heraFileVo = heraFileVo;
         initChildList();
     }
 
@@ -54,7 +54,7 @@ public class TreeNode {
         }
     }
 
-    public void addChildNode(TreeNode treeNode) {
+    public void addChildNode(HeraFileTreeNode treeNode) {
         initChildList();
         childList.add(treeNode);
     }
@@ -67,9 +67,9 @@ public class TreeNode {
      * @return
      * @desc 返回当前节点的所有父亲节点集合
      */
-    public List<TreeNode> getElders() {
-        List<TreeNode> elderList = new ArrayList<>();
-        TreeNode parentNode = this.getParentNode();
+    public List<HeraFileTreeNode> getElders() {
+        List<HeraFileTreeNode> elderList = new ArrayList<>();
+        HeraFileTreeNode parentNode = this.getParentNode();
         if (parentNode == null) {
             return elderList;
         } else {
@@ -83,9 +83,9 @@ public class TreeNode {
      * @return
      * @desc 返回当前节点的所有孩子节点集合
      */
-    public List<TreeNode> getJuniors() {
-        List<TreeNode> juniorList = new ArrayList<>();
-        List<TreeNode> childList = this.getChildList();
+    public List<HeraFileTreeNode> getJuniors() {
+        List<HeraFileTreeNode> juniorList = new ArrayList<>();
+        List<HeraFileTreeNode> childList = this.getChildList();
         if (childList == null) {
             return juniorList;
         } else {
@@ -101,7 +101,7 @@ public class TreeNode {
      * @return
      * @desc 返回当前节点的孩子集合
      */
-    public List<TreeNode> getChildList() {
+    public List<HeraFileTreeNode> getChildList() {
         return childList;
     }
 
@@ -109,7 +109,7 @@ public class TreeNode {
      * @desc 删除节点和它下面的晚辈
      */
     public void deleteNode() {
-        TreeNode parentNode = this.getParentNode();
+        HeraFileTreeNode parentNode = this.getParentNode();
         String id = this.getId();
         if (parentNode != null) {
             parentNode.deleteChildNode(id);
@@ -121,7 +121,7 @@ public class TreeNode {
      * @desc 删除当前节点的某个子节点
      */
     public void deleteChildNode(String childId) {
-        List<TreeNode> childListTmp = this.getChildList();
+        List<HeraFileTreeNode> childListTmp = this.getChildList();
         this.setChildList(childListTmp.stream().filter(child -> !child.getId().equals(childId)).collect(Collectors.toList()));
     }
 
@@ -130,17 +130,17 @@ public class TreeNode {
      * @return
      * @desc 动态的插入一个新的节点到当前树中
      */
-    public boolean insertJuniorNode(TreeNode treeNode) {
+    public boolean insertJuniorNode(HeraFileTreeNode treeNode) {
         String juniorParentId = treeNode.getParentId();
         if (this.parentId == juniorParentId) {
             addChildNode(treeNode);
             return true;
         } else {
-            List<TreeNode> childList = this.getChildList();
+            List<HeraFileTreeNode> childList = this.getChildList();
             int childNumber = childList.size();
             boolean insertFlag;
             for (int i = 0; i < childNumber; i++) {
-                TreeNode childNode = childList.get(i);
+                HeraFileTreeNode childNode = childList.get(i);
                 insertFlag = childNode.insertJuniorNode(treeNode);
                 if (insertFlag == true) {
                     return true;
@@ -155,7 +155,7 @@ public class TreeNode {
      * @return
      * @desc 找到一颗树中某个节点
      */
-    public TreeNode findTreeNodeById(String id) {
+    public HeraFileTreeNode findTreeNodeById(String id) {
         if (this.id == id) {
             return this;
         }
@@ -164,8 +164,8 @@ public class TreeNode {
         } else {
             int childNumber = childList.size();
             for (int i = 0; i < childNumber; i++) {
-                TreeNode child = childList.get(i);
-                TreeNode resultNode = child.findTreeNodeById(id);
+                HeraFileTreeNode child = childList.get(i);
+                HeraFileTreeNode resultNode = child.findTreeNodeById(id);
                 if (resultNode != null) {
                     return resultNode;
                 }
@@ -175,7 +175,7 @@ public class TreeNode {
     }
 
     public void traverse() {
-        if(StringUtils.isBlank(getId())) {
+        if(StringUtils.isBlank(heraFileVo.getId())) {
             return;
         }
         print(id);
@@ -186,12 +186,9 @@ public class TreeNode {
         childList.stream().forEach(child -> traverse());
     }
 
+
     public void print(String content) {
         System.out.println(content);
-    }
-
-    public void print(int content) {
-        System.out.println(String.valueOf(content));
     }
 
 

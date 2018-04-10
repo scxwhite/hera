@@ -18,15 +18,14 @@ import java.util.Date;
 @NoArgsConstructor
 public class HeraFile {
 
-    private static final long serialVersionUID = 1L;
     private String id;
     private String name;
     private String owner;
     private String parent;
-    private boolean folder;
     private String content;
-    private Date gmtCreate=new Date();
-    private Date gmtModified=new Date();
+    private String type;
+    private Date gmtCreate = new Date();
+    private Date gmtModified = new Date();
     private String hostGroupId;
 
 }
