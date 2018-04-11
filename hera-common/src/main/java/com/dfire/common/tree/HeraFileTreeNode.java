@@ -8,7 +8,6 @@ import com.dfire.common.entity.vo.HeraFileVo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -174,18 +173,28 @@ public class HeraFileTreeNode {
         return null;
     }
 
-    public void traverse() {
-        if(StringUtils.isBlank(heraFileVo.getId())) {
+    public void traverse(HeraFileTreeNode heraFileTreeNode) {
+        if(!heraFileTreeNode.getChildList().isEmpty() || heraFileTreeNode.getChildList().size() > 0) {
+            for(HeraFileTreeNode node : heraFileTreeNode.getChildList()) {
+                print(heraFileTreeNode.toString());
+                recursion(node);
+            }
+        } else  {
             return;
         }
-        print(id);
-        if(childList == null || childList.isEmpty()) {
-            return;
-        }
-        int childNumber = childList.size();
-        childList.stream().forEach(child -> traverse());
     }
 
+    private void recursion(HeraFileTreeNode parentNode) {
+        if(!parentNode.getChildList().isEmpty() || parentNode.getChildList().size() > 0) {
+            for (HeraFileTreeNode subNode : parentNode.getChildList()) {
+                print(parentNode.heraFileVo.toString());
+                print(subNode.heraFileVo.toString());
+                recursion(subNode);
+            }
+        } else {
+            return;
+        }
+    }
 
     public void print(String content) {
         System.out.println(content);

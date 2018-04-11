@@ -10,7 +10,7 @@ import java.util.Date;
 public class HeraFileVo {
 
     private String id;
-    private String parentId;
+    private String parent;
     private Date createDate;
     private Date modifiedDate;
     private String name;
@@ -19,4 +19,13 @@ public class HeraFileVo {
     private String owner;
     private boolean admin;
     private String hostGroupId;
+
+    @Override
+    public String toString() {
+        return "HeraFileVo{" +
+                "id='" + id + '\'' +
+                ", parent='" + parent + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

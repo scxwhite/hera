@@ -7,6 +7,25 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
 </head>
 
+<style type="text/css">
+    div#rMenu {
+        position:absolute;
+        visibility:hidden;
+        top:0;
+        background-color: #555;
+        text-align: left;
+        padding: 2px;
+    }
+
+    div#rMenu ul li{
+        margin: 1px 0;
+        padding: 0 5px;
+        cursor: pointer;
+        list-style: none outside none;
+        background-color: #DFDFDF;
+    }
+</style>
+
 <body class="hold-transition skin-green-light sidebar-mini">
 <div class="wrapper">
     <!-- header -->
@@ -19,7 +38,20 @@
         <section class="content" >
             <div class="container-fluid">
                 <div class="row-fluid">
-                    <div class="col-md-3 panel panel-primary" style="height:10px;padding-bottom:70%">
+                    <div class="col-md-5 panel panel-primary" style="height:10px;padding-bottom:70%">
+
+                        <div id="rMenu">
+                            <ul>
+                                <li id="addFolder" onclick="addFolder();">增加文件夹</li>
+                                <li id="addHiveFile" onclick="addHiveFile();">新疆hive</li>
+                                <li id="addShellFile" onclick="addShellFile();">新疆shell</li>
+                                <li id="rename" onclick="rename();">重命名</li>
+                                <li id="openFile" onclick="openFile();">重命名</li>
+                                <li id="removeFile" onclick="removeFile();">删除</li>
+                                <li id="copyFile" onclick="copyFile();">复制文件</li>
+                                <li id="resetTree" onclick="resetTree();">恢复zTree</li>
+                            </ul>
+                        </div>
 
                         <div >
                             <ul id="documentTree" class="ztree"></ul>
@@ -27,7 +59,7 @@
 
                     </div>
 
-                    <div class="col-md-9 panel panel-primary" style="height:10px;padding-bottom:70%">
+                    <div class="col-md-5 panel panel-primary" style="height:10px;padding-bottom:70%">
 
                         <form>
                             <button type="submit" class="btn btn-success btn-sm">执行</button>

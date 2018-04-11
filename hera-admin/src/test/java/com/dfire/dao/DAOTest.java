@@ -59,6 +59,6 @@ public class DAOTest {
         System.out.println(list.size());
         HeraFileTreeNode node = heraFileService.getUserFiles();
         System.out.println(node.getChildList().size());
-        node.traverse();
+        node.traverse(node);
     }
 }

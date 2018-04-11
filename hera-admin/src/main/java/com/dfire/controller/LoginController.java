@@ -1,6 +1,9 @@
 package com.dfire.controller;
 
 import com.dfire.common.entity.HeraUser;
+import com.dfire.common.service.HeraHostGroupService;
+import com.dfire.common.service.HeraJobService;
+import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +12,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.dfire.common.service.HeraHostGroupService;
-import com.dfire.common.service.HeraJobService;
-import com.dfire.common.service.HeraUserService;
 
 
 /**
@@ -40,7 +40,7 @@ public class LoginController {
         return "home";
     }
 
-    @RequestMapping(value="/toLogin", method=RequestMethod.POST)
+    @RequestMapping(value = "/toLogin", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse toLogin(String userName, String password) {
         heraJobService.findByName(182);
