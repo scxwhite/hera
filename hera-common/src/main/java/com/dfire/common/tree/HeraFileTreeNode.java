@@ -173,28 +173,18 @@ public class HeraFileTreeNode {
         return null;
     }
 
-    public void traverse(HeraFileTreeNode heraFileTreeNode) {
-        if(!heraFileTreeNode.getChildList().isEmpty() || heraFileTreeNode.getChildList().size() > 0) {
-            for(HeraFileTreeNode node : heraFileTreeNode.getChildList()) {
-                print(heraFileTreeNode.toString());
-                recursion(node);
-            }
-        } else  {
-            return;
+    public void traverse() {
+        print(heraFileVo.toString());
+        if(childList.isEmpty() || childList == null) {
+           return;
+        }
+        int num = childList.size();
+        for(int i = 0; i < num; i++) {
+            HeraFileTreeNode child = childList.get(i);
+            child.traverse();
         }
     }
 
-    private void recursion(HeraFileTreeNode parentNode) {
-        if(!parentNode.getChildList().isEmpty() || parentNode.getChildList().size() > 0) {
-            for (HeraFileTreeNode subNode : parentNode.getChildList()) {
-                print(parentNode.heraFileVo.toString());
-                print(subNode.heraFileVo.toString());
-                recursion(subNode);
-            }
-        } else {
-            return;
-        }
-    }
 
     public void print(String content) {
         System.out.println(content);
