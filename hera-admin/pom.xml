@@ -171,6 +171,14 @@
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
+                    <excludes>
+                        <excludes>
+                            <exclude>env.conf</exclude>
+                            <exclude>*.yaml</exclude>
+                            <exclude>*.yml</exclude>
+                            <exclude>*.xml</exclude>
+                        </excludes>
+                    </excludes>
                 </configuration>
             </plugin>
 
