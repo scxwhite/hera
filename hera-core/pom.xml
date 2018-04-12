@@ -20,6 +20,8 @@
     <properties>
         <quartz.version>2.2.1</quartz.version>
         <hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
+        <lang3.version>3.4</lang3.version>
+        <hera.common.version>1.0-SNAPSHOT</hera.common.version>
     </properties>
 
     <dependencies>
@@ -93,6 +95,11 @@
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${lang3.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.hyperic.sigar</groupId>
@@ -122,7 +129,7 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-common</artifactId>
-            <version>${parent.version}</version>
+            <version>${hera.common.version}</version>
         </dependency>
 
     </dependencies>

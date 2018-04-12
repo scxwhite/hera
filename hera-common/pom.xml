@@ -11,7 +11,7 @@
     <groupId>com.dfire.hera</groupId>
     <artifactId>hera-common</artifactId>
     <packaging>jar</packaging>
-
+    <version>1.0-SNAPSHOT</version>
     <name>hera-common</name>
     <url>http://maven.apache.org</url>
 

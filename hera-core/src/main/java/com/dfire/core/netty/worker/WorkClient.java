@@ -2,7 +2,10 @@ package com.dfire.core.netty.worker;
 
 
 import com.dfire.core.message.Protocol;
+import com.dfire.core.schedule.ScheduleInfoLog;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -13,9 +16,16 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.net.InetSocketAddress;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -35,6 +45,7 @@ public class WorkClient {
 
     @PostConstruct
     public void WorkClient() {
+        workContext = new WorkContext();
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
@@ -52,8 +63,42 @@ public class WorkClient {
         log.info("start work client success ");
     }
 
-    public synchronized void connect(String host, int port) {
-
+    public synchronized void connect(String host, int port) throws Exception {
+        //首先判断服务频道是否开启
+        if (workContext.getServerChannel() != null) {
+            //如果需要通信的对象是自己 那么直接返回
+            if (workContext.getServerHost().equals(host)) {
+                return ;
+            } else { //关闭之前通信
+                workContext.getServerChannel().close();
+                workContext.setServerChannel(null);
+            }
+        }
+        workContext.setServerHost(host);
+        CountDownLatch latch = new CountDownLatch(1);
+        ChannelFutureListener futureListener = (future) -> {
+                try {
+                    if (future.isSuccess()) {
+                        workContext.setServerChannel(future.channel());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    latch.countDown();
+                }
+        };
+        ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, port));
+        connectFuture.addListener(futureListener);
+        if (!latch.await(2, TimeUnit.SECONDS)) {
+            connectFuture.removeListener(futureListener);
+            connectFuture.cancel(true);
+            throw new ExecutionException(new TimeoutException("connect server consumption of 2 seconds"));
+        }
+        if (!connectFuture.isSuccess()) {
+            throw new RuntimeException("connect server failed " + host,
+                    connectFuture.cause());
+        }
+        ScheduleInfoLog.info("connect server success");
     }
 
 }

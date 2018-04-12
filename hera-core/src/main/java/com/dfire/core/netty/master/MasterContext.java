@@ -66,7 +66,10 @@ public class MasterContext {
     private MasterHandler handler;
     private MasterServer masterServer;
     private ExecutorService threadPool = Executors.newCachedThreadPool();
-    private ScheduledExecutorService schedulePool = Executors.newScheduledThreadPool(12);//后面成可配置的
+    /**
+     *     后面成可配置的
+     */
+    private ScheduledExecutorService schedulePool = Executors.newScheduledThreadPool(12);
 
 
 

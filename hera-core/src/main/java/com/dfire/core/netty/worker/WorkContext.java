@@ -31,7 +31,7 @@ public class WorkContext {
     public static String host;
     public static Integer cpuCoreNum;
     public String serverHost;
-    private Channel channel;
+    private Channel serverChannel;
     private Map<String, Job> running = new ConcurrentHashMap<String, Job>();
     private Map<String, Job> manualRunning = new ConcurrentHashMap<String, Job>();
     private Map<String, Job> debugRunning = new ConcurrentHashMap<String, Job>();
