@@ -135,8 +135,6 @@
 
 
     <build>
-        <!-- 为jar包取名 -->
-        <finalName>hera</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -181,7 +179,26 @@
                     </excludes>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <descriptor>src/main/assembly/assembly.xml</descriptor>
+                    <finalName>hera</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <outputDirectory>./</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
