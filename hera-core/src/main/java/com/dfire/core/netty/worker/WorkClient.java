@@ -1,6 +1,7 @@
 package com.dfire.core.netty.worker;
 
 
+import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.Protocol;
 import com.dfire.core.schedule.ScheduleInfoLog;
 import io.netty.bootstrap.Bootstrap;
@@ -16,16 +17,11 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 
 /**
@@ -37,8 +33,6 @@ import java.util.concurrent.TimeoutException;
 @Component
 public class WorkClient {
 
-    private int port = 7979;
-    private String host = "127.0.0.1";
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext;
@@ -61,6 +55,42 @@ public class WorkClient {
                     }
                 });
         log.info("start work client success ");
+        workContext.setWorkClient(this);
+        sendHeartBeat();
+    }
+
+    /**
+     * work 向 master 发送心跳信息
+     */
+    private void sendHeartBeat() {
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
+        service.scheduleAtFixedRate(new Runnable() {
+            private int failCount = 0;
+
+            @Override
+            public void run() {
+                if (workContext.getServerChannel() != null) {
+                    WorkerHeartBeat heartBeat = new WorkerHeartBeat();
+                    ChannelFuture channelFuture = heartBeat.send(workContext);
+                    channelFuture.addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture future) throws Exception {
+                            if (future.isSuccess()) {
+                                log.info("send heart beat failed");
+                            } else {
+                                failCount++;
+                                log.info("send heart beat success");
+                            }
+                        }
+                    });
+                } else {
+                    log.info("server channel can not find on " + DistributeLock.host);
+                }
+            }
+
+        }, 0, 5, TimeUnit.SECONDS);
+
+
     }
 
     public synchronized void connect(String host, int port) throws Exception {

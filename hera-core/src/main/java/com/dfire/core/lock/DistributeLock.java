@@ -30,6 +30,7 @@ public class DistributeLock {
 
     public static String host = "LOCALHOST";
 
+    public static  int port = 7979;
     @Autowired
     private HeraHostGroupService hostGroupService;
     @Autowired
@@ -41,7 +42,7 @@ public class DistributeLock {
 
     private HeraSchedule heraSchedule;
 
-    private int port = 7979;
+
 
     static {
         try {
