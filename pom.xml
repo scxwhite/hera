@@ -46,7 +46,7 @@
         <commons.lang.version>2.6</commons.lang.version>
         <velocity.version>1.5</velocity.version>
         <hyperic.sigar.veriosn>1.6.3</hyperic.sigar.veriosn>
-
+        <jdk.version>1.8</jdk.version>
     </properties>
 
     <dependencyManagement>

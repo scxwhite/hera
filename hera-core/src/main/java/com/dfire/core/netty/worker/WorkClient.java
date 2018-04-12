@@ -65,23 +65,23 @@ public class WorkClient {
     private void sendHeartBeat() {
         ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
         service.scheduleAtFixedRate(new Runnable() {
-            private int failCount = 0;
-
+            int failCount = 0;
             @Override
             public void run() {
                 if (workContext.getServerChannel() != null) {
                     WorkerHeartBeat heartBeat = new WorkerHeartBeat();
                     ChannelFuture channelFuture = heartBeat.send(workContext);
-                    channelFuture.addListener(new ChannelFutureListener() {
-                        @Override
-                        public void operationComplete(ChannelFuture future) throws Exception {
-                            if (future.isSuccess()) {
-                                log.info("send heart beat failed");
+                    channelFuture.addListener((future) -> {
+                            if (!future.isSuccess()) {
+                                log.info("send heart beat failed ,failCount :" + failCount);
                             } else {
                                 failCount++;
                                 log.info("send heart beat success");
                             }
-                        }
+                            if (failCount > 10) {
+                                future.cancel(true);
+                                log.info("cancel connect server ,failCount:" + failCount);
+                            }
                     });
                 } else {
                     log.info("server channel can not find on " + DistributeLock.host);

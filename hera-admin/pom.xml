@@ -24,6 +24,8 @@
         <java.version>1.8</java.version>
         <springfox.swagger2.version>2.7.0</springfox.swagger2.version>
         <springfox.swagger.ui.version>2.7.0</springfox.swagger.ui.version>
+        <main-class>com.dfire.AdminBootstrap</main-class>
+        <assembly.include.base.directory>true</assembly.include.base.directory>
     </properties>
 
     <dependencies>
@@ -135,47 +137,69 @@
 
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>./</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>env.conf</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/**</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>1.3.5.RELEASE</version>
-                <configuration><!-- 指定该Main Class为全局的唯一入口 -->
-                    <mainClass>com.dfire.AdminBootstrap</mainClass>
-                    <layout>ZIP</layout>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
-                        </goals>
-                        <!--可以生成不含依赖包的不可执行Jar包-->
-                        <!-- configuration>
-                          <classifier>exec</classifier>
-                        </configuration> -->
-                    </execution>
-                </executions>
+                <version>1.4.0.RELEASE</version>
             </plugin>
 
-            <!-- jar插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                    <verbose>true</verbose>
+                    <fork>true</fork>
+                    <compilerVersion>${jdk.version}</compilerVersion>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <mainClass>${main-class}</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <!--
+                             - 防止打包时出现,MANIFEST.MF中是 xxxx-20180318-092343-6.jar的包
+                             - 而在classPath的lib中则为xxxx-SNAPSHOT.jar导致出现ClassNotDefException情况
+                            -->
+                            <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
+                        <manifestEntries>
+                            <class-path>conf/</class-path>
+                        </manifestEntries>
                     </archive>
                     <excludes>
-                        <excludes>
-                            <exclude>env.conf</exclude>
-                            <exclude>*.yaml</exclude>
-                            <exclude>*.yml</exclude>
-                            <exclude>*.xml</exclude>
-                        </excludes>
+                        <exclude>env.conf</exclude>
+                        <exclude>*.yaml</exclude>
+                        <exclude>*.yml</exclude>
+                        <exclude>*.xml</exclude>
                     </excludes>
                 </configuration>
             </plugin>
