@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2018/4/13
  */
 @Slf4j
-public class MastDoHeartBeat {
+public class MasterDoHeartBeat {
 
     public void dealHeartBeat(MasterContext masterContext, Channel channel, Request request) {
         MasterWorkHolder worker = masterContext.getWorkMap().get(channel);

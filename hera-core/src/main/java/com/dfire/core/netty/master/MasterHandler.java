@@ -1,6 +1,5 @@
 package com.dfire.core.netty.master;
 
-import com.dfire.core.message.Protocol;
 import com.dfire.core.message.Protocol.*;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -33,7 +32,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
             case REQUEST:
                 Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 if (request.getOperate() == Operate.HeartBeat) {
-                    masterContext.getMastDoHeartBeat().dealHeartBeat(masterContext, channel, request);
+                    masterContext.getMasterDoHeartBeat().dealHeartBeat(masterContext, channel, request);
                 }
                 break;
 

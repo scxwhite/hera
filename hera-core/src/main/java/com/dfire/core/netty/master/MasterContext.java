@@ -9,7 +9,6 @@ import com.dfire.core.netty.Channel;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.queue.JobPriorityBlockingDeque;
-import com.dfire.core.web.MasterHeartBeatHandle;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -49,7 +48,7 @@ public class MasterContext {
 
     private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<Channel, MasterWorkHolder>();
     private ApplicationContext applicationContext;
-    private MastDoHeartBeat mastDoHeartBeat;
+    private MasterDoHeartBeat masterDoHeartBeat = new MasterDoHeartBeat();
 
     private Dispatcher dispatcher;
     private Map<String, HeraHostGroupVo> hostGroupCache;
