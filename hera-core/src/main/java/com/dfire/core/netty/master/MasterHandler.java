@@ -1,10 +1,9 @@
 package com.dfire.core.netty.master;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dfire.core.message.Protocol.*;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -14,7 +13,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ChannelHandler.Sharable
-public class MasterHandler extends SimpleChannelInboundHandler<String> {
+
+public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     private MasterContext context;
 
@@ -23,11 +23,10 @@ public class MasterHandler extends SimpleChannelInboundHandler<String> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-        log.info("work active :" + msg);
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        log.info("work active :" + JSONObject.toJSONString(msg));
         ctx.writeAndFlush(msg);
         super.channelActive(ctx);
-
     }
 
     @Override
