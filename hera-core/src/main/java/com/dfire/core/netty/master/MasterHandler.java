@@ -7,6 +7,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.SocketAddress;
+
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 1:34 2018/1/4
@@ -49,6 +51,10 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        Channel channel = ctx.channel();
+        masterContext.getWorkMap().put(channel, new MasterWorkHolder());
+        SocketAddress remoteAddress = channel.remoteAddress();
+        log.info("worker client connect success : {}", remoteAddress.toString());
         super.channelRegistered(ctx);
     }
 

@@ -5,10 +5,10 @@ import com.dfire.common.service.HeraHostGroupService;
 import com.dfire.common.service.HeraProfileService;
 import com.dfire.common.vo.HeraHostGroupVo;
 import com.dfire.core.event.Dispatcher;
-import com.dfire.core.netty.Channel;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.queue.JobPriorityBlockingDeque;
+import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,7 +46,7 @@ public class MasterContext {
 
     private Master master;
 
-    private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<Channel, MasterWorkHolder>();
+    private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<>();
     private ApplicationContext applicationContext;
     private MasterDoHeartBeat masterDoHeartBeat = new MasterDoHeartBeat();
 

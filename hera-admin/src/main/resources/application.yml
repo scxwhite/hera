@@ -34,6 +34,9 @@ hera:
    defaultWorkerGroupId : 1 #默认worker的host组id
    preemptionMasterGroupId : 1  #抢占master的host组id
 
+logging:
+  config: classpath:logback-spring.xml
+  path: /opt/logs/spring-boot
 ---
 spring:
   profiles: dev
