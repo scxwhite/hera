@@ -86,6 +86,7 @@ public class WorkClient {
                                     log.info("cancel connect server ,failCount:" + failCount);
                                 }
                         });
+                        workContext.getServerChannel().flush();
                     } else {
                         log.info("server channel can not find on " + DistributeLock.host);
                     }

@@ -1,7 +1,11 @@
 package com.dfire.core.netty.worker;
 
 import com.dfire.core.lock.DistributeLock;
-import com.dfire.core.message.Protocol;
+import com.dfire.core.message.Protocol.HeartBeatMessage;
+import com.dfire.core.message.Protocol.Operate;
+import com.dfire.core.message.Protocol.Request;
+import com.dfire.core.message.Protocol.SocketMessage;
+import com.dfire.core.netty.util.AtomicIncrease;
 import io.netty.channel.ChannelFuture;
 
 /**
@@ -12,16 +16,16 @@ public class WorkerHeartBeat {
 
 
     public ChannelFuture send(WorkContext context) {
-        Protocol.HeartBeatMessage hbm = Protocol.HeartBeatMessage.newBuilder().
+        HeartBeatMessage hbm = HeartBeatMessage.newBuilder().
                 setHost(DistributeLock.host).
                 build();
-        Protocol.Request request = Protocol.Request.newBuilder().
-                        setRid(100).
-                        setOperate(Protocol.Operate.HeartBeat).
+        Request request = Request.newBuilder().
+                        setRid(AtomicIncrease.getAndIncrement()).
+                        setOperate(Operate.HeartBeat).
                         setBody(hbm.toByteString()).
                         build();
-        Protocol.SocketMessage message = Protocol.SocketMessage.newBuilder().
-                setKind(Protocol.SocketMessage.Kind.REQUEST).
+        SocketMessage message = SocketMessage.newBuilder().
+                setKind(SocketMessage.Kind.REQUEST).
                 setBody(request.toByteString()).
                 build();
         return context.getServerChannel().write(message);
