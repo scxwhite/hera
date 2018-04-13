@@ -42,10 +42,6 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 log.error("unknow request type : {}", socketMessage.getKind() );
                 break;
         }
-
-
-        log.info("work active :" + socketMessage.getBody());
-        ctx.writeAndFlush(msg);
         super.channelActive(ctx);
     }
 

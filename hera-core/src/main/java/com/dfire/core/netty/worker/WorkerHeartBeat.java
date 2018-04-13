@@ -28,6 +28,6 @@ public class WorkerHeartBeat {
                 setKind(SocketMessage.Kind.REQUEST).
                 setBody(request.toByteString()).
                 build();
-        return context.getServerChannel().write(message);
+        return context.getServerChannel().writeAndFlush(message);
     }
 }

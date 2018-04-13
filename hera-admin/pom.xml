@@ -135,30 +135,7 @@
     </dependencies>
 
 
-    <profiles>
 
-        <profile>
-            <id>daily</id>
-            <properties>
-                <env>daily</env>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <profile>
-            <id>publish</id>
-            <properties>
-                <env>publish</env>
-            </properties>
-        </profile>
-        <profile>
-            <id>pre</id>
-            <properties>
-                <env>pre</env>
-            </properties>
-        </profile>
-    </profiles>
     <build>
 
         <resources>
@@ -182,59 +159,17 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>1.4.0.RELEASE</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
-                    <verbose>true</verbose>
-                    <fork>true</fork>
-                    <compilerVersion>${jdk.version}</compilerVersion>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>${main-class}</mainClass>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <!--
-                             - 防止打包时出现,MANIFEST.MF中是 xxxx-20180318-092343-6.jar的包
-                             - 而在classPath的lib中则为xxxx-SNAPSHOT.jar导致出现ClassNotDefException情况
-                            -->
-                            <useUniqueVersions>false</useUniqueVersions>
-                        </manifest>
-                        <manifestEntries>
-                            <class-path>conf/</class-path>
-                        </manifestEntries>
-                    </archive>
-                    <excludes>
-                        <exclude>env.conf</exclude>
-                        <exclude>*.yaml</exclude>
-                        <exclude>*.yml</exclude>
-                        <exclude>*.xml</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
+                <version>${maven-assembly-plugin.version}</version>
                 <configuration>
                     <descriptor>src/main/assembly/assembly.xml</descriptor>
                     <finalName>hera</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <outputDirectory>../</outputDirectory>
+                    <tarLongFileMode>posix</tarLongFileMode>
                 </configuration>
                 <executions>
                     <execution>
