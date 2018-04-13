@@ -1,6 +1,7 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.core.message.Protocol.*;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  * @desc  SocketMessage为rpc消息体
  */
 @Slf4j
+@ChannelHandler.Sharable
 public class MasterHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     private MasterContext context;
