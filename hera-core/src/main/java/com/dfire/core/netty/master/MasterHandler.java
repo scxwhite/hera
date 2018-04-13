@@ -16,7 +16,6 @@ import java.net.SocketAddress;
  */
 @Slf4j
 @ChannelHandler.Sharable
-
 public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     private MasterContext masterContext;
@@ -39,7 +38,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 break;
 
             default:
-                log.error("unknow request type : {}", socketMessage.getKind() );
+                log.error("unknown request type : {}", socketMessage.getKind() );
                 break;
         }
         super.channelActive(ctx);
