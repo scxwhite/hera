@@ -41,6 +41,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-data-redis</artifactId>
+                    <groupId>org.springframework.data</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- redisson-->
         <dependency>
