@@ -1,5 +1,5 @@
 spring:
-    profiles.active: dev
+    profiles.active: daily
     datasource:
         name: default
         type: com.alibaba.druid.pool.DruidDataSource
@@ -34,7 +34,13 @@ hera:
    defaultWorkerGroupId : 1 #默认worker的host组id
    preemptionMasterGroupId : 1  #抢占master的host组id
 
+---
+spring:
+  profiles: dev
+---
 
+spring:
+  profiles: daily
 ---
 spring:
   profiles: pre
