@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.entity.vo.HeraFileVo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -173,6 +174,12 @@ public class HeraFileTreeNode {
         return null;
     }
 
+    /**
+     * @param []
+     * @return void
+     * @desc 递归遍历树
+     */
+    
     public void traverse() {
         print(heraFileVo.toString());
         if(childList.isEmpty() || childList == null) {
@@ -186,6 +193,54 @@ public class HeraFileTreeNode {
     }
 
 
+        /*
+
+    {
+        children: [
+        { name:"文档111",id:12},
+        { name:"叶子节点112"},
+        { name:"叶子节点113"},
+        { children:[
+            {name:"haizi"},
+                            ],name:"haizai"}
+                    ],name:"个人文档"},
+    { name:"共享文档",
+            children: [
+        { name:"叶子节点121"},
+
+        { name:"叶子节点123"},
+        { name:"叶子节点124"}
+        ]}
+
+         */
+
+
+    public HeraFileTreeNodeVo parseHeraToJson() {
+        HeraFileTreeNodeVo vo = new HeraFileTreeNodeVo();
+        if(childList.isEmpty() || childList == null) {
+            return vo;
+        }
+        int num = childList.size();
+
+        for(int i = 0; i < num; i++) {
+            HeraFileTreeNode child = childList.get(i);
+            if(child.getHeraFileVo().isFolder()) {
+                HeraFileTreeNodeVo childVo = new HeraFileTreeNodeVo(child);
+                vo.getChildren().add(childVo);
+            } else {
+            }
+            child.traverse();
+        }
+        return vo;
+    }
+
+
+
+    /**
+     * @param [content]
+     * @return void
+     * @desc 
+     */
     public void print(String content) {
         System.out.println(content);
     }

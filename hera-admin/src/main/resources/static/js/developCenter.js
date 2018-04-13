@@ -13,7 +13,7 @@ $(function(){
         },
         data: {
             simpleData: {
-                enable: true
+                enable: false
             }
         },
         callback: {
@@ -22,36 +22,45 @@ $(function(){
     };
 
     var zNodes =[
-        { name:"文档中心", open:true,
+        {
+            name:"文档中心", open:true,
             children: [
-                { name:"个人文档",
+                {
                     children: [
-                        { name:"文档111"},
+                        { name:"文档111",id:12},
                         { name:"叶子节点112"},
                         { name:"叶子节点113"},
-                        { name:"叶子节点114"}
-                    ]},
+                        { children:[
+                                {name:"haizi"},
+                            ],name:"haizai"}
+                    ],name:"个人文档"},
                 { name:"共享文档",
                     children: [
                         { name:"叶子节点121"},
-                        { name:"叶子节点122"},
+
                         { name:"叶子节点123"},
                         { name:"叶子节点124"}
                     ]}
-            ]}
+            ]
+
+        }
     ];
 
     // debugger
-    // var zNodes = getDataStore("/developCenter/init.do");
-    // zNodes = JSON.stringify(zNodes);
+    // var result = getDataStore("/developCenter/init.do")
+    // console.log(result)
+    //
+    // var zNodes = JSON.parse(result);
+
+
+    console.log(zNodes);
 
     function getDataStore(url) {
         var dataStore;
         $.ajax({
-            dataType : 'json',
-            type : 'get',
-            url : url,
-            async : false,
+            type: "post",
+            url: url,
+            async: false,
             success : function(data) {
                 dataStore = data;
             }
@@ -70,7 +79,6 @@ $(function(){
             showRMenu("node", event.clientX, event.clientY);
         }
     }
-    debugger
     function showRMenu(type, x, y) {
         $("#rMenu ul").show();
         if (type=="root") {

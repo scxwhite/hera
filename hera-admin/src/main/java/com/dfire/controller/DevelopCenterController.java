@@ -1,6 +1,7 @@
 package com.dfire.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.dfire.common.util.HeraFileUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,35 +21,12 @@ public class DevelopCenterController {
         return "developCenter/developCenter.index";
     }
 
-    @RequestMapping(value = "/init", method = RequestMethod.GET)
+    @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
     public String initFileTree() {
 
-        String result = "[" +
-                " { name:文档中心, open:true," +
-                " children: [" +
-                "{ name:个人文档," +
-                "                    children: [" +
-                "                        { name:文档111}," +
-                "                        { name:叶子节点112}," +
-                "                        { name:叶子节点113}," +
-                "                        { name:叶子节点114}" +
-                "                    ]}," +
-                "                { name:共享文档," +
-                "                    children: [" +
-                "                        { name:叶子节点121}," +
-                "                        { name:叶子节点122}," +
-                "                        { name:叶子节点123}," +
-                "                        { name:叶子节点124}" +
-                "                    ]}" +
-                "            ]}" +
-                "    ]";
-
-        JSONObject object = new JSONObject();
-        object.put("name","文档中心");
-        object.put("open","true");
-        object.put("children","个人文档");
-
-        return  object.toJSONString();
+        JSONArray json = HeraFileUtil.parseHeraToJson();
+        String result = json.toJSONString().replaceAll("\\\\","").replaceAll("\\\"","");
+        return result;
     }
 }

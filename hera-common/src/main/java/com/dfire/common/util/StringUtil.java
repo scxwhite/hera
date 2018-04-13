@@ -41,4 +41,8 @@ public class StringUtil {
         }
         return buf.toString();
     }
+
+    public static void main(String[] args) {
+        System.out.println(EncoderByMd5("etl123456"));
+    }
 }
