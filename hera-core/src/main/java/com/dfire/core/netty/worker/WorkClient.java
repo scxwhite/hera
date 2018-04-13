@@ -65,30 +65,37 @@ public class WorkClient {
     private void sendHeartBeat() {
         ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
         service.scheduleAtFixedRate(new Runnable() {
-            int failCount = 0;
+            private WorkerHeartBeat heartBeat = new WorkerHeartBeat();
+            private int failCount = 0;
             @Override
             public void run() {
-                if (workContext.getServerChannel() != null) {
-                    WorkerHeartBeat heartBeat = new WorkerHeartBeat();
-                    ChannelFuture channelFuture = heartBeat.send(workContext);
-                    channelFuture.addListener((future) -> {
-                            if (!future.isSuccess()) {
-                                log.info("send heart beat failed ,failCount :" + failCount);
-                            } else {
-                                failCount++;
-                                log.info("send heart beat success");
-                            }
-                            if (failCount > 10) {
-                                future.cancel(true);
-                                log.info("cancel connect server ,failCount:" + failCount);
-                            }
-                    });
-                } else {
-                    log.info("server channel can not find on " + DistributeLock.host);
+                log.info("prepare send heart beat");
+                try{
+                    if (workContext.getServerChannel() != null) {
+                        ChannelFuture channelFuture = heartBeat.send(workContext);
+                        channelFuture.addListener((future) -> {
+                                if (!future.isSuccess()) {
+                                    failCount++;
+                                    log.info("send heart beat failed ,failCount :" + failCount);
+                                } else {
+                                    failCount = 0;
+                                    log.info("send heart beat success");
+                                }
+                                if (failCount > 10) {
+                                    future.cancel(true);
+                                    log.info("cancel connect server ,failCount:" + failCount);
+                                }
+                        });
+                    } else {
+                        log.info("server channel can not find on " + DistributeLock.host);
+                    }
+                } catch (Exception e) {
+                    log.info("heart beat send failed ："+ failCount);
+                    log.error("heart beat error:", e);
                 }
             }
 
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 5, 5, TimeUnit.SECONDS);
 
 
     }
@@ -96,8 +103,9 @@ public class WorkClient {
     public synchronized void connect(String host, int port) throws Exception {
         //首先判断服务频道是否开启
         if (workContext.getServerChannel() != null) {
-            //如果需要通信的对象是自己 那么直接返回
+            //如果已经与服务端连接
             if (workContext.getServerHost().equals(host)) {
+                log.info("server host already connected, return");
                 return ;
             } else { //关闭之前通信
                 workContext.getServerChannel().close();

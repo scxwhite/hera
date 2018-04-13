@@ -137,7 +137,7 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-compress:1.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.tukaani:xz:1.0" level="project" />
     <orderEntry type="library" name="Maven: net.sf.kosmosfs:kfs:0.3" level="project" />
-    <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.5.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:2.4.0a" level="project" />
     <orderEntry type="library" name="Maven: org.apache.hadoop:hadoop-auth:2.0.0-cdh4.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.jcraft:jsch:0.1.42" level="project" />
     <orderEntry type="library" name="Maven: org.apache.zookeeper:zookeeper:3.4.5-cdh4.6.0" level="project" />

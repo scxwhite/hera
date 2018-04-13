@@ -1,5 +1,6 @@
 package com.dfire.core.netty.master;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.core.message.Protocol.*;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -13,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ChannelHandler.Sharable
-public class MasterHandler extends SimpleChannelInboundHandler<SocketMessage> {
+public class MasterHandler extends SimpleChannelInboundHandler<String> {
 
     private MasterContext context;
 
@@ -22,8 +23,8 @@ public class MasterHandler extends SimpleChannelInboundHandler<SocketMessage> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, SocketMessage msg) throws Exception {
-        log.info("work active");
+    protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+        log.info("work active :" + msg);
         ctx.writeAndFlush(msg);
         super.channelActive(ctx);
 

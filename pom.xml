@@ -34,7 +34,6 @@
         <fastjson.version>1.2.7</fastjson.version>
         <guava.version>23.0</guava.version>
         <projectlombok.version>1.16.18</projectlombok.version>
-        <protobuf.java.version>3.5.0</protobuf.java.version>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.9</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
@@ -175,11 +174,6 @@
                 <version>${projectlombok.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>${protobuf.java.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>com.google.guava</groupId>
