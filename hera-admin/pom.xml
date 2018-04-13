@@ -234,7 +234,7 @@
                     <descriptor>src/main/assembly/assembly.xml</descriptor>
                     <finalName>hera</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
-                    <outputDirectory>./</outputDirectory>
+                    <outputDirectory>../</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
