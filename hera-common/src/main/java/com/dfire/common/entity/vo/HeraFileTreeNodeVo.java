@@ -1,10 +1,7 @@
 package com.dfire.common.entity.vo;
 
-import com.dfire.common.tree.HeraFileTreeNode;
+import lombok.Builder;
 import lombok.Data;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -13,19 +10,19 @@ import java.util.List;
  * @desc
  */
 @Data
+@Builder
 public class HeraFileTreeNodeVo {
 
-    String id = "";
-    String name = "";
-    List<HeraFileTreeNodeVo> children = new ArrayList<>();
+    String id;
+    String parent;
+    String name;
+    boolean isParent;
 
-    public  HeraFileTreeNodeVo() {
-        this.children = new ArrayList<>();
+    public boolean getIsParent(){
+        return isParent;
     }
-
-    public HeraFileTreeNodeVo(HeraFileTreeNode heraFileTreeNode) {
-        this.id = heraFileTreeNode.getHeraFileVo().getId();
-        this.name = heraFileTreeNode.getHeraFileVo().getName();
+    public void setIsParent(boolean isParent){
+        this.isParent = isParent;
     }
 
 }

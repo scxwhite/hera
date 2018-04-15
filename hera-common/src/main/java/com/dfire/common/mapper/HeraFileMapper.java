@@ -19,6 +19,9 @@ public interface HeraFileMapper {
     @Select("SELECT * FROM hera_file WHERE OWNER = #{owner} and parent is null")
     List<HeraFile> getUserHeraFiles(@Param("owner") String owner);
 
+    @Select("SELECT * FROM hera_file WHERE OWNER = #{owner}")
+    List<HeraFile> getAllUserHeraFiles(@Param("owner") String owner);
+
     @Select("SELECT * FROM hera_file WHERE id = #{id}")
     public HeraFile getHeraFile(String id);
 

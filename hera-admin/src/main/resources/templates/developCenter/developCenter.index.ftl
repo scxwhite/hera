@@ -17,6 +17,18 @@
         padding: 2px;
     }
 
+    div#rMenu ul {
+        margin: 0;
+        padding: 0;
+        border: 0;
+        outline: 0;
+        font-weight: inherit;
+        font-style: inherit;
+        font-size: 100%;
+        font-family: inherit;
+        vertical-align: baseline;
+    }
+
     div#rMenu ul li{
         margin: 1px 0;
         padding: 0 5px;
@@ -24,6 +36,8 @@
         list-style: none outside none;
         background-color: #DFDFDF;
     }
+
+
 </style>
 
 <body class="hold-transition skin-green-light sidebar-mini">
@@ -40,26 +54,25 @@
                 <div class="row-fluid">
                     <div class="col-md-5 panel panel-primary" style="height:10px;padding-bottom:70%">
 
-                        <div id="rMenu">
-                            <ul>
-                                <li id="addFolder" onclick="addFolder();">增加文件夹</li>
-                                <li id="addHiveFile" onclick="addHiveFile();">新疆hive</li>
-                                <li id="addShellFile" onclick="addShellFile();">新疆shell</li>
-                                <li id="rename" onclick="rename();">重命名</li>
-                                <li id="openFile" onclick="openFile();">重命名</li>
-                                <li id="removeFile" onclick="removeFile();">删除</li>
-                                <li id="copyFile" onclick="copyFile();">复制文件</li>
-                                <li id="resetTree" onclick="resetTree();">恢复zTree</li>
-                            </ul>
-                        </div>
-
                         <div >
                             <ul id="documentTree" class="ztree"></ul>
                         </div>
 
+                        <div id="rMenu">
+                            <ul>
+                                <li id="addFolder" >增加文件夹</li>
+                                <li id="addHiveFile" >新建Hive</li>
+                                <li id="addShellFile" >新建Shell</li>
+                                <li id="rename" >重命名</li>
+                                <li id="openFile" >打开</li>
+                                <li id="removeFile"> 删除</li>
+                                <li id="copyFile" >复制文件</li>
+                            </ul>
+                        </div>
+
                     </div>
 
-                    <div class="col-md-5 panel panel-primary" style="height:10px;padding-bottom:70%">
+                    <div class="col-md-7 panel panel-primary" style="height:10px;padding-bottom:70%">
 
                         <form>
                             <button type="submit" class="btn btn-success btn-sm">执行</button>

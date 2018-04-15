@@ -196,6 +196,7 @@ public class HeraFileTreeNode {
         /*
 
     {
+        name:"个人文档",
         children: [
         { name:"文档111",id:12},
         { name:"叶子节点112"},
@@ -203,7 +204,7 @@ public class HeraFileTreeNode {
         { children:[
             {name:"haizi"},
                             ],name:"haizai"}
-                    ],name:"个人文档"},
+                    ]},
     { name:"共享文档",
             children: [
         { name:"叶子节点121"},
@@ -213,27 +214,6 @@ public class HeraFileTreeNode {
         ]}
 
          */
-
-
-    public HeraFileTreeNodeVo parseHeraToJson() {
-        HeraFileTreeNodeVo vo = new HeraFileTreeNodeVo();
-        if(childList.isEmpty() || childList == null) {
-            return vo;
-        }
-        int num = childList.size();
-
-        for(int i = 0; i < num; i++) {
-            HeraFileTreeNode child = childList.get(i);
-            if(child.getHeraFileVo().isFolder()) {
-                HeraFileTreeNodeVo childVo = new HeraFileTreeNodeVo(child);
-                vo.getChildren().add(childVo);
-            } else {
-            }
-            child.traverse();
-        }
-        return vo;
-    }
-
 
 
     /**

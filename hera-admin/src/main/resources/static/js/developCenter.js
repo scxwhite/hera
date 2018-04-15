@@ -1,58 +1,26 @@
 $(function(){
     setInterval(log,1000);
     var setting = {
-        edit: {
-            enable: true,
-            showRemoveBtn: true,
-            showRenameBtn: true,
-            removeTitle: "删除",
-            renameTitle: "重命名"
-        },
         view: {
             showLine: false
         },
+
         data: {
             simpleData: {
-                enable: false
+                enable: true,
+                idKey: "id",
+                pIdKey: "parent",
+                rootPId: 0
+
             }
         },
         callback: {
             onRightClick: OnRightClick,
         }
     };
+    debugger
 
-    var zNodes =[
-        {
-            name:"文档中心", open:true,
-            children: [
-                {
-                    children: [
-                        { name:"文档111",id:12},
-                        { name:"叶子节点112"},
-                        { name:"叶子节点113"},
-                        { children:[
-                                {name:"haizi"},
-                            ],name:"haizai"}
-                    ],name:"个人文档"},
-                { name:"共享文档",
-                    children: [
-                        { name:"叶子节点121"},
-
-                        { name:"叶子节点123"},
-                        { name:"叶子节点124"}
-                    ]}
-            ]
-
-        }
-    ];
-
-    // debugger
-    // var result = getDataStore("/developCenter/init.do")
-    // console.log(result)
-    //
-    // var zNodes = JSON.parse(result);
-
-
+    var zNodes = getDataStore("/developCenter/init.do");
     console.log(zNodes);
 
     function getDataStore(url) {
@@ -97,13 +65,13 @@ $(function(){
         y += document.body.scrollTop;
         x += document.body.scrollLeft;
 
-        rMenu.css({"top":y+"px", "left":x+"px", "visibility":"visible"});
+        rMenu.css({"top":y+"px", "left":x+"px", "visibility":"visible",position: "absolute"});
 
         $("body").bind("mousedown", onBodyMouseDown);
     }
 
     function hideRMenu() {
-        if (rMenu) rMenu.css({"visibility": "hidden"});
+        // if (rMenu) rMenu.css({"visibility": "hidden"});
         $("body").unbind("mousedown", onBodyMouseDown);
     }
     function onBodyMouseDown(event){
@@ -113,87 +81,152 @@ $(function(){
     }
     var addCount = 1;
 
-    function addFolder() {
+    $("#addFolder").click(function() {
         hideRMenu();
-        var newNode = { name:"增加文件夹" + (addCount++)};
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0], newNode);
-        } else {
-            zTree.addNodes(null, newNode);
-        }
-    }
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+        var parent = selected['parent'];
+        var name = "文件夹" +  addCount;
 
+        var newNode = { name: "文件夹" +  addCount, isParent:true};
+        addCount ++;
 
-    function addHiveFile() {
-        hideRMenu();
-        var newNode = { name:"新建Hive脚本" + (addCount++)};
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0], newNode);
-        } else {
-            zTree.addNodes(null, newNode);
-        }
-    }
+        var parameter = "parent=" + parent + "&type=" + "1" + "&name=" + name ;
 
-    function addShellFile() {
-        hideRMenu();
-        var newNode = { name:"新建Shell脚本" + (addCount++)};
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0], newNode);
-        } else {
-            zTree.addNodes(null, newNode);
-        }
-    }
-
-    function rename() {
-        hideRMenu();
-        var newNode = { name:"重命名" + (addCount++)};
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0], newNode);
-        } else {
-            zTree.addNodes(null, newNode);
-        }
-    }
-
-    function openFile() {
-        hideRMenu();
-        var newNode = { name:"打开" + (addCount++)};
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0], newNode);
-        } else {
-            zTree.addNodes(null, newNode);
-        }
-    }
-
-    function removeFile() {
-        hideRMenu();
-        var nodes = zTree.getSelectedNodes();
-        if (nodes && nodes.length>0) {
-            if (nodes[0].children && nodes[0].children.length > 0) {
-                var msg = "要删除的节点是父节点，如果删除将连同子节点一起删掉。\n\n请确认！";
-                if (confirm(msg)==true){
-                    zTree.removeNode(nodes[0]);
-                }
-            } else {
-                zTree.removeNode(nodes[0]);
+        $.ajax({
+            url:"/developCenter/addFile.do",
+            type: "get",
+            async:false,
+            data: parameter,
+            success : function(data) {
+                alert(data);
             }
-        }
-    }
+        });
 
-    function copyFile(checked) {
-        hideRMenu();
-        var newNode = { name:"重命名" + (addCount++)};
         if (zTree.getSelectedNodes()[0]) {
             newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0], newNode);
-        } else {
-            zTree.addNodes(null, newNode);
+            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
         }
-    }
+
+        fixIcon();//调用修复图标的方法。方法如下：
+
+    });
+
+
+    $("#addHiveFile").click(function() {
+        hideRMenu();
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+        var parent = selected['parent'];
+        var name = selected['name'];
+
+        var newNode = { name: +  addCount + name, isParent:true};
+        addCount ++;
+
+        var parameter = "parent=" + parent + "&type=" + "2" + "&name=" + "copy_" +  name ;
+
+        $.ajax({
+            url:"/developCenter/addFile.do",
+            type: "get",
+            async:false,
+            data: parameter,
+            success : function(data) {
+                alert(data);
+            }
+        });
+
+        if (zTree.getSelectedNodes()[0]) {
+            newNode.checked = zTree.getSelectedNodes()[0].checked;
+            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
+        }
+
+        fixIcon();//调用修复图标的方法。方法如下：
+
+    });
+
+    $("#addShellFile").click(function() {
+        hideRMenu();
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+        var parent = selected['parent'];
+        var name = selected['name'];
+
+        var newNode = { name: +  addCount + name, isParent:true};
+        addCount ++;
+
+        var parameter = "parent=" + parent + "&type=" + "2" + "&name=" + "copy_" + name ;
+
+        $.ajax({
+            url:"/developCenter/addFile.do",
+            type: "get",
+            async:false,
+            data: parameter,
+            success : function(data) {
+                alert(data);
+            }
+        });
+
+        if (zTree.getSelectedNodes()[0]) {
+            newNode.checked = zTree.getSelectedNodes()[0].checked;
+            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
+        }
+
+        fixIcon();//调用修复图标的方法。方法如下：
+
+    });
+
+    $("#rename").click(function() {
+        hideRMenu();
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+        var parent = selected['parent'];
+
+    });
+
+
+    $("#openFile").click(function() {
+        hideRMenu();
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+        var parent = selected['parent'];
+
+    });
+
+    $("#removeFile").click(function() {
+        // hideRMenu();
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+
+        var parameter = "id=" + id ;
+
+        $.ajax({
+            url:"/developCenter/delete.do",
+            type: "get",
+            async:false,
+            data: parameter,
+            success : function(data) {
+                alert(data);
+            }
+        });
+
+        if (zTree.getSelectedNodes()[0]) {
+            newNode.checked = zTree.getSelectedNodes()[0].checked;
+            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
+        }
+
+        fixIcon();//调用修复图标的方法。方法如下：
+
+    });
+
+    $("#copyFile").click(function() {
+        hideRMenu();
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+        var parent = selected['parent'];
+
+    });
+
+
 
     function resetTree() {
         hideRMenu();
@@ -206,8 +239,25 @@ $(function(){
         $.fn.zTree.init($("#documentTree"), setting, zNodes);
         zTree = $.fn.zTree.getZTreeObj("documentTree");
         rMenu = $("#rMenu");
+        fixIcon();//调用修复图标的方法。方法如下：
 
     });
+
+
+
+
+
+//修正zTree的图标，让文件节点显示文件夹图标
+    function fixIcon(){
+        $.fn.zTree.init($("#documentTree"), setting, zNodes);
+        var treeObj = $.fn.zTree.getZTreeObj("documentTree");
+        //过滤出sou属性为true的节点（也可用你自己定义的其他字段来区分，这里通过sou保存的true或false来区分）
+        var folderNode = treeObj.getNodesByFilter(function (node) { return node.isParent});
+        for(var j = 0 ; j<folderNode.length; j++){//遍历目录节点，设置isParent属性为true;
+            folderNode[j].isParent = true;
+        }
+        treeObj.refresh();//调用api自带的refresh函数。
+    }
 
     function log() {
         console.log("log.......")

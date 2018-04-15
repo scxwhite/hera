@@ -1,5 +1,7 @@
 package com.dfire.dao;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.entity.vo.HeraFileVo;
@@ -20,6 +22,7 @@ import java.util.List;
  * @time: Created in 12:29 2018/1/12
  * @desc
  */
+
 @ComponentScan(basePackages = "com.dfire")
 @MapperScan(basePackages = "com.dfire.common.mapper")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,7 +58,7 @@ public class DAOTest {
         HeraFileTreeNode node = heraFileService.getUserFiles();
         System.out.println(node.getChildList().size());
         node.traverse();
-        HeraFileTreeNodeVo vo = node.parseHeraToJson();
+
 
     }
 }

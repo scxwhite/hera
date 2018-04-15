@@ -41,12 +41,11 @@ public class HeraFileServiceImpl implements HeraFileService {
 
 
     @Override
-    public List<HeraFileVo> getSubHeraFiles(String owner) {
-        List<HeraFile> heraFileList = heraFileMapper.getSubHeraFiles(owner);
+    public List<HeraFileVo> getSubHeraFiles(String parentId) {
+        List<HeraFile> heraFileList = heraFileMapper.getSubHeraFiles(parentId);
         List<HeraFileVo> heraFileVos = heraFileList.stream().map(heraFile -> convert(heraFile)).collect(Collectors.toList());
         return heraFileVos;
     }
-
 
 
     @Override
@@ -90,7 +89,7 @@ public class HeraFileServiceImpl implements HeraFileService {
     public HeraFileTreeNode getUserFiles() {
         List<HeraFileVo> fileVoList = getUserFiles("biadmin");
         List<HeraFile> list = transformTOList(fileVoList);
-        HeraFileVo heraFile = HeraFileVo.builder().name("根节点，不展示").id(String.valueOf(Integer.MIN_VALUE)).build();
+        HeraFileVo heraFile = HeraFileVo.builder().name("根节点，不展示").id(String.valueOf(Integer.MIN_VALUE)).folder(true).build();
         HeraFileTreeNode parent = new HeraFileTreeNode(heraFile);
         list.forEach(file -> {
             HeraFileTreeNode subNode = new HeraFileTreeNode(convert(file));
@@ -214,6 +213,9 @@ public class HeraFileServiceImpl implements HeraFileService {
         return heraFileVo;
     }
 
+
+
+
     private static HeraFile transform(HeraFileVo heraFileVo) {
         HeraFile heraFile = HeraFile.builder().build();
         BeanUtils.copyProperties(heraFileVo, heraFile);
@@ -231,6 +233,8 @@ public class HeraFileServiceImpl implements HeraFileService {
         List<HeraFile> heraFiles = list.stream().map(file -> transform(file)).collect(Collectors.toList());
         return heraFiles;
     }
+
+
 
 
 }
