@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -39,6 +40,8 @@ public class DistributeLock {
     private ApplicationContext applicationContext;
     @Autowired
     private WorkClient workClient;
+
+    public static boolean isMaster = false;
 
     private HeraSchedule heraSchedule;
 
@@ -68,8 +71,8 @@ public class DistributeLock {
                     .build();
             heraLockService.save(heraLock);
         }
-
-        if (host.equals(heraLock.getHost())) {
+        isMaster = host.equals(heraLock.getHost());
+        if (isMaster) {
             heraLock.setServerUpdate(new Date());
             heraLockService.save(heraLock);
             log.info("hold lock and update time");
@@ -81,6 +84,7 @@ public class DistributeLock {
             long interval = currentTime - lockTime;
             //host不匹配，切服务器更新时间间隔超过5分钟,判断发生master  切换
             if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
+
                 heraLock.setHost(host);
                 heraLock.setServerUpdate(new Date());
                 heraLock.setSubGroup("online");
@@ -88,12 +92,13 @@ public class DistributeLock {
                 log.info("master 发生切换");
             } else {
                 heraSchedule.shutdown();//非主节点，调度器不执行
+                try {
+                    workClient.connect(heraLock.getHost(), port);
+                } catch (Exception e) {
+                    log.info("client worker connect master server exception");
+                }
             }
-            try {
-                workClient.connect(heraLock.getHost(), port);
-            } catch (Exception e) {
-                log.info("client worker connect master server exception");
-            }
+
         }
     }
 

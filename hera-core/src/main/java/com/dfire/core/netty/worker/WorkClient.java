@@ -37,6 +37,7 @@ public class WorkClient {
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext;
 
+
     @PostConstruct
     public void WorkClient() {
         workContext = new WorkContext();
@@ -57,19 +58,19 @@ public class WorkClient {
         log.info("start work client success ");
         workContext.setWorkClient(this);
         sendHeartBeat();
+
     }
 
     /**
      * work 向 master 发送心跳信息
      */
     private void sendHeartBeat() {
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
         service.scheduleAtFixedRate(new Runnable() {
             private WorkerHeartBeat heartBeat = new WorkerHeartBeat();
             private int failCount = 0;
             @Override
             public void run() {
-                log.info("prepare send heart beat");
                 try{
                     if (workContext.getServerChannel() != null) {
                         ChannelFuture channelFuture = heartBeat.send(workContext);
@@ -96,7 +97,6 @@ public class WorkClient {
             }
 
         }, 5, 5, TimeUnit.SECONDS);
-
 
     }
 
