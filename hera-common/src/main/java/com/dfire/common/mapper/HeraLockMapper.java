@@ -21,6 +21,6 @@ public interface HeraLockMapper {
     })
     public HeraLock getHeraLock(@Param("subGroup") String subGroup) ;
 
-    @Update("update ZEUS_LOCK set gmt_create= #{gmtCreate},gmt_modified = #{gmtModified},host = #{host},server_update = #{serverUpdate},subgroup = #{subGroup}  where id = #{id}")
+    @Update("update hera_lock set gmt_create= #{gmtCreate},gmt_modified = #{gmtModified},host = #{host},server_update = #{serverUpdate},subgroup = #{subGroup}  where id = #{id}")
     public void save(HeraLock heraLock);
 }

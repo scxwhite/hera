@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.dfire.hera</groupId>
     <artifactId>hera</artifactId>
     <packaging>pom</packaging>
@@ -21,6 +22,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.9.RELEASE</version>
+
         <relativePath/>
     </parent>
 
@@ -32,7 +34,6 @@
         <fastjson.version>1.2.7</fastjson.version>
         <guava.version>23.0</guava.version>
         <projectlombok.version>1.16.18</projectlombok.version>
-        <protobuf.java.version>3.5.0</protobuf.java.version>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.9</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
@@ -44,7 +45,7 @@
         <commons.lang.version>2.6</commons.lang.version>
         <velocity.version>1.5</velocity.version>
         <hyperic.sigar.veriosn>1.6.3</hyperic.sigar.veriosn>
-
+        <jdk.version>1.8</jdk.version>
     </properties>
 
     <dependencyManagement>
@@ -173,11 +174,6 @@
                 <version>${projectlombok.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>${protobuf.java.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -219,91 +215,28 @@
     </dependencyManagement>
 
     <profiles>
+
         <profile>
             <id>daily</id>
+            <properties>
+                <env>daily</env>
+            </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <!-- The plugin rewrites your manifest -->
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-maven-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <goals>
-                                        <goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
-                                    </goals>
-                                    <!--可以生成不含依赖包的不可执行Jar包-->
-                                    <!-- configuration>
-                                      <classifier>exec</classifier>
-                                    </configuration> -->
-                                </execution>
-                            </executions>
-                        </plugin>
-
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <version>2.4.2</version>
-                            <configuration>
-                                <skipTests>true</skipTests>
-                            </configuration>
-                        </plugin>
-
-                    </plugins>
-                </pluginManagement>
-            </build>
         </profile>
-
         <profile>
             <id>publish</id>
-            <build>
-                <pluginManagement>
-                    <plugins>
-
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <version>2.4.2</version>
-                            <configuration>
-                                <skipTests>true</skipTests>
-                            </configuration>
-                        </plugin>
-
-                        <plugin>
-                            <!-- The plugin rewrites your manifest -->
-                            <groupId>org.springframework.boot</groupId>
-                            <artifactId>spring-boot-maven-plugin</artifactId>
-                            <executions>
-                                <execution>
-                                    <goals>
-                                        <goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
-                                    </goals>
-                                    <!--可以生成不含依赖包的不可执行Jar包-->
-                                    <!-- configuration>
-                                      <classifier>exec</classifier>
-                                    </configuration> -->
-                                </execution>
-                            </executions>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
+            <properties>
+                <env>publish</env>
+            </properties>
+        </profile>
+        <profile>
+            <id>pre</id>
+            <properties>
+                <env>pre</env>
+            </properties>
         </profile>
     </profiles>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok-maven-plugin</artifactId>
-                <version>1.16.8.0</version>
-            </plugin>
-
-        </plugins>
-    </build>
 
 </project>
