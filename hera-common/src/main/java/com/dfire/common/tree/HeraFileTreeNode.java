@@ -200,5 +200,8 @@ public class HeraFileTreeNode {
         System.out.println(content);
     }
 
-
+    @Override
+    public String toString() {
+        return "避免stack over flow ";
+    }
 }

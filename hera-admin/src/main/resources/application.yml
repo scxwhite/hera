@@ -1,5 +1,5 @@
 spring:
-    profiles.active: dev
+    profiles.active: daily
     datasource:
         name: default
         type: com.alibaba.druid.pool.DruidDataSource
@@ -24,7 +24,7 @@ spring:
 
 
 server:
-  context-path: /
+  context-path: /hera
   port: 8080
 
 clean:
@@ -34,7 +34,16 @@ hera:
    defaultWorkerGroupId : 1 #默认worker的host组id
    preemptionMasterGroupId : 1  #抢占master的host组id
 
+logging:
+  config: classpath:logback-spring.xml
+  path: /opt/logs/spring-boot
+---
+spring:
+  profiles: dev
+---
 
+spring:
+  profiles: daily
 ---
 spring:
   profiles: pre

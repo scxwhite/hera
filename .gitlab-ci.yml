@@ -5,7 +5,7 @@ stages:
 
 build:
  stage: build
- script: "mvn clean package -B"
+ script: "mvn clean package -B -Dmaven.test.skip=true"
  tags:
   - java
 
