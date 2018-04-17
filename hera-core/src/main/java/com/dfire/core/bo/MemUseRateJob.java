@@ -1,5 +1,6 @@
 package com.dfire.core.bo;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.job.ShellJob;
@@ -42,9 +43,12 @@ public class MemUseRateJob extends ShellJob {
             jobContext.putData(MEM_TOTAL, 204800d);
             return 0;
         }
+        log("ShellJob执行run");
         Integer exitCode = super.run();
+        log("开始执行");
         if (exitCode == 0) {
             String[] contents = getJobContext().getHeraJobHistory().getLog().getContent().split("\n");
+            log("执行结果：" + JSONObject.toJSONString(contents));
             for (String content : contents) {
                 if (content.contains("buffers/cache")) {
                     String line = content.substring(content.indexOf("buffers/cache:"));
