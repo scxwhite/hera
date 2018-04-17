@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -36,10 +37,11 @@ public class WorkClient {
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext;
-
-
+    private ScheduledExecutorService service;
+    private AtomicBoolean isShutdown = new AtomicBoolean(true);
     @PostConstruct
     public void WorkClient() {
+        isShutdown.compareAndSet(true, false);
         workContext = new WorkContext();
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
@@ -57,6 +59,7 @@ public class WorkClient {
                 });
         log.info("start work client success ");
         workContext.setWorkClient(this);
+        service = Executors.newScheduledThreadPool(1);
         sendHeartBeat();
 
     }
@@ -65,13 +68,13 @@ public class WorkClient {
      * work 向 master 发送心跳信息
      */
     private void sendHeartBeat() {
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
         service.scheduleAtFixedRate(new Runnable() {
             private WorkerHeartBeat heartBeat = new WorkerHeartBeat();
             private int failCount = 0;
             @Override
             public void run() {
                 try{
+                    log.info("prepare send hear beat");
                     if (workContext.getServerChannel() != null) {
                         ChannelFuture channelFuture = heartBeat.send(workContext);
                         channelFuture.addListener((future) -> {
@@ -139,4 +142,16 @@ public class WorkClient {
         ScheduleInfoLog.info("connect server success");
     }
 
+    public void shutdown() {
+        if (!isShutdown.get()) {
+            if (service != null && !service.isShutdown()) {
+                service.shutdown();
+            }
+            if (eventLoopGroup != null && !eventLoopGroup.isShutdown()) {
+                eventLoopGroup.shutdownGracefully();
+            }
+            workContext.shutdown();
+        }
+
+    }
 }

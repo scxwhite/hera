@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @time: Created in 17:50 2018/1/10
  * @desc
  */
-@ComponentScan(basePackages = "com.dfire.core")
+@ComponentScan("com.dfire")
 @EnableAutoConfiguration
 @SpringBootApplication
 public class Bootstrap {

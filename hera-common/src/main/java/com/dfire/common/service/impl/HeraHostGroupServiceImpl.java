@@ -23,13 +23,12 @@ import java.util.Map;
  * @desc
  */
 @Service("hostGroupServiceImpl")
-@PropertySource(value = "classpath:application.yml", ignoreResourceNotFound = true)
-@ConfigurationProperties("hera") //// prefix hera, find app.* values
+@PropertySource(value = "classpath:config.yml", ignoreResourceNotFound = true)
+@ConfigurationProperties("hera")
 public class HeraHostGroupServiceImpl implements HeraHostGroupService {
 
-    @Value("${defaultWorkerGroupId}")
     private String defaultWorkerGroup;
-    @Value("${preemptionMasterGroupId}")
+
     private String preemptionMasterGroup;
 
     @Autowired

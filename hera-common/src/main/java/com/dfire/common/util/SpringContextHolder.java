@@ -21,7 +21,7 @@ public class SpringContextHolder implements ApplicationContextAware {
         if(SpringContextHolder.applicationContext == null) {
             SpringContextHolder.applicationContext = applicationContext;
         }
-        log.info("set application success");
+        log.info("set config success");
     }
 
     public static ApplicationContext getApplicationContext() {

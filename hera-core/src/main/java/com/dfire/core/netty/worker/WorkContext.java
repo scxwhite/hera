@@ -54,8 +54,7 @@ public class WorkContext {
         return "WorkContext{}";
     }
 
-    public static void main(String[] args) {
-        System.out.println(host);
-        System.out.println(cpuCoreNum);
+    public void shutdown() {
+
     }
 }

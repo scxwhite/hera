@@ -1,5 +1,6 @@
 package com.dfire.core.netty.worker;
 
+import com.dfire.core.bo.MemUseRateJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.Protocol.HeartBeatMessage;
@@ -18,6 +19,8 @@ public class WorkerHeartBeat {
 
     public ChannelFuture send(WorkContext context) {
         JobContext jobContext = JobContext.getTempJobContext(JobContext.SYSTEM_RUN);
+        MemUseRateJob memUseRateJob = new MemUseRateJob(jobContext, 1);
+
         HeartBeatMessage hbm = HeartBeatMessage.newBuilder().
                 setHost(DistributeLock.host).
                 build();
