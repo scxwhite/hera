@@ -17,9 +17,9 @@ import java.util.regex.Pattern;
 @Slf4j
 public class MemUseRateJob extends ShellJob {
 
-    private double rate;
+    private float rate;
 
-    private double totalMem;
+    private float totalMem;
 
     private static Pattern pattern = Pattern.compile("\\d+");
 
@@ -29,7 +29,7 @@ public class MemUseRateJob extends ShellJob {
 
     public static final String MEM_TOTAL = "memTotal";
 
-    public MemUseRateJob(JobContext jobContext, double rate) {
+    public MemUseRateJob(JobContext jobContext, float rate) {
         super(jobContext, "free -m | grep buffers/cache");
         jobContext.getProperties().getAllProperties().put(RunningJobKeys.JOB_RUN_TYPE, "MemUseRateJob");
         this.rate = rate;
@@ -52,16 +52,16 @@ public class MemUseRateJob extends ShellJob {
                 if (content.contains("buffers/cache")) {
                     String line = content.substring(content.indexOf("buffers/cache:"));
                     Matcher matcher = pattern.matcher(line);
-                    double used = 0.0d, free = 0.0d;
+                    float used = 0.0f, free = 0.0f;
                     int num = 0;
                     while (matcher.find()) {
                         if (num == 0) {
-                            used = Double.valueOf(matcher.group());
+                            used = Float.valueOf(matcher.group());
                             num++;
                             continue;
                         }
                         if (num == 1) {
-                            free = Double.valueOf(matcher.group());
+                            free = Float.valueOf(matcher.group());
                             break;
                         }
                     }
@@ -70,6 +70,7 @@ public class MemUseRateJob extends ShellJob {
                         log.info("mem use rate used:" + used + " free:" + free + " rate:" + (used / (totalMem)));
                         date = System.currentTimeMillis();
                     }
+
                     jobContext.putData(MEM, (used / (totalMem)));
                     jobContext.putData(MEM_TOTAL, totalMem);
 
