@@ -169,6 +169,11 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            if (process == null) {
+                log("process空指针：" + JSONObject.toJSONString(process));
+            } else {
+                log("process不为空");
+            }
             String threadName = null;
             if (jobContext.getHeraJobHistory() != null && jobContext.getHeraJobHistory().getJobId() != null) {
                 threadName = "jobId=" + jobContext.getHeraJobHistory().getJobId();

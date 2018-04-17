@@ -115,7 +115,7 @@ public class ShellJob extends ProcessJob {
                         tmpFile.createNewFile();
                     }
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
-                            Charset.forName(jobContext.getProperties().getProperty("zeus.fs.encode", "utf-8")));
+                            Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
                     tmpWriter.write("source " + localEnvFilePath + "; source" + shellFilePath);
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
