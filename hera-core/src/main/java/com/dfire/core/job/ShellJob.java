@@ -52,7 +52,7 @@ public class ShellJob extends ProcessJob {
             }
             outputStreamWriter = new OutputStreamWriter(
                     new FileOutputStream(f),
-                    Charset.forName(jobContext.getProperties().getProperty("hera..encode", "utf-8")));
+                    Charset.forName(jobContext.getProperties().getProperty("hera.encode", "utf-8")));
 
             outputStreamWriter.write(script);
 

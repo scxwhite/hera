@@ -1,4 +1,4 @@
-package com.dfire.core.netty.worker.request;
+package com.dfire.core.netty.worker;
 
 import com.dfire.core.bo.MemUseRateJob;
 import com.dfire.core.job.JobContext;
@@ -8,7 +8,6 @@ import com.dfire.core.message.Protocol.Operate;
 import com.dfire.core.message.Protocol.Request;
 import com.dfire.core.message.Protocol.SocketMessage;
 import com.dfire.core.netty.util.AtomicIncrease;
-import com.dfire.core.netty.worker.WorkContext;
 import io.netty.channel.ChannelFuture;
 
 /**
