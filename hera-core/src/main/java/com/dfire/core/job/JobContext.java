@@ -4,6 +4,7 @@ import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.HeraDateTool;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -51,6 +52,8 @@ public class JobContext {
 
     private HeraDebugHistory debugHistory;
 
+    private HeraGlobalEnvironment environment;
+
     public JobContext() {
         this(MANUAL_RUN);
     }
@@ -70,7 +73,7 @@ public class JobContext {
         File file = new File(runType + HeraDateTool.getToday());
         if (!file.exists()) {
             if (!file.mkdir()) {
-                throw new SecurityException("create file failed,please check /tmp/hera ");
+                throw new SecurityException("create file failed,please check : " + file.getAbsolutePath());
             }
         }
         jobContext.setWorkDir(file.getAbsolutePath());

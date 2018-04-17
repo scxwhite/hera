@@ -44,17 +44,21 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         Map<String, String> mapred = new HashMap<>();
         Map<String, String> yarn = new HashMap<>();
         Map<String, String> hive = new HashMap<>();
+        String corePrefix = "core-site.", hDFSPrefix = "hdfs-site.",
+                mapPrefix = "mapred-site.", yarnPrefix = "yarn-site.", hivePrefix = "hive-site.";
+        Integer coreLen = corePrefix.length(), hDFSLen = hDFSPrefix.length(),
+                mapLen = mapPrefix.length(), yarnLen = yarnPrefix.length(), hiveLen = hivePrefix.length();
         jobContext.getProperties().getAllProperties().keySet().stream().forEach(key -> {
-            if (key.startsWith("core-site.")) {
-                core.put(key.substring("core-site.".length()), jobContext.getProperties().getProperty(key));
-            } else if (key.startsWith("hdfs-site.")) {
-                hdfs.put(key.substring("hdfs-site.".length()), jobContext.getProperties().getProperty(key));
-            } else if (key.startsWith("mapred-site.")) {
-                mapred.put(key.substring("mapred-site.".length()), jobContext.getProperties().getProperty(key));
-            } else if (key.startsWith("yarn-site.")) {
-                yarn.put(key.substring("yarn-site.".length()), jobContext.getProperties().getProperty(key));
-            } else if (key.startsWith("hive-site.")) {
-                hive.put(key.substring("hive-site.".length()), jobContext.getProperties().getProperty(key));
+            if (key.startsWith(corePrefix)) {
+                core.put(key.substring(coreLen), jobContext.getProperties().getProperty(key));
+            } else if (key.startsWith(hDFSPrefix)) {
+                hdfs.put(key.substring(hDFSLen), jobContext.getProperties().getProperty(key));
+            } else if (key.startsWith(mapPrefix)) {
+                mapred.put(key.substring(mapLen), jobContext.getProperties().getProperty(key));
+            } else if (key.startsWith(yarnPrefix)) {
+                yarn.put(key.substring(yarnLen), jobContext.getProperties().getProperty(key));
+            } else if (key.startsWith(hivePrefix)) {
+                hive.put(key.substring(hiveLen), jobContext.getProperties().getProperty(key));
             }
         });
 
@@ -282,6 +286,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         return processId;
     }
 
+    @Override
     protected String getProperty(String key, String defaultValue) {
         String value = jobContext.getProperties().getProperty(key);
         if (value == null) {
@@ -290,10 +295,12 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         return value;
     }
 
+    @Override
     public HierarchyProperties getProperties() {
         return jobContext.getProperties();
     }
 
+    @Override
     public JobContext getJobContext() {
         return jobContext;
     }

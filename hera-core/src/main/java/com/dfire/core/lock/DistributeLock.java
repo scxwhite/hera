@@ -1,6 +1,7 @@
 package com.dfire.core.lock;
 
 import com.dfire.common.entity.HeraLock;
+import com.dfire.common.service.HeraHostGroupService;
 import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.HeraSchedule;
@@ -8,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import com.dfire.common.service.HeraHostGroupService;
 
 import javax.annotation.PostConstruct;
 import java.net.InetAddress;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -77,6 +76,7 @@ public class DistributeLock {
             heraLockService.save(heraLock);
             log.info("hold lock and update time");
             heraSchedule.startup(port);
+            workClient.shutdown();
         } else {
             log.info("not my lock");
             long currentTime = System.currentTimeMillis();
@@ -93,6 +93,7 @@ public class DistributeLock {
             } else {
                 heraSchedule.shutdown();//非主节点，调度器不执行
                 try {
+                    //work连接master
                     workClient.connect(heraLock.getHost(), port);
                 } catch (Exception e) {
                     log.info("client worker connect master server exception");

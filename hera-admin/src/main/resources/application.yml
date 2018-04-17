@@ -29,14 +29,16 @@ server:
 
 clean:
    path: ${server.context-path}
-
+#hera全局配置
 hera:
-   defaultWorkerGroupId : 1 #默认worker的host组id
-   preemptionMasterGroupId : 1  #抢占master的host组id
+   default-worker-group-id : 1 #默认worker的host组id
+   preemption-master-group-id : 1  #抢占master的host组id
+   exclude-file: jar
 
 logging:
   config: classpath:logback-spring.xml
   path: /opt/logs/spring-boot
+
 ---
 spring:
   profiles: dev
@@ -63,3 +65,4 @@ spring:
       url: jdbc:mysql://master1401.my.2dfire-inc.com:3306/report_revaluation?useUnicode=true&amp;characterEncoding=UTF-8
       username: hera
       password: hera@552208
+
