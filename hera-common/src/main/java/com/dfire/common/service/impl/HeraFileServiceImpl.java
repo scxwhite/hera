@@ -47,6 +47,11 @@ public class HeraFileServiceImpl implements HeraFileService {
         return heraFileVos;
     }
 
+    @Override
+    public List<HeraFile> getAllUserHeraFiles(String owner) {
+        return heraFileMapper.getAllUserHeraFiles(owner);
+    }
+
 
     @Override
     public HeraFileVo addHeraFile(HeraFile heraFile) {

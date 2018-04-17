@@ -5,6 +5,7 @@ import com.dfire.common.service.HeraHostGroupService;
 import com.dfire.common.service.HeraProfileService;
 import com.dfire.common.vo.HeraHostGroupVo;
 import com.dfire.core.event.Dispatcher;
+import com.dfire.core.netty.master.response.MasterHandleHeartBeat;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.queue.JobPriorityBlockingDeque;
@@ -48,7 +49,7 @@ public class MasterContext {
 
     private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<>();
     private ApplicationContext applicationContext;
-    private MasterDoHeartBeat masterDoHeartBeat = new MasterDoHeartBeat();
+    private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
 
     private Dispatcher dispatcher;
     private Map<String, HeraHostGroupVo> hostGroupCache;

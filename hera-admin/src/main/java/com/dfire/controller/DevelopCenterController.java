@@ -1,10 +1,13 @@
 package com.dfire.controller;
 
+import com.dfire.common.constant.JobRunType;
+import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
-import com.dfire.common.entity.vo.HeraFileVo;
 import com.dfire.common.mapper.HeraFileMapper;
+import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
+import com.dfire.core.netty.worker.WorkClient;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +30,9 @@ public class DevelopCenterController {
     @Autowired
     HeraFileService heraFileService;
     @Autowired
-    HeraFileMapper heraFileMapper;
+    HeraDebugHistoryService debugHistoryService;
+    @Autowired
+    WorkClient workClient;
 
     @RequestMapping
     public String dev() {
@@ -38,7 +43,7 @@ public class DevelopCenterController {
     @ResponseBody
     public List<HeraFileTreeNodeVo> initFileTree() {
 
-        List<HeraFile> fileVoList = heraFileMapper.getAllUserHeraFiles("biadmin");
+        List<HeraFile> fileVoList = heraFileService.getAllUserHeraFiles("biadmin");
         List<HeraFileTreeNodeVo> list = fileVoList.stream().map(file -> {
             HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
             if(file.getParent() == null ||StringUtils.isBlank(file.getParent())) {
@@ -62,7 +67,6 @@ public class DevelopCenterController {
         System.out.println(heraFile.getId());
         heraFile.setOwner("biadmin");
         heraFileService.addHeraFile(heraFile);
-
         return "sucess";
     }
 
@@ -77,9 +81,32 @@ public class DevelopCenterController {
             heraFileService.deleteHeraFile(heraFile.getId());
             response = "删除成功";
         }
-
         return response;
     }
+
+    @RequestMapping(value = "/debug", method = RequestMethod.GET)
+    @ResponseBody
+    public String debug(String fileId, String mode, String script, String hostGroupId) {
+        HeraFile file = heraFileService.getHeraFile(fileId);
+
+
+        HeraDebugHistory history = HeraDebugHistory.builder()
+                .fileId(fileId)
+                .script(script)
+                .hostGroupId(hostGroupId)
+                .jobRunType(JobRunType.parser(mode))
+                .build();
+        debugHistoryService.addHeraDebugHistory(history);
+        System.out.println(history.getId());
+
+
+
+
+
+        return "";
+    }
+
+
 
 
 }

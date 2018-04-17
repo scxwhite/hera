@@ -1,7 +1,9 @@
-package com.dfire.core.netty.master;
+package com.dfire.core.netty.master.response;
 
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.message.Protocol.*;
+import com.dfire.core.netty.master.MasterContext;
+import com.dfire.core.netty.master.MasterWorkHolder;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2018/4/13
  */
 @Slf4j
-public class MasterDoHeartBeat {
+public class MasterHandleHeartBeat {
 
     public void dealHeartBeat(MasterContext masterContext, Channel channel, Request request) {
         MasterWorkHolder worker = masterContext.getWorkMap().get(channel);

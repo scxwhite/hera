@@ -16,6 +16,8 @@ public interface HeraFileService {
 
     List<HeraFileVo> getSubHeraFiles(String owner);
 
+    List<HeraFile> getAllUserHeraFiles(String owner);
+
     public List<HeraFileVo> getUserFiles(String owner);
 
 
