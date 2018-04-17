@@ -1,11 +1,8 @@
 package com.dfire.core.bo;
 
-import com.dfire.core.job.JobContext;
-import com.dfire.core.netty.util.RunningJobKeys;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.omg.CORBA.FREE_MEM;
 
 import java.io.*;
 import java.util.regex.Matcher;

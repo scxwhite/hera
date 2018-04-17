@@ -39,6 +39,7 @@ public class DistributeLock {
     private ApplicationContext applicationContext;
     @Autowired
     private WorkClient workClient;
+
     public static boolean isMaster = false;
 
     private HeraSchedule heraSchedule;
@@ -90,6 +91,10 @@ public class DistributeLock {
                 heraLockService.save(heraLock);
                 log.info("master 发生切换");
             } else {
+                if (workClient.getIsShutdown().get()) {
+                    workClient = new WorkClient();
+                }
+
                 heraSchedule.shutdown();//非主节点，调度器不执行
                 try {
                     //work连接master

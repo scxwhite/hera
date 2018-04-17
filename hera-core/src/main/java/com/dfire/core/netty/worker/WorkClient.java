@@ -16,6 +16,7 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @desc
  */
 @Slf4j
+@Data
 @Component
 public class WorkClient {
 
@@ -38,7 +40,7 @@ public class WorkClient {
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext;
     private ScheduledExecutorService service;
-    private AtomicBoolean isShutdown = new AtomicBoolean(true);
+    public AtomicBoolean isShutdown = new AtomicBoolean(true);
     @PostConstruct
     public void WorkClient() {
         isShutdown.compareAndSet(true, false);
@@ -144,6 +146,7 @@ public class WorkClient {
 
     public void shutdown() {
         if (!isShutdown.get()) {
+            isShutdown.set(true);
             if (service != null && !service.isShutdown()) {
                 service.shutdown();
             }
@@ -152,6 +155,6 @@ public class WorkClient {
             }
             workContext.shutdown();
         }
-
     }
+
 }
