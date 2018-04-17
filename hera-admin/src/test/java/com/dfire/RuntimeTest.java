@@ -254,5 +254,6 @@ public class RuntimeTest {
             System.out.println(cfg.getName() + "网卡类型" + cfg.getType());//
         }
     }
+
 }
 

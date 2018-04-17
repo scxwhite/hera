@@ -43,9 +43,8 @@ public class MemUseRateJob extends ShellJob {
             jobContext.putData(MEM_TOTAL, 204800d);
             return 0;
         }
-        log("ShellJob执行run");
         Integer exitCode = super.run();
-        log("开始执行");
+        log.info("shell执行结果：{}",exitCode);
         if (exitCode == 0) {
             String[] contents = getJobContext().getHeraJobHistory().getLog().getContent().split("\n");
             log("执行结果：" + JSONObject.toJSONString(contents));
