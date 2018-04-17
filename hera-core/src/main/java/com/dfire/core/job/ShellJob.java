@@ -1,7 +1,9 @@
 package com.dfire.core.job;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.core.netty.util.PropertyKeys;
 import com.dfire.core.util.CommandUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -17,6 +19,7 @@ import java.util.List;
  * @author xiaosuda
  * @date 2018/4/13
  */
+@Slf4j
 public class ShellJob extends ProcessJob {
 
     private String shell;
@@ -127,7 +130,7 @@ public class ShellJob extends ProcessJob {
         } else {
             list.add("sh " + shellFilePath);
         }
-
+        log.info("命令：{}", JSONObject.toJSONString(list));
         return list;
     }
 
