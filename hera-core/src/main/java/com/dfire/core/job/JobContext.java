@@ -8,6 +8,7 @@ import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ public class JobContext {
 
     private HeraDebugHistory debugHistory;
 
+    @Autowired
     private HeraGlobalEnvironment environment;
 
     public JobContext() {
