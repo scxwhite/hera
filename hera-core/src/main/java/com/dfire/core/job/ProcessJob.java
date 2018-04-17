@@ -194,6 +194,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         if (exitCode != 0) {
             return exitCode;
         }
+
         return exitCode;
     }
 
