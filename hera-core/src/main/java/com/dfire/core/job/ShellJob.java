@@ -97,8 +97,8 @@ public class ShellJob extends ProcessJob {
         }
 
         if (isDocToUnix) {
-            list.add("doc2unix " + shellFilePath);
-            log("doc2unix file:" + shellFilePath);
+            list.add("dos2unix " + shellFilePath);
+            log("dos2unix file:" + shellFilePath);
         }
         //以当前用户执行shell
         if (shellPrefix.trim().length() > 0) {
