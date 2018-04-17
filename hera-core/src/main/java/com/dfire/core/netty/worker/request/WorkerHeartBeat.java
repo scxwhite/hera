@@ -1,4 +1,4 @@
-package com.dfire.core.netty.worker;
+package com.dfire.core.netty.worker.request;
 
 import com.dfire.core.bo.MemUseRateJob;
 import com.dfire.core.lock.DistributeLock;
@@ -7,6 +7,7 @@ import com.dfire.core.message.Protocol.Operate;
 import com.dfire.core.message.Protocol.Request;
 import com.dfire.core.message.Protocol.SocketMessage;
 import com.dfire.core.netty.util.AtomicIncrease;
+import com.dfire.core.netty.worker.WorkContext;
 import io.netty.channel.ChannelFuture;
 import lombok.extern.slf4j.Slf4j;
 

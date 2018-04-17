@@ -3,6 +3,7 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.Protocol;
+import com.dfire.core.netty.worker.request.WorkerHeartBeat;
 import com.dfire.core.schedule.ScheduleInfoLog;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
