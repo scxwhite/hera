@@ -1,5 +1,6 @@
 package com.dfire.core.job;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constant.RunningJobKeys;
 import com.dfire.common.util.ConfUtil;
 import com.dfire.common.util.HierarchyProperties;
@@ -8,7 +9,10 @@ import org.apache.hadoop.conf.Configuration;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -242,6 +246,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             String arg = builder.toString();
             commands.add(arg);
         }
+        log.info("组装后的命令为：{}",JSONObject.toJSONString(commands));
         return commands.toArray(new String[commands.size()]);
     }
 

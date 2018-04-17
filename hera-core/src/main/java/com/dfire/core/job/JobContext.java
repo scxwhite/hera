@@ -82,4 +82,11 @@ public class JobContext {
 
     }
 
+    public void putData(String key, Object val) {
+        data.put(key, val);
+    }
+
+    public Object getData(String key) {
+        return data.get(key);
+    }
 }

@@ -1,10 +1,13 @@
 package com.dfire.core.netty.master;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.message.Protocol.*;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Date;
 
 /**
  *
@@ -17,12 +20,14 @@ public class MasterDoHeartBeat {
     public void dealHeartBeat(MasterContext masterContext, Channel channel, Request request) {
         MasterWorkHolder worker = masterContext.getWorkMap().get(channel);
         HeartBeatInfo heartBeatInfo = new HeartBeatInfo();
-        HeartBeatMessage heartBeatMessage = null;
+        HeartBeatMessage heartBeatMessage;
         try {
             heartBeatMessage = HeartBeatMessage.newBuilder().mergeFrom(request.getBody()).build();
             heartBeatInfo.setHost(heartBeatMessage.getHost());
+            heartBeatInfo.setMemRate(heartBeatMessage.getMemRate());
+            heartBeatInfo.setMemTotal(heartBeatMessage.getMemTotal());
             worker.setHeartBeatInfo(heartBeatInfo);
-            log.info("received heart beat from :{}", heartBeatMessage.getHost());
+            log.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
