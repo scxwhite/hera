@@ -2,13 +2,11 @@ package com.dfire.core.job;
 
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.HeraDateTool;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.common.util.HierarchyProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.HashMap;
@@ -52,9 +50,6 @@ public class JobContext {
     private HeraJobHistory heraJobHistory;
 
     private HeraDebugHistory debugHistory;
-
-    @Autowired
-    private HeraGlobalEnvironment environment;
 
     public JobContext() {
         this(MANUAL_RUN);

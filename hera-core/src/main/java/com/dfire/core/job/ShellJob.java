@@ -1,6 +1,7 @@
 package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.util.PropertyKeys;
 import com.dfire.core.util.CommandUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +84,7 @@ public class ShellJob extends ProcessJob {
             log("没有RunType=" + jobContext.getRunType() + " 的执行类别");
         }
         //过滤不需要转化的后缀名
-        String[] excludes = jobContext.getEnvironment().getExcludeFile().split(";");
+        String[] excludes = HeraGlobalEnvironment.excludeFile.split(";");
         boolean isDocToUnix = true;
         if (excludes != null && excludes.length > 0) {
             String lowCaseShellPath = shellFilePath.toLowerCase();

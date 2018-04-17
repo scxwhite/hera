@@ -39,7 +39,6 @@ public class DistributeLock {
     private ApplicationContext applicationContext;
     @Autowired
     private WorkClient workClient;
-
     public static boolean isMaster = false;
 
     private HeraSchedule heraSchedule;

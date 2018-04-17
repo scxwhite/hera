@@ -1,7 +1,6 @@
 package com.dfire.core.config;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,16 +8,28 @@ import org.springframework.stereotype.Component;
  * @author xiaosuda
  * @date 2018/4/16
  */
-@Data
 @Component
-@ConfigurationProperties("hera")
 public class HeraGlobalEnvironment {
 
-    private String excludeFile;
+    public static String excludeFile;
 
-    private String defaultWorkerGroup;
+    public static String defaultWorkerGroup;
 
-    private String preemptionMasterGroup;
+    public static String preemptionMasterGroup;
+
+
+    @Value("${hera.exclude-file}")
+    public void setExcludeFile(String excludeFile) {
+        HeraGlobalEnvironment.excludeFile = excludeFile;
+    }
+    @Value("${hera.default-worker-group-id}")
+    public void setDefaultWorkerGroup(String defaultWorkerGroup) {
+        HeraGlobalEnvironment.defaultWorkerGroup = defaultWorkerGroup;
+    }
+    @Value("${hera.preemption-master-group-id}")
+    public void setPreemptionMasterGroup(String preemptionMasterGroup) {
+        HeraGlobalEnvironment.preemptionMasterGroup = preemptionMasterGroup;
+    }
 
     /**
      * 判断是否是linux 环境，有些命令不一样
