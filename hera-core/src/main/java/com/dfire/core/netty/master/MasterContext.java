@@ -1,6 +1,7 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.common.service.HeraFileService;
+import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraHostGroupService;
 import com.dfire.common.service.HeraProfileService;
 import com.dfire.common.vo.HeraHostGroupVo;
@@ -44,6 +45,8 @@ public class MasterContext {
     private HeraProfileService heraProfileService;
     @Autowired
     private QuartzSchedulerService quartzSchedulerService;
+    @Autowired
+    private HeraGroupService heraGroupService;
 
     private Master master;
 

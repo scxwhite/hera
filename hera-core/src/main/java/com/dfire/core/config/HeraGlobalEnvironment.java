@@ -17,6 +17,8 @@ public class HeraGlobalEnvironment {
 
     public static String preemptionMasterGroup;
 
+    public static String env;
+
 
     @Value("${hera.exclude-file}")
     public void setExcludeFile(String excludeFile) {
@@ -29,6 +31,10 @@ public class HeraGlobalEnvironment {
     @Value("${hera.preemption-master-group-id}")
     public void setPreemptionMasterGroup(String preemptionMasterGroup) {
         HeraGlobalEnvironment.preemptionMasterGroup = preemptionMasterGroup;
+    }
+    @Value("${hera.env}")
+    public void setEnv(String preemptionMasterGroup) {
+        HeraGlobalEnvironment.env = env;
     }
 
     /**

@@ -39,7 +39,7 @@ public class LogContent {
                 content.append("CONSOLE# ").append(log).append("\n");
             }
             if (lines == 20000) {
-                content.append("ZEUS# 控制台输出信息过多，停止记录，建议您优化自己的Job");
+                content.append("HERA# 控制台输出信息过多，停止记录，建议您优化自己的Job");
             }
         }
     }

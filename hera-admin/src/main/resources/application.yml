@@ -33,7 +33,8 @@ clean:
 hera:
    default-worker-group-id : 1 #默认worker的host组id
    preemption-master-group-id : 1  #抢占master的host组id
-   exclude-file: jar
+   exclude-file:
+   env : daily
 
 logging:
   config: classpath:logback-spring.xml
