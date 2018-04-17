@@ -2,9 +2,7 @@ package com.dfire.core.netty.worker;
 
 
 import com.dfire.core.lock.DistributeLock;
-import com.dfire.core.message.Protocol.*;
-import com.dfire.core.netty.worker.request.WorkerHeartBeat;
-import com.dfire.core.netty.worker.request.WorkerWebExecute;
+import com.dfire.core.message.Protocol;
 import com.dfire.core.schedule.ScheduleInfoLog;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -18,8 +16,8 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -34,19 +32,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @desc
  */
 @Slf4j
+@Data
 @Component
 public class WorkClient {
 
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext;
-
-    @Autowired
-    WorkerWebExecute workerWebExecute;
-
     private ScheduledExecutorService service;
-    private AtomicBoolean isShutdown = new AtomicBoolean(true);
-
+    public AtomicBoolean isShutdown = new AtomicBoolean(true);
     @PostConstruct
     public void WorkClient() {
         isShutdown.compareAndSet(true, false);
@@ -59,7 +53,7 @@ public class WorkClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new ProtobufVarint32FrameDecoder())
-                                .addLast(new ProtobufDecoder(SocketMessage.getDefaultInstance()))
+                                .addLast(new ProtobufDecoder(Protocol.SocketMessage.getDefaultInstance()))
                                 .addLast(new ProtobufVarint32LengthFieldPrepender())
                                 .addLast(new ProtobufEncoder())
                                 .addLast(new WorkHandler(workContext));
@@ -150,43 +144,9 @@ public class WorkClient {
         ScheduleInfoLog.info("connect server success");
     }
 
-
-    public void excuteJobFromWeb(ExecuteKind kind, String id) {
-        WebResponse response = WebResponse.newBuilder().build();
-        try {
-             response = workerWebExecute.send(workContext, kind, id).get();
-        } catch (Exception e) {
-            log.error("netty manual web request error");
-        } finally {
-            if(response.getStatus() == Status.ERROR) {
-                log.error("netty manual web request get jobStatus error");
-            }
-        }
-    }
-
-    public void cancelJobFromWeb(ExecuteKind kind, String id) {
-
-    }
-
-    public void updateJobFromWeb(String jobId) {
-
-    }
-
-
-    public void cancelDebugJob(String debugId) {
-
-    }
-
-    public void cancelManualJob(String historyId) {
-
-    }
-
-    public void cancelScheduleJob() {
-
-    }
-
     public void shutdown() {
         if (!isShutdown.get()) {
+            isShutdown.set(true);
             if (service != null && !service.isShutdown()) {
                 service.shutdown();
             }
@@ -195,6 +155,6 @@ public class WorkClient {
             }
             workContext.shutdown();
         }
-
     }
+
 }
