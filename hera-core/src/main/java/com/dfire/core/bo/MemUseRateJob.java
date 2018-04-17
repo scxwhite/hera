@@ -1,12 +1,13 @@
 package com.dfire.core.bo;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.JobContext;
-import com.dfire.core.job.ShellJob;
 import com.dfire.core.netty.util.RunningJobKeys;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.omg.CORBA.FREE_MEM;
 
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,75 +15,89 @@ import java.util.regex.Pattern;
  * @author xiaosuda
  * @date 2018/4/13
  */
+@Data
 @Slf4j
-public class MemUseRateJob extends ShellJob {
+public class MemUseRateJob {
 
     private float rate;
 
-    private float totalMem;
-
     private static Pattern pattern = Pattern.compile("\\d+");
 
-    private static long date = System.currentTimeMillis();
+    private final String MEM_TOTAL = "MemTotal";
 
-    public static final String MEM = "mem";
+    private final String MEM_AVAILABLE = "MemAvailable";
 
-    public static final String MEM_TOTAL = "memTotal";
+    private final String MEM_FREE = "MemFree";
 
-    public MemUseRateJob(JobContext jobContext, float rate) {
-        super(jobContext, "free -m | grep buffers/cache");
-        jobContext.getProperties().getAllProperties().put(RunningJobKeys.JOB_RUN_TYPE, "MemUseRateJob");
+    private final String BUFFERS = "Buffers";
+
+    private final String CACHED = "Cached";
+
+    private final String MEM_INFO_PATH = "/proc/meminfo";
+
+    private float memAvailable = 0.0f;
+
+    private float memTotal = 0.0f;
+
+    public MemUseRateJob(float rate) {
         this.rate = rate;
     }
 
-    @Override
-    public int run() {
-        //非linux系统 测试数据
-        if (!HeraGlobalEnvironment.isLinuxSystem()) {
-            jobContext.putData(MEM, 0.1);
-            jobContext.putData(MEM_TOTAL, 204800d);
-            return 0;
+    /**
+     * 在 /proc/meminfo 文件有系统内存的实时信息
+     */
+    public void readMemUsed() {
+        File file = new File(MEM_INFO_PATH);
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+        } catch (FileNotFoundException e) {
+            log.info("文件不存在：{}", MEM_INFO_PATH);
+            e.printStackTrace();
         }
-        Integer exitCode = super.run();
-        log.info("shell执行结果：{}",exitCode);
-        if (exitCode == 0) {
-            String[] contents = getJobContext().getHeraJobHistory().getLog().getContent().split("\n");
-            log("执行结果：" + JSONObject.toJSONString(contents));
-            for (String content : contents) {
-                if (content.contains("buffers/cache")) {
-                    String line = content.substring(content.indexOf("buffers/cache:"));
-                    Matcher matcher = pattern.matcher(line);
-                    float used = 0.0f, free = 0.0f;
-                    int num = 0;
-                    while (matcher.find()) {
-                        if (num == 0) {
-                            used = Float.valueOf(matcher.group());
-                            num++;
-                            continue;
+        String line;
+        Float memFree = null, buffers = null, cached = null;
+        try {
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(MEM_TOTAL)) {
+                    memTotal = matchVal(line);
+                } else {
+                    //如果linux内核3.4 直接读 MemAvailable
+                    if (line.contains(MEM_AVAILABLE)) {
+                        memAvailable = matchVal(line);
+                        break;
+                    } else {
+                        if (line.contains(MEM_FREE)) {
+                            memFree = matchVal(line);
+                        } else if (line.contains(BUFFERS)) {
+                            buffers = matchVal(line);
+                        } else if (line.contains(CACHED)) {
+                            cached = matchVal(line);
                         }
-                        if (num == 1) {
-                            free = Float.valueOf(matcher.group());
+
+                        if (memFree != null && buffers != null && cached != null) {
+                            memAvailable = memFree + buffers + cached;
                             break;
                         }
                     }
-                    totalMem = free + used;
-                    if ((System.currentTimeMillis() - date) > 3 * 60 * 1000) {
-                        log.info("mem use rate used:" + used + " free:" + free + " rate:" + (used / (totalMem)));
-                        date = System.currentTimeMillis();
-                    }
-
-                    jobContext.putData(MEM, (used / (totalMem)));
-                    jobContext.putData(MEM_TOTAL, totalMem);
-
-                    if (used / totalMem > rate) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
                 }
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(reader);
         }
-        return -1;
+        rate = (memTotal - memAvailable) / memTotal;
+    }
+
+    public float matchVal(String target) {
+        float x = 0.0f;
+        Matcher matcher = pattern.matcher(target);
+        if (matcher.find()) {
+            x = Float.parseFloat(matcher.group()) / 1024;
+        }
+        return x;
     }
 
 }
