@@ -158,8 +158,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
         List<String> commands = getCommandList();
         ExecutorService executor = Executors.newCachedThreadPool();
-        InputStream inputStream = process.getInputStream();
-        InputStream errorStream = process.getErrorStream();
+
 
         commands.stream().forEach(command -> {
             ProcessBuilder builder = new ProcessBuilder(partitionCommandLine(command));
@@ -178,6 +177,8 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             } else {
                 threadName = "not-normal-job";
             }
+            InputStream inputStream = process.getInputStream();
+            InputStream errorStream = process.getErrorStream();
             executor.execute(new StreamThread(inputStream, threadName));
             executor.execute(new StreamThread(errorStream, threadName));
         });

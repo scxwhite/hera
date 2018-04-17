@@ -38,6 +38,7 @@ hera:
 logging:
   config: classpath:logback-spring.xml
   path: /opt/logs/spring-boot
+  level: info
 
 ---
 spring:
