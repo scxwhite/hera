@@ -70,7 +70,7 @@ public class DistributeLock {
                     .build();
             heraLockService.save(heraLock);
         }
-        isMaster = host.equals(heraLock.getHost());
+        isMaster = host.equals(heraLock.getHost().trim());
         if (isMaster) {
             heraLock.setServerUpdate(new Date());
             heraLockService.save(heraLock);
@@ -94,13 +94,12 @@ public class DistributeLock {
                 if (workClient.getIsShutdown().get()) {
                     workClient = new WorkClient();
                 }
-
                 heraSchedule.shutdown();//非主节点，调度器不执行
                 try {
                     //work连接master
                     workClient.connect(heraLock.getHost(), port);
                 } catch (Exception e) {
-                    log.info("client worker connect master server exception");
+                    log.info("client worker connect master server exception:{}", e);
                 }
             }
 
