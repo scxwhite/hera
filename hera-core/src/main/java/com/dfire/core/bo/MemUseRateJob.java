@@ -45,9 +45,9 @@ public class MemUseRateJob {
      * 在 /proc/meminfo 文件有系统内存的实时信息
      */
     public void readMemUsed() {
-        if (!HeraGlobalEnvironment.isLinuxSystem()) {
-            memTotal = 4096f;
+        if(!HeraGlobalEnvironment.isLinuxSystem()) {
             rate = 0.6f;
+            memTotal = 4096f;
             return ;
         }
         File file = new File(MEM_INFO_PATH);

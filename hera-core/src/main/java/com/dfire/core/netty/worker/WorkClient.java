@@ -77,7 +77,6 @@ public class WorkClient {
             @Override
             public void run() {
                 try{
-                    log.info("prepare send hear beat");
                     if (workContext.getServerChannel() != null) {
                         ChannelFuture channelFuture = heartBeat.send(workContext);
                         channelFuture.addListener((future) -> {
