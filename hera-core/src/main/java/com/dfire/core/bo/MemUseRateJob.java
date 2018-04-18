@@ -1,5 +1,6 @@
 package com.dfire.core.bo;
 
+import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -44,6 +45,11 @@ public class MemUseRateJob {
      * 在 /proc/meminfo 文件有系统内存的实时信息
      */
     public void readMemUsed() {
+        if(!HeraGlobalEnvironment.isLinuxSystem()) {
+            rate = 0.6f;
+            memTotal = 4096f;
+            return ;
+        }
         File file = new File(MEM_INFO_PATH);
         BufferedReader reader = null;
         try {
