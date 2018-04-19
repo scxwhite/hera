@@ -1,7 +1,7 @@
 package com.dfire.core.schedule;
 
 import com.dfire.core.event.Dispatcher;
-import com.dfire.core.event.events.JobScheduledEvent;
+import com.dfire.core.event.JobScheduledEvent;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 

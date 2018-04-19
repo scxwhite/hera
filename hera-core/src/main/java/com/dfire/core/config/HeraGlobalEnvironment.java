@@ -33,7 +33,7 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.preemptionMasterGroup = preemptionMasterGroup;
     }
     @Value("${hera.env}")
-    public void setEnv(String preemptionMasterGroup) {
+    public void setEnv(String env) {
         HeraGlobalEnvironment.env = env;
     }
 

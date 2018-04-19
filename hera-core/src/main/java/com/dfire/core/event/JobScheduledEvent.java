@@ -1,4 +1,4 @@
-package com.dfire.core.event.events;
+package com.dfire.core.event;
 
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +12,11 @@ import lombok.Data;
 @Builder
 public class JobScheduledEvent {
 
-    private final String jobId;
+    public final String jobId;
+
+    public JobScheduledEvent(String id) {
+        this.jobId = id;
+    }
+
 
 }
