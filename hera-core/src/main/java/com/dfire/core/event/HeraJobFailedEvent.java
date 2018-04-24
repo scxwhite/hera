@@ -13,7 +13,6 @@ import lombok.Data;
  * @desc
  */
 @Data
-@Builder
 public class HeraJobFailedEvent extends ApplicationEvent {
 
     private final HeraJobHistory heraJobHistory;

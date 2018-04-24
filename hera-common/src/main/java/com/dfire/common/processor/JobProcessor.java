@@ -1,4 +1,4 @@
-package com.dfire.processor;
+package com.dfire.common.processor;
 
 
 import com.alibaba.fastjson.JSONObject;
@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 

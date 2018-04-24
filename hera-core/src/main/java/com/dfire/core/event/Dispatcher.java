@@ -1,12 +1,16 @@
 package com.dfire.core.event;
 
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
+import com.dfire.core.event.base.*;
+import com.dfire.core.event.handler.AbstractHandler;
+import com.dfire.core.event.handler.JobHandler;
+import com.dfire.core.event.listenter.AbstractListener;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.concurrent.Executors;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -15,50 +19,72 @@ import java.util.concurrent.Executors;
  */
 @Slf4j
 @Component
-public class Dispatcher {
+public class Dispatcher extends AbstractObservable {
 
-    /**
-     * 同步事件总线，默认选择方案，后期做性能测试，尝试异步事件总线，提高调度任务事件吞吐
-     */
-    private static EventBus heraSyncEventBus;
+    public static final EventType beforeDispatch = new EventType();
 
-    /**
-     * 异步hera任务事件总线
-     */
-    private AsyncEventBus heraAsyncEventBus = new AsyncEventBus(Executors.newCachedThreadPool());
+    public static final EventType afterDispatch = new EventType();
 
-    @PostConstruct
-    public EventBus init() {
-        heraSyncEventBus = new EventBus();
-        log.info("init hera event bus success");
-        return heraSyncEventBus;
+    @Getter
+    List<AbstractHandler> jobHandlers;
+
+    public Dispatcher() {
+        jobHandlers = new ArrayList<AbstractHandler>();
     }
 
-    /**
-     * 触发同步事件
-     *
-     * @param event
-     */
-    public static void post(Object event) {
-        heraSyncEventBus.post(event);
+    public void addJobHandler(JobHandler jobHandler) {
+        if(!jobHandlers.contains(jobHandler)) {
+            jobHandlers.add(jobHandler);
+        }
     }
 
-    /**
-     * 注册事件处理器
-     *
-     * @param handler
-     */
-    public static void register(Object handler) {
-        heraSyncEventBus.register(handler);
+    public void removeJobhandler(JobHandler jobHandler) {
+        if(jobHandlers.contains(jobHandler)) {
+            jobHandlers.remove(jobHandler);
+        }
     }
 
-    /**
-     * 注销事件处理器
-     *
-     * @param handler
-     */
-    public static void unregister(Object handler) {
-        heraSyncEventBus.unregister(handler);
+    public void addDispatcherListener(AbstractListener listener) {
+        addListener(beforeDispatch, listener);
+        addListener(afterDispatch, listener);
     }
+
+
+    public void forwardEvent(ApplicationEvent event) {
+        dispatch(event);
+    }
+
+    public void forwardEvent(EventType eventType) {
+        dispatch(eventType);
+    }
+
+
+    public void dispatch(EventType type) {
+        dispatch(new ApplicationEvent(type));
+    }
+
+    public void dispatch(EventType type, Object data) {
+        dispatch(new ApplicationEvent(type, data));
+    }
+
+
+
+    public void dispatch(ApplicationEvent applicationEvent) {
+        MvcEvent event = new MvcEvent(this, applicationEvent);
+        event.setApplicationEvent(applicationEvent);
+        if(fireEvent(beforeDispatch, event)) {
+            List<AbstractHandler> jobHandlersCopy = new ArrayList<>(jobHandlers);
+            for(AbstractHandler jobHandler : jobHandlersCopy) {
+                if(jobHandler.canHandle(applicationEvent)) {
+                    if(! jobHandler.isInitialized()) {
+                        jobHandler.setInitialized(true);
+                    }
+                    jobHandler.handleEvent(applicationEvent);
+                }
+            }
+            fireEvent(afterDispatch, applicationEvent);
+        }
+    }
+
 
 }

@@ -1,6 +1,6 @@
 package com.dfire.core.event.base;
 
-import lombok.Builder;
+import com.dfire.core.event.Dispatcher;
 import lombok.Data;
 
 /**
@@ -8,7 +8,6 @@ import lombok.Data;
  * @time: Created in 下午5:19 2018/4/18
  * @desc
  */
-@Builder
 @Data
 public class MvcEvent extends AbstractEvent {
 
@@ -18,5 +17,10 @@ public class MvcEvent extends AbstractEvent {
 
     public MvcEvent(EventType type) {
         super(type);
+    }
+
+    public MvcEvent(Dispatcher dispatcher, ApplicationEvent applicationEvent) {
+        super(dispatcher);
+        this.applicationEvent = applicationEvent;
     }
 }

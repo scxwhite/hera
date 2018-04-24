@@ -1,7 +1,7 @@
 package com.dfire.core.event.base;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -9,9 +9,8 @@ import lombok.Data;
  * @desc
  */
 @Data
-@Builder
-
-public abstract class AbstractEvent {
+@NoArgsConstructor
+public class AbstractEvent {
 
     private boolean cancelled;
     private Object source;
@@ -23,6 +22,14 @@ public abstract class AbstractEvent {
 
     public AbstractEvent(Object source) {
         this.source = source;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 
 

@@ -3,7 +3,6 @@ package com.dfire.core.event;
 import com.dfire.common.constant.TriggerType;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
-import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -12,7 +11,6 @@ import lombok.Data;
  * @desc
  */
 @Data
-@Builder
 public class HeraJobSuccessEvent extends ApplicationEvent {
 
     private String historyId;

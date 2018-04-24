@@ -2,7 +2,6 @@ package com.dfire.core.event;
 
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.EventType;
-import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -11,7 +10,6 @@ import lombok.Data;
  * @desc
  */
 @Data
-@Builder
 public class HeraJobLostEvent extends ApplicationEvent {
 
     private final String jobId;

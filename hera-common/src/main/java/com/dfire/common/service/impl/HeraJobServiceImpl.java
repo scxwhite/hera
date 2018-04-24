@@ -20,4 +20,9 @@ public class HeraJobServiceImpl implements HeraJobService {
     public HeraJob findByName(int id) {
         return heraJobMapper.findByName(id);
     }
+
+    @Override
+    public HeraJob findById(String jobId) {
+        return heraJobMapper.findById(jobId);
+    }
 }

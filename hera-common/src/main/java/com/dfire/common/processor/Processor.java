@@ -1,4 +1,4 @@
-package com.dfire.processor;
+package com.dfire.common.processor;
 
 import java.io.Serializable;
 

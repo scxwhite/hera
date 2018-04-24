@@ -2,6 +2,7 @@ package com.dfire.core.event.handler;
 
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.EventType;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  * @time: Created in 下午5:24 2018/4/19
  * @desc  抽象任务实践处理器
  */
+@Data
 public abstract class AbstractHandler {
 
     protected List<AbstractHandler> children;
@@ -37,13 +39,9 @@ public abstract class AbstractHandler {
 
     public abstract void handleEvent(ApplicationEvent event);
 
-    protected void initialize() {
+    protected abstract void initialize();
 
-    }
-
-    protected void destory() {
-
-    }
+    protected abstract void destory();
 
 
     protected void registerEventType(EventType type) {

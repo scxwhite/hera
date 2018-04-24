@@ -2,6 +2,7 @@ package com.dfire.core.event;
 
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.EventType;
+import lombok.Getter;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -10,6 +11,7 @@ import com.dfire.core.event.base.EventType;
  */
 public class HeraJobMaintenanceEvent extends ApplicationEvent {
 
+    @Getter
     private final String id;
 
     public HeraJobMaintenanceEvent(EventType type, String id) {

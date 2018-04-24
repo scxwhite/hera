@@ -3,6 +3,7 @@ package com.dfire.core.event;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
+import lombok.Getter;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -11,6 +12,7 @@ import com.dfire.core.event.base.Events;
  */
 public class HeraDebugSuccessEvent extends ApplicationEvent {
 
+    @Getter
     private HeraDebugHistory history;
     private String fileId;
 

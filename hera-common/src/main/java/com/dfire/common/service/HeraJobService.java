@@ -11,4 +11,6 @@ public interface HeraJobService {
 
     HeraJob findByName(int id) ;
 
+    HeraJob findById(String jobId);
+
 }
