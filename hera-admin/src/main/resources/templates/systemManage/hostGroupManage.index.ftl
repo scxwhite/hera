@@ -106,6 +106,7 @@
     }
 
     function edit(id) {
+        $('#myModalLabel').text("编辑机器组");
         form[0].reset();
         formDataLoad("hostGroupTable", groupCache[id]);
         $('#myModal').modal('show');
