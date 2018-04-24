@@ -44,8 +44,7 @@ $(function () {
             element.parent('div').append(error);
         },
         submitHandler : function() {
-
-            $.post("/toLogin", $("#loginForm").serialize(), function(data) {
+            $.post($("#baseURl").attr("href") + "/toLogin", $("#loginForm").serialize(), function(data) {
                 if (data.code == "200") {
                     layer.open({
                         title: '系统提示',

@@ -45,6 +45,9 @@ public class LoginController {
     public RestfulResponse toLogin(String userName, String password) {
         heraJobService.findByName(182);
         HeraUser user = heraUserService.findByName(userName);
+        if (user == null) {
+            return RestfulResponse.builder().code("400").build();
+        }
         String pwd = user.getPassword();
         RestfulResponse response = RestfulResponse
                 .builder().build();

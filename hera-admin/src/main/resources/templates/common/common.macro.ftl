@@ -46,6 +46,9 @@
 	<script src="${request.contextPath}/plugins/jquery/jquery.cookie.js"></script>
 <#-- layer -->
 	<script src="${request.contextPath}/plugins/layer/layer.js"></script>
+
+	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 <#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>
 

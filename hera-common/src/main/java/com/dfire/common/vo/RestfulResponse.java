@@ -27,4 +27,9 @@ public class RestfulResponse {
      * total recorded
      */
     private int results;
+
+    public RestfulResponse(boolean success, String msg) {
+        this.success = success;
+        this.msg = msg;
+    }
 }

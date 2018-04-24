@@ -2,6 +2,7 @@
 <html>
 <head lang="en">
     <title>调度中心</title>
+    <base href="${request.contextPath}" id="baseURl">
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
     <link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/iCheck/square/green.css">
