@@ -19,10 +19,15 @@ public class HeraUserServiceImpl implements HeraUserService {
     @Autowired
     private HeraUserMapper heraUserMapper;
 
-    public int addUser(String name, Integer age) {
-        return heraUserMapper.insert(name, age);
+    @Override
+    public Boolean addUser(HeraUser user) {
+
+        Integer res = heraUserMapper.insert(user);
+
+        return res != null && res > 0;
     }
 
+    @Override
     public HeraUser findByName(String name) {
         return heraUserMapper.findByName(name);
     }
