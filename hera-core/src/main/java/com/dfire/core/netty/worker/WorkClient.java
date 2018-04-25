@@ -115,7 +115,6 @@ public class WorkClient {
         if (workContext.getServerChannel() != null) {
             //如果已经与服务端连接
             if (workContext.getServerHost().equals(host)) {
-                log.info("server host already connected, return");
                 return ;
             } else { //关闭之前通信
                 workContext.getServerChannel().close();

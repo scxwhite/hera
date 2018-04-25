@@ -45,6 +45,9 @@ public class LoginController {
     public RestfulResponse toLogin(String userName, String password) {
         heraJobService.findByName(182);
         HeraUser user = heraUserService.findByName(userName);
+        if (user == null) {
+            return RestfulResponse.builder().code("400").build();
+        }
         String pwd = user.getPassword();
         RestfulResponse response = RestfulResponse
                 .builder().build();
@@ -58,6 +61,17 @@ public class LoginController {
             }
         }
         return response;
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse register(HeraUser user) {
+        HeraUser check = heraUserService.findByName(user.getName());
+        if (check != null) {
+            return new RestfulResponse(false, "用户名已存在");
+        }
+        boolean res = heraUserService.addUser(user);
+        return new RestfulResponse(res, res ? "注册成功，等待管理员审核" : "注册失败,请联系管理员");
     }
 
 
