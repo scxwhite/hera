@@ -72,11 +72,11 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="name">密码</label>
-                                    <input type="text" class="form-control" name="password" id="password" >
+                                    <input type="password" class="form-control" name="password" id="password" >
                                 </div>
                                 <div class="form-group">
                                     <label for="name">确认密码</label>
-                                    <input type="text" class="form-control" name="confirmPassword" id="confirmPassword">
+                                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword">
                                 </div>
                                 <div class="form-group">
                                     <label for="name">邮箱</label>
@@ -111,6 +111,7 @@
 <script src="${request.contextPath}/plugins/jquery/jquery.metadata.js"></script>
 <script src="${request.contextPath}/adminlte/plugins/iCheck/icheck.min.js"></script>
 <script src="${request.contextPath}/plugins/jquery/messages_zh.js"></script>
+<script src="${request.contextPath}/plugins/jquery/md5.js"></script>
 <script src="${request.contextPath}/js/login.js"></script>
 </body>
 </html>

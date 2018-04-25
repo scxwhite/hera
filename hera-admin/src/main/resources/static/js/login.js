@@ -47,7 +47,13 @@ $(function () {
             }
         },
         submitHandler: function () {
-            $.post($("#baseURl").attr("href") + "/register", $("#registerForm").serialize(), function (data) {
+            $.post($("#baseURl").attr("href") + "/register", {
+                name: $('#name').val(),
+                password: hex_md5($('#password').val()),
+                phone: $('#phone').val(),
+                email: $('#email').val(),
+                description: $('#description').val()
+            }, function (data) {
                 if (data.success === true) {
                     layer.open({
                         title: '系统提示',
