@@ -1,5 +1,6 @@
 package com.dfire.core.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,15 @@ public class HeraGlobalEnvironment {
 
     public static String env;
 
+    @Getter
+    private static Float maxMemRate = Float.valueOf(0.8F);
+    @Getter
+    private static Float maxCpuLoadPerCore = Float.valueOf(3F);
+    @Getter
+    private static Integer scanRate = Integer.valueOf(3000);
+    @Getter
+    private static Integer scanExceptionRate = Integer.valueOf(3000);
+
 
     @Value("${hera.exclude-file}")
     public void setExcludeFile(String excludeFile) {
@@ -35,6 +45,23 @@ public class HeraGlobalEnvironment {
     @Value("${hera.env}")
     public void setEnv(String env) {
         HeraGlobalEnvironment.env = env;
+    }
+
+    @Value("${hera.scanExceptionRate}")
+    public void setScanExceptionRate(Integer scanExceptionRate) {
+        HeraGlobalEnvironment.scanExceptionRate = scanExceptionRate;
+    }
+    @Value("${hera.maxMemRate}")
+    public void setMaxMemRate(Float maxMemRate) {
+        HeraGlobalEnvironment.maxMemRate = maxMemRate;
+    }
+    @Value("${hera.maxCpuLoadPerCore}")
+    public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
+        HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+    }
+    @Value("${hera.scanRate}")
+    public void setScanRate(Integer scanRate) {
+        HeraGlobalEnvironment.scanExceptionRate = scanRate;
     }
 
     /**

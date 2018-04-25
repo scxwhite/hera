@@ -1,5 +1,6 @@
 package com.dfire.core.netty.worker;
 
+import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.core.job.Job;
 import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
@@ -7,7 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -22,10 +25,9 @@ import java.util.concurrent.Executors;
  * @desc
  */
 @Slf4j
-@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
+@Component
 public class WorkContext {
 
     public static String host;
@@ -39,6 +41,8 @@ public class WorkContext {
     private WorkClient workClient;
     private ExecutorService workThreadPool = Executors.newCachedThreadPool();
     private ApplicationContext applicationContext;
+    @Autowired
+    private HeraDebugHistoryService debugHistoryService;
 
     static {
         try {

@@ -21,4 +21,16 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     public void addHeraDebugHistory(HeraDebugHistory heraDebugHistory) {
         heraDebugHistoryMapper.addHeraDebugHistory(heraDebugHistory);
     }
+
+    @Override
+    public HeraDebugHistory findDebugHistoryById(String id) {
+        return heraDebugHistoryMapper.findById(id);
+    }
+
+    @Override
+    public void update(HeraDebugHistory heraDebugHistory) {
+        heraDebugHistoryMapper.update(heraDebugHistory);
+    }
+
+
 }

@@ -50,6 +50,8 @@ public class MasterContext {
     private HeraUserService heraUserService;
     @Autowired
     private HeraJobService heraJobService;
+    @Autowired
+    private HeraDebugHistoryService heraDebugHistoryService;
 
     private Master master;
 

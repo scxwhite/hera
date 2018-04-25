@@ -2,14 +2,12 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.message.Protocol.*;
+import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -49,6 +47,24 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, SocketMessage msg) throws Exception {
         SocketMessage socketMessage = (SocketMessage) msg;
+        switch (socketMessage.getKind()) {
+            case REQUEST:
+                final Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                Operate operate = request.getOperate();
+                if(operate == Operate.Schedule || operate == Operate.Manual || operate == Operate.Debug) {
+                    completionService.submit(new Callable<Response>() {
+                        private WorkExecuteJob workExecuteJob = new WorkExecuteJob();
+                        @Override
+                        public Response call() throws Exception {
+                            return workExecuteJob.execute(workContext, request).get();
+                        }
+                    });
+                }
+            case RESPONSE:
+            case WEB_RESPONSE:
+
+        }
+        super.channelActive(ctx);
         ctx.writeAndFlush(msg);
     }
 

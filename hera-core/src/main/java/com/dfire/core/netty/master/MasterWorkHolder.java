@@ -17,14 +17,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class MasterWorkHolder {
+
 
     private  Channel channel;
 
-    /** 布尔值标记是不是已经发送过超时报警 */
     private Map<String, Boolean> running = new ConcurrentHashMap<String, Boolean>();
 
     private Map<String, Boolean> manningRunning = new ConcurrentHashMap<String, Boolean>();

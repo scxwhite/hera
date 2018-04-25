@@ -44,7 +44,7 @@ message WebRequest{
 	required sint32 rid=1;
 	required WebOperate operate=2;
 	required ExecuteKind ek=3;
-	required string id=4;// update 时 id=jobId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
+	required string id=4;             // update 时 id=jobId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
 	optional string executor=5;
 	optional bytes body=6;
 }

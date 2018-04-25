@@ -11,5 +11,9 @@ public interface HeraDebugHistoryService {
 
     public void addHeraDebugHistory(HeraDebugHistory heraDebugHistory);
 
+    public HeraDebugHistory findDebugHistoryById(String id);
+
+    public void update(HeraDebugHistory heraDebugHistory);
+
 
 }

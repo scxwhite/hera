@@ -1,5 +1,6 @@
 package com.dfire.core.netty.master.response;
 
+import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.queue.JobElement;
@@ -13,7 +14,7 @@ import java.util.Queue;
  */
 public class MasterHandleWebDebug {
 
-    public WebResponse  handleWebDebug(MasterContext context, WebRequest request) {
+    public WebResponse handleWebDebug(MasterContext context, WebRequest request) {
 
         String debugId = request.getId();
         Queue<JobElement> queue = context.getDebugQueue();
@@ -28,6 +29,8 @@ public class MasterHandleWebDebug {
                 return response;
             }
         }
+        HeraDebugHistory debugHistory = context.getHeraDebugHistoryService().findDebugHistoryById(debugId);
+        context.getMaster().debug(debugHistory);
 
         WebResponse response = WebResponse.newBuilder()
                 .setRid(request.getRid())

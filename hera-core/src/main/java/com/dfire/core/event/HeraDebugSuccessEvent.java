@@ -3,6 +3,7 @@ package com.dfire.core.event;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
+import lombok.Builder;
 import lombok.Getter;
 
 /**
@@ -10,16 +11,12 @@ import lombok.Getter;
  * @time: Created in 下午4:06 2018/4/19
  * @desc
  */
+@Builder
 public class HeraDebugSuccessEvent extends ApplicationEvent {
 
     @Getter
     private HeraDebugHistory history;
     private String fileId;
 
-    public HeraDebugSuccessEvent(String fileId,HeraDebugHistory history) {
-        super(Events.JobSucceed);
-        this.fileId=fileId;
-        this.history=history;
-    }
 
 }
