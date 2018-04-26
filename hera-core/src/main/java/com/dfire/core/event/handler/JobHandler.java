@@ -5,8 +5,10 @@ import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -14,6 +16,7 @@ import lombok.Getter;
  * @desc 任务事件处理器
  */
 @Builder
+@AllArgsConstructor
 public class JobHandler extends AbstractHandler {
 
     @Getter

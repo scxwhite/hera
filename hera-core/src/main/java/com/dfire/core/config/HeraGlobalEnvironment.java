@@ -55,9 +55,9 @@ public class HeraGlobalEnvironment {
     public void setMaxMemRate(Float maxMemRate) {
         HeraGlobalEnvironment.maxMemRate = maxMemRate;
     }
-    @Value("${hera.maxCpuLoadPerCore}")
-    public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
-        HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+    @Value("${hera.cpuLoadPerCore}")
+    public void setCpuLoadPerCore(Float cpuLoadPerCore) {
+        HeraGlobalEnvironment.maxCpuLoadPerCore = cpuLoadPerCore;
     }
     @Value("${hera.scanRate}")
     public void setScanRate(Integer scanRate) {

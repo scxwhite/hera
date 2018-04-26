@@ -1,7 +1,9 @@
 package com.dfire.common.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -10,6 +12,8 @@ import lombok.Data;
  */
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class HeraGroup {
 
     private String id;

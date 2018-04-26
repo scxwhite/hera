@@ -1,10 +1,9 @@
 package com.dfire.core.job;
 
-import com.dfire.common.util.JobUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +36,7 @@ public class CancelHadoopJob extends ProcessJob {
             logContent = jobContext.getDebugHistory().getLog().getContent();
         }
         if(logContent != null) {
-            String hadoopCmd = JobUtils.getHadoopCmd(envMap);
+            String hadoopCmd = getHadoopCmd(envMap);
             commands = Arrays.asList(logContent.split("\n")).stream().filter(line-> line.startsWith("Starting Job ="))
                     .map(line -> {
                         String jobId = line.substring(line.lastIndexOf("job_"));
@@ -46,5 +45,20 @@ public class CancelHadoopJob extends ProcessJob {
 
         }
         return commands;
+    }
+
+    /**
+     * @param evenMap
+     * @return
+     * @desc 获取系统环境的hadoop命令
+     */
+    public static String getHadoopCmd(Map<String, String> evenMap) {
+        StringBuilder cmd = new StringBuilder(64);
+        String hadoopHome = evenMap.get("HADOOP_HOME");
+        if (hadoopHome != null) {
+            cmd.append(hadoopHome).append("/bin/");
+        }
+        cmd.append("hadoop");
+        return cmd.toString();
     }
 }

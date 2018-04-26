@@ -4,6 +4,7 @@ import com.dfire.core.netty.master.MasterContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -24,6 +25,7 @@ public class HeraSchedule {
         this.applicationContext = applicationContext;
     }
 
+    @PostConstruct
     public void startup(int port) {
         if(!running.compareAndSet(false, true)) {
             return;

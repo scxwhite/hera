@@ -1,11 +1,11 @@
 package com.dfire.core.netty.worker.request;
 
 import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.util.JobUtils;
-import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
+import com.dfire.core.job.JobContext;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.core.util.JobUtils;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,8 +51,44 @@ public class WorkExecuteJob {
                 if(!directory.exists()) {
                     directory.mkdirs();
                 }
-//                Job job = JobUtils.createDebug
-                return null;
+                Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), history,
+                        directory.getAbsolutePath(), workContext.getApplicationContext());
+                workContext.getDebugRunning().put(debugId, job);
+
+                int exitCode = -1;
+                Exception exception = null;
+                try {
+                    exitCode = job.run();
+                } catch (Exception e) {
+                    exception = e;
+                    history.getLog().appendHeraException(e);
+                } finally {
+                    HeraDebugHistory debugHistory = workContext.getDebugHistoryService().findDebugHistoryById(history.getId());
+                    debugHistory.setEndTime(new Date());
+                    if(exitCode == 0) debugHistory.setStatus(com.dfire.common.constant.Status.SUCCESS);
+                    else {
+                        debugHistory.setStatus(com.dfire.common.constant.Status.FAILED);
+                    }
+                    history.getLog().appendHera("exitCode =" + exitCode);
+                    workContext.getDebugHistoryService().update(debugHistory);
+                    log.info("update debug jobId = " + debugId + " success");
+
+                }
+                Status status = Status.OK;
+                String errorText = "";
+                if(exitCode != 0) {
+                    status = Status.ERROR;
+                }
+                if(exception != null && exception.getMessage() != null) {
+                    errorText = exception.getMessage();
+                }
+                Response response = Response.newBuilder()
+                        .setRid(request.getRid())
+                        .setOperate(Operate.Debug)
+                        .setStatus(status)
+                        .setErrorText(errorText)
+                        .build();
+                return response;
             }
         });
         return  future;

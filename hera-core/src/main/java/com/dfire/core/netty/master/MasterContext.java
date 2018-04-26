@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.*;
@@ -79,7 +80,6 @@ public class MasterContext {
      *     后面成可配置的
      */
     private ScheduledExecutorService schedulePool = Executors.newScheduledThreadPool(12);
-
 
 
     public void init(int port) {

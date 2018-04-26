@@ -19,6 +19,7 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Data
 @Component
+@NoArgsConstructor
 public class WorkClient {
 
     private Bootstrap bootstrap;

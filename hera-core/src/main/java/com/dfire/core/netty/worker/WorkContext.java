@@ -28,6 +28,8 @@ import java.util.concurrent.Executors;
 @Builder
 @Data
 @Component
+@NoArgsConstructor
+@AllArgsConstructor
 public class WorkContext {
 
     public static String host;

@@ -18,6 +18,8 @@ import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -36,12 +38,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class Master {
 
+    @Autowired
     private MasterContext masterContext;
     private Map<Long, HeraAction> heraActionMap;
 
     public Master(final MasterContext masterContext) {
         this.masterContext = masterContext;
-        HeraGroup globalGroup = masterContext.getHeraGroupService().getGlobalGroup();
+//        HeraGroup globalGroup = masterContext.getHeraGroupService().getGlobalGroup();
 
         if (HeraGlobalEnvironment.env.equalsIgnoreCase("pre")) {
             //预发环境不执行调度

@@ -4,6 +4,7 @@ import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 /**
@@ -18,5 +19,10 @@ public class HeraDebugSuccessEvent extends ApplicationEvent {
     private HeraDebugHistory history;
     private String fileId;
 
+    public HeraDebugSuccessEvent(HeraDebugHistory history, String fileId) {
+        super(Events.JobSucceed);
+        this.fileId = fileId;
+        this.history = history;
+    }
 
 }

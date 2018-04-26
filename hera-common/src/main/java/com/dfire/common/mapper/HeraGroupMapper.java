@@ -1,6 +1,7 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraGroup;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -9,5 +10,6 @@ import com.dfire.common.entity.HeraGroup;
  */
 public interface HeraGroupMapper {
 
+    @Select("SELECT * FROM hera_group WHERE name = 'default' ")
     HeraGroup getGlobalGroup();
 }

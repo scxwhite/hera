@@ -4,7 +4,10 @@ import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+
+import javax.annotation.security.DenyAll;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -19,5 +22,10 @@ public class HeraDebugFailEvent extends ApplicationEvent {
     private final String fileId;
     private final Throwable throwable;
 
-
+    public HeraDebugFailEvent(HeraDebugHistory history, String fileId, Throwable t) {
+        super(Events.JobFailed);
+        this.fileId = fileId;
+        this.debugHistory = history;
+        this.throwable = t;
+    }
 }
