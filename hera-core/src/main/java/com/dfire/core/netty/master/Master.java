@@ -147,7 +147,7 @@ public class Master {
                         break;
                     }
                     for (MasterWorkHolder worker : masterContext.getWorkMap().values()) {
-                        if (worker != null && worker.heartBeatInfo != null && worker.heartBeatInfo.host.equals(host)) {
+                        if (worker != null && worker.heartBeatInfo != null && worker.heartBeatInfo.host.trim().equals(host.trim())) {
                             HeartBeatInfo heartBeatInfo = worker.heartBeatInfo;
                             if (heartBeatInfo.getMemRate() != null && heartBeatInfo.getCpuLoadPerCore() != null
                                     && heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate() && heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()) {

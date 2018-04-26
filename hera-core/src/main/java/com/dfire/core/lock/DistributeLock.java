@@ -91,18 +91,14 @@ public class DistributeLock {
                 heraLockService.save(heraLock);
                 log.info("master 发生切换");
             } else {
-                if (workClient.getIsShutdown().get()) {
-                    workClient = new WorkClient();
-                }
                 heraSchedule.shutdown();//非主节点，调度器不执行
-                try {
-                    //work连接master
-                    workClient.connect(heraLock.getHost());
-                } catch (Exception e) {
-                    log.info("client worker connect master server exception:{}", e);
-                }
             }
-
+            try {
+                //work连接master
+                workClient.connect(heraLock.getHost());
+            } catch (Exception e) {
+                log.info("client worker connect master server exception:{}", e);
+            }
         }
     }
 
