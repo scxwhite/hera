@@ -29,20 +29,23 @@ public class WorkerWebExecute {
                 .setId(id)
                 .build();
         SocketMessage socketMessage = SocketMessage.newBuilder()
-                    .setKind(SocketMessage.Kind.WEB_REUQEST)
-                    .setBody(request.toByteString())
+                .setKind(SocketMessage.Kind.WEB_REUQEST)
+                .setBody(request.toByteString())
                 .build();
         Future<WebResponse> future = workContext.getWorkThreadPool().submit(new Callable<WebResponse>() {
             private WebResponse webResponse;
+
             @Override
             public WebResponse call() throws Exception {
                 final CountDownLatch latch = new CountDownLatch(1);
                 workContext.getHandler().addListener(new ResponseListener() {
                     @Override
-                    public void onResponse(Response response) { }
+                    public void onResponse(Response response) {
+                    }
+
                     @Override
                     public void onWebResponse(WebResponse response) {
-                        if(request.getRid() == request.getRid()) {
+                        if (request.getRid() == request.getRid()) {
                             workContext.getHandler().removeListener(this);
                             webResponse = response;
                             latch.countDown();

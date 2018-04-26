@@ -21,12 +21,12 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
     private CompletionService<Response> completionService = new ExecutorCompletionService<Response>(Executors.newCachedThreadPool());
     private WorkContext workContext;
 
-    private List<ResponseListener> listeners = new CopyOnWriteArrayList<ResponseListener>();
-
     public WorkHandler(final WorkContext workContext) {
         this.workContext = workContext;
         this.workContext.setHandler(this);
     }
+
+    private List<ResponseListener> listeners = new CopyOnWriteArrayList<ResponseListener>();
 
     public void addListener(ResponseListener listener) {
         listeners.add(listener);

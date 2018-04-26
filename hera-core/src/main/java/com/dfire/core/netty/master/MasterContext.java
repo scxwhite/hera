@@ -2,6 +2,7 @@ package com.dfire.core.netty.master;
 
 import com.dfire.common.service.*;
 import com.dfire.common.vo.HeraHostGroupVo;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.netty.master.response.MasterHandleHeartBeat;
 import com.dfire.core.quartz.QuartzSchedulerService;
@@ -32,7 +33,7 @@ import java.util.concurrent.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
+@Component("masterContext")
 public class MasterContext {
 
     @Autowired
@@ -81,12 +82,12 @@ public class MasterContext {
      */
     private ScheduledExecutorService schedulePool = Executors.newScheduledThreadPool(12);
 
-
-    public void init(int port) {
+    @PostConstruct
+    public void init() {
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);
         masterServer = new MasterServer(handler);
-        masterServer.start(port);
+        masterServer.start(HeraGlobalEnvironment.getConnectPort());
         master = new Master(this);
         log.info("end init master content success ");
     }

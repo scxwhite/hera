@@ -10,7 +10,7 @@ import com.dfire.core.event.base.MvcEvent;
  * @time: Created in 下午5:57 2018/4/18
  * @desc
  */
-public class AbstractListener<E extends AbstractEvent> implements Listener<MvcEvent> {
+public class AbstractListener implements Listener<MvcEvent> {
 
     @Override
     public void handleEvent(MvcEvent event) {

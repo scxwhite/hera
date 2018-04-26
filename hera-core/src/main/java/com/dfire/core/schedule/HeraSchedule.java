@@ -25,14 +25,13 @@ public class HeraSchedule {
         this.applicationContext = applicationContext;
     }
 
-    @PostConstruct
-    public void startup(int port) {
+    public void startup() {
         if(!running.compareAndSet(false, true)) {
             return;
         }
         log.info("begin to start master context");
         masterContext = (MasterContext) applicationContext.getBean("masterContext");
-        masterContext.init(port);
+        masterContext.init();
     }
 
     public void shutdown() {

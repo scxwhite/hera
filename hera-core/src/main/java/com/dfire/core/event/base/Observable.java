@@ -1,6 +1,5 @@
 package com.dfire.core.event.base;
 
-import com.dfire.core.event.listenter.AbstractListener;
 import com.dfire.core.event.listenter.Listener;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
  */
 public interface Observable {
 
-    public void addListener(EventType eventType, AbstractListener<? extends AbstractEvent> listener);
+    public void addListener(EventType eventType, Listener<? extends AbstractEvent> listener);
 
     public List<Listener<? extends  AbstractEvent>> getListeners(EventType eventType);
 

@@ -28,40 +28,45 @@ public class HeraGlobalEnvironment {
     private static Integer scanRate = Integer.valueOf(3000);
     @Getter
     private static Integer scanExceptionRate = Integer.valueOf(3000);
+    @Getter
+    private static Integer  connectPort;
 
 
     @Value("${hera.exclude-file}")
     public void setExcludeFile(String excludeFile) {
-        HeraGlobalEnvironment.excludeFile = excludeFile;
+        this.excludeFile = excludeFile;
     }
     @Value("${hera.default-worker-group-id}")
     public void setDefaultWorkerGroup(String defaultWorkerGroup) {
-        HeraGlobalEnvironment.defaultWorkerGroup = defaultWorkerGroup;
+        this.defaultWorkerGroup = defaultWorkerGroup;
     }
     @Value("${hera.preemption-master-group-id}")
     public void setPreemptionMasterGroup(String preemptionMasterGroup) {
-        HeraGlobalEnvironment.preemptionMasterGroup = preemptionMasterGroup;
+        this.preemptionMasterGroup = preemptionMasterGroup;
     }
     @Value("${hera.env}")
     public void setEnv(String env) {
-        HeraGlobalEnvironment.env = env;
+        this.env = env;
     }
-
     @Value("${hera.scanExceptionRate}")
     public void setScanExceptionRate(Integer scanExceptionRate) {
-        HeraGlobalEnvironment.scanExceptionRate = scanExceptionRate;
+        this.scanExceptionRate = scanExceptionRate;
     }
     @Value("${hera.maxMemRate}")
     public void setMaxMemRate(Float maxMemRate) {
-        HeraGlobalEnvironment.maxMemRate = maxMemRate;
+        this.maxMemRate = maxMemRate;
     }
     @Value("${hera.cpuLoadPerCore}")
     public void setCpuLoadPerCore(Float cpuLoadPerCore) {
-        HeraGlobalEnvironment.maxCpuLoadPerCore = cpuLoadPerCore;
+        this.maxCpuLoadPerCore = cpuLoadPerCore;
     }
     @Value("${hera.scanRate}")
     public void setScanRate(Integer scanRate) {
-        HeraGlobalEnvironment.scanExceptionRate = scanRate;
+        this.scanExceptionRate = scanRate;
+    }
+    @Value("${hera.connect.port}")
+    public void setConnectPort(Integer port) {
+        this.connectPort = port;
     }
 
     /**

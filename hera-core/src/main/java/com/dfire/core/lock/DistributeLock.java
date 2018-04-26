@@ -3,6 +3,7 @@ package com.dfire.core.lock;
 import com.dfire.common.entity.HeraLock;
 import com.dfire.common.service.HeraHostGroupService;
 import com.dfire.common.service.HeraLockService;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.HeraSchedule;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,6 @@ public class DistributeLock {
 
     public static String host = "LOCALHOST";
 
-    public static  int port = 7979;
     @Autowired
     private HeraHostGroupService hostGroupService;
     @Autowired
@@ -75,7 +75,7 @@ public class DistributeLock {
             heraLock.setServerUpdate(new Date());
             heraLockService.save(heraLock);
             log.info("hold lock and update time");
-            heraSchedule.startup(port);
+            heraSchedule.startup();
             workClient.shutdown();
         } else {
             log.info("not my lock");
@@ -97,7 +97,7 @@ public class DistributeLock {
                 heraSchedule.shutdown();//非主节点，调度器不执行
                 try {
                     //work连接master
-                    workClient.connect(heraLock.getHost(), port);
+                    workClient.connect(heraLock.getHost());
                 } catch (Exception e) {
                     log.info("client worker connect master server exception:{}", e);
                 }

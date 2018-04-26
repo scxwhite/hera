@@ -70,9 +70,9 @@ public class Dispatcher extends AbstractObservable {
 
 
     public void dispatch(ApplicationEvent applicationEvent) {
-        MvcEvent event = new MvcEvent(this, applicationEvent);
-        event.setApplicationEvent(applicationEvent);
-        if(fireEvent(beforeDispatch, event)) {
+        MvcEvent mvcEvent = new MvcEvent(this, applicationEvent);
+        mvcEvent.setApplicationEvent(applicationEvent);
+        if(fireEvent(beforeDispatch, mvcEvent)) {
             List<AbstractHandler> jobHandlersCopy = new ArrayList<>(jobHandlers);
             for(AbstractHandler jobHandler : jobHandlersCopy) {
                 if(jobHandler.canHandle(applicationEvent)) {
@@ -82,7 +82,7 @@ public class Dispatcher extends AbstractObservable {
                     jobHandler.handleEvent(applicationEvent);
                 }
             }
-            fireEvent(afterDispatch, applicationEvent);
+            fireEvent(afterDispatch, mvcEvent);
         }
     }
 

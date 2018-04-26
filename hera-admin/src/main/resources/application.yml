@@ -46,7 +46,7 @@ hera:
    hdfsLibPath : /hera/hdfs-upload-dir #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上
    schedule-group : online
 
-   connect.port : 9887 #Scheduler与Worker通信的端口
+   connect.port : 9887 #Master与Worker通信的端口
 
    #hadoop 配置文件路径
    hadoop-home : /opt/cloudera/parcels/CDH/lib/hadoop

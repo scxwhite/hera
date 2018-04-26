@@ -7,7 +7,7 @@ import com.dfire.core.event.base.AbstractEvent;
  * @time: Created in 下午5:52 2018/4/18
  * @desc
  */
-public interface Listener<E extends AbstractEvent> {
+public interface Listener<E extends AbstractEvent>  {
 
     public void handleEvent(E event);
 }

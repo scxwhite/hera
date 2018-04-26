@@ -1,6 +1,7 @@
 package com.dfire.core.netty.worker;
 
 
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.request.WorkerHeartBeat;
@@ -49,6 +50,7 @@ public class WorkClient {
 
     @Autowired
     WorkerWebExecute workerWebExecute;
+
     @PostConstruct
     public void WorkClient() {
         isShutdown.compareAndSet(true, false);
@@ -112,7 +114,7 @@ public class WorkClient {
 
     }
 
-    public synchronized void connect(String host, int port) throws Exception {
+    public synchronized void connect(String host) throws Exception {
         //首先判断服务频道是否开启
         if (workContext.getServerChannel() != null) {
             //如果已经与服务端连接
@@ -136,7 +138,7 @@ public class WorkClient {
                     latch.countDown();
                 }
         };
-        ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, port));
+        ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, HeraGlobalEnvironment.getConnectPort()));
         connectFuture.addListener(futureListener);
         if (!latch.await(2, TimeUnit.SECONDS)) {
             connectFuture.removeListener(futureListener);

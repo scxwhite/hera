@@ -1,6 +1,7 @@
 package com.dfire.core.netty.worker.request;
 
 import com.dfire.core.bo.MemUseRateJob;
+import com.dfire.core.job.JobContext;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.Protocol.HeartBeatMessage;
 import com.dfire.core.message.Protocol.Operate;
@@ -20,13 +21,19 @@ public class WorkerHeartBeat {
 
 
     public ChannelFuture send(WorkContext context) {
+        JobContext jobContext = JobContext.getTempJobContext(JobContext.SYSTEM_RUN);//创建任务运行目录 /tmp/hera
         MemUseRateJob memUseRateJob = new MemUseRateJob(1);
         memUseRateJob.readMemUsed();
-        HeartBeatMessage hbm = HeartBeatMessage.newBuilder().
-                setHost(DistributeLock.host).
-                setMemTotal(memUseRateJob.getMemTotal()).
-                setMemRate(memUseRateJob.getRate()).
-                build();
+        jobContext.putData("memTotal", memUseRateJob.getMemTotal());
+        jobContext.putData("rate", memUseRateJob.getRate());
+        HeartBeatMessage hbm = HeartBeatMessage.newBuilder()
+                .setHost(DistributeLock.host)
+                .setMemTotal(memUseRateJob.getMemTotal())
+                .setMemRate(memUseRateJob.getRate())
+                .addAllDebugRunnings(context.getDebugRunning().keySet())
+                .addAllManualRunnings(context.getManualRunning().keySet())
+                .addAllRunnings(context.getRunning().keySet())
+                .build();
         Request request = Request.newBuilder().
                         setRid(AtomicIncrease.getAndIncrement()).
                         setOperate(Operate.HeartBeat).

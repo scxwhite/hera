@@ -1,6 +1,5 @@
 package com.dfire.core.event.base;
 
-import com.dfire.core.event.listenter.AbstractListener;
 import com.dfire.core.event.listenter.Listener;
 import com.google.common.collect.Lists;
 
@@ -24,7 +23,7 @@ public  class AbstractObservable implements Observable {
 
 
     @Override
-    public void addListener(EventType eventType, AbstractListener<? extends AbstractEvent> listener) {
+    public void addListener(EventType eventType, Listener<? extends AbstractEvent> listener) {
         if(listener == null) return;
         if(listMap == null ) {
             listMap = new HashMap<String, List<Listener<AbstractEvent>>>();
@@ -32,11 +31,11 @@ public  class AbstractObservable implements Observable {
         List<Listener<AbstractEvent>> listeners = listMap.get(eventType.getId());
         if(listeners == null) {
             listeners = new ArrayList<Listener<AbstractEvent>>();
-            listeners.add((AbstractListener) listener);
+            listeners.add((Listener)listener);
             listMap.put(eventType.getId(), listeners);
         } else {
             if(listeners.contains(listener)) {
-                listeners.add((AbstractListener) listener);
+                listeners.add((Listener) listener);
             }
         }
 
