@@ -3,7 +3,6 @@ package com.dfire.core.lock;
 import com.dfire.common.entity.HeraLock;
 import com.dfire.common.service.HeraHostGroupService;
 import com.dfire.common.service.HeraLockService;
-import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.HeraSchedule;
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +39,7 @@ public class DistributeLock {
     @Autowired
     private WorkClient workClient;
 
-    public static boolean isMaster = false;
-
     private HeraSchedule heraSchedule;
-
 
 
     static {
@@ -58,7 +54,7 @@ public class DistributeLock {
     public void init() {
         heraSchedule = new HeraSchedule(applicationContext);
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-        service.scheduleAtFixedRate(() -> getLock() , 5, 15, TimeUnit.SECONDS);
+        service.scheduleAtFixedRate(() -> getLock(), 5, 15, TimeUnit.SECONDS);
     }
 
     public void getLock() {
@@ -70,8 +66,7 @@ public class DistributeLock {
                     .build();
             heraLockService.save(heraLock);
         }
-        isMaster = host.equals(heraLock.getHost().trim());
-        if (isMaster) {
+        if (host.equals(heraLock.getHost().trim())) {
             heraLock.setServerUpdate(new Date());
             heraLockService.save(heraLock);
             log.info("hold lock and update time");

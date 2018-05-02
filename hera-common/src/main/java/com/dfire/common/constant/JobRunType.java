@@ -27,4 +27,8 @@ public enum JobRunType {
         }
         return null;
     }
+
+    public static void main(String[] args) {
+        System.out.println(JobRunType.Shell.toString());
+    }
 }

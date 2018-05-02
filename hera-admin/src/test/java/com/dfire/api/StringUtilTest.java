@@ -9,6 +9,8 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -59,5 +61,13 @@ public class StringUtilTest {
         System.out.println( LocalDate.parse("2018-09-23", formatter));
         System.out.println( LocalDate.parse("09-23-2018", formatter));
         System.out.println( LocalDate.parse("23/09/2018", formatter));
+    }
+
+    @Test
+    public  void testBoolean() {
+        System.out.println(System.getenv());
+        Map map = new HashMap(System.getenv());
+        System.out.println(map.size());
+
     }
 }

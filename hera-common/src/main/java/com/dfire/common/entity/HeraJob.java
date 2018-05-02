@@ -39,8 +39,8 @@ public class HeraJob {
     private String name;
     private String offset;
     private String owner;
-    private String postProcessers;
-    private String preProcessers;
+    private String postProcessors;
+    private String preProcessors;
     private String readyDependency;
     private String resources;
     private String runType;

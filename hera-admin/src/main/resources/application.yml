@@ -24,7 +24,6 @@ spring:
 
 
 server:
-  context-path: /hera
   port: 8080
 
 clean:

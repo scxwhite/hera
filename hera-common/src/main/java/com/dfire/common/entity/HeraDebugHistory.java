@@ -1,6 +1,5 @@
 package com.dfire.common.entity;
 
-import com.dfire.common.constant.JobRunType;
 import com.dfire.common.constant.Status;
 import com.dfire.common.vo.LogContent;
 import lombok.Builder;
@@ -27,7 +26,7 @@ public class HeraDebugHistory {
     private Date gmtCreate = new Date();
     private Date gmtModified = new Date();
     private String script;
-    private JobRunType jobRunType;
+    private String runType;
     private LogContent log = new LogContent();
     private String host;
     private String hostGroupId;

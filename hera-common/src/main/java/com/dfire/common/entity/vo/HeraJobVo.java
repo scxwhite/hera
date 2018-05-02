@@ -34,9 +34,9 @@ public class HeraJobVo {
     private JobRunType jobRunType;
     private JobScheduleType jobScheduleType;
     private String timezone;
-    private List<Processor> preProcessers = new ArrayList<Processor>();
-    private List<Processor> postProcessers = new ArrayList<Processor>();
-    private String offRaw="0";
+    private List<Processor> preProcessors = new ArrayList<Processor>();
+    private List<Processor> postProcessors = new ArrayList<Processor>();
+    private String offRaw = "0";
     private String cycle;
     private long startTimestamp;
     private String startTime;

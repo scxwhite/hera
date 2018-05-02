@@ -1,9 +1,7 @@
-package com.dfire.common.entity;
+package com.dfire.common.entity.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -11,18 +9,15 @@ import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
- * @time: Created in 17:35 2018/1/11
+ * @time: Created in 上午10:47 2018/5/2
  * @desc
  */
-@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class HeraProfile {
-
+@Data
+public class HeraProfileVo {
     private String id;
     private String uid;
-    private String hadoopConf;
+    private Map<String, String> hadoopConf = new HashMap<String, String>();
     private Date gmtCreate = new Date();
     private Date gmtModified = new Date();
 }

@@ -16,9 +16,34 @@ $(function(){
         },
         callback: {
             onRightClick: OnRightClick,
+            onClick: leftClick
         }
     };
-    debugger
+
+    function leftClick() {
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+        var parent = selected['parent'];
+        var name = selected['name'];
+
+        var parameter = "id=" + id ;
+        var result = null;
+
+        $.ajax({
+            url:"/developCenter/find.do",
+            type: "get",
+            async:false,
+            data: parameter,
+            success : function(data) {
+                result = data;
+            }
+        });
+        var script = result['content'];
+        $("#script").text(script);
+        $("id").val(id);
+
+
+    }
 
     var zNodes = getDataStore("/developCenter/init.do");
     console.log(zNodes);
@@ -245,8 +270,6 @@ $(function(){
 
 
 
-
-
 //修正zTree的图标，让文件节点显示文件夹图标
     function fixIcon(){
         $.fn.zTree.init($("#documentTree"), setting, zNodes);
@@ -262,6 +285,30 @@ $(function(){
     function log() {
         console.log("log.......")
     }
+
+    $("#execute").click(function () {
+        debugger
+
+        var id = $("#id").text();
+        var script = $("#script").val();
+        var id = '253';
+
+        script = 'ls';
+
+        var parameter = "id=" + id + "&script=" + script;
+        var result = null;
+
+        $.ajax({
+            url:"/developCenter/debug.do",
+            type: "get",
+            async:false,
+            data: parameter,
+            success : function(data) {
+                result = data;
+            }
+        });
+
+    });
 
 });
 

@@ -75,16 +75,17 @@
                     <div class="col-md-7 panel panel-primary" style="height:10px;padding-bottom:70%">
 
                         <form>
-                            <button type="submit" class="btn btn-success btn-sm">执行</button>
-                            <button type="submit" class="btn btn-success btn-sm">执行选中的代码</button>
+                            <button id="execute" type="submit" class="btn btn-success btn-sm">执行</button>
+                            <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码</button>
                         </form>
                         </br>
 
                         <div class="row">
                         <div  class="span8" style="height: 600px;overflow-y:auto">
                             <div class="box-body pad" >
+                                <label id="id" hidden></label>
                                 <form>
-                                    <textarea class="textarea" placeholder="编写脚本" style="width: 100%; height: 500px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                                    <textarea id="script" class="textarea" placeholder="编写脚本" style="width: 100%; height: 500px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                                 </form>
                             </div>
                         </div>
@@ -92,7 +93,7 @@
                         <div class="span4" >
                             <div class="box-body pad" >
                                 <form>
-                                    <textarea class="textarea" placeholder="运行日志" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+                                    <textarea id="log" class="textarea" placeholder="运行日志" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
                                 </form>
                             </div>
                         </div>

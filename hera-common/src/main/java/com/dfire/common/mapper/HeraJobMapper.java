@@ -23,4 +23,6 @@ public interface HeraJobMapper {
             @Result(column="gmt_create", property = "gmtCreate")
     })
     HeraJob findById(@Param("jobId") String jobId) ;
+
+
 }

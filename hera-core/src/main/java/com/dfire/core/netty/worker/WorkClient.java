@@ -83,29 +83,30 @@ public class WorkClient {
         service.scheduleAtFixedRate(new Runnable() {
             private WorkerHeartBeat heartBeat = new WorkerHeartBeat();
             private int failCount = 0;
+
             @Override
             public void run() {
-                try{
+                try {
                     if (workContext.getServerChannel() != null) {
                         ChannelFuture channelFuture = heartBeat.send(workContext);
                         channelFuture.addListener((future) -> {
-                                if (!future.isSuccess()) {
-                                    failCount++;
-                                    log.info("send heart beat failed ,failCount :" + failCount);
-                                } else {
-                                    failCount = 0;
-                                    log.info("send heart beat success");
-                                }
-                                if (failCount > 10) {
-                                    future.cancel(true);
-                                    log.info("cancel connect server ,failCount:" + failCount);
-                                }
+                            if (!future.isSuccess()) {
+                                failCount++;
+                                log.info("send heart beat failed ,failCount :" + failCount);
+                            } else {
+                                failCount = 0;
+                                log.info("send heart beat success");
+                            }
+                            if (failCount > 10) {
+                                future.cancel(true);
+                                log.info("cancel connect server ,failCount:" + failCount);
+                            }
                         });
                     } else {
                         log.info("server channel can not find on " + DistributeLock.host);
                     }
                 } catch (Exception e) {
-                    log.info("heart beat send failed ："+ failCount);
+                    log.info("heart beat send failed ：" + failCount);
                     log.error("heart beat error:", e);
                 }
             }
@@ -119,7 +120,7 @@ public class WorkClient {
         if (workContext.getServerChannel() != null) {
             //如果已经与服务端连接
             if (workContext.getServerHost().equals(host)) {
-                return ;
+                return;
             } else { //关闭之前通信
                 workContext.getServerChannel().close();
                 workContext.setServerChannel(null);
@@ -128,15 +129,15 @@ public class WorkClient {
         workContext.setServerHost(host);
         CountDownLatch latch = new CountDownLatch(1);
         ChannelFutureListener futureListener = (future) -> {
-                try {
-                    if (future.isSuccess()) {
-                        workContext.setServerChannel(future.channel());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    latch.countDown();
+            try {
+                if (future.isSuccess()) {
+                    workContext.setServerChannel(future.channel());
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                latch.countDown();
+            }
         };
         ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, HeraGlobalEnvironment.getConnectPort()));
         connectFuture.addListener(futureListener);
@@ -166,18 +167,12 @@ public class WorkClient {
     }
 
 
-    public void excuteJobFromWeb(ExecuteKind kind, String id) {
-        WebResponse response = WebResponse.newBuilder().build();
-        try {
-            response = workerWebExecute.send(workContext, kind, id).get();
-        } catch (Exception e) {
-            log.error("netty manual web request error");
-        } finally {
-            if(response.getStatus() == Status.ERROR) {
-                log.error("netty manual web request get jobStatus error");
-            }
+    public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        WebResponse response = workerWebExecute.send(workContext, kind, id).get();
+        if (response.getStatus() == Status.ERROR) {
+            log.error("netty manual web request get jobStatus error");
         }
-    }
+}
 
     public void cancelJobFromWeb(ExecuteKind kind, String id) {
 

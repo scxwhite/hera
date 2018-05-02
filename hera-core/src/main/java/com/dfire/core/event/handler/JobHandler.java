@@ -45,7 +45,7 @@ public class JobHandler extends AbstractHandler {
     }
 
     @Override
-    protected void destory() {
+    protected void destroy() {
 
     }
 }

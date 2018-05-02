@@ -1,12 +1,11 @@
 package com.dfire.controller;
 
-import com.dfire.common.constant.JobRunType;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
-import com.dfire.common.mapper.HeraFileMapper;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
+import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.WorkClient;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -70,6 +70,15 @@ public class DevelopCenterController {
         return "sucess";
     }
 
+    @RequestMapping(value = "/find", method = RequestMethod.GET)
+    @ResponseBody
+    public HeraFile getHeraFile(HeraFile heraFile) {
+        System.out.println(heraFile.getId());
+        heraFile.setOwner("biadmin");
+        HeraFile file = heraFileService.getHeraFile(heraFile.getId());
+        return file;
+    }
+
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     @ResponseBody
     public String delete(HeraFile heraFile) {
@@ -86,18 +95,20 @@ public class DevelopCenterController {
 
     @RequestMapping(value = "/debug", method = RequestMethod.GET)
     @ResponseBody
-    public String debug(String fileId, String mode, String script, String hostGroupId) {
-        HeraFile file = heraFileService.getHeraFile(fileId);
+    public String debug(String id, String script) throws ExecutionException, InterruptedException {
+        HeraFile file = heraFileService.getHeraFile(id);
 
 
         HeraDebugHistory history = HeraDebugHistory.builder()
-                .fileId(fileId)
+                .fileId(id)
                 .script(script)
-                .hostGroupId(hostGroupId)
-                .jobRunType(JobRunType.parser(mode))
+                .hostGroupId(file.getHostGroupId())
+                .runType(file.getType())
+                .owner(file.getOwner())
                 .build();
         debugHistoryService.addHeraDebugHistory(history);
         System.out.println(history.getId());
+        workClient.executeJobFromWeb(ExecuteKind.DebugKind, id);
 
 
 

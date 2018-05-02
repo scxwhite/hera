@@ -41,7 +41,7 @@ public abstract class AbstractHandler {
 
     protected abstract void initialize();
 
-    protected abstract void destory();
+    protected abstract void destroy();
 
 
     protected void registerEventType(EventType type) {

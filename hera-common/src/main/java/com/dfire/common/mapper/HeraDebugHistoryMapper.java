@@ -1,6 +1,7 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraDebugHistory;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -12,6 +13,7 @@ import org.apache.ibatis.annotations.Update;
  */
 public interface HeraDebugHistoryMapper {
 
+    @Insert("INSERT into hera_debug_history(file_id, script, host_group_id, runType, owner) VALUES(#{fileId}, #{script}, #{hostGroupId}, #{runType}, #{owner})")
     public void addHeraDebugHistory(HeraDebugHistory heraDebugHistory);
 
     @Select("SELECT * FROM hera_debug_history WHERE id = #{id}")

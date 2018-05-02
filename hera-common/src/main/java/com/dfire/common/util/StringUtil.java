@@ -1,10 +1,15 @@
 package com.dfire.common.util;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.dfire.common.processor.DownPorcessor;
+import com.dfire.common.processor.Processor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -42,7 +47,30 @@ public class StringUtil {
         return buf.toString();
     }
 
-    public static void main(String[] args) {
-        System.out.println(EncoderByMd5("etl123456"));
+    public static Map<String, String> convertStringToMap(String config) {
+        Map<String, String> map = new HashMap();
+        JSONObject jsonObject = JSONObject.parseObject(config);
+        for (Object key : jsonObject.keySet()) {
+            map.put(key.toString(), jsonObject.getString(key.toString()));
+        }
+        return map;
+    }
+
+    public static String convertMapToString(Map<String, String> config) {
+        JSONObject jsonObject = new JSONObject();
+        for (Map.Entry<String, String> entry : config.entrySet()) {
+            jsonObject.put(entry.getKey().toLowerCase(), entry.getValue().toLowerCase());
+        }
+        return jsonObject.toString();
+    }
+
+    public Processor convertProcessorToList(String processor) {
+        Processor result = null;
+        JSONObject jsonObject = JSONObject.parseObject(processor);
+        String id = jsonObject.getString("id");
+        if (id.equals("download")) {
+            result = new DownPorcessor();
+        }
+        return result;
     }
 }
