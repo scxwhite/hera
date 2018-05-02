@@ -74,7 +74,6 @@ public class MasterServer {
 
     public synchronized boolean shutdown() {
         this.bossGroup.shutdownGracefully();
-        this.workGroup.shutdownGracefully();
         log.info("stop master server gracefully");
         return true;
     }
