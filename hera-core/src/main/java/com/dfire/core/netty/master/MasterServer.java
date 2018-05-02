@@ -73,7 +73,8 @@ public class MasterServer {
     }
 
     public synchronized boolean shutdown() {
-        this.bossGroup.shutdownGracefully();
+        bossGroup.shutdownGracefully();
+        workGroup.shutdownGracefully();
         log.info("stop master server gracefully");
         return true;
     }
