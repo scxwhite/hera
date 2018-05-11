@@ -2,12 +2,13 @@ package com.dfire.core.netty.master;
 
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.ResponseListener;
-import com.dfire.core.netty.master.response.MasterHandleWebDebug;
+import com.dfire.core.netty.master.response.*;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
+import sun.jvm.hotspot.tools.jcore.ClassDump;
 
 import java.net.SocketAddress;
 import java.util.List;
@@ -27,6 +28,16 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     private MasterContext masterContext;
 
     private MasterHandleWebDebug handleWebDebug = new MasterHandleWebDebug();
+
+    private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
+
+    private MasterHandleWebCancel masterHandleCancelJob = new MasterHandleWebCancel();
+
+    private MasterHandleWebExecute masterHandleWebExecute = new MasterHandleWebExecute();
+
+    private MasterHandleWebUpdate masterHandleWebUpdate = new MasterHandleWebUpdate();
+
+
 
     public MasterHandler(MasterContext masterContext) {
         this.masterContext = masterContext;
@@ -57,7 +68,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
             case REQUEST:
                 Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 if (request.getOperate() == Operate.HeartBeat) {
-                    masterContext.getMasterDoHeartBeat().dealHeartBeat(masterContext, channel, request);
+                    masterDoHeartBeat.dealHeartBeat(masterContext, channel, request);
                 }
                 break;
             case WEB_REUQEST:
@@ -72,10 +83,28 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         });
                         break;
                     case CancelJob:
+                        completionService.submit(new Callable<ChannelResponse>() {
+                            @Override
+                            public ChannelResponse call() throws Exception {
+                                return new ChannelResponse(channel, masterHandleCancelJob.handleWebCancel(masterContext, webRequest));
+                            }
+                        });
                         break;
                     case UpdateJob:
+                        completionService.submit(new Callable<ChannelResponse>() {
+                            @Override
+                            public ChannelResponse call() throws Exception {
+                                return new ChannelResponse(channel, masterHandleWebUpdate.handleWebUpdate(masterContext, webRequest));
+                            }
+                        });
                         break;
                     case ExecuteJob:
+                        completionService.submit(new Callable<ChannelResponse>() {
+                            @Override
+                            public ChannelResponse call() throws Exception {
+                                return new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest));
+                            }
+                        });
                         break;
                 }
                 break;

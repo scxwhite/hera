@@ -30,7 +30,7 @@ public class HeraLockServiceImpl implements HeraLockService {
         return heraLockMapper.getHeraLock(subGroup);
     }
 
-    public void save(HeraLock heraLock) {
-        heraLockMapper.save(heraLock);
+    public void update(HeraLock heraLock) {
+        heraLockMapper.update(heraLock);
     }
 }

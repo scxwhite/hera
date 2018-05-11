@@ -1,5 +1,6 @@
 package com.dfire.api;
 
+import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.RenderHierarchyProperties;
 import com.dfire.common.util.StringUtil;
 import com.dfire.core.job.ProcessJob;
@@ -68,6 +69,10 @@ public class StringUtilTest {
         System.out.println(System.getenv());
         Map map = new HashMap(System.getenv());
         System.out.println(map.size());
+    }
 
+    @Test
+    public void testDateUtil() {
+        System.out.println(DateUtil.getTodayStringForAction());
     }
 }

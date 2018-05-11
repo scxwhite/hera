@@ -20,7 +20,6 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JobStatus {
-    private static final long serialVersionUID = 1L;
 
     private String jobId;
 

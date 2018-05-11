@@ -1,5 +1,6 @@
 package com.dfire.core.netty.master.response;
 
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.MasterContext;
@@ -22,8 +23,109 @@ public class MasterExecuteJob {
     public Future<Response> executeJob(final MasterContext context, final MasterWorkHolder holder, ExecuteKind kind, final String id) {
         if (kind == ExecuteKind.DebugKind) {
             return executeDebugJob(context, holder, id);
+        } else if(kind == ExecuteKind.ScheduleKind) {
+            executeScheduleJob(context, holder, id);
+        } else if (kind == ExecuteKind.ManualKind) {
+            executeManualJob(context, holder, id);
         }
         return null;
+    }
+
+    /**
+     * @param [context, holder, id]
+     * @return java.util.concurrent.Future<com.dfire.core.message.Protocol.Response>
+     * @desc 向channel发送执行job命令，等待worker响应，响应ok,则添加监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     */
+    private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder holder, String jobId) {
+        holder.getManningRunning().put(jobId, false);
+
+        ExecuteMessage message = ExecuteMessage.newBuilder().setJobId(jobId).build();
+        final Request request = Request.newBuilder()
+                .setRid(AtomicIncrease.getAndIncrement())
+                .setOperate(Operate.Manual)
+                .setBody(message.toByteString())
+                .build();
+        SocketMessage socketMessage = SocketMessage.newBuilder()
+                .setKind(SocketMessage.Kind.REQUEST)
+                .setBody(request.toByteString())
+                .build();
+        Future<Response> future = context.getSchedulePool().submit(new Callable<Response>() {
+            private Response result;
+            @Override
+            public Response call() throws Exception {
+                final CountDownLatch latch = new CountDownLatch(1);
+                context.getHandler().addListener(new ResponseListener() {
+                    @Override
+                    public void onWebResponse(WebResponse webResponse) {
+                    }
+                    @Override
+                    public void onResponse(Response response) {
+                        if(response.getRid() == request.getRid()) {
+                            context.getHandler().removeListener(this);
+                            result = response;
+                            latch.countDown();
+                        }
+
+                    }
+                });
+                latch.await();
+                holder.getRunning().remove(jobId);
+                return result;
+            }
+        });
+        holder.getChannel().write(socketMessage);
+        return future;
+    }
+
+    /**
+     * @param [context, holder, id]
+     * @return void
+     * @desc 向channel发送执行job命令，等待worker响应，响应ok,则添加监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     */
+    private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String id) {
+
+        HeraJobHistory history = context.getHeraJobHistoryService().findJobHistory(id);
+        final String jobId = history.getJobId();
+        holder.getRunning().put(jobId, false);
+
+        ExecuteMessage message = ExecuteMessage.newBuilder().setJobId(jobId).build();
+        final Request request = Request.newBuilder()
+                .setRid(AtomicIncrease.getAndIncrement())
+                .setOperate(Operate.Schedule)
+                .setBody(message.toByteString())
+                .build();
+        SocketMessage socketMessage = SocketMessage.newBuilder()
+                .setKind(SocketMessage.Kind.REQUEST)
+                .setBody(request.toByteString())
+                .build();
+        Future<Response> future = context.getSchedulePool().submit(new Callable<Response>() {
+            private Response result;
+            @Override
+            public Response call() throws Exception {
+                final CountDownLatch latch = new CountDownLatch(1);
+                context.getHandler().addListener(new ResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        if(response.getRid() == request.getRid()) {
+                            context.getHandler().removeListener(this);
+                            result = response;
+                            latch.countDown();
+                        }
+
+                    }
+
+                    @Override
+                    public void onWebResponse(WebResponse webResponse) {
+                        }
+                });
+                latch.await();
+                holder.getRunning().remove(jobId);
+                return result;
+            }
+        });
+        holder.getChannel().write(socketMessage);
+        return future;
+
     }
 
 

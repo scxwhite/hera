@@ -5,10 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -21,48 +18,68 @@ import java.util.Map;
 @NoArgsConstructor
 public class HeraAction {
 
-    private static final long serialVersionUID = 1L;
-
-    private Map<String, String> allProperties = new HashMap<String, String>();
-    private Map<String, String> localProperties = new HashMap<String, String>();
-    private String cronExpression;
-    private List<String> dependencies;
     private String id;
-    private String toJobId;
+
+    private String jobId;
+
+    private Integer auto = 0;
+
+    private Integer scheduleType;
+
+    private String runType;
+
+    private String configs;
+
+    private String cronExpression;
+
+    private String dependencies;
+
+    private String jobDependencies;
+
     private String name;
-    private String desc;
-    private String groupId;
+
+    private String description;
+
+    private Integer groupId;
+
     private String owner;
-    private List<String> owners;
-    private String ownerName;
-    private List<Map<String, String>> localResources = new ArrayList<Map<String, String>>();
-    private List<Map<String, String>> allResources = new ArrayList<Map<String, String>>();
-    private String jobRunType;
-    private String jobScheduleType;
-    private Boolean auto;
-    private String script;
-    private List<String> preProcessers = new ArrayList<String>();
-    private List<String> postProcessers = new ArrayList<String>();
-    private Boolean admin;
-    private List<String> admins = new ArrayList<String>();
-    private List<String> follows = new ArrayList<String>();
-    private Map<String, String> readyDependencies = new HashMap<String, String>();
+
+    private String resources;
+
+    private Date gmtCreate = new Date();
+
+    private Date gmtModified = new Date();
+
+    private Long historyId;
+
     private String status;
-    private String lastStatus;
-    private String historyId;
-    private String defaultTZ;
-    private String offRaw;
-    private String jobCycle;
+
+    private String readyDependency;
+
+    private String preProcessors;
+
+    private String postProcessors;
+
+    private String timezone;
+
+    private Date startTime;
+
+    private long startTimestamp;
+
+    private int offset;
+
+    private Date lastEndTime;
+
+    private String lastResult;
+
+    private Date statisticStartTime;
+
+    private Date statisticEndTime;
+
+    private String cycle;
+
     private String host;
 
-    public static final String SHELL = "shell 脚本";
-    public static final String HIVE = "hive 脚本";
-
-    public static final String TIMING_JOB = "定时调度";
-    public static final String DEPEND_JOB = "依赖调度";
-    public static final String CYCLE_JOB = "周期调度";
-
-    public static final String JOB_CYCLE_HOUR="小时任务";
-    public static final String JOB_CYCLE_DAY="天任务";
+    private Integer hostGroupId;
 
 }

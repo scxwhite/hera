@@ -7,11 +7,13 @@ import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.entity.vo.HeraFileVo;
 import com.dfire.common.service.*;
 import com.dfire.common.tree.HeraFileTreeNode;
+import com.dfire.common.util.SpringContextHolder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -60,5 +62,14 @@ public class DAOTest {
         node.traverse();
 
 
+    }
+
+    @Test
+    public void testGetSpringContext() {
+        ApplicationContext context = SpringContextHolder.getApplicationContext();
+        System.out.println(context.getId());
+        HeraFileService heraFileService1 = (HeraFileService) context.getBean("heraFileService");
+        HeraFileService heraFileService2 = (HeraFileService) SpringContextHolder.getBean("heraFileService");
+        System.out.println(heraFileService1.equals(heraFileService2));
     }
 }

@@ -1,6 +1,10 @@
 package com.dfire.core.netty.worker.request;
 
 import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.model.HeraJobBean;
+import com.dfire.common.vo.JobStatus;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.message.Protocol.*;
@@ -26,8 +30,192 @@ public class WorkExecuteJob {
     public Future<Response> execute(final WorkContext workContext, final Request request) {
         if (request.getOperate() == Operate.Debug) {
             return debug(workContext, request);
+        } else if (request.getOperate() == Operate.Manual) {
+            return manual(workContext, request);
+        } else if(request.getOperate() == Operate.Schedule) {
+            return schedule(workContext, request);
         }
         return null;
+    }
+
+    private Future<Response> manual(WorkContext workContext, Request request) {
+        ExecuteMessage message = null;
+        try {
+            message = ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        final String jobId = message.getJobId();
+        log.info("worker received master request to run manual job, jobId :" + jobId);
+        if(workContext.getRunning().containsKey(jobId)) {
+            log.info("job is running, can not run again, jobId :" + jobId);
+            return workContext.getWorkThreadPool().submit(new Callable<Response>() {
+                @Override
+                public Response call() throws Exception {
+                    return Response.newBuilder()
+                            .setRid(request.getRid())
+                            .setOperate(Operate.Schedule)
+                            .setStatus(Status.ERROR)
+                            .build();
+                }
+            });
+        }
+
+        final JobStatus jobStatus = workContext.getHeraGroupService().getJobStatus(jobId);
+        final HeraJobHistory history = workContext.getJobHistoryService().findJobHistory(jobStatus.getHistoryId());
+        Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
+            @Override
+            public Response call() throws Exception {
+                history.setExecuteHost(WorkContext.host);
+                history.setStartTime(new Date());
+                workContext.getJobHistoryService().updateHeraJobHistory(history);
+
+                HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
+                String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                File directory = new File(HeraGlobalEnvironment.getDownloadDir()
+                        + File.separator + date + File.separator + "manual-" + history.getId());
+                if(!directory.exists()) {
+                    directory.mkdir();
+                }
+
+                final Job job = JobUtils.createJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
+                workContext.getManualRunning().put(jobId, job);
+
+                Integer exitCode = -1;
+                Exception exception = null;
+                try {
+                    exitCode = job.run();
+                } catch (Exception e) {
+                    exception = e;
+                    history.getLog().appendHeraException(e);//此处应该执行更新日志操作
+                } finally {
+                    HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
+                    heraJobHistory.setEndTime(new Date());
+                    if(exitCode == 0) {
+                        heraJobHistory.setStatus(com.dfire.common.constant.Status.SUCCESS);
+                    } else {
+                        heraJobHistory.setStatus(com.dfire.common.constant.Status.FAILED);
+                    }
+                    workContext.getJobHistoryService().updateHeraJobHistory(heraJobHistory);
+                    heraJobHistory.getLog().appendHera("exitCode=" + exitCode);
+
+                    workContext.getJobHistoryService().updateHeraJobHistory(heraJobHistory);
+
+                    workContext.getManualRunning().remove(jobId);
+                }
+
+                Status status = Status.OK;
+                String errorText = "";
+                if(exitCode != 0) {
+                    status = Status.ERROR;
+                }
+                if(exception != null) {
+                    errorText = exception.getMessage();
+                }
+
+                Response response = Response.newBuilder()
+                        .setRid(request.getRid())
+                        .setOperate(Operate.Schedule)
+                        .setStatus(status)
+                        .setErrorText(errorText)
+                        .build();
+                log.info("send execute message, jobId = " + jobId);
+                return response;
+            }
+        });
+
+        return future;
+
+    }
+
+    private Future<Response> schedule(WorkContext workContext, Request request) {
+        ExecuteMessage message = null;
+        try {
+            message = ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        final String jobId = message.getJobId();
+        log.info("worker received master request to run schedule, jobId :" + jobId);
+        if(workContext.getRunning().containsKey(jobId)) {
+            log.info("job is running, can not run again, jobId :" + jobId);
+            return workContext.getWorkThreadPool().submit(new Callable<Response>() {
+                @Override
+                public Response call() throws Exception {
+                    return Response.newBuilder()
+                            .setRid(request.getRid())
+                            .setOperate(Operate.Schedule)
+                            .setStatus(Status.ERROR)
+                            .build();
+                }
+            });
+        }
+
+        final JobStatus jobStatus = workContext.getHeraGroupService().getJobStatus(jobId);
+        final HeraJobHistory history = workContext.getJobHistoryService().findJobHistory(jobStatus.getHistoryId());
+        Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
+            @Override
+            public Response call() throws Exception {
+                history.setExecuteHost(WorkContext.host);
+                history.setStartTime(new Date());
+                workContext.getJobHistoryService().updateHeraJobHistory(history);
+
+                HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
+                String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                File directory = new File(HeraGlobalEnvironment.getDownloadDir()
+                        + File.separator + date + File.separator + history.getId());
+                if(!directory.exists()) {
+                    directory.mkdir();
+                }
+
+                final Job job = JobUtils.createJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
+                workContext.getRunning().put(jobId, job);
+
+                Integer exitCode = -1;
+                Exception exception = null;
+                try {
+                    exitCode = job.run();
+                } catch (Exception e) {
+                    exception = e;
+                    history.getLog().appendHeraException(e);//此处应该执行更新日志操作
+                } finally {
+                    HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
+                    heraJobHistory.setEndTime(new Date());
+                    if(exitCode == 0) {
+                        heraJobHistory.setStatus(com.dfire.common.constant.Status.SUCCESS);
+                    } else {
+                        heraJobHistory.setStatus(com.dfire.common.constant.Status.FAILED);
+                    }
+                    workContext.getJobHistoryService().updateHeraJobHistory(heraJobHistory);
+                    heraJobHistory.getLog().appendHera("exitCode=" + exitCode);
+
+                    workContext.getJobHistoryService().updateHeraJobHistory(heraJobHistory);
+
+                    workContext.getRunning().remove(jobId);
+                }
+
+                Status status = Status.OK;
+                String errorText = "";
+                if(exitCode != 0) {
+                    status = Status.ERROR;
+                }
+                if(exception != null) {
+                    errorText = exception.getMessage();
+                }
+
+                Response response = Response.newBuilder()
+                        .setRid(request.getRid())
+                        .setOperate(Operate.Schedule)
+                        .setStatus(status)
+                        .setErrorText(errorText)
+                        .build();
+                log.info("send execute message, jobId = " + jobId);
+                return response;
+            }
+        });
+
+        return future;
+
     }
 
     private Future<Response> debug(WorkContext workContext, Request request) {
@@ -47,7 +235,7 @@ public class WorkExecuteJob {
                 workContext.getDebugHistoryService().update(history);
 
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                File directory = new File(File.separator + date + File.separator);
+                File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator);
                 if(!directory.exists()) {
                     directory.mkdirs();
                 }

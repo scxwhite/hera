@@ -1,6 +1,9 @@
 package com.dfire.common.util;
 
+import com.dfire.common.kv.Tuple;
+
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -28,4 +31,36 @@ public class DateUtil {
         SimpleDateFormat sdf = new SimpleDateFormat(default_formatter);
         return sdf.format(date);
     }
+
+    public static int getCurrentHour(Calendar now) {
+        return now.get(Calendar.HOUR_OF_DAY);
+    }
+
+    public static int getCurrentMinute(Calendar now) {
+        return now.get(Calendar.MINUTE);
+    }
+
+
+    public static String getTodayStringForAction() {
+        Date now = new Date();
+        SimpleDateFormat dfDateTime=new SimpleDateFormat("yyyyMMddHHmmss0000");
+        String currentDate = dfDateTime.format(now);
+        return currentDate;
+
+    }
+
+    public static Tuple<String, Date> getNextDayString() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, +1);
+        SimpleDateFormat dfNextDate=new SimpleDateFormat("yyyyMMdd0000000000");
+        String next = dfNextDate.format(cal.getTime());
+        Tuple<String, Date> tuple = new Tuple<>();
+        tuple.setSource(next);
+        tuple.setTarget(cal.getTime());
+        return tuple;
+
+    }
+
+
+
 }

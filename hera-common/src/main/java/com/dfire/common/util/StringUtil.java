@@ -73,4 +73,17 @@ public class StringUtil {
         }
         return result;
     }
+
+    public static boolean actionIdToJobId(String actionId, String id){
+        String str = actionId.substring(12);
+        Integer id1 = Integer.valueOf(str);
+        Integer id2 = Integer.valueOf(id);
+        return id1.equals(id2);
+    }
+
+    public static void main(String[] args) {
+        System.out.println("12345678901234".substring(12));
+    }
+
+
 }

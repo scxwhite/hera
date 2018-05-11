@@ -3,6 +3,8 @@ package com.dfire.core.util;
 import com.dfire.common.constant.JobRunType;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
+import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraProfileVo;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.common.service.HeraProfileService;
@@ -62,6 +64,13 @@ public class JobUtils {
         }
         Job job = new WithProcessJob(jobContext, pres, new ArrayList<>(), core, applicationContext);
         return job;
+    }
+
+    public static Job createJob(JobContext jobContext, HeraJobBean jobBean,
+                                HeraJobHistory history, String workDir,
+                                ApplicationContext applicationContext) {
+        return null;
+
     }
 
     private static String resolveScriptResource(List<Map<String, String>> resources, String script, ApplicationContext applicationContext) {

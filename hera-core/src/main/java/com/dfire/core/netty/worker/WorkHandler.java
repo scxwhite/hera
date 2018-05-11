@@ -3,6 +3,7 @@ package com.dfire.core.netty.worker;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
+import com.dfire.core.netty.worker.request.WorkHandleCancel;
 import io.netty.channel.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,9 +60,25 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                             return workExecuteJob.execute(workContext, request).get();
                         }
                     });
+                } else if(operate == Operate.Cancel) {
+                    completionService.submit(new Callable<Response>() {
+                        private WorkHandleCancel workHandleCancel = new WorkHandleCancel();
+                        @Override
+                        public Response call() throws Exception {
+                            return workHandleCancel.handleCancel(workContext, request).get();
+                        }
+                    });
                 }
             case RESPONSE:
+                final Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                for(ResponseListener listener : listeners) {
+                    listener.onResponse(response);
+                }
             case WEB_RESPONSE:
+                final WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                for(ResponseListener listener : listeners) {
+                    listener.onWebResponse(webResponse);
+                }
 
         }
         super.channelActive(ctx);

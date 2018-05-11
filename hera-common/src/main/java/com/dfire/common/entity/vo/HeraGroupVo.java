@@ -1,5 +1,8 @@
 package com.dfire.common.entity.vo;
 
+import lombok.Builder;
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +13,8 @@ import java.util.Map;
  * @time: Created in 下午4:51 2018/4/17
  * @desc
  */
+@Builder
+@Data
 public class HeraGroupVo {
 
     private String id;

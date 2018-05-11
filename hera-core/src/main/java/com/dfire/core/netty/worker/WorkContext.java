@@ -1,13 +1,13 @@
 package com.dfire.core.netty.worker;
 
 import com.dfire.common.service.HeraDebugHistoryService;
+import com.dfire.common.service.HeraGroupService;
+import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.core.job.Job;
 import io.netty.channel.Channel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.experimental.theories.suppliers.TestedOn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -24,17 +24,14 @@ import java.util.concurrent.Executors;
  * @time: Created in 11:30 2018/1/10
  * @desc
  */
-@Slf4j
-@Builder
 @Data
-@Component
 @NoArgsConstructor
-@AllArgsConstructor
+@ToString(exclude = "debugHistoryService")
 public class WorkContext {
 
     public static String host;
     public static Integer cpuCoreNum;
-    public String serverHost;
+    public  String serverHost;
     private Channel serverChannel;
     private Map<String, Job> running = new ConcurrentHashMap<String, Job>();
     private Map<String, Job> manualRunning = new ConcurrentHashMap<String, Job>();
@@ -43,8 +40,10 @@ public class WorkContext {
     private WorkClient workClient;
     private ExecutorService workThreadPool = Executors.newCachedThreadPool();
     private ApplicationContext applicationContext;
-    @Autowired
+
     private HeraDebugHistoryService debugHistoryService;
+    private HeraJobHistoryService jobHistoryService;
+    private HeraGroupService heraGroupService;
 
     static {
         try {
@@ -55,12 +54,22 @@ public class WorkContext {
         cpuCoreNum = Runtime.getRuntime().availableProcessors();
     }
 
-    @Override
-    public String toString() {
-        return "WorkContext{}";
+    public HeraDebugHistoryService getDebugHistoryService() {
+        return (HeraDebugHistoryService) applicationContext.getBean("debugHistoryService");
     }
 
-    public void shutdown() {
-
+    public HeraJobHistoryService getJobHistoryService() {
+        return (HeraJobHistoryService) applicationContext.getBean("jobHistoryService");
     }
+
+    public HeraGroupService getHeraGroupService() {
+        return (HeraGroupService) applicationContext.getBean("heraGroupService");
+    }
+
+
+
+
+
+
+
 }

@@ -1,11 +1,17 @@
 package com.dfire.core.netty.worker;
 
 
+import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.core.job.Job;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.Protocol.*;
+import com.dfire.core.netty.worker.request.WorkHandleWebCancel;
+import com.dfire.core.netty.worker.request.WorkHandleWebUpdate;
 import com.dfire.core.netty.worker.request.WorkerHeartBeat;
-import com.dfire.core.netty.worker.request.WorkerWebExecute;
+import com.dfire.core.netty.worker.request.WorkerHandleWebExecute;
 import com.dfire.core.schedule.ScheduleInfoLog;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -20,15 +26,14 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -39,22 +44,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Data
 @Component
-@NoArgsConstructor
 public class WorkClient {
 
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
-    private WorkContext workContext;
+    private WorkContext workContext = new WorkContext();
     private ScheduledExecutorService service;
-    public AtomicBoolean isShutdown = new AtomicBoolean(true);
 
     @Autowired
-    WorkerWebExecute workerWebExecute;
+    WorkerHandleWebExecute workerWebExecute;
 
-    @PostConstruct
+    @Autowired
     public void WorkClient() {
-        isShutdown.compareAndSet(true, false);
-        workContext = new WorkContext();
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
@@ -71,15 +72,8 @@ public class WorkClient {
                 });
         log.info("start work client success ");
         workContext.setWorkClient(this);
-        service = Executors.newScheduledThreadPool(1);
-        sendHeartBeat();
 
-    }
-
-    /**
-     * work 向 master 发送心跳信息
-     */
-    private void sendHeartBeat() {
+        service = Executors.newScheduledThreadPool(2);
         service.scheduleAtFixedRate(new Runnable() {
             private WorkerHeartBeat heartBeat = new WorkerHeartBeat();
             private int failCount = 0;
@@ -112,6 +106,77 @@ public class WorkClient {
             }
 
         }, 5, 5, TimeUnit.SECONDS);
+
+        service.scheduleAtFixedRate(new Runnable() {
+
+            private void editLog(Job job, Exception e) {
+                try {
+                    HeraJobHistory his = job.getJobContext().getHeraJobHistory();
+                    String logContent = his.getLog().getContent();
+                    if (logContent == null) {
+                        logContent = "";
+                    }
+                    log.error(new StringBuilder("log output error!\n")
+                            .append("[jobId:").append(his.getJobId())
+                            .append(", hisId:").append(his.getId())
+                            .append(", logLength:")
+                            .append(logContent.length()).append("]")
+                            .toString(), e);
+                } catch (Exception ex) {
+                    log.error("log exception error!");
+                }
+            }
+
+
+            private void editDebugLog(Job job, Exception e) {
+                try {
+                    HeraDebugHistory history = job.getJobContext().getDebugHistory();
+                    String logContent = history.getLog().getContent();
+                    if (logContent == null) {
+                        logContent = "";
+                    }
+                    log.error(new StringBuilder("log output error!\n")
+                            .append("[fileId:").append(history.getFileId())
+                            .append(", hisId:").append(history.getId())
+                            .append(", logLength:")
+                            .append(logContent.length()).append("]")
+                            .toString(), e);
+                } catch (Exception ex) {
+                    log.error("log exception error!");
+                }
+            }
+
+            @Override
+            public void run() {
+
+                for (Job job : new HashSet<Job>(workContext.getRunning().values())) {
+                    try {
+                        HeraDebugHistory history = job.getJobContext().getDebugHistory();
+                        workContext.getDebugHistoryService().update(history);
+                    } catch (Exception e) {
+                        editDebugLog(job, e);
+                    }
+                }
+
+                for (Job job : new HashSet<Job>(workContext.getManualRunning().values())) {
+                    try {
+                        HeraDebugHistory history = job.getJobContext().getDebugHistory();
+                        workContext.getDebugHistoryService().update(history);
+                    } catch (Exception e) {
+                        editLog(job, e);
+                    }
+                }
+
+                for (Job job : new HashSet<Job>(workContext.getDebugRunning().values())) {
+                    try {
+                        HeraDebugHistory history = job.getJobContext().getDebugHistory();
+                        workContext.getDebugHistoryService().update(history);
+                    } catch (Exception e) {
+                        editDebugLog(job, e);
+                    }
+                }
+            }
+        }, 0, 3, TimeUnit.SECONDS);
 
     }
 
@@ -153,46 +218,84 @@ public class WorkClient {
         ScheduleInfoLog.info("connect server success");
     }
 
-    public void shutdown() {
-        if (!isShutdown.get()) {
-            isShutdown.set(true);
-            if (service != null && !service.isShutdown()) {
-                service.shutdown();
-            }
-            if (eventLoopGroup != null && !eventLoopGroup.isShutdown()) {
-                eventLoopGroup.shutdownGracefully();
-            }
-            workContext.shutdown();
-        }
-    }
-
-
-    public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        WebResponse response = workerWebExecute.send(workContext, kind, id).get();
-        if (response.getStatus() == Status.ERROR) {
-            log.error("netty manual web request get jobStatus error");
-        }
-}
-
-    public void cancelJobFromWeb(ExecuteKind kind, String id) {
-
-    }
-
-    public void updateJobFromWeb(String jobId) {
-
-    }
-
-
     public void cancelDebugJob(String debugId) {
+        Job job = workContext.getDebugRunning().get(debugId);
+        job.cancel();
+        workContext.getDebugRunning().remove(debugId);
+
+        HeraDebugHistory history = job.getJobContext().getDebugHistory();
+        history.setEndTime(new Date());
+        history.setStatus(com.dfire.common.constant.Status.FAILED);
+        workContext.getDebugHistoryService().update(history);
+        history.getLog().appendHera("任务被取消");
+        workContext.getDebugHistoryService().update(history);
+
 
     }
 
     public void cancelManualJob(String historyId) {
+        Job job = workContext.getManualRunning().get(historyId);
+        workContext.getManualRunning().remove(historyId);
+        job.cancel();
+
+        HeraJobHistory history = job.getJobContext().getHeraJobHistory();
+        history.setEndTime(new Date());
+        String illustrate = history.getIllustrate();
+        if(illustrate!=null && illustrate.trim().length()>0){
+            history.setIllustrate(illustrate+"；手动取消该任务");
+        }else{
+            history.setIllustrate("手动取消该任务");
+        }
+        history.setStatus(com.dfire.common.constant.Status.FAILED);
+        workContext.getJobHistoryService().updateHeraJobHistory(history);
+        history.getLog().appendHera("任务被取消");
+        workContext.getJobHistoryService().updateHeraJobHistory(history);
 
     }
 
-    public void cancelScheduleJob() {
+    public void cancelScheduleJob(String jobId) {
+        Job job = workContext.getRunning().get(jobId);
+        workContext.getRunning().remove(jobId);
+        job.cancel();
+
+        HeraJobHistory history = job.getJobContext().getHeraJobHistory();
+        history.setEndTime(new Date());
+        String illustrate = history.getIllustrate();
+        if(illustrate!=null && illustrate.trim().length()>0){
+            history.setIllustrate(illustrate+"；手动取消该任务");
+        }else{
+            history.setIllustrate("手动取消该任务");
+        }
+        history.setStatus(com.dfire.common.constant.Status.FAILED);
+        workContext.getJobHistoryService().updateHeraJobHistory(history);
+        history.getLog().appendHera("任务被取消");
+        workContext.getJobHistoryService().updateHeraJobHistory(history);
 
     }
+
+
+    public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        WebResponse response = workerWebExecute.handleWebExecute(workContext, kind, id).get();
+        if (response.getStatus() == Status.ERROR) {
+            log.error("netty manual web request get jobStatus error");
+        }
+    }
+
+    public void cancelJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
+        if(webResponse.getStatus() == Status.ERROR) {
+            log.error("cancel from web exception");
+        }
+
+    }
+
+    public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {
+        WebResponse webResponse = new WorkHandleWebUpdate().handleUpdate(workContext, jobId).get();
+        if(webResponse.getStatus() == Status.ERROR) {
+            log.error("cancel from web exception");
+        }
+
+    }
+
 
 }

@@ -1,11 +1,8 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.core.message.HeartBeatInfo;
-import com.dfire.core.netty.Channel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import io.netty.channel.Channel;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MasterWorkHolder {
 
 
-    private  Channel channel;
+    private Channel channel;
 
     private Map<String, Boolean> running = new ConcurrentHashMap<String, Boolean>();
 

@@ -18,7 +18,7 @@ public class HeraJobFailedEvent extends ApplicationEvent {
     private final HeraJobHistory heraJobHistory;
     private final String jobId;
     private final TriggerType triggerType;
-    private final int runCount = 0;
+    private int runCount = 0;
     private int rollBackTime = 0;
 
     public HeraJobFailedEvent(String jobId, TriggerType triggerType, HeraJobHistory heraJobHistory) {

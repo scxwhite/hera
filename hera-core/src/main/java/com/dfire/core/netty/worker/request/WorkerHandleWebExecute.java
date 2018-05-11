@@ -18,9 +18,9 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 @Component
-public class WorkerWebExecute {
+public class WorkerHandleWebExecute {
 
-    public Future<WebResponse> send(final WorkContext workContext, ExecuteKind kind, String id) {
+    public Future<WebResponse> handleWebExecute(final WorkContext workContext, ExecuteKind kind, String id) {
 
         final WebRequest request = WebRequest.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())

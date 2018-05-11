@@ -1,6 +1,13 @@
 package com.dfire.common.service;
 
-import com.dfire.common.entity.HeraGroup;
+import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.model.HeraGroupBean;
+import com.dfire.common.entity.model.HeraJobBean;
+import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.kv.Tuple;
+import com.dfire.common.vo.JobStatus;
+
+import java.util.List;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -9,5 +16,24 @@ import com.dfire.common.entity.HeraGroup;
  */
 public interface HeraGroupService {
 
-    HeraGroup getGlobalGroup();
+    HeraGroupBean getGlobalGroup();
+
+    Tuple<HeraJobVo, JobStatus> getHeraJobVo(String jobId);
+
+    JobStatus getJobStatus(String jobId);
+
+    HeraJobBean getUpstreamJobBean(String jobId);
+
+
+    void updateJobStatus(JobStatus heraJobVo);
+
+    void updateJob(HeraJobVo heraJobVo);
+
+    void removeJob(String jobId);
+
+    List<HeraAction> getAllAction();
+
+    void saveJobAction(HeraAction action);
+
+    List<HeraAction> getLastJobAction(String dp);
 }

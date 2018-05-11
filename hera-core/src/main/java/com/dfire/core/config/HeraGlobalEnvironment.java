@@ -30,6 +30,8 @@ public class HeraGlobalEnvironment {
     private static Integer scanExceptionRate = Integer.valueOf(3000);
     @Getter
     private static Integer  connectPort;
+    @Getter
+    private static String downloadDir;
 
 
     @Value("${hera.exclude-file}")
@@ -67,6 +69,10 @@ public class HeraGlobalEnvironment {
     @Value("${hera.connect.port}")
     public void setConnectPort(Integer port) {
         this.connectPort = port;
+    }
+    @Value("${download-dir}")
+    public void setDownloadDir(String dir) {
+        this.downloadDir = dir;
     }
 
     /**

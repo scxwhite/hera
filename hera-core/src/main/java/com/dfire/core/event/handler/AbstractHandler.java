@@ -39,9 +39,13 @@ public abstract class AbstractHandler {
 
     public abstract void handleEvent(ApplicationEvent event);
 
-    protected abstract void initialize();
+    public  void initialize() {
 
-    protected abstract void destroy();
+    }
+
+    public  void destroy() {
+
+    }
 
 
     protected void registerEventType(EventType type) {

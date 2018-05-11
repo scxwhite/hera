@@ -4,10 +4,8 @@ import com.dfire.common.service.*;
 import com.dfire.common.vo.HeraHostGroupVo;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
-import com.dfire.core.netty.master.response.MasterHandleHeartBeat;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
-import com.dfire.core.queue.JobPriorityBlockingDeque;
 import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,9 +42,9 @@ public class MasterContext {
     private HeraProfileService heraProfileService;
     @Autowired
     private QuartzSchedulerService quartzSchedulerService;
-    @Autowired
+
     private HeraGroupService heraGroupService;
-    @Autowired
+
     private HeraJobHistoryService heraJobHistoryService;
     @Autowired
     private HeraUserService heraUserService;
@@ -59,7 +57,7 @@ public class MasterContext {
 
     private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<>();
     private ApplicationContext applicationContext;
-    private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
+
 
     private Dispatcher dispatcher;
     private Map<String, HeraHostGroupVo> hostGroupCache;
@@ -69,7 +67,7 @@ public class MasterContext {
      *      2. 手动执行任务，manualQueue，等待被扫描调度，随后进入调度队列
      *      3. debugQueue，任务会先进入到exceptionQueue队列，等待被扫描调度，随后进入调度队列
      */
-    private JobPriorityBlockingDeque scheduleQueue = new JobPriorityBlockingDeque();
+    private Queue scheduleQueue = new PriorityBlockingQueue();
     private Queue<JobElement> exceptionQueue = new LinkedBlockingQueue();
     private Queue<JobElement> debugQueue = new ArrayBlockingQueue(1000);
     private Queue<JobElement> manualQueue = new ArrayBlockingQueue(1000);

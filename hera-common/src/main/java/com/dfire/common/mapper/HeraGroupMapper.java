@@ -1,6 +1,7 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraGroup;
+import com.dfire.common.entity.model.HeraGroupBean;
 import org.apache.ibatis.annotations.Select;
 
 /**

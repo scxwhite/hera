@@ -1,14 +1,11 @@
 package com.dfire.core.quartz;
 
-import com.dfire.common.entity.HeraJob;
-import com.dfire.core.event.Dispatcher;
-import com.dfire.core.schedule.HeraQuartzJob;
 import jdk.nashorn.internal.objects.annotations.Constructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -20,7 +17,7 @@ import java.util.Properties;
  * @desc quartz调度器初始化
  */
 @Slf4j
-@Service
+@Component
 @Configuration
 public class QuartzSchedulerService {
 
@@ -78,27 +75,16 @@ public class QuartzSchedulerService {
         return scheduler;
     }
 
-    /**
-     * 创建定时任务
-     *
-     * @param scheduler the scheduler
-     * @param heraJob the job name
-     */
-
-    public static void createScheduleJob(Scheduler scheduler, Dispatcher dispatcher, HeraJob heraJob) {
-
-        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity("hera").build();
-        jobDetail.getJobDataMap().put("jobId", heraJob.getId());
-        jobDetail.getJobDataMap().put("dispatcher", dispatcher);
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraJob.getCronExpression());
-        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("hera").withSchedule(scheduleBuilder).build();
+    public void deleteJob(String jobId) {
         try {
-            scheduler.scheduleJob(jobDetail, trigger);
+            JobKey jobKey = new JobKey(jobId, "hera");
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            if(jobDetail != null) {
+                scheduler.deleteJob(jobKey);
+            }
         } catch (SchedulerException e) {
-            log.error("创建定时任务失败", e);
-            e.printStackTrace();
+            log.error("clear quartz schedule error : " + jobId);
         }
-
 
     }
 
