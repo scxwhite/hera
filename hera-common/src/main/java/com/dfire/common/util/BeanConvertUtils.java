@@ -1,7 +1,12 @@
 package com.dfire.common.util;
 
+import com.dfire.common.constant.Status;
+import com.dfire.common.constant.TriggerType;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.HeraProfile;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.entity.vo.HeraProfileVo;
+import com.dfire.common.vo.LogContent;
 import org.springframework.beans.BeanUtils;
 
 /**
@@ -28,4 +33,27 @@ public class BeanConvertUtils {
         BeanUtils.copyProperties(heraProfile, heraProfileVo);
         return heraProfile;
     }
+
+    public static HeraJobHistoryVo convert(HeraJobHistory heraJobHistory) {
+        HeraJobHistoryVo heraJobHistoryVo = HeraJobHistoryVo.builder().build();
+        BeanUtils.copyProperties(heraJobHistory, heraJobHistoryVo);
+        heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
+        heraJobHistoryVo.setProperties(StringUtil.convertStringToMap(heraJobHistory.getProperties()));
+        heraJobHistoryVo.setStatus(Status.parse(heraJobHistory.getStatus()));
+        heraJobHistoryVo.setTriggerType(TriggerType.parser(heraJobHistory.getTriggerType()));
+        return heraJobHistoryVo;
+
+    }
+
+    public static HeraJobHistory convert(HeraJobHistoryVo jobHistoryVo) {
+        HeraJobHistory jobHistory = HeraJobHistory.builder().build();
+        BeanUtils.copyProperties(jobHistoryVo, jobHistory);
+        jobHistory.setLog(jobHistoryVo.getLog().getContent());
+        jobHistory.setStatus(jobHistoryVo.getStatus().toString());
+        jobHistory.setProperties(StringUtil.convertMapToString(jobHistoryVo.getProperties()));
+        jobHistory.setTriggerType(jobHistoryVo.getTriggerType().getId());
+        return jobHistory;
+    }
+
+
 }

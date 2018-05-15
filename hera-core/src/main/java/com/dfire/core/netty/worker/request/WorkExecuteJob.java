@@ -3,6 +3,8 @@ package com.dfire.core.netty.worker.request;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.model.HeraJobBean;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
@@ -62,13 +64,13 @@ public class WorkExecuteJob {
         }
 
         final JobStatus jobStatus = workContext.getHeraGroupService().getJobStatus(jobId);
-        final HeraJobHistory history = workContext.getJobHistoryService().findJobHistory(jobStatus.getHistoryId());
+        final HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(jobStatus.getHistoryId());
         Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
             @Override
             public Response call() throws Exception {
                 history.setExecuteHost(WorkContext.host);
                 history.setStartTime(new Date());
-                workContext.getJobHistoryService().updateHeraJobHistory(history);
+                workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
 
                 HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -89,17 +91,17 @@ public class WorkExecuteJob {
                     exception = e;
                     history.getLog().appendHeraException(e);//此处应该执行更新日志操作
                 } finally {
-                    HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
+                    HeraJobHistoryVo heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
                     heraJobHistory.setEndTime(new Date());
                     if(exitCode == 0) {
                         heraJobHistory.setStatus(com.dfire.common.constant.Status.SUCCESS);
                     } else {
                         heraJobHistory.setStatus(com.dfire.common.constant.Status.FAILED);
                     }
-                    workContext.getJobHistoryService().updateHeraJobHistory(heraJobHistory);
+                    workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(heraJobHistory));
                     heraJobHistory.getLog().appendHera("exitCode=" + exitCode);
 
-                    workContext.getJobHistoryService().updateHeraJobHistory(heraJobHistory);
+                    workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(heraJobHistory));
 
                     workContext.getManualRunning().remove(jobId);
                 }
@@ -152,13 +154,13 @@ public class WorkExecuteJob {
         }
 
         final JobStatus jobStatus = workContext.getHeraGroupService().getJobStatus(jobId);
-        final HeraJobHistory history = workContext.getJobHistoryService().findJobHistory(jobStatus.getHistoryId());
+        final HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(jobStatus.getHistoryId());
         Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
             @Override
             public Response call() throws Exception {
                 history.setExecuteHost(WorkContext.host);
                 history.setStartTime(new Date());
-                workContext.getJobHistoryService().updateHeraJobHistory(history);
+                workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
 
                 HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -179,17 +181,17 @@ public class WorkExecuteJob {
                     exception = e;
                     history.getLog().appendHeraException(e);//此处应该执行更新日志操作
                 } finally {
-                    HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
+                    HeraJobHistoryVo heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
                     heraJobHistory.setEndTime(new Date());
                     if(exitCode == 0) {
                         heraJobHistory.setStatus(com.dfire.common.constant.Status.SUCCESS);
                     } else {
                         heraJobHistory.setStatus(com.dfire.common.constant.Status.FAILED);
                     }
-                    workContext.getJobHistoryService().updateHeraJobHistory(heraJobHistory);
+                    workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(heraJobHistory));
                     heraJobHistory.getLog().appendHera("exitCode=" + exitCode);
 
-                    workContext.getJobHistoryService().updateHeraJobHistory(heraJobHistory);
+                    workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(heraJobHistory));
 
                     workContext.getRunning().remove(jobId);
                 }

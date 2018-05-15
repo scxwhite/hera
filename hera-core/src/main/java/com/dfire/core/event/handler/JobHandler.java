@@ -7,9 +7,11 @@ import com.dfire.common.constant.TriggerType;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.model.JobGroupCache;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.entity.vo.HeraJobVo;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
@@ -87,7 +89,7 @@ public class JobHandler extends AbstractHandler {
             if(jobStatus.getStatus() == Status.RUNNING) {
                 log.error("jobId" + jobId + "处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
                 if(jobStatus.getHistoryId() != null) {
-                    HeraJobHistory heraJobHistory = jobHistoryService.findJobHistory(jobId);
+                    HeraJobHistoryVo heraJobHistory = jobHistoryService.findJobHistory(jobId);
                     if(heraJobHistory != null && heraJobHistory.getStatus().equals(Status.RUNNING)) {
                         JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
                         heraJobHistory.setIllustrate("启动服务器发现正在running状态，判断状态已经丢失，进行重试操作");
@@ -106,7 +108,7 @@ public class JobHandler extends AbstractHandler {
                     }
                 } else {
                     HeraJobVo heraJobVo = heraGroupService.getUpstreamJobBean(jobId).getHeraJobVo();
-                    HeraJobHistory history = HeraJobHistory.builder()
+                    HeraJobHistoryVo history = HeraJobHistoryVo.builder()
                             .id(jobId)
                             .jobId(heraJobVo.getToJobId())
                             .triggerType(TriggerType.MANUAL_RECOVER)
@@ -114,7 +116,7 @@ public class JobHandler extends AbstractHandler {
                             .operator(heraJobVo.getOwner())
                             .hostGroupId(heraJobVo.getHostGroupId())
                             .build();
-                    masterContext.getHeraJobHistoryService().addHeraJobHistory(history);
+                    masterContext.getHeraJobHistoryService().addHeraJobHistory(BeanConvertUtils.convert(history));
                     master.run(history);
 
                 }
@@ -196,16 +198,16 @@ public class JobHandler extends AbstractHandler {
     }
 
     private void startNewJob(TriggerType triggerType, HeraJobVo heraJobVo) {
-        HeraJobHistory history = HeraJobHistory.builder()
+        HeraJobHistoryVo history = HeraJobHistoryVo.builder()
                 .jobId(heraJobVo.getId())
                 .illustrate("依赖任务全部到位，开始执行")
-                .toJobId(heraJobVo.getToJobId() == null ? null : heraJobVo.getToJobId())
+                .jobId(heraJobVo.getId() == null ? null : heraJobVo.getToJobId())
                 .triggerType(TriggerType.SCHEDULE)
                 .statisticsEndTime(heraJobVo.getStatisticStartTime())
                 .hostGroupId(heraJobVo.getHostGroupId())
                 .operator(heraJobVo.getOwner() == null ? null : heraJobVo.getOwner())
                 .build();
-        masterContext.getHeraJobHistoryService().addHeraJobHistory(history);
+        masterContext.getHeraJobHistoryService().addHeraJobHistory(BeanConvertUtils.convert(history));
         master.run(history);
         if(history.getStatus() == Status.FAILED) {
             HeraJobFailedEvent jobFailedEvent = new HeraJobFailedEvent(heraJobVo.getId(), triggerType, history);
@@ -243,15 +245,14 @@ public class JobHandler extends AbstractHandler {
     }
 
     private void runJob(HeraJobVo heraJobVo) {
-        HeraJobHistory history = HeraJobHistory.builder()
+        HeraJobHistoryVo history = HeraJobHistoryVo.builder()
                 .jobId(heraJobVo.getId())
-                .toJobId(heraJobVo.getToJobId() == null ? null : heraJobVo.getToJobId())
                 .triggerType(TriggerType.SCHEDULE)
                 .statisticsEndTime(heraJobVo.getStatisticStartTime())
                 .hostGroupId(heraJobVo.getHostGroupId())
                 .operator(heraJobVo.getOwner() == null ? null : heraJobVo.getOwner())
                 .build();
-        masterContext.getHeraJobHistoryService().addHeraJobHistory(history);
+        masterContext.getHeraJobHistoryService().addHeraJobHistory(BeanConvertUtils.convert(history));
         master.run(history);
     }
 
@@ -316,16 +317,15 @@ public class JobHandler extends AbstractHandler {
                 if(jobStatus != null) {
                     String currentDate = DateUtil.getTodayStringForAction();
                     if(Long.parseLong(jobId) < Long.parseLong(currentDate)) {
-                        HeraJobHistory history = HeraJobHistory.builder()
+                        HeraJobHistoryVo history = HeraJobHistoryVo.builder()
                                 .illustrate("漏跑任务,自动恢复执行")
                                 .jobId(heraJobVo.getId())
-                                .toJobId(heraJobVo.getToJobId() == null ? null : heraJobVo.getToJobId())
                                 .triggerType(TriggerType.SCHEDULE)
                                 .statisticsEndTime(heraJobVo.getStatisticStartTime())
                                 .hostGroupId(heraJobVo.getHostGroupId())
                                 .operator(heraJobVo.getOwner() == null ? null : heraJobVo.getOwner())
                                 .build();
-                        masterContext.getHeraJobHistoryService().addHeraJobHistory(history);
+                        masterContext.getHeraJobHistoryService().addHeraJobHistory(BeanConvertUtils.convert(history));
                         master.run(history);
                         log.info("漏跑任务,自动恢复执行");
                     }

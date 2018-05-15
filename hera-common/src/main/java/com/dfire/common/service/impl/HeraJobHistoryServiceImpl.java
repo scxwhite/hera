@@ -1,6 +1,7 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.mapper.HeraJobHistoryMapper;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.vo.JobStatus;
@@ -18,7 +19,7 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     HeraJobHistoryMapper heraJobHistoryMapper;
 
     @Override
-    public HeraJobHistory findJobHistory(String id) {
+    public HeraJobHistoryVo findJobHistory(String id) {
         return null;
     }
 

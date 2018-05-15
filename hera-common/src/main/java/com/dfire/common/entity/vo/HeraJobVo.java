@@ -44,4 +44,5 @@ public class HeraJobVo {
     private String statisticEndTime;
     private String host;
     private String hostGroupId;
+    private String script;
 }

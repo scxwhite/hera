@@ -146,7 +146,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
 
     @Override
-    public int run() {
+    public int run()  {
         int exitCode = -999;
         String jobType = jobContext.getProperties().getAllProperties().get(RunningJobKeys.JOB_RUN_TYPE);
         buildHiveConf(jobType);

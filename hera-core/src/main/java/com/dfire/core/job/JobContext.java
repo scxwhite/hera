@@ -2,6 +2,7 @@ package com.dfire.core.job;
 
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.HeraDateTool;
 import com.dfire.common.util.HierarchyProperties;
 import lombok.AllArgsConstructor;
@@ -47,7 +48,7 @@ public class JobContext {
 
     private List<Map<String, String>> resources;
 
-    private HeraJobHistory heraJobHistory;
+    private HeraJobHistoryVo heraJobHistory;
 
     private HeraDebugHistory debugHistory;
 
@@ -61,7 +62,7 @@ public class JobContext {
 
     public static JobContext getTempJobContext(int runType) {
         JobContext jobContext = new JobContext(runType);
-        HeraJobHistory jobHistory = new HeraJobHistory();
+        HeraJobHistoryVo jobHistory =  HeraJobHistoryVo.builder().build();
         jobContext.setHeraJobHistory(jobHistory);
         File baseFile = new File(runPath);
         if (baseFile == null || !baseFile.exists()) {

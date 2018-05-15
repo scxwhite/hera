@@ -6,11 +6,7 @@ import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.core.job.Job;
 import io.netty.channel.Channel;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.experimental.theories.suppliers.TestedOn;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

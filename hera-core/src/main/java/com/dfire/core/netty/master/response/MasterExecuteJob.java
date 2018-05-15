@@ -1,6 +1,7 @@
 package com.dfire.core.netty.master.response;
 
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.MasterContext;
@@ -84,7 +85,7 @@ public class MasterExecuteJob {
      */
     private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String id) {
 
-        HeraJobHistory history = context.getHeraJobHistoryService().findJobHistory(id);
+        HeraJobHistoryVo history = context.getHeraJobHistoryService().findJobHistory(id);
         final String jobId = history.getJobId();
         holder.getRunning().put(jobId, false);
 

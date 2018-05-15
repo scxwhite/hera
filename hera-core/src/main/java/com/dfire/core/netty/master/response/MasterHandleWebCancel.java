@@ -3,6 +3,8 @@ package com.dfire.core.netty.master.response;
 import com.dfire.common.constant.TriggerType;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.master.MasterContext;
@@ -95,7 +97,7 @@ public class MasterHandleWebCancel {
     private WebResponse handleManualCancel(MasterContext context, WebRequest request) {
         WebResponse webResponse = null;
         String historyId = request.getId();
-        HeraJobHistory history = context.getHeraJobHistoryService().findJobHistory(historyId);
+        HeraJobHistoryVo history = context.getHeraJobHistoryService().findJobHistory(historyId);
         String jobId = history.getJobId();
         for (JobElement element : new ArrayList<JobElement>(context.getManualQueue())) {
             if (element.getJobId().equals(historyId)) {
@@ -105,7 +107,7 @@ public class MasterHandleWebCancel {
                         .setStatus(Status.OK)
                         .build();
                 history.getLog().appendHera("任务取消");
-                context.getHeraJobHistoryService().updateHeraJobHistory(history);
+                context.getHeraJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
                 break;
 
             }
@@ -145,7 +147,7 @@ public class MasterHandleWebCancel {
         history = context.getHeraJobHistoryService().findJobHistory(historyId);
         history.setEndTime(new Date());
         history.setStatus(com.dfire.common.constant.Status.FAILED);
-        context.getHeraJobHistoryService().updateHeraJobHistory(history);
+        context.getHeraJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
         return webResponse;
 
     }
@@ -153,7 +155,7 @@ public class MasterHandleWebCancel {
     private WebResponse handleScheduleCancel(MasterContext context, WebRequest request) {
         WebResponse webResponse = null;
         String historyId = request.getId();
-        HeraJobHistory history = context.getHeraJobHistoryService().findJobHistory(historyId);
+        HeraJobHistoryVo history = context.getHeraJobHistoryService().findJobHistory(historyId);
         String jobId = history.getJobId();
         for (JobElement element : new ArrayList<JobElement>(context.getScheduleQueue())) {
             if (element.getJobId().equals(historyId)) {
@@ -163,7 +165,7 @@ public class MasterHandleWebCancel {
                         .setStatus(Status.OK)
                         .build();
                 history.getLog().appendHera("任务取消");
-                context.getHeraJobHistoryService().updateHeraJobHistory(history);
+                context.getHeraJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
                 break;
 
             }
@@ -199,7 +201,7 @@ public class MasterHandleWebCancel {
         history = context.getHeraJobHistoryService().findJobHistory(historyId);
         history.setEndTime(new Date());
         history.setStatus(com.dfire.common.constant.Status.FAILED);
-        context.getHeraJobHistoryService().updateHeraJobHistory(history);
+        context.getHeraJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
         return webResponse;
     }
 

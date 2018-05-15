@@ -3,6 +3,8 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
@@ -111,7 +113,7 @@ public class WorkClient {
 
             private void editLog(Job job, Exception e) {
                 try {
-                    HeraJobHistory his = job.getJobContext().getHeraJobHistory();
+                    HeraJobHistoryVo his = job.getJobContext().getHeraJobHistory();
                     String logContent = his.getLog().getContent();
                     if (logContent == null) {
                         logContent = "";
@@ -238,7 +240,7 @@ public class WorkClient {
         workContext.getManualRunning().remove(historyId);
         job.cancel();
 
-        HeraJobHistory history = job.getJobContext().getHeraJobHistory();
+        HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
         history.setEndTime(new Date());
         String illustrate = history.getIllustrate();
         if(illustrate!=null && illustrate.trim().length()>0){
@@ -247,9 +249,9 @@ public class WorkClient {
             history.setIllustrate("手动取消该任务");
         }
         history.setStatus(com.dfire.common.constant.Status.FAILED);
-        workContext.getJobHistoryService().updateHeraJobHistory(history);
+        workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistory(history);
+        workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
 
     }
 
@@ -258,7 +260,7 @@ public class WorkClient {
         workContext.getRunning().remove(jobId);
         job.cancel();
 
-        HeraJobHistory history = job.getJobContext().getHeraJobHistory();
+        HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
         history.setEndTime(new Date());
         String illustrate = history.getIllustrate();
         if(illustrate!=null && illustrate.trim().length()>0){
@@ -267,9 +269,9 @@ public class WorkClient {
             history.setIllustrate("手动取消该任务");
         }
         history.setStatus(com.dfire.common.constant.Status.FAILED);
-        workContext.getJobHistoryService().updateHeraJobHistory(history);
+        workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistory(history);
+        workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
 
     }
 

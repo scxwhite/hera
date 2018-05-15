@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HeraGlobalEnvironment {
 
+    @Getter
     public static String excludeFile;
 
     public static String defaultWorkerGroup;
@@ -70,7 +71,7 @@ public class HeraGlobalEnvironment {
     public void setConnectPort(Integer port) {
         this.connectPort = port;
     }
-    @Value("${download-dir}")
+    @Value("${hera.download-dir}")
     public void setDownloadDir(String dir) {
         this.downloadDir = dir;
     }

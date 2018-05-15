@@ -2,6 +2,7 @@ package com.dfire.core.event.listenter;
 
 import com.dfire.common.constant.TriggerType;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.core.event.HeraJobSuccessEvent;
@@ -30,7 +31,7 @@ public class HeraJobSuccessListener extends AbstractListener {
             if(jobSuccessEvent.getTriggerType() == TriggerType.SCHEDULE) {
                 return;
             }
-            HeraJobHistory heraJobHistory = heraJobHistoryService.findJobHistory(jobSuccessEvent.getHistoryId());
+            HeraJobHistoryVo heraJobHistory = heraJobHistoryService.findJobHistory(jobSuccessEvent.getHistoryId());
         }
     }
 }

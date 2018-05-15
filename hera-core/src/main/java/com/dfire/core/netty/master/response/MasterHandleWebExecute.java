@@ -2,6 +2,7 @@ package com.dfire.core.netty.master.response;
 
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.master.MasterContext;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ public class MasterHandleWebExecute {
     public WebResponse handleWebExecute(MasterContext context, WebRequest request) {
         if(request.getEk() == ExecuteKind.ManualKind || request.getEk() == ExecuteKind.ScheduleKind) {
             String historyId = request.getId();
-            HeraJobHistory history = context.getHeraJobHistoryService().findJobHistory(historyId);
+            HeraJobHistoryVo history = context.getHeraJobHistoryService().findJobHistory(historyId);
             String jobId = history.getJobId();
             context.getMaster().run(history);
             WebResponse webResponse = WebResponse.newBuilder()

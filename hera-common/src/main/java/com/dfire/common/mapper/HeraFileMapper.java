@@ -14,15 +14,39 @@ public interface HeraFileMapper {
 
 
     @Select("SELECT * FROM hera_file WHERE parent = #{parent}")
+    @Results({
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "host_group_id", property = "hostGroupId"),
+            @Result(column = "gmt_create", property = "gmtCreate"),
+            @Result(column = "gmt_modified", property = "gmtModified")
+    })
     List<HeraFile> getSubHeraFiles(@Param("parent") String parentId);
 
     @Select("SELECT * FROM hera_file WHERE OWNER = #{owner} and parent is null")
+    @Results({
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "host_group_id", property = "hostGroupId"),
+            @Result(column = "gmt_create", property = "gmtCreate"),
+            @Result(column = "gmt_modified", property = "gmtModified")
+    })
     List<HeraFile> getUserHeraFiles(@Param("owner") String owner);
 
     @Select("SELECT * FROM hera_file WHERE OWNER = #{owner}")
+    @Results({
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "host_group_id", property = "hostGroupId"),
+            @Result(column = "gmt_create", property = "gmtCreate"),
+            @Result(column = "gmt_modified", property = "gmtModified")
+    })
     List<HeraFile> getAllUserHeraFiles(@Param("owner") String owner);
 
     @Select("SELECT * FROM hera_file WHERE id = #{id}")
+    @Results({
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "host_group_id", property = "hostGroupId"),
+            @Result(column = "gmt_create", property = "gmtCreate"),
+            @Result(column = "gmt_modified", property = "gmtModified")
+    })
     public HeraFile getHeraFile(String id);
 
 

@@ -1,7 +1,7 @@
 package com.dfire.core.netty.worker.request;
 
 import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.WorkContext;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -38,7 +38,7 @@ public class WorkHandleCancel {
     }
 
     private Future<Response> cancelManual(WorkContext workContext, Request request, String historyId) {
-        HeraJobHistory history = workContext.getJobHistoryService().findJobHistory(historyId);
+        HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(historyId);
         final String jobId = history.getJobId();
         log.info("worker receive cancel manual job, jobId =" + jobId);
         if(!workContext.getManualRunning().containsKey(history.getId())) {
@@ -68,7 +68,7 @@ public class WorkHandleCancel {
     }
 
     private Future<Response> cancelSchedule(WorkContext workContext, Request request, String historyId) {
-        HeraJobHistory history = workContext.getJobHistoryService().findJobHistory(historyId);
+        HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(historyId);
         final String jobId = history.getJobId();
         log.info("worker receive cancel schedule job, jobId =" + jobId);
         if(!workContext.getRunning().containsKey(history.getId())) {

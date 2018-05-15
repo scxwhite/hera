@@ -2,6 +2,7 @@ package com.dfire.core.event;
 
 import com.dfire.common.constant.TriggerType;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import lombok.Builder;
@@ -15,13 +16,13 @@ import lombok.Data;
 @Data
 public class HeraJobFailedEvent extends ApplicationEvent {
 
-    private final HeraJobHistory heraJobHistory;
+    private final HeraJobHistoryVo heraJobHistory;
     private final String jobId;
     private final TriggerType triggerType;
     private int runCount = 0;
     private int rollBackTime = 0;
 
-    public HeraJobFailedEvent(String jobId, TriggerType triggerType, HeraJobHistory heraJobHistory) {
+    public HeraJobFailedEvent(String jobId, TriggerType triggerType, HeraJobHistoryVo heraJobHistory) {
         super(Events.JobFailed);
         this.jobId = jobId;
         this.triggerType = triggerType;

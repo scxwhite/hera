@@ -31,28 +31,9 @@ import java.util.concurrent.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Component("masterContext")
 public class MasterContext {
 
-    @Autowired
-    private HeraHostGroupService heraHostGroupService;
-    @Autowired
-    private HeraFileService heraFileService;
-    @Autowired
-    private HeraProfileService heraProfileService;
-    @Autowired
     private QuartzSchedulerService quartzSchedulerService;
-
-    private HeraGroupService heraGroupService;
-
-    private HeraJobHistoryService heraJobHistoryService;
-    @Autowired
-    private HeraUserService heraUserService;
-    @Autowired
-    private HeraJobService heraJobService;
-    @Autowired
-    private HeraDebugHistoryService heraDebugHistoryService;
-
     private Master master;
 
     private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<>();
@@ -80,7 +61,6 @@ public class MasterContext {
      */
     private ScheduledExecutorService schedulePool = Executors.newScheduledThreadPool(12);
 
-    @PostConstruct
     public void init() {
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);
@@ -112,12 +92,47 @@ public class MasterContext {
         return hostGroupCache;
     }
 
+    public HeraHostGroupService getHeraHostGroupService() {
+        return (HeraHostGroupService) applicationContext.getBean("heraHostGroupService");
+    }
+
+    public HeraFileService getHeraFileService() {
+        return (HeraFileService) applicationContext.getBean("heraFileService");
+    }
+
+    public HeraProfileService getHeraProfileService() {
+        return (HeraProfileService) applicationContext.getBean("heraProfileService");
+    }
+
+    public QuartzSchedulerService getQuartzSchedulerService() {
+        return quartzSchedulerService;
+    }
+
+    public HeraGroupService getHeraGroupService() {
+        return (HeraGroupService) applicationContext.getBean("heraGroupService");
+    }
+
+    public HeraJobHistoryService getHeraJobHistoryService() {
+        return (HeraJobHistoryService) applicationContext.getBean("heraJobHistoryService");
+    }
+
+    public HeraUserService getHeraUserService() {
+        return (HeraUserService) applicationContext.getBean("heraUserService");
+    }
+
+    public HeraJobService getHeraJobService() {
+        return (HeraJobService) applicationContext.getBean("heraJobService");
+    }
+
+    public HeraDebugHistoryService getHeraDebugHistoryService() {
+        return (HeraDebugHistoryService) applicationContext.getBean("heraDebugHistoryService");
+    }
+
     public synchronized void refreshHostGroupCache() {
         try {
-            hostGroupCache = heraHostGroupService.getAllHostGroupInfo();
+            hostGroupCache = getHeraHostGroupService().getAllHostGroupInfo();
         } catch (Exception e) {
             log.info("refresh host group error");
         }
-
     }
 }

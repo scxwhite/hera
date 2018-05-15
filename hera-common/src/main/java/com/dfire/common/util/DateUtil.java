@@ -2,9 +2,11 @@ package com.dfire.common.util;
 
 import com.dfire.common.kv.Tuple;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  *
@@ -59,6 +61,17 @@ public class DateUtil {
         tuple.setTarget(cal.getTime());
         return tuple;
 
+    }
+
+    public static long string2Timestamp(String dateString, String timezone)
+            throws ParseException {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if ((timezone != null) && (!timezone.equals(""))) {
+            df.setTimeZone(TimeZone.getTimeZone(timezone));
+        }
+        Date date1 = df.parse(dateString);
+        long temp = date1.getTime();
+        return temp;
     }
 
 

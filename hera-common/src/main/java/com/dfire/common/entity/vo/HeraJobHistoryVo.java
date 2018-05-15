@@ -1,22 +1,23 @@
-package com.dfire.common.entity;
+package com.dfire.common.entity.vo;
 
-import lombok.AllArgsConstructor;
+import com.dfire.common.constant.Status;
+import com.dfire.common.constant.TriggerType;
+import com.dfire.common.vo.LogContent;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
- * @time: Created in 17:31 2018/1/11
+ * @time: Created in 上午7:21 2018/5/12
  * @desc
  */
-@Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class HeraJobHistory {
+@Data
+public class HeraJobHistoryVo {
 
     private String id;
 
@@ -30,15 +31,15 @@ public class HeraJobHistory {
 
     private String operator;
 
-    private String status;
+    private Status status;
 
-    private Integer triggerType;
+    private TriggerType triggerType;
 
     private String illustrate;
 
     private String statisticsEndTime;
 
-    private String log ;
+    private LogContent log = new LogContent();
 
     private String timezone;
 
@@ -46,5 +47,7 @@ public class HeraJobHistory {
 
     private String hostGroupId;
 
-    String properties ;
+
+    Map<String, String> properties = new HashMap<>();
+
 }
