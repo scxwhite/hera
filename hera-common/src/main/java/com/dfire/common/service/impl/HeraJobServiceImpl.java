@@ -11,7 +11,7 @@ import com.dfire.common.service.HeraJobService;
  * @time: Created in 2:08 2018/1/11
  * @desc
  */
-@Service("heraJobServiceImpl")
+@Service("heraJobService")
 public class HeraJobServiceImpl implements HeraJobService {
 
     @Autowired

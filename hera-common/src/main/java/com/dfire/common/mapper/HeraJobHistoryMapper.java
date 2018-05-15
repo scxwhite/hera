@@ -14,7 +14,7 @@ import org.apache.ibatis.annotations.Select;
 public interface HeraJobHistoryMapper {
 
 
-    @Select("select * from hera_job_history where job_id = #{jobId}")
+    @Select("select * from hera_action_history where job_id = #{jobId}")
     @Results({
             @Result(id=true, column="id", property = "id"),
             @Result(column="gmt_create", property = "gmtCreate")

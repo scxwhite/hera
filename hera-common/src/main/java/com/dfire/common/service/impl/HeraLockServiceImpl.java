@@ -20,17 +20,24 @@ public class HeraLockServiceImpl implements HeraLockService {
     private HeraLockMapper heraLockMapper;
 
     /**
-     * @desc 分布式锁保持唯一性，设为单例模式
      * @param subGroup
      * @return
+     * @desc 分布式锁保持唯一性，设为单例模式
      */
-    @Bean(name="lock")
+    @Bean(name = "lock")
     @Scope("prototype")
     public HeraLock getHeraLock(String subGroup) {
         return heraLockMapper.getHeraLock(subGroup);
     }
 
-    public void update(HeraLock heraLock) {
-        heraLockMapper.update(heraLock);
+    @Override
+    public void updateHeraLock(HeraLock heraLock) {
+        heraLockMapper.updateHeraLock(heraLock);
     }
+
+    @Override
+    public void insertHeraLock(HeraLock heraLock) {
+        heraLockMapper.insertHeraLock(heraLock);
+    }
+
 }

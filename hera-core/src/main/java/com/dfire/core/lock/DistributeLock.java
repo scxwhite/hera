@@ -71,13 +71,13 @@ public class DistributeLock {
                     .host(host)
                     .serverUpdate(new Date())
                     .build();
-            heraLockService.update(heraLock);
+            heraLockService.insertHeraLock(heraLock);
         }
 
 
         if (host.equals(heraLock.getHost().trim())) {
             heraLock.setServerUpdate(new Date());
-            heraLockService.update(heraLock);
+            heraLockService.updateHeraLock(heraLock);
             log.info("hold lock and update time");
             heraSchedule.startup();
         } else {
@@ -90,20 +90,20 @@ public class DistributeLock {
                 heraLock.setHost(host);
                 heraLock.setServerUpdate(new Date());
                 heraLock.setSubGroup("online");
-                heraLockService.update(heraLock);
+                heraLockService.updateHeraLock(heraLock);
                 log.error("master 发生切换");
             } else {
                 heraSchedule.shutdown();//非主节点，调度器不执行
                 log.info("shutdown worker's  schedule service ");
             }
-            try {
+        }
 
-                log.info("work try to connect master ....");
-                workClient.connect(heraLock.getHost());
-                log.info("work connect master success...");
-            } catch (Exception e) {
-                log.info("client worker connect master server exception:{}", e);
-            }
+        try {
+            log.info("work try to connect master ....");
+            workClient.connect(heraLock.getHost());
+            log.info("work connect master success...");
+        } catch (Exception e) {
+            log.info("client worker connect master server exception:{}", e);
         }
     }
 

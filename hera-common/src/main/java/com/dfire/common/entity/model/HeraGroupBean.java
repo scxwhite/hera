@@ -19,6 +19,7 @@ import java.util.Map;
 @Data
 public class HeraGroupBean {
 
+
     private HeraGroupBean parentGroupBean;
     private HeraGroupVo groupVo;
     private Map<String, HeraJobBean> jobBeanMap = new HashMap<>();

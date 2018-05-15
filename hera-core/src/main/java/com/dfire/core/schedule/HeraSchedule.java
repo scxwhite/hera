@@ -30,7 +30,7 @@ public class HeraSchedule {
             return;
         }
         log.info("begin to start master context");
-        masterContext = (MasterContext) applicationContext.getBean("masterContext");
+        masterContext = new MasterContext(applicationContext);
         masterContext.init();
     }
 

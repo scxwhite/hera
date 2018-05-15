@@ -46,6 +46,7 @@
         <velocity.version>1.5</velocity.version>
         <hyperic.sigar.veriosn>1.6.3</hyperic.sigar.veriosn>
         <jdk.version>1.8</jdk.version>
+        <quartz.version>2.2.1</quartz.version>
     </properties>
 
     <dependencyManagement>
@@ -203,6 +204,12 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
             </dependency>
 
             <dependency>

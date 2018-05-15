@@ -61,6 +61,10 @@ public class MasterContext {
      */
     private ScheduledExecutorService schedulePool = Executors.newScheduledThreadPool(12);
 
+    public MasterContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
     public void init() {
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);

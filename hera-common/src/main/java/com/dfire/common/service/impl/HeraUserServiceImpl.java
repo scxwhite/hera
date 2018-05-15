@@ -13,7 +13,7 @@ import java.util.List;
  * @time: Created in 0:35 2017/12/30
  * @desc
  */
-@Service("heraUserServiceImpl")
+@Service("heraUserService")
 public class HeraUserServiceImpl implements HeraUserService {
 
     @Autowired

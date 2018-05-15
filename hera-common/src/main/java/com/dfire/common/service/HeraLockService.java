@@ -11,5 +11,7 @@ public interface HeraLockService {
 
     public HeraLock getHeraLock(String subGroup) ;
 
-    public void update(HeraLock heraLock);
+    public void updateHeraLock(HeraLock heraLock);
+
+    public void insertHeraLock(HeraLock heraLock);
 }
