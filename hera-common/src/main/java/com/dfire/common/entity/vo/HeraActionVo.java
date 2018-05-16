@@ -1,27 +1,20 @@
-package com.dfire.common.entity;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
+package com.dfire.common.entity.vo;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
- * @time: Created in 13:59 2017/12/30
+ * @time: Created in 上午11:00 2018/5/16
  * @desc
  */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class HeraJob {
+public class HeraActionVo {
 
-    private int id;
+    private String id;
 
-    private String auto;
+    private String jobId;
+
+    private Integer auto = 0;
 
     private String configs;
 
@@ -31,6 +24,8 @@ public class HeraJob {
 
     private String dependencies;
 
+    private String jobDependencies;
+
     private String description;
 
     private Date gmtCreate;
@@ -39,7 +34,7 @@ public class HeraJob {
 
     private Integer groupId;
 
-    private String historyId;
+    private Long historyId;
 
     private String host;
 
@@ -49,7 +44,7 @@ public class HeraJob {
 
     private String name;
 
-    private String offset;
+    private int offset;
 
     private String owner;
 
@@ -59,28 +54,25 @@ public class HeraJob {
 
     private String readyDependency;
 
-    private String resources;
+    private Map<String, String> resources;
 
     private String runType;
 
-    private String scheduleType;
+    private Integer scheduleType;
 
     private String script;
 
     private Date startTime;
 
-    private Long startTimestamp;
-
-    private Date statisticEndTime;
+    private long startTimestamp;
 
     private Date statisticStartTime;
+
+    private Date statisticEndTime;
 
     private String status;
 
     private String timezone;
 
-    private String hostGroupId;
-
-    private Long mustEndMinute;
-
+    private Integer hostGroupId;
 }

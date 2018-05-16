@@ -17,18 +17,31 @@ import java.util.Date;
 public class HeraDebugHistory {
 
     private String id;
+
     private String fileId;
+
     private Date startTime;
+
     private Date endTime;
+
     private String executeHost;
+
     private Status status;
+
     private String owner;
-    private Date gmtCreate = new Date();
-    private Date gmtModified = new Date();
+
+    private Date gmtCreate ;
+
+    private Date gmtModified;
+
     private String script;
+
     private String runType;
-    private LogContent log = new LogContent();
+
+    private String log;
+
     private String host;
+
     private String hostGroupId;
 
 }

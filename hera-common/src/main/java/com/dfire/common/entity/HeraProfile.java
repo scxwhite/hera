@@ -23,6 +23,6 @@ public class HeraProfile {
     private String id;
     private String uid;
     private String hadoopConf;
-    private Date gmtCreate = new Date();
-    private Date gmtModified = new Date();
+    private Date gmtCreate;
+    private Date gmtModified;
 }

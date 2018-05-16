@@ -14,16 +14,27 @@ import java.sql.Date;
 public class HeraUser {
 
 	private Long id;
+
 	private String email;
+
 	private Date gmtCreate;
+
 	private Date gmtModified;
+
     private String name;
+
     private String phone;
+
     private String uid;
+
     private String wangwang;
+
     private String password;
-	private Integer user_type;
-	private Integer is_effective;
+
+	private int user_type;
+
+	private int is_effective;
+
 	private String description;
 
 

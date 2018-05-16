@@ -92,6 +92,7 @@ public class DistributeLock {
                 heraLock.setSubGroup("online");
                 heraLockService.updateHeraLock(heraLock);
                 log.error("master 发生切换");
+                heraSchedule.startup();
             } else {
                 heraSchedule.shutdown();//非主节点，调度器不执行
                 log.info("shutdown worker's  schedule service ");

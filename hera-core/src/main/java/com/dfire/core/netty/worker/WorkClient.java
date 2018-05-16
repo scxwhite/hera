@@ -183,12 +183,10 @@ public class WorkClient {
     }
 
     public synchronized void connect(String host) throws Exception {
-        //首先判断服务频道是否开启
         if (workContext.getServerChannel() != null) {
-            //如果已经与服务端连接
             if (workContext.getServerHost().equals(host)) {
                 return;
-            } else { //关闭之前通信
+            } else {
                 workContext.getServerChannel().close();
                 workContext.setServerChannel(null);
             }

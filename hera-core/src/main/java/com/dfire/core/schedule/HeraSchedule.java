@@ -26,7 +26,7 @@ public class HeraSchedule {
     }
 
     public void startup() {
-        if(!running.compareAndSet(false, true)) {
+        if (!running.compareAndSet(false, true)) {
             return;
         }
         log.info("begin to start master context");
@@ -35,7 +35,7 @@ public class HeraSchedule {
     }
 
     public void shutdown() {
-        if(running.compareAndSet(true, false)) {
+        if (running.compareAndSet(true, false)) {
             masterContext.destroy();
         }
     }

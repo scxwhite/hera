@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -18,13 +20,25 @@ import lombok.NoArgsConstructor;
 public class HeraGroup {
 
     private String id;
-    private String parent;
-    private String name;
-    private String owner;
-    private String desc;
-    private boolean directory;
-    private int isExisted;
+
     private String configs;
+
+    private String description;
+
+    private int directory;
+
+    private Date gmtCreate;
+
+    private Date gmtModified;
+
+    private String name;
+
+    private String owner;
+
+    private String parent;
+
     private String resources;
+
+    private int existed;
 
 }

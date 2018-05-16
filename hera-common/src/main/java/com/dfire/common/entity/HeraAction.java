@@ -24,61 +24,63 @@ public class HeraAction {
 
     private Integer auto = 0;
 
-    private Integer scheduleType;
-
-    private String runType;
-
     private String configs;
 
     private String cronExpression;
+
+    private String cycle;
 
     private String dependencies;
 
     private String jobDependencies;
 
-    private String name;
-
     private String description;
+
+    private Date gmtCreate;
+
+    private Date gmtModified;
 
     private Integer groupId;
 
-    private String owner;
-
-    private String resources;
-
-    private Date gmtCreate = new Date();
-
-    private Date gmtModified = new Date();
-
     private Long historyId;
 
-    private String status;
-
-    private String readyDependency;
-
-    private String preProcessors;
-
-    private String postProcessors;
-
-    private String timezone;
-
-    private Date startTime;
-
-    private long startTimestamp;
-
-    private int offset;
+    private String host;
 
     private Date lastEndTime;
 
     private String lastResult;
 
+    private String name;
+
+    private int offset;
+
+    private String owner;
+
+    private String postProcessors;
+
+    private String preProcessors;
+
+    private String readyDependency;
+
+    private String resources;
+
+    private String runType;
+
+    private Integer scheduleType;
+
+    private String script;
+
+    private Date startTime;
+
+    private long startTimestamp;
+
     private Date statisticStartTime;
 
     private Date statisticEndTime;
 
-    private String cycle;
+    private String status;
 
-    private String host;
+    private String timezone;
 
     private Integer hostGroupId;
 

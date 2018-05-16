@@ -2,14 +2,12 @@ package com.dfire.common.entity.vo;
 
 import com.dfire.common.constant.JobRunType;
 import com.dfire.common.constant.JobScheduleType;
+import com.dfire.common.constant.Status;
 import com.dfire.common.processor.Processor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -20,29 +18,68 @@ import java.util.Map;
 @Data
 public class HeraJobVo {
 
-    private Map<String, String> properties = new HashMap<String, String>();
+    private int id;
+
+    private String auto;
+
+    private Map<String, String> configs;
+
     private String cronExpression;
-    private List<String> dependencies = new ArrayList<String>();
-    private String id;
-    private String toJobId;
-    private String name;
-    private String desc;
-    private String groupId;
-    private String owner;
-    private Boolean auto = false;
-    private List<Map<String, String>> resources = new ArrayList<Map<String, String>>();
-    private JobRunType jobRunType;
-    private JobScheduleType jobScheduleType;
-    private String timezone;
-    private List<Processor> preProcessors = new ArrayList<Processor>();
-    private List<Processor> postProcessors = new ArrayList<Processor>();
-    private String offRaw = "0";
+
     private String cycle;
-    private long startTimestamp;
-    private String startTime;
-    private String statisticStartTime;
-    private String statisticEndTime;
+
+    private List<String> dependencies;
+
+    private String description;
+
+    private Date gmtCreate;
+
+    private Date gmtModified;
+
+    private Integer groupId;
+
+    private String historyId;
+
     private String host;
-    private String hostGroupId;
+
+    private Date lastEndTime;
+
+    private String lastResult;
+
+    private String name;
+
+    private String offset;
+
+    private String owner;
+
+    private List<String> postProcessors;
+
+    private List<String> preProcessors;
+
+    private String readyDependency;
+
+    private Map<String, String> resources;
+
+    private JobRunType runType;
+
+    private JobScheduleType scheduleType;
+
     private String script;
+
+    private Date startTime;
+
+    private Long startTimestamp;
+
+    private Date statisticEndTime;
+
+    private Date statisticStartTime;
+
+    private Status status;
+
+    private String timezone;
+
+    private String hostGroupId;
+
+    private Long mustEndMinute;
+
 }
