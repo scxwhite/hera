@@ -2,9 +2,12 @@ package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.vo.JobStatus;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -13,18 +16,27 @@ import org.apache.ibatis.annotations.Select;
  */
 public interface HeraJobHistoryMapper {
 
+    int insert(HeraJobHistory heraJobHistory);
 
-    @Select("select * from hera_action_history where job_id = #{jobId}")
+    int delete(@Param("id") String id, @Param("updateBy") String updateBy);
+
+    int update(HeraJobHistory heraJobHistory);
+
+    List<HeraJobHistory> getAll();
+
+
+    @Select("select * from hera_action_history where id = #{id}")
     @Results({
-            @Result(id=true, column="id", property = "id"),
-            @Result(column="gmt_create", property = "gmtCreate")
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "gmt_create", property = "gmtCreate")
     })
-    public HeraJobHistory findJobHistory(String jobId);
+    public HeraJobHistory findById(@Param("id") String id);
 
-    public void addHeraJobHistory(HeraJobHistory heraJobHistory);
+    @Select("select * from hera_action_history where jobId = #{jobId}")
+    @Results({
+            @Result(id = true, column = "id", property = "id"),
+            @Result(column = "gmt_create", property = "gmtCreate")
+    })
+    public HeraJobHistory findByJobId(@Param("jobId") String jobId);
 
-    public void updateHeraJobHistory(HeraJobHistory heraJobHistory);
-
-    //任务链路的任务状态也需要更新
-    public void updateJobStatus(JobStatus jobStatus);
 }
