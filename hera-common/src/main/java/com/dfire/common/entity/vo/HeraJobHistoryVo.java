@@ -1,7 +1,7 @@
 package com.dfire.common.entity.vo;
 
-import com.dfire.common.constant.Status;
-import com.dfire.common.constant.TriggerType;
+import com.dfire.common.enums.Status;
+import com.dfire.common.enums.TriggerType;
 import com.dfire.common.vo.LogContent;
 import lombok.Builder;
 import lombok.Data;

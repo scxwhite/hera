@@ -2,7 +2,7 @@ package com.dfire.common.util;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.dfire.common.processor.DownPorcessor;
+import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.Processor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,7 +69,7 @@ public class StringUtil {
         JSONObject jsonObject = JSONObject.parseObject(processor);
         String id = jsonObject.getString("id");
         if (id.equals("download")) {
-            result = new DownPorcessor();
+            result = new DownProcessor();
         }
         return result;
     }

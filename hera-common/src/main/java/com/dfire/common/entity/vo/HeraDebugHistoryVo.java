@@ -1,19 +1,17 @@
-package com.dfire.common.entity;
+package com.dfire.common.entity.vo;
 
+import com.dfire.common.enums.JobRunType;
 import com.dfire.common.enums.Status;
-import lombok.Builder;
-import lombok.Data;
+import com.dfire.common.vo.LogContent;
 
 import java.util.Date;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
- * @time: Created in 14:29 2018/3/22
+ * @time: Created in 下午12:05 2018/5/16
  * @desc
  */
-@Builder
-@Data
-public class HeraDebugHistory {
+public class HeraDebugHistoryVo {
 
     private String id;
 
@@ -35,9 +33,9 @@ public class HeraDebugHistory {
 
     private String script;
 
-    private String runType;
+    private JobRunType runType;
 
-    private String log;
+    private LogContent log = new LogContent();
 
     private String host;
 

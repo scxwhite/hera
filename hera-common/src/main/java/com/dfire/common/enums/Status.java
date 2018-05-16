@@ -1,4 +1,4 @@
-package com.dfire.common.constant;
+package com.dfire.common.enums;
 
 
 /**

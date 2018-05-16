@@ -1,7 +1,6 @@
 package com.dfire.core.event.listenter;
 
-import com.dfire.common.constant.TriggerType;
-import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobHistoryService;

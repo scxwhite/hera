@@ -1,4 +1,4 @@
-package com.dfire.common.constant;
+package com.dfire.common.constants;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

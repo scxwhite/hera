@@ -18,7 +18,7 @@ public interface HeraGroupService {
 
     HeraGroupBean getGlobalGroup();
 
-    Tuple<HeraJobVo, JobStatus> getHeraJobVo(String jobId);
+    Tuple<HeraJobVo, JobStatus> getHeraJobVo(int jobId);
 
     JobStatus getJobStatus(String jobId);
 

@@ -1,13 +1,13 @@
 package com.dfire.core.util;
 
-import com.dfire.common.constant.JobRunType;
-import com.dfire.common.constant.RunningJobKeys;
+import com.dfire.common.enums.JobRunType;
+import com.dfire.common.constants.RunningJobKeys;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.entity.vo.HeraProfileVo;
-import com.dfire.common.processor.DownPorcessor;
+import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.JobProcessor;
 import com.dfire.common.processor.Processor;
 import com.dfire.common.service.HeraFileService;
@@ -91,14 +91,14 @@ public class JobUtils {
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
         List<Map<String, String>> resource = jobBean.getHierarchyResources();
         HeraGroupService heraGroupService = (HeraGroupService) applicationContext.getBean("heraGroupService");
-        String jobId = jobBean.getHeraJobVo().getId();
+        int jobId = jobBean.getHeraJobVo().getId();
         String script = heraGroupService.getHeraJobVo(jobId).getSource().getScript();
         String actionDate = history.getId().substring(0, 12) + "00";
         if (StringUtils.isNotBlank(actionDate) && actionDate.length() == 14) {
             script = RenderHierarchyProperties.render(script, actionDate);
         }
-        if (jobBean.getHeraJobVo().getJobRunType().equals(JobRunType.Shell)
-                || jobBean.getHeraJobVo().getJobRunType().equals(JobRunType.Hive)) {
+        if (jobBean.getHeraJobVo().getRunType().equals(JobRunType.Shell)
+                || jobBean.getHeraJobVo().getRunType().equals(JobRunType.Hive)) {
             script = resolveScriptResource(resource, script, applicationContext);
         }
         jobContext.setResources(resource);
@@ -118,9 +118,9 @@ public class JobUtils {
                 jobBean.getHeraJobVo().getPostProcessors(), history, workDir);
 
         Job core = null;
-        if (jobBean.getHeraJobVo().getJobRunType() == JobRunType.Shell) {
+        if (jobBean.getHeraJobVo().getRunType() == JobRunType.Shell) {
             core = new HadoopShellJob(jobContext);
-        } else if (jobBean.getHeraJobVo().getJobRunType() == JobRunType.Hive) {
+        } else if (jobBean.getHeraJobVo().getRunType() == JobRunType.Hive) {
             core = new HiveJob(jobContext, applicationContext);
         }
         Job job = new WithProcessJob(jobContext, pres, posts, core, applicationContext);
@@ -162,7 +162,7 @@ public class JobUtils {
                 }
                 processor.parse(config);
             }
-            if(processor instanceof DownPorcessor) {
+            if(processor instanceof DownProcessor) {
                 jobs.add(new DownLoadJob(jobContext));
             } else if(processor instanceof JobProcessor) {
                 Integer depth = (Integer) jobContext.getData("depth");
@@ -174,7 +174,7 @@ public class JobUtils {
                     Map<String, String> configs = jobProcessor.getKvConfig();
                     for(String key : configs.keySet()) {
                         if(configs.get(key) != null) {
-                            jobBean.getHeraJobVo().getProperties().put(key, map.get(key));
+                            jobBean.getHeraJobVo().getConfigs().put(key, map.get(key));
                         }
                     }
                     File directory = new File(workDir + File.separator + "job-processor-" + jobProcessor.getJobId());

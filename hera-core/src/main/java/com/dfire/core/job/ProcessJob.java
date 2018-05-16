@@ -1,7 +1,7 @@
 package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dfire.common.constant.RunningJobKeys;
+import com.dfire.common.constants.RunningJobKeys;
 import com.dfire.common.util.ConfUtil;
 import com.dfire.common.util.HierarchyProperties;
 import lombok.extern.slf4j.Slf4j;

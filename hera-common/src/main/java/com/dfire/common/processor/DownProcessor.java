@@ -5,7 +5,8 @@ package com.dfire.common.processor;
  * @time: Created in 上午11:37 2018/5/2
  * @desc
  */
-public class DownPorcessor implements Processor {
+public class DownProcessor implements Processor {
+
     @Override
     public String getId() {
         return "download";

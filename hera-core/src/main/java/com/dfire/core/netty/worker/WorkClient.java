@@ -2,10 +2,8 @@ package com.dfire.core.netty.worker;
 
 
 import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.lock.DistributeLock;
@@ -225,7 +223,7 @@ public class WorkClient {
 
         HeraDebugHistory history = job.getJobContext().getDebugHistory();
         history.setEndTime(new Date());
-        history.setStatus(com.dfire.common.constant.Status.FAILED);
+        history.setStatus(com.dfire.common.enums.Status.FAILED);
         workContext.getDebugHistoryService().update(history);
         history.getLog().appendHera("任务被取消");
         workContext.getDebugHistoryService().update(history);
@@ -246,7 +244,7 @@ public class WorkClient {
         }else{
             history.setIllustrate("手动取消该任务");
         }
-        history.setStatus(com.dfire.common.constant.Status.FAILED);
+        history.setStatus(com.dfire.common.enums.Status.FAILED);
         workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
         workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
@@ -266,7 +264,7 @@ public class WorkClient {
         }else{
             history.setIllustrate("手动取消该任务");
         }
-        history.setStatus(com.dfire.common.constant.Status.FAILED);
+        history.setStatus(com.dfire.common.enums.Status.FAILED);
         workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
         workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));

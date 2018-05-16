@@ -1,6 +1,6 @@
 package com.dfire.core.job;
 
-import com.dfire.common.constant.RunningJobKeys;
+import com.dfire.common.constants.RunningJobKeys;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

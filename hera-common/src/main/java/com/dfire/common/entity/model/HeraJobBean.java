@@ -27,17 +27,15 @@ public class HeraJobBean {
 
     public HierarchyProperties getHierarchyProperties() {
         if(groupBean != null) {
-            return new HierarchyProperties(groupBean.getHierarchyProperties(), heraJobVo.getProperties());
+            return new HierarchyProperties(groupBean.getHierarchyProperties(), heraJobVo.getConfigs());
         }
-        return new HierarchyProperties(heraJobVo.getProperties());
+        return new HierarchyProperties(heraJobVo.getConfigs());
     }
 
     public List<Map<String, String>> getHierarchyResources() {
         List<String> existList = new ArrayList<>();
-        List<Map<String, String>> local =new ArrayList<>(heraJobVo.getResources());
-        if(local == null) {
-            local = new ArrayList<Map<String, String>>();
-        }
+        List<Map<String, String>> local = new ArrayList<Map<String, String>>(heraJobVo.getResources());
+
         for(Map<String, String> map : local) {
             if(map.get("name") != null && !existList.contains(map.get("name"))) {
                 existList.add(map.get("name"));

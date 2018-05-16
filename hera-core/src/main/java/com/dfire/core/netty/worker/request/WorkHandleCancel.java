@@ -112,7 +112,7 @@ public class WorkHandleCancel {
                 }
             });
             HeraDebugHistory debugHistory = workContext.getDebugHistoryService().findDebugHistoryById(debugId);
-            debugHistory.setStatus(com.dfire.common.constant.Status.FAILED);
+            debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
             debugHistory.setEndTime(new Date());
             workContext.getDebugHistoryService().update(debugHistory);
         } else {

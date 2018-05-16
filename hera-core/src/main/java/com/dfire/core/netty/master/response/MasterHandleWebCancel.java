@@ -1,8 +1,7 @@
 package com.dfire.core.netty.master.response;
 
-import com.dfire.common.constant.TriggerType;
+import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
@@ -87,7 +86,7 @@ public class MasterHandleWebCancel {
         }
         debugHistory = context.getHeraDebugHistoryService().findDebugHistoryById(debugId);
         debugHistory.setEndTime(new Date());
-        debugHistory.setStatus(com.dfire.common.constant.Status.FAILED);
+        debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
         context.getHeraDebugHistoryService().update(debugHistory);
         return webResponse;
 
@@ -146,7 +145,7 @@ public class MasterHandleWebCancel {
         }
         history = context.getHeraJobHistoryService().findJobHistory(historyId);
         history.setEndTime(new Date());
-        history.setStatus(com.dfire.common.constant.Status.FAILED);
+        history.setStatus(com.dfire.common.enums.Status.FAILED);
         context.getHeraJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
         return webResponse;
 
@@ -194,13 +193,13 @@ public class MasterHandleWebCancel {
 
         if (webResponse != null) {
             JobStatus jobStatus = context.getHeraGroupService().getJobStatus(jobId);
-            jobStatus.setStatus(com.dfire.common.constant.Status.WAIT);
+            jobStatus.setStatus(com.dfire.common.enums.Status.WAIT);
             jobStatus.setHistoryId(null);
             context.getHeraJobHistoryService().updateJobStatus(jobStatus);
         }
         history = context.getHeraJobHistoryService().findJobHistory(historyId);
         history.setEndTime(new Date());
-        history.setStatus(com.dfire.common.constant.Status.FAILED);
+        history.setStatus(com.dfire.common.enums.Status.FAILED);
         context.getHeraJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
         return webResponse;
     }

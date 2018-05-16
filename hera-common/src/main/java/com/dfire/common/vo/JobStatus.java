@@ -1,6 +1,6 @@
 package com.dfire.common.vo;
 
-import com.dfire.common.constant.Status;
+import com.dfire.common.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

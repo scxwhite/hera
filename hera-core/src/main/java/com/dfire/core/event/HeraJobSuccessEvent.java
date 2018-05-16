@@ -1,6 +1,6 @@
 package com.dfire.core.event;
 
-import com.dfire.common.constant.TriggerType;
+import com.dfire.common.enums.TriggerType;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import lombok.Data;

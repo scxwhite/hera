@@ -1,11 +1,10 @@
 package com.dfire.core.netty.master;
 
 
-import com.dfire.common.constant.Status;
-import com.dfire.common.constant.TriggerType;
+import com.dfire.common.enums.Status;
+import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.model.HeraGroupBean;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
@@ -32,8 +31,6 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

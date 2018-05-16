@@ -1,7 +1,7 @@
 package com.dfire.common.util;
 
-import com.dfire.common.constant.Status;
-import com.dfire.common.constant.TriggerType;
+import com.dfire.common.enums.Status;
+import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.HeraProfile;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;

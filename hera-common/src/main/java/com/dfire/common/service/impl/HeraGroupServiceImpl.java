@@ -31,7 +31,7 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     }
 
     @Override
-    public Tuple<HeraJobVo, JobStatus> getHeraJobVo(String jobId) {
+    public Tuple<HeraJobVo, JobStatus> getHeraJobVo(int jobId) {
         return null;
     }
 

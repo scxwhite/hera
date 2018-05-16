@@ -1,10 +1,9 @@
 package com.dfire.core.event.handler;
 
-import com.dfire.common.constant.JobScheduleType;
-import com.dfire.common.constant.RunningJobKeys;
-import com.dfire.common.constant.Status;
-import com.dfire.common.constant.TriggerType;
-import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.enums.JobScheduleType;
+import com.dfire.common.constants.RunningJobKeys;
+import com.dfire.common.enums.Status;
+import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.model.JobGroupCache;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;

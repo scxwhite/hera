@@ -1,11 +1,9 @@
 package com.dfire.core.event;
 
-import com.dfire.common.constant.TriggerType;
-import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
-import lombok.Builder;
 import lombok.Data;
 
 /**
