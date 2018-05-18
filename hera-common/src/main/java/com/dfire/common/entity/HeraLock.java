@@ -23,6 +23,6 @@ public class HeraLock {
     private Date serverUpdate;
     private Date gmtCreate ;
     private Date gmtModified;
-    private String subGroup;
+    private String subgroup;
 
 }

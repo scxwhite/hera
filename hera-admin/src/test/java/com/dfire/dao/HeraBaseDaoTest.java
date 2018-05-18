@@ -4,6 +4,7 @@ import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.vo.HeraHostGroupVo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -38,12 +40,20 @@ public class HeraBaseDaoTest {
     HeraFileService heraFileService;
     @Autowired
     HeraGroupService heraGroupService;
+    @Autowired
+    HeraLockService heraLockService;
+    @Autowired
+    HeraHostRelationService heraHostRelationService;
+    @Autowired
+    HeraHostGroupService heraHostGroupService;
 
     HeraAction heraAction;
     HeraPermission heraPermission;
     HeraDebugHistory heraDebugHistory;
     HeraFile heraFile;
     HeraGroup heraGroup;
+    HeraLock heraLock;
+
 
     @Before
     public void doBefore() {
@@ -72,9 +82,16 @@ public class HeraBaseDaoTest {
                 .startTime(new Date())
                 .endTime(new Date())
                 .build();
-        heraFile = HeraFile.builder().build();
+
+        heraFile = HeraFile.builder()
+                .build();
 
         heraGroup = HeraGroup.builder().build();
+        heraLock = HeraLock.builder()
+                .subgroup("test")
+                .host("127.0.0.1")
+                .serverUpdate(new Date())
+                .build();
 
 
     }
@@ -159,7 +176,7 @@ public class HeraBaseDaoTest {
         List<HeraFile> subList = heraFileService.findByParent(heraFile);
         System.out.println(subList.size());
 
-        List<HeraFile> pList  = heraFileService.findByOwner("biadmin");
+        List<HeraFile> pList = heraFileService.findByOwner("biadmin");
         System.out.println(pList.size());
 
         heraFile = HeraFile.builder().owner("test").name("test").type("2").build();
@@ -189,6 +206,25 @@ public class HeraBaseDaoTest {
         System.out.println(userGroup.size());
 
         heraGroupService.delete(3580);
+
+    }
+
+    @Test
+    public void heraLockDaoTest() {
+        HeraLock lock = heraLockService.findById("online");
+        lock.setServerUpdate(new Date());
+        heraLockService.update(lock);
+
+        heraLockService.insert(heraLock);
+    }
+
+    @Test
+    public void heraHostGroupDaoTest() {
+        HeraHostGroup group = heraHostGroupService.findById(1);
+        System.out.println(group.getName());
+
+        Map<String, HeraHostGroupVo> map = heraHostGroupService.getAllHostGroupInfo();
+        System.out.println(map.toString());
 
     }
 

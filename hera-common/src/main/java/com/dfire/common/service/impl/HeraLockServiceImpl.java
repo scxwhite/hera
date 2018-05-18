@@ -24,7 +24,7 @@ public class HeraLockServiceImpl implements HeraLockService {
     @Scope("prototype")
     @Override
     public HeraLock findById(String group) {
-        HeraLock heraLock = HeraLock.builder().subGroup("subgroup").build();
+        HeraLock heraLock = HeraLock.builder().subgroup(group).build();
         return heraLockMapper.findById(heraLock);
     }
 

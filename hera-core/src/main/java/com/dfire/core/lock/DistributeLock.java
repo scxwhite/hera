@@ -91,7 +91,7 @@ public class DistributeLock {
                 log.info("server lock time exceed 5 minutes and will happen master switch");
                 heraLock.setHost(host);
                 heraLock.setServerUpdate(new Date());
-                heraLock.setSubGroup("online");
+                heraLock.setSubgroup("online");
                 heraLockService.update(heraLock);
                 log.error("master 发生切换");
                 heraSchedule.startup();

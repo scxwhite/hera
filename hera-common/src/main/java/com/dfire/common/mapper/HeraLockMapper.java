@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.*;
  */
 public interface HeraLockMapper {
 
-    @Select("select * from hera_lock where subgroup = #{subGroup}")
+    @Select("select * from hera_lock where subgroup = #{subgroup}")
     @Lang(HeraSelectLangDriver.class)
     HeraLock findById(HeraLock heraLock);
 

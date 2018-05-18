@@ -1,7 +1,6 @@
 package com.dfire.core.netty.worker;
 
 
-import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
