@@ -55,8 +55,6 @@ hera:
    sqoop.home : /opt/cloudera/parcels/CDH/lib/sqoop
    spark-home : /home/hadoop/spark161-hadoop26
 
-
-
 logging:
   config: classpath:logback-spring.xml
   path: /opt/logs/spring-boot

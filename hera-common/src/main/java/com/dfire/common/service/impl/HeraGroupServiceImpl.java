@@ -31,7 +31,7 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     }
 
     @Override
-    public Tuple<HeraJobVo, JobStatus> getHeraJobVo(int jobId) {
+    public Tuple<HeraJobVo, JobStatus> getHeraJobVo(String jobId) {
         return null;
     }
 
@@ -73,5 +73,50 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     @Override
     public List<HeraAction> getLastJobAction(String dp) {
         return null;
+    }
+
+
+
+    @Override
+    public int insert(HeraGroup heraFile) {
+        return heraGroupMapper.insert(heraFile);
+    }
+
+    @Override
+    public int delete(int id) {
+        return heraGroupMapper.delete(id);
+    }
+
+    @Override
+    public int update(HeraGroup heraFile) {
+        return heraGroupMapper.update(heraFile);
+    }
+
+    @Override
+    public List<HeraGroup> getAll() {
+        return heraGroupMapper.getAll();
+    }
+
+    @Override
+    public HeraGroup findById(int id) {
+        HeraGroup heraGroup = HeraGroup.builder().id(id).build();
+        return heraGroupMapper.findById(heraGroup);
+    }
+
+    @Override
+    public List<HeraGroup> findByIds(List<Integer> list) {
+        return heraGroupMapper.findByIds(list);
+    }
+
+    @Override
+    public List<HeraGroup> findByParent(int parentId) {
+        HeraGroup heraGroup = HeraGroup.builder().parent(parentId).build();
+        return heraGroupMapper.findByParent(heraGroup);
+    }
+
+    @Override
+    public List<HeraGroup> findByOwner(String owner) {
+        HeraGroup heraGroup = HeraGroup.builder().owner(owner).build();
+        return heraGroupMapper.findByOwner(heraGroup);
     }
 }

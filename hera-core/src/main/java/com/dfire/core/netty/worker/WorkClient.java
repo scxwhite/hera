@@ -2,6 +2,7 @@ package com.dfire.core.netty.worker;
 
 
 import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -130,7 +131,7 @@ public class WorkClient {
 
             private void editDebugLog(Job job, Exception e) {
                 try {
-                    HeraDebugHistory history = job.getJobContext().getDebugHistory();
+                    HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
                     String logContent = history.getLog().getContent();
                     if (logContent == null) {
                         logContent = "";
@@ -151,8 +152,8 @@ public class WorkClient {
 
                 for (Job job : new HashSet<Job>(workContext.getRunning().values())) {
                     try {
-                        HeraDebugHistory history = job.getJobContext().getDebugHistory();
-                        workContext.getDebugHistoryService().update(history);
+                        HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
+                        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                     } catch (Exception e) {
                         editDebugLog(job, e);
                     }
@@ -160,8 +161,8 @@ public class WorkClient {
 
                 for (Job job : new HashSet<Job>(workContext.getManualRunning().values())) {
                     try {
-                        HeraDebugHistory history = job.getJobContext().getDebugHistory();
-                        workContext.getDebugHistoryService().update(history);
+                        HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
+                        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                     } catch (Exception e) {
                         editLog(job, e);
                     }
@@ -169,8 +170,8 @@ public class WorkClient {
 
                 for (Job job : new HashSet<Job>(workContext.getDebugRunning().values())) {
                     try {
-                        HeraDebugHistory history = job.getJobContext().getDebugHistory();
-                        workContext.getDebugHistoryService().update(history);
+                        HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
+                        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                     } catch (Exception e) {
                         editDebugLog(job, e);
                     }
@@ -221,12 +222,12 @@ public class WorkClient {
         job.cancel();
         workContext.getDebugRunning().remove(debugId);
 
-        HeraDebugHistory history = job.getJobContext().getDebugHistory();
+        HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
         history.setEndTime(new Date());
         history.setStatus(com.dfire.common.enums.Status.FAILED);
-        workContext.getDebugHistoryService().update(history);
+        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getDebugHistoryService().update(history);
+        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
 
 
     }

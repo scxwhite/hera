@@ -37,7 +37,7 @@ public class HeraJobHistoryVo {
 
     private String illustrate;
 
-    private String statisticsEndTime;
+    private Date statisticsEndTime;
 
     private LogContent log = new LogContent();
 
@@ -45,7 +45,7 @@ public class HeraJobHistoryVo {
 
     private String cycle;
 
-    private String hostGroupId;
+    private int hostGroupId;
 
 
     Map<String, String> properties = new HashMap<>();

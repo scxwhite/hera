@@ -18,11 +18,16 @@ import java.util.Date;
 @NoArgsConstructor
 public class HeraHostGroup {
 
-    private Integer id;
+    private int id;
+
     private String name;
+
     private int effective;
+
     private String description;
+
     private Date gmtCreate;
+
     private Date gmtModified;
 
 }

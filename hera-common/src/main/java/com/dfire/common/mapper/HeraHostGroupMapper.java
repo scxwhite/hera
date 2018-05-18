@@ -1,8 +1,10 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraHostGroup;
+import com.dfire.common.mybatis.HeraInsertLangDriver;
+import com.dfire.common.mybatis.HeraSelectLangDriver;
+import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
-import org.omg.CORBA.INTERNAL;
 
 import java.util.List;
 
@@ -13,48 +15,23 @@ import java.util.List;
  */
 public interface HeraHostGroupMapper {
 
-    @Select("SELECT HOST FROM hera_host_relation WHERE host_group_id = #{preemptionMasterGroupId}")
-    List<String> getPreemptionGroup(@Param("preemptionMasterGroupId") String groupId);
+    @Insert("insert into hera_host_group (#{heraHostGroup})")
+    @Lang(HeraInsertLangDriver.class)
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    int insert(HeraHostGroup heraHostGroup);
 
+    @Update("update hera_host_group set effective = 0 where id = #{id}")
+    int delete(@Param("id") int id);
 
-    @Select("SELECT * FROM hera_host_group ")
-    List<HeraHostGroup> getAllHostGroupList();
+    @Update("update hera_host_group (#{heraHostGroup}) where id = #{id}")
+    @Lang(HeraUpdateLangDriver.class)
+    int update(HeraHostGroup heraHostGroup);
 
-    @Insert("<script>" +
-            "insert into hera_host_group" +
-            "<trim prefix = '(' suffix = ')' suffixOverrides=',' >" +
-            "<if test = 'name != null' >" +
-            "name ," +
-            "</if>" +
-            "<if test='effective != null' >" +
-            "effective ," +
-            "</if>" +
-            "<if test = 'description != null' >" +
-            "description ," +
-            "</if>" +
-            "</trim>" +
-            "values" +
-            "<trim prefix = '(' suffix = ')' suffixOverrides=',' >" +
-            "<if test = 'name != null' >" +
-            "#{name,jdbcType=VARCHAR}," +
-            "</if>" +
-            "<if test='effective != null' >" +
-            "#{effective, jdbcType=INTEGER} ," +
-            "</if>" +
-            "<if test = 'description != null' >" +
-            "#{description, jdbcType=VARCHAR}," +
-            "</if>" +
-            "</trim>" +
-            "</script>")
-    Integer insertHostGroup(HeraHostGroup hostGroup);
+    @Select("select * from hera_host_group")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraHostGroup> getAll();
 
-    @Update("update hera_host_group " +
-            "set name = #{name, jdbcType = VARCHAR}, " +
-            "effective = #{effective, jdbcType = INTEGER}," +
-            "description = #{description, jdbcType = VARCHAR} " +
-            "where id = #{id, jdbcType=INTEGER}")
-    Integer updateHostGroup(HeraHostGroup hostGroup);
-
-    @Delete("delete from hera_host_group where id = #{id, jdbcType=INTEGER}")
-    Integer deleteHostGroup(Integer id);
+    @Select("select * from hera_host_group where id = #{id} and effective = 1")
+    @Lang(HeraSelectLangDriver.class)
+    HeraHostGroup findById(HeraHostGroup heraHostGroup);
 }

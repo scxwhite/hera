@@ -2,6 +2,7 @@ package com.dfire.core.netty.worker.request;
 
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.model.HeraJobBean;
+import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
@@ -227,20 +228,20 @@ public class WorkExecuteJob {
             e.printStackTrace();
         }
         String debugId = debugMessage.getDebugId();
-        HeraDebugHistory history = workContext.getDebugHistoryService().findDebugHistoryById(debugId);
+        HeraDebugHistoryVo history = workContext.getDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
         Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
             @Override
             public Response call() throws Exception {
                 history.setExecuteHost(WorkContext.host);
                 history.setStartTime(new Date());
-                workContext.getDebugHistoryService().update(history);
+                workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
 
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator);
                 if(!directory.exists()) {
                     directory.mkdirs();
                 }
-                Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), history,
+                Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
                         directory.getAbsolutePath(), workContext.getApplicationContext());
                 workContext.getDebugRunning().put(debugId, job);
 
@@ -252,14 +253,14 @@ public class WorkExecuteJob {
                     exception = e;
                     history.getLog().appendHeraException(e);
                 } finally {
-                    HeraDebugHistory debugHistory = workContext.getDebugHistoryService().findDebugHistoryById(history.getId());
+                    HeraDebugHistoryVo debugHistory = workContext.getDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
                     debugHistory.setEndTime(new Date());
                     if(exitCode == 0) debugHistory.setStatus(com.dfire.common.enums.Status.SUCCESS);
                     else {
                         debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
                     }
                     history.getLog().appendHera("exitCode =" + exitCode);
-                    workContext.getDebugHistoryService().update(debugHistory);
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                     log.info("update debug jobId = " + debugId + " success");
 
                 }

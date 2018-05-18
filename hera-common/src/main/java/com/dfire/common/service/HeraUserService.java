@@ -1,6 +1,7 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraUser;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,26 +13,17 @@ import java.util.List;
 
 public interface HeraUserService {
 
-    Boolean addUser(HeraUser user) ;
+    int insert(HeraUser heraUser);
+
+    int delete(String id);
+
+    int update(HeraUser heraUser);
+
+    List<HeraUser> getAll();
+
+    HeraUser findById(HeraUser heraUser);
 
     HeraUser findByName(String name);
 
-    List<HeraUser> getAllUsers();
-
-    HeraUser findByUid(String uid);
-
-    List<HeraUser> findListByUid(List<String> uids);
-
-    HeraUser addOrUpdateUser(HeraUser user);
-
-    List<HeraUser> findListByUidByOrder(List<String> uids);
-
-    HeraUser findByUidFilter(String uid);
-
-    List<HeraUser> findAllUsers(String sortField, String sortOrder);
-
-    List<HeraUser> findListByFilter(String filter, String sortField, String sortOrder);
-
-    void update(HeraUser user);
-
+    List<HeraUser> findByIds(List<Integer> list);
 }

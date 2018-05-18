@@ -40,6 +40,7 @@ public class HeraAction {
 
     private Date gmtModified;
 
+
     private Integer groupId;
 
     private Long historyId;

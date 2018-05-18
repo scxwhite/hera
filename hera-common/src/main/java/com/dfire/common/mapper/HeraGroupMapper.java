@@ -1,12 +1,11 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraGroup;
-import com.dfire.common.entity.HeraJob;
-import com.dfire.common.entity.model.HeraGroupBean;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import com.dfire.common.mybatis.HeraInsertLangDriver;
+import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraSelectLangDriver;
+import com.dfire.common.mybatis.HeraUpdateLangDriver;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -17,22 +16,39 @@ import java.util.List;
  */
 public interface HeraGroupMapper {
 
-    int insert(HeraGroup heraJob);
+    @Insert("insert into hera_group (#{heraGroup})")
+    @Lang(HeraInsertLangDriver.class)
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    int insert(HeraGroup heraGroup);
 
-    int delete(@Param("id") String id, @Param("updateBy") String updateBy);
+    @Update("update hera_group set existed = 0 where id = #{id}")
+    int delete(@Param("id") int id);
 
-    int update(HeraGroup heraJob);
+    @Update("update hera_group (#{heraGroup}) where id = #{id}")
+    @Lang(HeraUpdateLangDriver.class)
+    int update(HeraGroup heraGroup);
 
+    @Select("select * from hera_group")
+    @Lang(HeraSelectLangDriver.class)
     List<HeraGroup> getAll();
 
+    @Select("select * from hera_group where id = #{id} and existed = 1")
+    @Lang(HeraSelectLangDriver.class)
+    HeraGroup findById(HeraGroup heraGroup);
 
-    @Select("select * from hera_group where id = #{id}")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "gmt_create", property = "gmtCreate")
-    })
-    public HeraGroup findById(@Param("id") String id);
+    @Select("select * from hera_group where id in (#{list}) and existed = 1")
+    @Lang(HeraSelectInLangDriver.class)
+    List<HeraGroup> findByIds(@Param("list") List<Integer> list);
 
-    @Select("SELECT * FROM hera_group WHERE name = 'default' ")
-    HeraGroup findGlobalGroup();
+
+    @Select("select * from hera_group where parent = #{parent} and existed = 1")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraGroup> findByParent(HeraGroup heraGroup);
+
+    @Select("select * from hera_group where owner = #{owner} and existed = 1")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraGroup> findByOwner(HeraGroup heraGroup);
+
+
+
 }

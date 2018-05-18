@@ -15,7 +15,7 @@ public class HeraGlobalEnvironment {
     @Getter
     public static String excludeFile;
 
-    public static String defaultWorkerGroup;
+    public static int defaultWorkerGroup;
 
     public static String preemptionMasterGroup;
 
@@ -40,7 +40,7 @@ public class HeraGlobalEnvironment {
         this.excludeFile = excludeFile;
     }
     @Value("${hera.default-worker-group-id}")
-    public void setDefaultWorkerGroup(String defaultWorkerGroup) {
+    public void setDefaultWorkerGroup(int defaultWorkerGroup) {
         this.defaultWorkerGroup = defaultWorkerGroup;
     }
     @Value("${hera.preemption-master-group-id}")

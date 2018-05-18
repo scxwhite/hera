@@ -19,7 +19,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class HeraGroup {
 
-    private String id;
+    private int id;
 
     private String configs;
 
@@ -35,7 +35,7 @@ public class HeraGroup {
 
     private String owner;
 
-    private String parent;
+    private int parent;
 
     private String resources;
 

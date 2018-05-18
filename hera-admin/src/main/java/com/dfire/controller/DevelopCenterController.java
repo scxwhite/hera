@@ -43,7 +43,7 @@ public class DevelopCenterController {
     @ResponseBody
     public List<HeraFileTreeNodeVo> initFileTree() {
 
-        List<HeraFile> fileVoList = heraFileService.getAllUserHeraFiles("biadmin");
+        List<HeraFile> fileVoList = heraFileService.findByOwner("biadmin");
         List<HeraFileTreeNodeVo> list = fileVoList.stream().map(file -> {
             HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
             if(file.getParent() == null ||StringUtils.isBlank(file.getParent())) {
@@ -66,7 +66,7 @@ public class DevelopCenterController {
     public String addFileAndFolder(HeraFile heraFile) {
         System.out.println(heraFile.getId());
         heraFile.setOwner("biadmin");
-        heraFileService.addHeraFile(heraFile);
+        heraFileService.insert(heraFile);
         return "sucess";
     }
 
@@ -75,19 +75,19 @@ public class DevelopCenterController {
     public HeraFile getHeraFile(HeraFile heraFile) {
         System.out.println(heraFile.getId());
         heraFile.setOwner("biadmin");
-        HeraFile file = heraFileService.getHeraFile(heraFile.getId());
+        HeraFile file = heraFileService.findById(heraFile.getId());
         return file;
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     @ResponseBody
     public String delete(HeraFile heraFile) {
-        HeraFile file = heraFileService.getHeraFile(heraFile.getId());
+        HeraFile file = heraFileService.findById(heraFile.getId());
         String response = "";
         if(file.getType().equals("1")) {
             response =  "文件夹不能删除";
         } else if(file.getType().equals("2")) {
-            heraFileService.deleteHeraFile(heraFile.getId());
+            heraFileService.delete(heraFile.getId());
             response = "删除成功";
         }
         return response;
@@ -96,9 +96,7 @@ public class DevelopCenterController {
     @RequestMapping(value = "/debug", method = RequestMethod.GET)
     @ResponseBody
     public String debug(String id, String script) throws ExecutionException, InterruptedException {
-        HeraFile file = heraFileService.getHeraFile(id);
-
-
+        HeraFile file = heraFileService.findById(id);
         HeraDebugHistory history = HeraDebugHistory.builder()
                 .fileId(id)
                 .script(script)
@@ -106,13 +104,9 @@ public class DevelopCenterController {
                 .runType(file.getType())
                 .owner(file.getOwner())
                 .build();
-        debugHistoryService.addHeraDebugHistory(history);
+        String newId = debugHistoryService.insert(history);
         System.out.println(history.getId());
-        workClient.executeJobFromWeb(ExecuteKind.DebugKind, id);
-
-
-
-
+        workClient.executeJobFromWeb(ExecuteKind.DebugKind, newId);
 
         return "";
     }

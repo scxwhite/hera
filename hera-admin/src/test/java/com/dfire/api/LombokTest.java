@@ -23,12 +23,13 @@ public class LombokTest {
         private int id;
         private String name;
         private double score;
-        private Shape shape = new Square(5, 10);
+        private Square shape = new Square(5, 10);
         private String[] tags;
 
 
-        @EqualsAndHashCode(callSuper=true)
-        public  class Square extends Shape {
+//        @EqualsAndHashCode(callSuper=true)
+        @EqualsAndHashCode
+        public  class Square {
             private final int width, height;
 
             public Square(int width, int height) {

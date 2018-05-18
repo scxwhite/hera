@@ -14,16 +14,22 @@ import java.util.Date;
  */
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class HeraPermission {
 
-    public static final String GROUP_TYPE="group";
-    public static final String JOB_TYPE="job";
-    private Long id;
+
+    private int id;
+
     private String type;
+
     private Long targetId;
+
     private String uid;
-    private Date gmtCreate=new Date();
-    private Date gmtModified=new Date();
+
+    private Date gmtCreate;
+
+    private Date gmtModified;
+
+
 }

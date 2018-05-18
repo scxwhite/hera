@@ -1,8 +1,6 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraFile;
-import com.dfire.common.entity.vo.HeraFileVo;
-import com.dfire.common.tree.HeraFileTreeNode;
 
 import java.util.List;
 
@@ -14,30 +12,21 @@ import java.util.List;
 public interface HeraFileService {
 
 
-    List<HeraFileVo> getSubHeraFiles(String owner);
+    int insert(HeraFile heraFile);
 
-    List<HeraFile> getAllUserHeraFiles(String owner);
+    int delete(String id);
 
-    public List<HeraFileVo> getUserFiles(String owner);
+    int update(HeraFile heraFile);
 
+    List<HeraFile> getAll();
 
-    //FileManagerService
-    HeraFileVo addHeraFile(HeraFile heraFile );
+    HeraFile findById(String id);
 
-    public void deleteHeraFile(String fileId) ;
+    List<HeraFile> findByIds(List<Integer> list);
 
-    void updateHeraFileContent(String fileId, String content);
+    List<HeraFile> findByParent(HeraFile heraFile);
 
-    void updateHeraFileName(String fileId, String name);
+    List<HeraFile> findByOwner(String heraFile);
 
-    public HeraFile getHeraFile(String id);
-
-    public  HeraFileTreeNode getUserFiles();
-
-    void moveHeraFile(String sourceId,String targetId);
-
-    List<HeraFileVo> getCommonFiles(HeraFileVo fm);
-
-    void updateHostGroupId(String fileId, String hostGroupId);
 
 }

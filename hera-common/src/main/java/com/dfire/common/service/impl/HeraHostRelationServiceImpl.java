@@ -20,7 +20,32 @@ public class HeraHostRelationServiceImpl implements HeraHostRelationService {
     private HeraHostRelationMapper heraHostRelationMapper;
 
     @Override
-    public List<HeraHostRelation> getAllHostRelationList() {
-        return heraHostRelationMapper.getAllHostRelationList();
+    public int insert(HeraHostRelation heraHostRelation) {
+        return heraHostRelationMapper.insert(heraHostRelation);
+    }
+
+    @Override
+    public int delete(int id) {
+        return heraHostRelationMapper.delete(id);
+    }
+
+    @Override
+    public int update(HeraHostRelation heraHostRelation) {
+        return heraHostRelationMapper.update(heraHostRelation);
+    }
+
+    @Override
+    public List<HeraHostRelation> getAll() {
+        return heraHostRelationMapper.getAll();
+    }
+
+    @Override
+    public HeraHostRelation findById(HeraHostRelation heraHostRelation) {
+        return heraHostRelationMapper.findById(heraHostRelation);
+    }
+
+    @Override
+    public List<String> findPreemptionGroup(int id) {
+        return heraHostRelationMapper.findPreemptionGroup(id);
     }
 }

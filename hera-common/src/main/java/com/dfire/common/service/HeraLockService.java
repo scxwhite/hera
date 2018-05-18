@@ -9,9 +9,9 @@ import com.dfire.common.entity.HeraLock;
  */
 public interface HeraLockService {
 
-    public HeraLock getHeraLock(String subGroup) ;
+    HeraLock findById(String group);
 
-    public void updateHeraLock(HeraLock heraLock);
+    int insert(HeraLock heraLock);
 
-    public void insertHeraLock(HeraLock heraLock);
+    int update(HeraLock heraLock);
 }

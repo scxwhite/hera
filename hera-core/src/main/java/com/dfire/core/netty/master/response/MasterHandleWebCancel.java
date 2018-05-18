@@ -1,5 +1,6 @@
 package com.dfire.core.netty.master.response;
 
+import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
@@ -40,7 +41,7 @@ public class MasterHandleWebCancel {
     private WebResponse handleDebugCancel(MasterContext context, WebRequest request) {
         WebResponse webResponse = null;
         String debugId = request.getId();
-        HeraDebugHistory debugHistory = context.getHeraDebugHistoryService().findDebugHistoryById(debugId);
+        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
         for (JobElement element : new ArrayList<JobElement>(context.getDebugQueue())) {
             if (element.getJobId().equals(debugId)) {
                 webResponse = WebResponse.newBuilder()
@@ -49,7 +50,7 @@ public class MasterHandleWebCancel {
                         .setStatus(Status.OK)
                         .build();
                 debugHistory.getLog().appendHera("任务取消");
-                context.getHeraDebugHistoryService().update(debugHistory);
+                context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
                 break;
 
             }
@@ -84,10 +85,10 @@ public class MasterHandleWebCancel {
                     .setErrorText("Manual任务中找不到匹配的job(" + debugHistory.getId() + "," + debugHistory.getId() + ")，无法执行取消命令")
                     .build();
         }
-        debugHistory = context.getHeraDebugHistoryService().findDebugHistoryById(debugId);
+        debugHistory = context.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
         debugHistory.setEndTime(new Date());
         debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
-        context.getHeraDebugHistoryService().update(debugHistory);
+        context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         return webResponse;
 
 

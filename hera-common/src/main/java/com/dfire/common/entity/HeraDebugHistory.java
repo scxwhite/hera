@@ -1,8 +1,9 @@
 package com.dfire.common.entity;
 
-import com.dfire.common.enums.Status;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -13,6 +14,8 @@ import java.util.Date;
  */
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class HeraDebugHistory {
 
     private String id;
@@ -25,7 +28,7 @@ public class HeraDebugHistory {
 
     private String executeHost;
 
-    private Status status;
+    private String status;
 
     private String owner;
 
@@ -38,8 +41,6 @@ public class HeraDebugHistory {
     private String runType;
 
     private String log;
-
-    private String host;
 
     private String hostGroupId;
 

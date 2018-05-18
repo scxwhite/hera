@@ -26,20 +26,21 @@ public class HostGroupController {
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
     public List<HeraHostGroup> getAll(){
-        return heraHostGroupService.getAllHostGroupList();
+        return heraHostGroupService.getAll();
     }
 
 
     @RequestMapping(value = "saveOrUpdate", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse saveOrUpdate(HeraHostGroup heraHostGroup) {
-        return heraHostGroupService.saveOrUpdate(heraHostGroup);
+         heraHostGroupService.insert(heraHostGroup);
+         return RestfulResponse.builder().build();
     }
 
     @RequestMapping(value = "del", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse del(Integer id) {
-        Boolean res = heraHostGroupService.deleteById(id);
-        return new RestfulResponse(res, res ? "删除成功" : "删除失败");
+        int res = heraHostGroupService.delete(id);
+        return new RestfulResponse(res >0 , res >0 ? "删除成功" : "删除失败");
     }
 }

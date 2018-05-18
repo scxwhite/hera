@@ -1,5 +1,7 @@
 package com.dfire.common.util;
 
+import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.enums.Status;
 import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.HeraJobHistory;
@@ -52,6 +54,23 @@ public class BeanConvertUtils {
         jobHistory.setStatus(jobHistoryVo.getStatus().toString());
         jobHistory.setProperties(StringUtil.convertMapToString(jobHistoryVo.getProperties()));
         jobHistory.setTriggerType(jobHistoryVo.getTriggerType().getId());
+        return jobHistory;
+    }
+
+    public static HeraDebugHistoryVo convert(HeraDebugHistory heraJobHistory) {
+        HeraDebugHistoryVo heraJobHistoryVo = HeraDebugHistoryVo.builder().build();
+        BeanUtils.copyProperties(heraJobHistory, heraJobHistoryVo);
+        heraJobHistoryVo.setStatus(Status.parse(heraJobHistory.getStatus()));
+        heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
+        return heraJobHistoryVo;
+
+    }
+
+    public static HeraDebugHistory convert(HeraDebugHistoryVo jobHistoryVo) {
+        HeraDebugHistory jobHistory = HeraDebugHistory.builder().build();
+        BeanUtils.copyProperties(jobHistoryVo, jobHistory);
+        jobHistory.setStatus(jobHistoryVo.getStatus().toString());
+        jobHistory.setLog(jobHistoryVo.getLog().getContent());
         return jobHistory;
     }
 

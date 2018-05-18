@@ -2,6 +2,7 @@ package com.dfire.core.job;
 
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.HeraDateTool;
 import com.dfire.common.util.HierarchyProperties;
@@ -50,7 +51,7 @@ public class JobContext {
 
     private HeraJobHistoryVo heraJobHistory;
 
-    private HeraDebugHistory debugHistory;
+    private HeraDebugHistoryVo debugHistory;
 
     public JobContext() {
         this(MANUAL_RUN);

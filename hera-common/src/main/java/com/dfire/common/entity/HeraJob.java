@@ -37,7 +37,7 @@ public class HeraJob {
 
     private Date gmtModified;
 
-    private Integer groupId;
+    private int groupId;
 
     private String historyId;
 

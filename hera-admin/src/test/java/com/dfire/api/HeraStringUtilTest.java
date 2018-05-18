@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @time: Created in 18:29 2018/3/22
  * @desc
  */
-public class StringUtilTest {
+public class HeraStringUtilTest {
 
     @Test
     public void md5() {

@@ -1,6 +1,13 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.vo.HeraDebugHistoryVo;
+import com.dfire.common.mybatis.HeraInsertLangDriver;
+import com.dfire.common.mybatis.HeraSelectLangDriver;
+import com.dfire.common.mybatis.HeraUpdateLangDriver;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -9,11 +16,15 @@ import com.dfire.common.entity.HeraDebugHistory;
  */
 public interface HeraDebugHistoryService {
 
-    public void addHeraDebugHistory(HeraDebugHistory heraDebugHistory);
+    String insert(HeraDebugHistory heraDebugHistory);
 
-    public HeraDebugHistory findDebugHistoryById(String id);
+    int delete( int id);
 
-    public void update(HeraDebugHistory heraDebugHistory);
+    int update(HeraDebugHistory heraDebugHistory);
+
+    List<HeraDebugHistory> getAll();
+
+    HeraDebugHistoryVo findById(HeraDebugHistory heraDebugHistory);
 
 
 }

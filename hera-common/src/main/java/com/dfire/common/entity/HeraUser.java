@@ -13,7 +13,7 @@ import java.sql.Date;
 @AllArgsConstructor
 public class HeraUser {
 
-	private Long id;
+	private int id;
 
 	private String email;
 

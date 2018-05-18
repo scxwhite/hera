@@ -1,9 +1,11 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraUser;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import com.dfire.common.mybatis.HeraInsertLangDriver;
+import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraSelectLangDriver;
+import com.dfire.common.mybatis.HeraUpdateLangDriver;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -15,19 +17,33 @@ import java.util.List;
 public interface HeraUserMapper {
 
 
-    @Insert("INSERT INTO hera_user" +
-            "(name, password, email, phone, description, is_effective) " +
-            "VALUES" +
-            "(#{name, jdbcType=VARCHAR}, #{password, jdbcType=VARCHAR}, #{email, jdbcType=VARCHAR}, #{phone, jdbcType=VARCHAR}, #{description, jdbcType=VARCHAR}, 0)")
-    int insert(HeraUser user);
+    @Insert("insert into hera_user (#{heraUser})")
+    @Lang(HeraInsertLangDriver.class)
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    int insert(HeraUser heraUser);
 
-    int update(HeraUser user);
+    @Delete("delete from hera_user where id = #{id}")
+    int delete(@Param("id") String id);
+
+    @Update("update hera_user (#{heraUser}) where id = #{id}")
+    @Lang(HeraUpdateLangDriver.class)
+    int update(HeraUser heraUser);
+
+    @Select("select * from hera_user")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraUser> getAll();
+
+    @Select("select * from hera_user where id = #{id}")
+    @Lang(HeraSelectLangDriver.class)
+    HeraUser findById(HeraUser heraUser);
 
     @Select("SELECT * FROM hera_user WHERE NAME = #{name}")
-    HeraUser getByName(@Param("name") String name);
+    @Lang(HeraUpdateLangDriver.class)
+    HeraUser getByName(HeraUser heraUser);
 
-    @Select("SELECT * FROM hera_user")
-    List<HeraUser> getAll();
+    @Select("select * from hera_user where id in (#{list})")
+    @Lang(HeraSelectInLangDriver.class)
+    List<HeraUser> findByIds(@Param("list") List<Integer> list);
 
 
 }

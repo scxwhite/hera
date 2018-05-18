@@ -1,7 +1,9 @@
 package com.dfire.core.netty.worker.request;
 
 import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.WorkContext;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -111,10 +113,10 @@ public class WorkHandleCancel {
                             .build();
                 }
             });
-            HeraDebugHistory debugHistory = workContext.getDebugHistoryService().findDebugHistoryById(debugId);
+            HeraDebugHistoryVo debugHistory = workContext.getDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
             debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
             debugHistory.setEndTime(new Date());
-            workContext.getDebugHistoryService().update(debugHistory);
+            workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         } else {
             future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
                 @Override

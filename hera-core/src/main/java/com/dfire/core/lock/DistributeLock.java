@@ -1,7 +1,9 @@
 package com.dfire.core.lock;
 
+import com.dfire.common.entity.HeraHostRelation;
 import com.dfire.common.entity.HeraLock;
 import com.dfire.common.service.HeraHostGroupService;
+import com.dfire.common.service.HeraHostRelationService;
 import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.HeraSchedule;
@@ -31,7 +33,7 @@ public class DistributeLock {
     public static String host = "LOCALHOST";
 
     @Autowired
-    private HeraHostGroupService hostGroupService;
+    private HeraHostRelationService hostGroupService;
     @Autowired
     private HeraLockService heraLockService;
     @Autowired
@@ -65,19 +67,19 @@ public class DistributeLock {
 
     public void getLock() {
         log.info("start get lock");
-        HeraLock heraLock = heraLockService.getHeraLock("online");
+        HeraLock heraLock = heraLockService.findById("online");
         if (heraLock == null) {
             heraLock = HeraLock.builder()
                     .host(host)
                     .serverUpdate(new Date())
                     .build();
-            heraLockService.insertHeraLock(heraLock);
+            heraLockService.insert(heraLock);
         }
 
 
         if (host.equals(heraLock.getHost().trim())) {
             heraLock.setServerUpdate(new Date());
-            heraLockService.updateHeraLock(heraLock);
+            heraLockService.update(heraLock);
             log.info("hold lock and update time");
             heraSchedule.startup();
         } else {
@@ -90,7 +92,7 @@ public class DistributeLock {
                 heraLock.setHost(host);
                 heraLock.setServerUpdate(new Date());
                 heraLock.setSubGroup("online");
-                heraLockService.updateHeraLock(heraLock);
+                heraLockService.update(heraLock);
                 log.error("master 发生切换");
                 heraSchedule.startup();
             } else {
@@ -109,7 +111,7 @@ public class DistributeLock {
     }
 
     public boolean isPreemptionHost() {
-        List<String> preemptionHostList = hostGroupService.getPreemptionGroup("1");
+        List<String> preemptionHostList = hostGroupService.findPreemptionGroup(1);
         if (preemptionHostList.contains(host)) {
             return true;
         } else {

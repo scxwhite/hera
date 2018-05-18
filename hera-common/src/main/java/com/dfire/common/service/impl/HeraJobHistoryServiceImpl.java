@@ -8,6 +8,8 @@ import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 19:18 2018/1/12
@@ -37,5 +39,31 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     @Override
     public void updateJobStatus(JobStatus jobStatus) {
 
+    }
+
+    @Override
+    public int insert(HeraJobHistory heraJobHistory) {
+        return heraJobHistoryMapper.insert(heraJobHistory);
+    }
+
+    @Override
+    public int delete(String id) {
+        return heraJobHistoryMapper.delete(id);
+    }
+
+    @Override
+    public int update(HeraJobHistory heraJobHistory) {
+        return heraJobHistoryMapper.update(heraJobHistory);
+    }
+
+    @Override
+    public List<HeraJobHistory> getAll() {
+        return heraJobHistoryMapper.getAll();
+    }
+
+    @Override
+    public HeraJobHistory findById(String id) {
+        HeraJobHistory history = HeraJobHistory.builder().id(id).build();
+        return heraJobHistoryMapper.findById(history);
     }
 }

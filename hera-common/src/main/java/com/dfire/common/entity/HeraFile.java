@@ -19,13 +19,21 @@ import java.util.Date;
 public class HeraFile {
 
     private String id;
+
     private String name;
+
     private String owner;
+
     private String parent;
+
     private String content;
+
     private String type;
-    private Date gmtCreate = new Date();
-    private Date gmtModified = new Date();
+
+    private Date gmtCreate;
+
+    private Date gmtModified;
+
     private String hostGroupId;
 
 }

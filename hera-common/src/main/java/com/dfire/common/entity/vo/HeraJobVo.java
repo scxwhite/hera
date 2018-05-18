@@ -18,7 +18,7 @@ import java.util.*;
 @Data
 public class HeraJobVo {
 
-    private int id;
+    private String id;
 
     private String auto;
 
@@ -36,7 +36,7 @@ public class HeraJobVo {
 
     private Date gmtModified;
 
-    private Integer groupId;
+    private int groupId;
 
     private String historyId;
 
@@ -78,7 +78,7 @@ public class HeraJobVo {
 
     private String timezone;
 
-    private String hostGroupId;
+    private int hostGroupId;
 
     private Long mustEndMinute;
 

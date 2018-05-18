@@ -3,6 +3,8 @@ package com.dfire.common.entity.vo;
 import com.dfire.common.enums.JobRunType;
 import com.dfire.common.enums.Status;
 import com.dfire.common.vo.LogContent;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.Date;
 
@@ -11,6 +13,8 @@ import java.util.Date;
  * @time: Created in 下午12:05 2018/5/16
  * @desc
  */
+@Builder
+@Data
 public class HeraDebugHistoryVo {
 
     private String id;
@@ -27,7 +31,7 @@ public class HeraDebugHistoryVo {
 
     private String owner;
 
-    private Date gmtCreate ;
+    private Date gmtCreate;
 
     private Date gmtModified;
 
@@ -35,10 +39,10 @@ public class HeraDebugHistoryVo {
 
     private JobRunType runType;
 
-    private LogContent log = new LogContent();
+    private LogContent log;
 
     private String host;
 
-    private String hostGroupId;
+    private int hostGroupId;
 
 }

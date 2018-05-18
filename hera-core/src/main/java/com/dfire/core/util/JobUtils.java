@@ -13,6 +13,7 @@ import com.dfire.common.processor.Processor;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraProfileService;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.RenderHierarchyProperties;
@@ -42,7 +43,7 @@ public class JobUtils {
 
     public static Job createDebugJob(JobContext jobContext, HeraDebugHistory heraDebugHistory,
                                      String workDir, ApplicationContext applicationContext) {
-        jobContext.setDebugHistory(heraDebugHistory);
+        jobContext.setDebugHistory(BeanConvertUtils.convert(heraDebugHistory));
         jobContext.setWorkDir(workDir);
         //脚本中的变量替换，暂时不做
         HierarchyProperties hierarchyProperties = new HierarchyProperties(new HashMap<>());
@@ -53,7 +54,7 @@ public class JobUtils {
         hierarchyProperties.setProperty("job.script", script);
         //权限控制判断，暂时不做
         HeraFileService heraFileService = (HeraFileService) applicationContext.getBean("heraFileService");
-        String owner = heraFileService.getHeraFile(heraDebugHistory.getId()).getOwner();
+        String owner = heraFileService.findById(heraDebugHistory.getId()).getOwner();
         HeraProfileService heraProfileService = (HeraProfileService) applicationContext.getBean("profileService");
         HeraProfileVo heraProfile = heraProfileService.findByOwner(owner);
         if (heraProfile != null && heraProfile.getHadoopConf() != null) {
@@ -91,7 +92,7 @@ public class JobUtils {
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
         List<Map<String, String>> resource = jobBean.getHierarchyResources();
         HeraGroupService heraGroupService = (HeraGroupService) applicationContext.getBean("heraGroupService");
-        int jobId = jobBean.getHeraJobVo().getId();
+        String jobId = jobBean.getHeraJobVo().getId();
         String script = heraGroupService.getHeraJobVo(jobId).getSource().getScript();
         String actionDate = history.getId().substring(0, 12) + "00";
         if (StringUtils.isNotBlank(actionDate) && actionDate.length() == 14) {
@@ -138,9 +139,9 @@ public class JobUtils {
                 String value = map.get(key);
 
                 if (StringUtils.isBlank(value)) {
-                    if (StringUtils.isBlank(history.getStatisticsEndTime()) || StringUtils.isBlank(history.getTimezone())) {
-                        value = value.replace("${j_set}", history.getStatisticsEndTime());
-                        value = value.replace("${j_est}", DateUtil.string2Timestamp(history.getStatisticsEndTime(), history.getTimezone()) / 1000 + "");
+                    if (StringUtils.isBlank(history.getStatisticsEndTime().toString()) || StringUtils.isBlank(history.getTimezone())) {
+                        value = value.replace("${j_set}", history.getStatisticsEndTime().toString());
+                        value = value.replace("${j_est}", DateUtil.string2Timestamp(history.getStatisticsEndTime().toString(), history.getTimezone()) / 1000 + "");
                         varMap.put(key, value);
                     }
                 }
@@ -195,12 +196,12 @@ public class JobUtils {
     }
 
     private static String replaceScript(HeraJobHistoryVo history, String script) {
-        if (StringUtils.isBlank(history.getStatisticsEndTime()) || StringUtils.isBlank(history.getTimezone())) {
+        if (StringUtils.isBlank(history.getStatisticsEndTime().toString()) || StringUtils.isBlank(history.getTimezone())) {
             return script;
         }
-        script = script.replace("${j_set}", history.getStatisticsEndTime());
+        script = script.replace("${j_set}", history.getStatisticsEndTime().toString());
         try {
-            script = script.replace("${j_est}", DateUtil.string2Timestamp(history.getStatisticsEndTime(),
+            script = script.replace("${j_est}", DateUtil.string2Timestamp(history.getStatisticsEndTime().toString(),
                     history.getTimezone()) / 1000 + "");
         } catch (ParseException e) {
             e.printStackTrace();
@@ -241,7 +242,7 @@ public class JobUtils {
             Map<String, String> map = new HashMap<>(2);
             if (uri.startsWith("doc://")) {
                 HeraFileService fileService = (HeraFileService) applicationContext.getBean("fileService");
-                HeraFile heraFile = fileService.getHeraFile(path);
+                HeraFile heraFile = fileService.findById(path);
                 name = heraFile.getName();
                 referScript = heraFile.getContent();
             }

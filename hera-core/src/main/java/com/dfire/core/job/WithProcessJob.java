@@ -37,7 +37,7 @@ public class WithProcessJob extends AbstractJob {
         HeraFile heraFile = null;
         if(jobContext.getDebugHistory() != null) {
             isDebug = true;
-            heraFile = fileService.getHeraFile(jobContext.getDebugHistory().getFileId());
+            heraFile = fileService.findById(jobContext.getDebugHistory().getFileId());
         } else {
             jobId = jobContext.getHeraJobHistory().getJobId();
             historyId = jobContext.getHeraJobHistory().getId();

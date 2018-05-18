@@ -1,6 +1,7 @@
 package com.dfire.core.netty.master;
 
 
+import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.enums.Status;
 import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.HeraAction;
@@ -491,7 +492,7 @@ public class Master {
             int retryCount = 0;
             int retryWaitTime = 1;
             HeraJobVo heraJobVo = masterContext.getHeraGroupService().getHeraJobVo(jobId).getSource();
-            Map<String, String> properties = heraJobVo.getProperties();
+            Map<String, String> properties = heraJobVo.getConfigs();
             if(properties != null && properties.size() > 0) {
                 retryCount = Integer.parseInt(properties.get("roll.back.times") == null ? "0" : properties.get("roll.back.times"));
                 retryWaitTime = Integer.parseInt(properties.get("roll.back.wait.time") == null ? "0" : properties.get("roll.back.wait.time"));
@@ -588,9 +589,9 @@ public class Master {
         new Thread() {
             @Override
             public void run() {
-                HeraDebugHistory history = masterContext.getHeraDebugHistoryService().findDebugHistoryById(jobId);
+                HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(jobId).build());
                 history.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
-                masterContext.getHeraDebugHistoryService().update(history);
+                masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
                 Exception exception = null;
                 Response response = null;
                 try {
@@ -604,9 +605,9 @@ public class Master {
                 if (!success) {
                     exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
                     log.info("debug job error");
-                    history = masterContext.getHeraDebugHistoryService().findDebugHistoryById(jobId);
+                    history = masterContext.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(jobId).build());
                     HeraDebugFailEvent failEvent = HeraDebugFailEvent.builder()
-                            .debugHistory(history)
+                            .debugHistory(BeanConvertUtils.convert(history))
                             .throwable(exception)
                             .fileId(history.getFileId())
                             .build();
@@ -615,7 +616,7 @@ public class Master {
                     log.info("debug success");
                     HeraDebugSuccessEvent successEvent = HeraDebugSuccessEvent.builder()
                             .fileId(history.getFileId())
-                            .history(history)
+                            .history(BeanConvertUtils.convert(history))
                             .build();
                     masterContext.getDispatcher().forwardEvent(successEvent);
                 }
@@ -625,8 +626,8 @@ public class Master {
     }
 
 
-    private MasterWorkHolder getRunnableWork(String hostGroupId) {
-        if (hostGroupId == null) {
+    private MasterWorkHolder getRunnableWork(int hostGroupId) {
+        if (hostGroupId == 0) {
             hostGroupId = HeraGlobalEnvironment.defaultWorkerGroup;
         }
         MasterWorkHolder workHolder = null;
@@ -667,7 +668,7 @@ public class Master {
         return workHolder;
     }
 
-    public void debug(HeraDebugHistory debugHistory) {
+    public void debug(HeraDebugHistoryVo debugHistory) {
         JobElement element = JobElement.builder()
                 .jobId(debugHistory.getId())
                 .hostGroupId(debugHistory.getHostGroupId())
@@ -675,7 +676,7 @@ public class Master {
         debugHistory.setStatus(Status.RUNNING);
         debugHistory.setStartTime(new Date());
         debugHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 进入任务队列");
-        masterContext.getHeraDebugHistoryService().update(debugHistory);
+        masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         masterContext.getDebugQueue().offer(element);
 
     }
@@ -684,7 +685,7 @@ public class Master {
         String jobId = heraJobHistory.getJobId();
         int priorityLevel = 3;
         HeraJobVo heraJobVo = masterContext.getHeraGroupService().getHeraJobVo(jobId).getSource();
-        String priorityLevelValue = heraJobVo.getProperties().get("run.priority.level");
+        String priorityLevelValue = heraJobVo.getConfigs().get("run.priority.level");
         if (priorityLevelValue != null) {
             priorityLevel = Integer.parseInt(priorityLevelValue);
         }

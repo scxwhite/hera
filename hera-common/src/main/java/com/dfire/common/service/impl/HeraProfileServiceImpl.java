@@ -19,21 +19,19 @@ public class HeraProfileServiceImpl implements HeraProfileService {
     @Autowired
     private HeraProfileMapper heraProfileMapper;
 
+
     @Override
     public HeraProfileVo findByOwner(String owner) {
-        HeraProfile heraProfile = heraProfileMapper.findByOwner(owner);
-        HeraProfileVo heraProfileVo = BeanConvertUtils.convert(heraProfile);
-
-        return heraProfileVo;
+        return null;
     }
 
     @Override
     public void insert(HeraProfile profile) {
-        heraProfileMapper.insert(profile);
+
     }
 
     @Override
     public void update(HeraProfile profile) {
-        heraProfileMapper.update(profile);
+
     }
 }

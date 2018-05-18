@@ -15,7 +15,7 @@ public class JobElement {
 
     private String jobId;
 
-    private String hostGroupId;
+    private int hostGroupId;
 
     private Integer priorityLevel;
 

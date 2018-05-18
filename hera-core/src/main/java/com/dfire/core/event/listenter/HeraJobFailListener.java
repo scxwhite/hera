@@ -44,8 +44,7 @@ public class HeraJobFailListener extends AbstractListener {
             HeraJobFailedEvent failedEvent = (HeraJobFailedEvent) mvcEvent.getApplicationEvent();
             String jobId = failedEvent.getJobId();
             HeraJobHistoryVo heraJobHistory = heraJobHistoryService.findJobHistory(jobId);
-            HeraJob heraJob = heraJobService.findById(jobId);
-            HeraUser owner = heraUserService.findByUid(jobId);
+            HeraJob heraJob = heraJobService.findById(Integer.parseInt(jobId));
             Executor executor = Executors.newScheduledThreadPool(2);
 
             executor.execute(new Runnable() {

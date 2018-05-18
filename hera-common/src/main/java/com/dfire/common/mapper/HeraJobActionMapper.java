@@ -1,10 +1,9 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraAction;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import com.dfire.common.mybatis.HeraInsertLangDriver;
+import com.dfire.common.mybatis.HeraSelectLangDriver;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -15,28 +14,25 @@ import java.util.List;
  */
 public interface HeraJobActionMapper {
 
+    @Insert("insert into hera_action (#{heraAction})")
+    @Lang(HeraInsertLangDriver.class)
     int insert(HeraAction heraAction);
 
-    int delete(@Param("id") String id, @Param("updateBy") String updateBy);
+    @Delete("delete from hera_action where id = #{id}")
+    int delete(@Param("id") String id);
 
+    @Update("update heraAction where id = #{id}")
     int update(HeraAction heraJobHistory);
 
+    @Select("select * from hera_action")
     List<HeraAction> getAll();
 
-
     @Select("select * from hera_action where id = #{id}")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "gmt_create", property = "gmtCreate")
-    })
-    public HeraAction findById(@Param("id") String id);
+    @Lang(HeraSelectLangDriver.class)
+    public HeraAction findById(HeraAction heraAction);
 
-    @Select("select * from hera_action where jobId = #{jobId}")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "gmt_create", property = "gmtCreate")
-    })
-    public HeraAction findByJobId(@Param("jobId") String jobId);
+    @Select("select * from hera_action where job_id = #{jobId}")
+    public HeraAction findByJobId(HeraAction heraAction);
 
 
 }

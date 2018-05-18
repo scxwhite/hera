@@ -27,14 +27,14 @@ public class HeraJobController {
     public HeraJob getJob() {
         // 处理"/books/"的GET请求，用来获取图书列表
         // 还可以通过@RequestParam传递参数来进行查询条件或者翻页信息的传递
-        HeraJob heraJob = heraJobService.findByName(675);
+        HeraJob heraJob = heraJobService.findById(675);
         return heraJob;
     }
 
     @ApiOperation(value="获取书籍列表", notes="")
     @RequestMapping(value={"/hh"}, method=RequestMethod.GET)
     public HeraJob getJob2() {
-        HeraJob heraJob = heraJobService.findByName(182);
+        HeraJob heraJob = heraJobService.findById(182);
         return heraJob;
     }
 }

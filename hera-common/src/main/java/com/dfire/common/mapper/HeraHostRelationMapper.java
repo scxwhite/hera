@@ -1,7 +1,10 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraHostRelation;
-import org.apache.ibatis.annotations.Select;
+import com.dfire.common.mybatis.HeraInsertLangDriver;
+import com.dfire.common.mybatis.HeraSelectLangDriver;
+import com.dfire.common.mybatis.HeraUpdateLangDriver;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -12,7 +15,28 @@ import java.util.List;
  */
 public interface HeraHostRelationMapper {
 
-    @Select("SELECT * FROM hera_host_relation ")
-    public List<HeraHostRelation> getAllHostRelationList();
+    @Insert("insert into hera_host_relation (#{heraHostRelation})")
+    @Lang(HeraInsertLangDriver.class)
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
+    int insert(HeraHostRelation heraHostRelation);
+
+    @Update("update hera_host_relation set effective = 0 where id = #{id}")
+    int delete(@Param("id") int id);
+
+    @Update("update hera_host_relation (#{heraHostRelation}) where id = #{id}")
+    @Lang(HeraUpdateLangDriver.class)
+    int update(HeraHostRelation heraHostRelation);
+
+    @Select("select * from hera_host_relation")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraHostRelation> getAll();
+
+    @Select("select * from hera_host_relation where id = #{id}")
+    @Lang(HeraSelectLangDriver.class)
+    HeraHostRelation findById(HeraHostRelation heraHostRelation);
+
+    @Select("select host from hera_host_relation where host_group_id = #{groupId}")
+    @Lang(HeraSelectLangDriver.class)
+    List<String> findPreemptionGroup(@Param("groupId") int groupId);
 
 }

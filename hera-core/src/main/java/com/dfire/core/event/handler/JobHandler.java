@@ -109,7 +109,7 @@ public class JobHandler extends AbstractHandler {
                     HeraJobVo heraJobVo = heraGroupService.getUpstreamJobBean(jobId).getHeraJobVo();
                     HeraJobHistoryVo history = HeraJobHistoryVo.builder()
                             .id(jobId)
-                            .jobId(heraJobVo.getToJobId())
+                            .jobId(heraJobVo.getId())
                             .triggerType(TriggerType.MANUAL_RECOVER)
                             .illustrate("启动服务器发现正在running状态，判断状态已经丢失，进行重试操作")
                             .operator(heraJobVo.getOwner())
@@ -123,13 +123,13 @@ public class JobHandler extends AbstractHandler {
         }
 
         HeraJobVo heraJobVo = cache.getHeraJobVo();
-        if(heraJobVo.getAuto() && heraJobVo.getJobScheduleType() == JobScheduleType.Independent) {
+        if(heraJobVo.getAuto().equals("1") && (heraJobVo.getScheduleType().getType() == JobScheduleType.Independent.getType())) {
             try {
                 createScheduleJob(masterContext.getDispatcher(), heraJobVo);
                 log.info("启动服务器，创建任务的quartz定时调度");
             } catch (Exception e) {
                 if(e instanceof SchedulerException) {
-                    heraJobVo.setAuto(false);
+                    heraJobVo.setAuto("o");
                     log.error("创建任务的quartz定时调度失败");
                     heraGroupService.updateJob(heraJobVo);
                 }
@@ -150,10 +150,10 @@ public class JobHandler extends AbstractHandler {
             autoRecovery();
             return;
         }
-        if(!heraJobVo.getAuto()) {
+        if(!heraJobVo.getAuto().equals("0")) {
             return;
         }
-        if(heraJobVo.getJobScheduleType() == JobScheduleType.Independent) {
+        if(heraJobVo.getScheduleType() == JobScheduleType.Independent) {
             return;
         }
         if(!heraJobVo.getDependencies().contains(jobId)) {
@@ -200,7 +200,7 @@ public class JobHandler extends AbstractHandler {
         HeraJobHistoryVo history = HeraJobHistoryVo.builder()
                 .jobId(heraJobVo.getId())
                 .illustrate("依赖任务全部到位，开始执行")
-                .jobId(heraJobVo.getId() == null ? null : heraJobVo.getToJobId())
+                .jobId(heraJobVo.getId() == null ? null : heraJobVo.getId())
                 .triggerType(TriggerType.SCHEDULE)
                 .statisticsEndTime(heraJobVo.getStatisticStartTime())
                 .hostGroupId(heraJobVo.getHostGroupId())
@@ -223,7 +223,7 @@ public class JobHandler extends AbstractHandler {
             autoRecovery();
             return;
         }
-        if(! heraJobVo.getAuto()) {
+        if(heraJobVo.getAuto().equals("0")) {
             return;
         }
 
@@ -274,7 +274,7 @@ public class JobHandler extends AbstractHandler {
             log.error(e.toString());
         }
 
-        if(!heraJobVo.getAuto()) {
+        if(!heraJobVo.getAuto().equals("1")) {
             if(jobDetail != null) {
                 try {
                     jobDetail = masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey);
@@ -283,7 +283,7 @@ public class JobHandler extends AbstractHandler {
                     log.error(e.toString());
                 }
             }
-        } else if(heraJobVo.getJobScheduleType() == JobScheduleType.Independent) {//独立任务
+        } else if(heraJobVo.getScheduleType() == JobScheduleType.Independent) {//独立任务
             try {
                 if(jobDetail != null) {
                     return;

@@ -27,14 +27,14 @@ public class HeraDebugListener extends AbstractListener {
         if(mvcEvent.getApplicationEvent() instanceof HeraDebugFailEvent) {
             HeraDebugFailEvent event = (HeraDebugFailEvent) mvcEvent.getApplicationEvent();
             final HeraDebugHistory history = event.getDebugHistory();
-            HeraFile heraFile = heraFileService.getHeraFile(history.getId());
+            HeraFile heraFile = heraFileService.findById(history.getId());
             String msg = "手动调试任务" + heraFile.getName() + "运行失败";
 
 
         } else if(mvcEvent.getApplicationEvent() instanceof HeraDebugSuccessEvent) {
             HeraDebugSuccessEvent event = (HeraDebugSuccessEvent) mvcEvent.getApplicationEvent();
             final HeraDebugHistory history = event.getHistory();
-            HeraFile heraFile = heraFileService.getHeraFile(history.getId());
+            HeraFile heraFile = heraFileService.findById(history.getId());
             String msg = "手动调试任务" + heraFile.getName() + "运行成功";
 
         }

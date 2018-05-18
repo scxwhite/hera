@@ -1,8 +1,13 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraFile;
+
 import java.util.List;
 
+import com.dfire.common.mybatis.HeraInsertLangDriver;
+import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraSelectLangDriver;
+import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
 
 /**
@@ -13,50 +18,38 @@ import org.apache.ibatis.annotations.*;
 public interface HeraFileMapper {
 
 
-    @Select("SELECT * FROM hera_file WHERE parent = #{parent}")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "host_group_id", property = "hostGroupId"),
-            @Result(column = "gmt_create", property = "gmtCreate"),
-            @Result(column = "gmt_modified", property = "gmtModified")
-    })
-    List<HeraFile> getSubHeraFiles(@Param("parent") String parentId);
+    @Insert("insert into hera_file (#{heraFile})")
+    @Lang(HeraInsertLangDriver.class)
+    @Options(useGeneratedKeys = true, keyProperty = "heraFile.id", keyColumn = "id")
+    int insert(HeraFile heraFile);
 
-    @Select("SELECT * FROM hera_file WHERE OWNER = #{owner} and parent is null")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "host_group_id", property = "hostGroupId"),
-            @Result(column = "gmt_create", property = "gmtCreate"),
-            @Result(column = "gmt_modified", property = "gmtModified")
-    })
-    List<HeraFile> getUserHeraFiles(@Param("owner") String owner);
+    @Delete("delete from hera_file where id = #{id}")
+    int delete(@Param("id") String id);
 
-    @Select("SELECT * FROM hera_file WHERE OWNER = #{owner}")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "host_group_id", property = "hostGroupId"),
-            @Result(column = "gmt_create", property = "gmtCreate"),
-            @Result(column = "gmt_modified", property = "gmtModified")
-    })
-    List<HeraFile> getAllUserHeraFiles(@Param("owner") String owner);
+    @Update("update hera_file (#{heraFile}) where id = #{id}")
+    @Lang(HeraUpdateLangDriver.class)
+    int update(HeraFile heraFile);
 
-    @Select("SELECT * FROM hera_file WHERE id = #{id}")
-    @Results({
-            @Result(id = true, column = "id", property = "id"),
-            @Result(column = "host_group_id", property = "hostGroupId"),
-            @Result(column = "gmt_create", property = "gmtCreate"),
-            @Result(column = "gmt_modified", property = "gmtModified")
-    })
-    public HeraFile getHeraFile(String id);
+    @Select("select * from hera_file")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraFile> getAll();
+
+    @Select("select * from hera_file where id = #{id}")
+    @Lang(HeraSelectLangDriver.class)
+    HeraFile findById(HeraFile heraFile);
+
+    @Select("select * from hera_file where id in (#{list})")
+    @Lang(HeraSelectInLangDriver.class)
+    List<HeraFile> findByIds(@Param("list") List<Integer> list);
 
 
-    @Insert("INSERT into hera_file(content, name, owner, parent, type, host_group_id, gmt_create, gmt_modified) VALUES(#{content}, #{name}, #{owner}, #{parent}, #{type}, #{hostGroupId}, #{gmtCreate}, #{gmtModified})")
-    public void addHerFile(HeraFile heraFile);
+    @Select("select * from hera_file where parent = #{parent}")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraFile> findByParent(HeraFile heraFile);
 
-    @Delete("DELETE FROM hera_file WHERE id =#{id}")
-    public void deleteHeraFile(String id);
+    @Select("select * from hera_file where owner = #{owner}")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraFile> findByOwner(HeraFile heraFile);
 
-    @Update("UPDATE hera_file SET content = #{content}, name = #{name}, owner = #{owner}, parent = #{parent}, type = #{type}, host_group_id = #{hostGroupId}, gmt_create = #{gmtCreate}, gmt_modified = #{gmtModified} WHERE id =#{id}")
-    public void update(HeraFile heraFile);
 
 }

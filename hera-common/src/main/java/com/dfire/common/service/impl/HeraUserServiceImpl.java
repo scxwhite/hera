@@ -2,6 +2,11 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraUser;
 import com.dfire.common.mapper.HeraUserMapper;
+import com.dfire.common.mybatis.HeraInsertLangDriver;
+import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraSelectLangDriver;
+import com.dfire.common.mybatis.HeraUpdateLangDriver;
+import org.apache.ibatis.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.dfire.common.service.HeraUserService;
@@ -19,61 +24,40 @@ public class HeraUserServiceImpl implements HeraUserService {
     @Autowired
     private HeraUserMapper heraUserMapper;
 
+
     @Override
-    public Boolean addUser(HeraUser user) {
+    public int insert(HeraUser heraUser) {
+        return heraUserMapper.insert(heraUser);
+    }
 
-        Integer res = heraUserMapper.insert(user);
+    @Override
+    public int delete(String id) {
+        return heraUserMapper.delete(id);
+    }
 
-        return res != null && res > 0;
+    @Override
+    public int update(HeraUser heraUser) {
+        return heraUserMapper.update(heraUser);
+    }
+
+    @Override
+    public List<HeraUser> getAll() {
+        return heraUserMapper.getAll();
+    }
+
+    @Override
+    public HeraUser findById(HeraUser heraUser) {
+        return heraUserMapper.findById(heraUser);
     }
 
     @Override
     public HeraUser findByName(String name) {
-        return heraUserMapper.findByName(name);
+        HeraUser heraUser = HeraUser.builder().name(name).build();
+        return heraUserMapper.getByName(heraUser);
     }
 
     @Override
-    public List<HeraUser> getAllUsers() {
-        return null;
-    }
-
-    @Override
-    public HeraUser findByUid(String uid) {
-        return null;
-    }
-
-    @Override
-    public List<HeraUser> findListByUid(List<String> uids) {
-        return null;
-    }
-
-    @Override
-    public HeraUser addOrUpdateUser(HeraUser user) {
-        return null;
-    }
-
-    @Override
-    public List<HeraUser> findListByUidByOrder(List<String> uids) {
-        return null;
-    }
-
-    @Override
-    public HeraUser findByUidFilter(String uid) {
-        return null;
-    }
-
-    @Override
-    public List<HeraUser> findAllUsers(String sortField, String sortOrder) {
-        return null;
-    }
-
-    @Override
-    public List<HeraUser> findListByFilter(String filter, String sortField, String sortOrder) {
-        return null;
-    }
-
-    @Override
-    public void update(HeraUser user) {
-
+    public List<HeraUser> findByIds(List<Integer> list) {
+        return heraUserMapper.findByIds(list);
     }
 }
