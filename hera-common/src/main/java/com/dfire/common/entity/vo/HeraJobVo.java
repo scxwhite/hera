@@ -74,7 +74,7 @@ public class HeraJobVo {
 
     private Date statisticStartTime;
 
-    private Status status;
+    private String status;
 
     private String timezone;
 

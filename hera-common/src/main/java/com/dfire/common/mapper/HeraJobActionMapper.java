@@ -32,7 +32,7 @@ public interface HeraJobActionMapper {
     public HeraAction findById(HeraAction heraAction);
 
     @Select("select * from hera_action where job_id = #{jobId}")
-    public HeraAction findByJobId(HeraAction heraAction);
+    public List<HeraAction> findByJobId(HeraAction heraAction);
 
 
 }

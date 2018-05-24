@@ -1,15 +1,21 @@
 package com.dfire.common.util;
 
 import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
+import com.dfire.common.entity.vo.HeraJobVo;
 import com.dfire.common.enums.Status;
 import com.dfire.common.enums.TriggerType;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.HeraProfile;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.entity.vo.HeraProfileVo;
+import com.dfire.common.processor.Processor;
 import com.dfire.common.vo.LogContent;
 import org.springframework.beans.BeanUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -73,6 +79,35 @@ public class BeanConvertUtils {
         jobHistory.setLog(jobHistoryVo.getLog().getContent());
         return jobHistory;
     }
+
+    public static HeraJobVo convert(HeraJob heraJob) {
+        HeraJobVo heraJobVo = HeraJobVo.builder().build();
+        BeanUtils.copyProperties(heraJob, heraJobVo);
+        heraJobVo.setConfigs(StringUtil.convertStringToMap(heraJob.getConfigs()));
+        Processor postProcessor = StringUtil.convertProcessorToList(heraJob.getPostProcessors());
+        Processor preProcessor = StringUtil.convertProcessorToList(heraJob.getPreProcessors());
+        List<Processor> list = new ArrayList<>();
+        list.add(postProcessor);
+        heraJobVo.setPostProcessors(list);
+        list.clear();
+        list.add(preProcessor);
+        heraJobVo.setPreProcessors(list);
+        heraJobVo.setResources(StringUtil.convertResources(heraJob.getResources()));
+        heraJobVo.setId(String.valueOf(heraJob.getId()));
+        return heraJobVo;
+    }
+
+    public static HeraJob convert(HeraJobVo heraJobVo) {
+        HeraJob heraJob = HeraJob.builder().build();
+        BeanUtils.copyProperties(heraJobVo, heraJob);
+        heraJob.setPostProcessors(StringUtil.convertProcessorToList(heraJobVo.getPostProcessors()));
+        heraJob.setPreProcessors(StringUtil.convertProcessorToList(heraJobVo.getPreProcessors()));
+        heraJob.setResources(StringUtil.convertResoureToString(heraJobVo.getResources()));
+        heraJob.setConfigs(StringUtil.convertMapToString(heraJobVo.getConfigs()));
+        heraJob.setId(Integer.parseInt(heraJobVo.getId()));
+        return heraJob;
+    }
+
 
 
 }

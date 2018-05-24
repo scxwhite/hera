@@ -1,14 +1,18 @@
 package com.dfire.common.util;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.Processor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,26 +68,72 @@ public class StringUtil {
         return jsonObject.toString();
     }
 
-    public Processor convertProcessorToList(String processor) {
+    public static Processor convertProcessorToList(String processor) {
         Processor result = null;
+        if(processor.equals("[]")) {
+            return result;
+        }
         JSONObject jsonObject = JSONObject.parseObject(processor);
         String id = jsonObject.getString("id");
-        if (id.equals("download")) {
-            result = new DownProcessor();
+        if (StringUtils.isNotBlank(id)) {
+            if (id.equals("download")) {
+                result = new DownProcessor();
+            }
         }
         return result;
     }
 
-    public static boolean actionIdToJobId(String actionId, String id){
+    public static String convertProcessorToList(List<Processor> list) {
+        JSONArray preArray = new JSONArray();
+        for (Processor p : list) {
+            JSONObject o = new JSONObject();
+            o.put("id", p.getId());
+            o.put("config", p.getConfig());
+            preArray.add(o);
+        }
+        return preArray.toString();
+    }
+
+
+    public static boolean actionIdToJobId(String actionId, String id) {
         String str = actionId.substring(12);
         Integer id1 = Integer.valueOf(str);
         Integer id2 = Integer.valueOf(id);
         return id1.equals(id2);
     }
 
-    public static void main(String[] args) {
-        System.out.println("12345678901234".substring(12));
+    public static List<Map<String, String>> convertResources(String resource) {
+        List<Map<String, String>> tempRes = new ArrayList<Map<String, String>>();
+
+        if (StringUtils.isNotBlank(resource)) {
+
+            JSONArray resArray = JSONArray.parseArray(resource);
+            for (int i = 0; i < resArray.size(); i++) {
+                JSONObject o = resArray.getJSONObject(i);
+                Map<String, String> map = new HashMap<String, String>();
+                for (Object key : o.keySet()) {
+                    map.put(key.toString(), o.getString(key.toString()));
+                }
+                tempRes.add(map);
+            }
+        }
+        return tempRes;
     }
 
+    public static String convertResoureToString(List<Map<String, String>> list) {
+        String resource = "[]";
+        if (list != null && list.size() > 0) {
+            JSONArray resArray = new JSONArray();
+            for (Map<String, String> map : list) {
+                JSONObject o = new JSONObject();
+                for (String key : map.keySet()) {
+                    o.put(key, map.get(key));
+                }
+                resArray.add(o);
+            }
+            resource = resArray.toString();
+        }
+        return resource;
+    }
 
 }

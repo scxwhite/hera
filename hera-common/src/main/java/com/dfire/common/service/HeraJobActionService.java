@@ -19,8 +19,8 @@ public interface HeraJobActionService {
 
     List<HeraAction> getAll();
 
-    public HeraAction findById(HeraAction heraAction);
+    public HeraAction findById(String actionId);
 
-    public HeraAction findByJobId(HeraAction heraAction);
+    public List<HeraAction> findByJobId(String jobId);
 
 }

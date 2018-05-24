@@ -1,6 +1,8 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraJob;
+import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
+import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 
 import java.util.List;
 
@@ -24,5 +26,7 @@ public interface HeraJobService {
     List<HeraJob> findByIds(List<Integer> list);
 
     List<HeraJob> findByPid(int groupId);
+
+    List<HeraJobTreeNodeVo> buildJobTree();
 
 }

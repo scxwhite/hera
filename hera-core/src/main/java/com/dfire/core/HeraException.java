@@ -6,6 +6,7 @@ package com.dfire.core;
  * @desc
  */
 public class HeraException extends Exception {
+
     public HeraException(){
         super();
     }

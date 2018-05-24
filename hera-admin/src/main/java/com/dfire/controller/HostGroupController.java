@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 /**
- *
  * @author xiaosuda
  * @date 2018/4/20
  */
@@ -25,7 +24,7 @@ public class HostGroupController {
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public List<HeraHostGroup> getAll(){
+    public List<HeraHostGroup> getAll() {
         return heraHostGroupService.getAll();
     }
 
@@ -33,14 +32,14 @@ public class HostGroupController {
     @RequestMapping(value = "saveOrUpdate", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse saveOrUpdate(HeraHostGroup heraHostGroup) {
-         heraHostGroupService.insert(heraHostGroup);
-         return RestfulResponse.builder().build();
+        heraHostGroupService.insert(heraHostGroup);
+        return RestfulResponse.builder().build();
     }
 
     @RequestMapping(value = "del", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse del(Integer id) {
         int res = heraHostGroupService.delete(id);
-        return new RestfulResponse(res >0 , res >0 ? "删除成功" : "删除失败");
+        return new RestfulResponse(res > 0, res > 0 ? "删除成功" : "删除失败");
     }
 }

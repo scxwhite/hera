@@ -2,6 +2,7 @@ package com.dfire.dao;
 
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
+import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.HeraHostGroupVo;
@@ -46,6 +47,8 @@ public class HeraBaseDaoTest {
     HeraHostRelationService heraHostRelationService;
     @Autowired
     HeraHostGroupService heraHostGroupService;
+    @Autowired
+    HeraJobService heraJobService;
 
     HeraAction heraAction;
     HeraPermission heraPermission;
@@ -100,9 +103,6 @@ public class HeraBaseDaoTest {
     @Test
     public void heraActionDaoTest() {
         HeraAction action = HeraAction.builder().id("201801010010000350").jobId("350").build();
-        HeraAction result = heraJobActionService.findById(action);
-        System.out.println(result.getCronExpression());
-        HeraAction heraAction = heraJobActionService.findByJobId(action);
         System.out.println(heraAction.getGmtCreate());
         List<HeraAction> list = heraJobActionService.getAll();
         System.out.println(list.get(5).getJobDependencies());
@@ -226,6 +226,12 @@ public class HeraBaseDaoTest {
         Map<String, HeraHostGroupVo> map = heraHostGroupService.getAllHostGroupInfo();
         System.out.println(map.toString());
 
+    }
+
+    @Test
+    public void heraJobDaoTest() {
+        List<HeraJobTreeNodeVo> list = heraJobService.buildJobTree();
+        System.out.println(list.size());
     }
 
 

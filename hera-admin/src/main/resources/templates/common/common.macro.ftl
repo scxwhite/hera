@@ -16,7 +16,10 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">
     <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
-    <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/skin-green-light.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/skin-blue.css">
+
+	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
+
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -48,6 +51,7 @@
 	<script src="${request.contextPath}/plugins/layer/layer.js"></script>
 
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+	<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 <#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>

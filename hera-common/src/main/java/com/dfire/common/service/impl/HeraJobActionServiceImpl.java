@@ -40,12 +40,14 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public HeraAction findById(HeraAction heraAction) {
+    public HeraAction findById(String actionId) {
+        HeraAction heraAction = HeraAction.builder().id(actionId).build();
         return heraJobActionMapper.findById(heraAction);
     }
 
     @Override
-    public HeraAction findByJobId(HeraAction heraAction) {
+    public List<HeraAction> findByJobId(String jobId) {
+        HeraAction heraAction = HeraAction.builder().jobId(jobId).build();
         return heraJobActionMapper.findByJobId(heraAction);
     }
 }

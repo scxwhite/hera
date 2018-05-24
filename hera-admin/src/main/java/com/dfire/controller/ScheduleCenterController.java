@@ -1,7 +1,23 @@
 package com.dfire.controller;
 
+import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraJob;
+import com.dfire.common.entity.HeraUser;
+import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
+import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.service.HeraJobActionService;
+import com.dfire.common.service.HeraJobService;
+import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.config.WebSecurityConfig;
+import com.dfire.core.netty.worker.WorkClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -9,11 +25,59 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @desc 调度中心视图管理器
  */
 @Controller
+@RequestMapping("/scheduleCenter")
 public class ScheduleCenterController {
 
-    @RequestMapping("/scheduleCenter")
+    @Autowired
+    HeraJobService heraJobService;
+    @Autowired
+    HeraJobActionService heraJobActionService;
+
+    @Autowired
+    WorkClient workClient;
+
+
+
+    @RequestMapping()
     public String login() {
         return "scheduleCenter/scheduleCenter.index";
     }
+
+    @RequestMapping(value = "/init", method = RequestMethod.POST)
+    @ResponseBody
+    public List<HeraJobTreeNodeVo> initJobTree(HttpSession session) {
+        List<HeraJobTreeNodeVo> list = heraJobService.buildJobTree();
+        HeraUser user = (HeraUser) session.getAttribute(WebSecurityConfig.SESSION_KEY);
+        if(user != null) {
+            String name = user.getName();
+
+        }
+        return list;
+    }
+
+    @RequestMapping(value = "/getJobMessage", method = RequestMethod.GET)
+    @ResponseBody
+    public HeraJobVo getJobMessage(Integer jobId) {
+        HeraJob job = heraJobService.findById(jobId);
+        HeraJobVo heraJobVo = BeanConvertUtils.convert(job);
+        return heraJobVo;
+    }
+
+
+    @RequestMapping(value = "/manual", method = RequestMethod.GET)
+    @ResponseBody
+    public String manual(String actionId) {
+        HeraAction heraAction = heraJobActionService.findById(actionId);
+        return "";
+    }
+
+    @RequestMapping(value = "/getJobVersion", method = RequestMethod.GET)
+    @ResponseBody
+    public List<HeraAction> getJobVersion(String jobId) {
+        List<HeraAction> list = heraJobActionService.findByJobId(jobId);
+        return list;
+
+    }
+
 
 }

@@ -6,12 +6,15 @@ import com.dfire.common.service.HeraJobService;
 import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
+import com.dfire.config.WebSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -25,10 +28,6 @@ public class LoginController {
 
     @Autowired
     private HeraUserService heraUserService;
-    @Autowired
-    private HeraJobService heraJobService;
-    @Autowired
-    private HeraHostGroupService hostGroupService;
 
     @RequestMapping("/")
     public String login() {
@@ -42,10 +41,13 @@ public class LoginController {
 
     @RequestMapping(value = "/toLogin", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse toLogin(String userName, String password) {
+    public RestfulResponse toLogin(String userName, String password, HttpSession session) {
         HeraUser user = heraUserService.findByName(userName);
+
         if (user == null) {
             return RestfulResponse.builder().code("400").build();
+        } else {
+            session.setAttribute(WebSecurityConfig.SESSION_KEY, user);
         }
         String pwd = user.getPassword();
         RestfulResponse response = RestfulResponse

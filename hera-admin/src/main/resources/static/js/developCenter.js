@@ -1,5 +1,4 @@
 $(function(){
-    setInterval(log,1000);
     var setting = {
         view: {
             showLine: false
