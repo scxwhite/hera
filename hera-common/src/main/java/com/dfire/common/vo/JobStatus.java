@@ -21,6 +21,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class JobStatus {
 
+    //版本号id
     private String jobId;
 
     private Status status;

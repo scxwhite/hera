@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2018/4/12
  */
 @Slf4j
-public class WorkerHeartBeat {
+public class WorkerHandlerHeartBeat {
 
 
     public ChannelFuture send(WorkContext context) {
@@ -30,6 +30,7 @@ public class WorkerHeartBeat {
                 .setHost(DistributeLock.host)
                 .setMemTotal(memUseRateJob.getMemTotal())
                 .setMemRate(memUseRateJob.getRate())
+                .setCpuLoadPerCore(1.5f)
                 .addAllDebugRunnings(context.getDebugRunning().keySet())
                 .addAllManualRunnings(context.getManualRunning().keySet())
                 .addAllRunnings(context.getRunning().keySet())

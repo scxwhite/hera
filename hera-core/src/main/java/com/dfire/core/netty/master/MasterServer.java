@@ -31,6 +31,11 @@ public class MasterServer {
     private EventLoopGroup workGroup;
     private int port = 7979;
 
+    /**
+     * ProtobufVarint32LengthFieldPrepender:对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
+     * ProtobufVarint32FrameDecoder:针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
+     * @param handler
+     */
     public  MasterServer(final ChannelHandler handler) {
         serverBootstrap = new ServerBootstrap();
         bossGroup = new NioEventLoopGroup(1);
@@ -38,21 +43,12 @@ public class MasterServer {
         serverBootstrap.group(bossGroup, workGroup)
                        .channel(NioServerSocketChannel.class)
                        .childHandler(new ChannelInitializer<SocketChannel>() {
-                           /**
-                            *  ProtobufVarint32LengthFieldPrepender:对protobuf协议的的消息头上加上一个长度为32的整形字段，
-                            *  用于标志这个消息的长度。
-                            *  ProtobufVarint32FrameDecoder:针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
-                            * @param ch
-                            * @throws Exception
-                            */
                            @Override
                            protected void initChannel(SocketChannel ch) throws Exception {
-                               final ProtobufVarint32LengthFieldPrepender frameEncoder = new ProtobufVarint32LengthFieldPrepender();
-                               final ProtobufEncoder protobufEncoder = new ProtobufEncoder();
                                ch.pipeline().addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
-                                       .addLast("protobufDecoder", new ProtobufDecoder(Protocol.SocketMessage.getDefaultInstance()))
-                                       .addLast("frameEncoder", frameEncoder)
-                                       .addLast("protobufEncoder", protobufEncoder)
+                                       .addLast("decoder", new ProtobufDecoder(Protocol.SocketMessage.getDefaultInstance()))
+                                       .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
+                                       .addLast("encoder", new ProtobufEncoder())
                                        .addLast(new IdleStateHandler(0,0, 10))
                                        .addLast("handler", handler);
                            }

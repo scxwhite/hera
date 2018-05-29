@@ -1,17 +1,16 @@
 package com.dfire.common.util;
 
-import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraJob;
-import com.dfire.common.entity.vo.HeraDebugHistoryVo;
-import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.entity.*;
+import com.dfire.common.entity.vo.*;
+import com.dfire.common.enums.JobRunType;
+import com.dfire.common.enums.JobScheduleType;
 import com.dfire.common.enums.Status;
 import com.dfire.common.enums.TriggerType;
-import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.HeraProfile;
-import com.dfire.common.entity.vo.HeraJobHistoryVo;
-import com.dfire.common.entity.vo.HeraProfileVo;
+import com.dfire.common.kv.Tuple;
 import com.dfire.common.processor.Processor;
+import com.dfire.common.vo.JobStatus;
 import com.dfire.common.vo.LogContent;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
@@ -45,7 +44,11 @@ public class BeanConvertUtils {
     public static HeraJobHistoryVo convert(HeraJobHistory heraJobHistory) {
         HeraJobHistoryVo heraJobHistoryVo = HeraJobHistoryVo.builder().build();
         BeanUtils.copyProperties(heraJobHistory, heraJobHistoryVo);
-        heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
+        if(StringUtils.isBlank(heraJobHistory.getLog())) {
+            heraJobHistoryVo.setLog(LogContent.builder().build());
+        } else {
+            heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
+        }
         heraJobHistoryVo.setProperties(StringUtil.convertStringToMap(heraJobHistory.getProperties()));
         heraJobHistoryVo.setStatus(Status.parse(heraJobHistory.getStatus()));
         heraJobHistoryVo.setTriggerType(TriggerType.parser(heraJobHistory.getTriggerType()));
@@ -67,7 +70,12 @@ public class BeanConvertUtils {
         HeraDebugHistoryVo heraJobHistoryVo = HeraDebugHistoryVo.builder().build();
         BeanUtils.copyProperties(heraJobHistory, heraJobHistoryVo);
         heraJobHistoryVo.setStatus(Status.parse(heraJobHistory.getStatus()));
-        heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
+        heraJobHistoryVo.setRunType(JobRunType.parser(heraJobHistory.getRunType()));
+        if(StringUtils.isBlank(heraJobHistory.getLog())) {
+            heraJobHistoryVo.setLog(LogContent.builder().build());
+        } else {
+            heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
+        }
         return heraJobHistoryVo;
 
     }
@@ -77,6 +85,7 @@ public class BeanConvertUtils {
         BeanUtils.copyProperties(jobHistoryVo, jobHistory);
         jobHistory.setStatus(jobHistoryVo.getStatus().toString());
         jobHistory.setLog(jobHistoryVo.getLog().getContent());
+        jobHistory.setRunType(jobHistoryVo.getRunType().toString());
         return jobHistory;
     }
 
@@ -84,30 +93,89 @@ public class BeanConvertUtils {
         HeraJobVo heraJobVo = HeraJobVo.builder().build();
         BeanUtils.copyProperties(heraJob, heraJobVo);
         heraJobVo.setConfigs(StringUtil.convertStringToMap(heraJob.getConfigs()));
-        Processor postProcessor = StringUtil.convertProcessorToList(heraJob.getPostProcessors());
-        Processor preProcessor = StringUtil.convertProcessorToList(heraJob.getPreProcessors());
-        List<Processor> list = new ArrayList<>();
-        list.add(postProcessor);
-        heraJobVo.setPostProcessors(list);
-        list.clear();
-        list.add(preProcessor);
-        heraJobVo.setPreProcessors(list);
+        heraJobVo.setPostProcessors(StringUtil.convertProcessorToList(heraJob.getPostProcessors()));
+        heraJobVo.setPreProcessors(StringUtil.convertProcessorToList(heraJob.getPreProcessors()));
         heraJobVo.setResources(StringUtil.convertResources(heraJob.getResources()));
         heraJobVo.setId(String.valueOf(heraJob.getId()));
         return heraJobVo;
     }
 
-    public static HeraJob convert(HeraJobVo heraJobVo) {
-        HeraJob heraJob = HeraJob.builder().build();
-        BeanUtils.copyProperties(heraJobVo, heraJob);
-        heraJob.setPostProcessors(StringUtil.convertProcessorToList(heraJobVo.getPostProcessors()));
-        heraJob.setPreProcessors(StringUtil.convertProcessorToList(heraJobVo.getPreProcessors()));
-        heraJob.setResources(StringUtil.convertResoureToString(heraJobVo.getResources()));
-        heraJob.setConfigs(StringUtil.convertMapToString(heraJobVo.getConfigs()));
-        heraJob.setId(Integer.parseInt(heraJobVo.getId()));
-        return heraJob;
+    /**
+     * job -> jobAction
+     *
+     * @param heraJobVo
+     * @return
+     */
+    public static HeraAction convert(HeraJobVo heraJobVo) {
+        HeraAction heraAction = HeraAction.builder().build();
+        BeanUtils.copyProperties(heraJobVo, heraAction);
+        heraAction.setPostProcessors(StringUtil.convertProcessorToList(heraJobVo.getPostProcessors()));
+        heraAction.setPreProcessors(StringUtil.convertProcessorToList(heraJobVo.getPreProcessors()));
+        heraAction.setResources(StringUtil.convertResoureToString(heraJobVo.getResources()));
+        heraAction.setConfigs(StringUtil.convertMapToString(heraJobVo.getConfigs()));
+        heraAction.setId(heraJobVo.getId());
+        return heraAction;
     }
 
+
+    /**
+     * job中jobVo为对应的版本id
+     *
+     * @param job
+     * @return
+     */
+    public static HeraAction convert(Tuple<HeraJobVo, JobStatus> job) {
+        if (job == null) {
+            return null;
+        }
+        HeraAction heraAction = convert(job.getSource());
+        HeraAction action = convert(job.getTarget());
+        heraAction.setReadyDependency(action.getReadyDependency());
+        heraAction.setStatus(action.getStatus());
+        heraAction.setHistoryId(action.getHistoryId());
+        return heraAction;
+    }
+
+    public static Tuple<HeraActionVo, JobStatus> convert(HeraAction action) {
+        HeraActionVo heraActionVo = transform(action);
+        JobStatus jobStatus = JobStatus.builder().build();
+        jobStatus.setJobId(action.getJobId());
+        jobStatus.setHistoryId(action.getHistoryId());
+        jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()));
+        return new Tuple<>(heraActionVo, jobStatus);
+
+    }
+
+    /**
+     * action 版本转为job
+     *
+     * @param action
+     * @return
+     */
+    public static HeraActionVo transform(HeraAction action) {
+        HeraActionVo heraActionVo = HeraActionVo.builder().build();
+        BeanUtils.copyProperties(action, heraActionVo);
+
+        heraActionVo.setPostProcessors(StringUtil.convertProcessorToList(action.getPostProcessors()));
+        heraActionVo.setPreProcessors(StringUtil.convertProcessorToList(action.getPreProcessors()));
+        heraActionVo.setResources(StringUtil.convertResources(action.getResources()));
+        heraActionVo.setConfigs(StringUtil.convertStringToMap(action.getConfigs()));
+        heraActionVo.setRunType(JobRunType.parser(action.getRunType()));
+        heraActionVo.setScheduleType(JobScheduleType.parser(action.getScheduleType()));
+        return heraActionVo;
+    }
+
+    public static HeraAction convert(JobStatus jobStatus) {
+        if (jobStatus == null) {
+            return null;
+        }
+        HeraAction heraAction = HeraAction.builder().build();
+        heraAction.setId(jobStatus.getJobId());
+        heraAction.setStatus(jobStatus.getStatus().toString());
+        heraAction.setHistoryId(jobStatus.getHistoryId());
+        heraAction.setReadyDependency(StringUtil.convertMapToString(jobStatus.getReadyDependency()));
+        return heraAction;
+    }
 
 
 }

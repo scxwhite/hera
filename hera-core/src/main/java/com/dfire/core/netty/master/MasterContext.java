@@ -41,7 +41,7 @@ public class MasterContext {
 
 
     private Dispatcher dispatcher;
-    private Map<String, HeraHostGroupVo> hostGroupCache;
+    private Map<Integer, HeraHostGroupVo> hostGroupCache;
     /**
      * @desc
      *      1. quartz发生任务调度的时候，任务会先进入到exceptionQueue队列，等待被扫描调度，随后进入调度队列
@@ -92,7 +92,7 @@ public class MasterContext {
         log.info("destroy master context success");
     }
 
-    public synchronized Map<String,HeraHostGroupVo> getHostGroupCache() {
+    public synchronized Map<Integer,HeraHostGroupVo> getHostGroupCache() {
         return hostGroupCache;
     }
 
@@ -134,6 +134,10 @@ public class MasterContext {
 
     public HeraDebugHistoryService getHeraDebugHistoryService() {
         return (HeraDebugHistoryService) applicationContext.getBean("heraDebugHistoryService");
+    }
+
+    public HeraJobActionService getHeraJobActionService() {
+        return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
     }
 
     public synchronized void refreshHostGroupCache() {

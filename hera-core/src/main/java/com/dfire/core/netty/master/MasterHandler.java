@@ -37,7 +37,6 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     private MasterHandleWebUpdate masterHandleWebUpdate = new MasterHandleWebUpdate();
 
 
-
     public MasterHandler(MasterContext masterContext) {
         this.masterContext = masterContext;
         Executor executor = Executors.newSingleThreadExecutor();
@@ -49,6 +48,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         Future<ChannelResponse> future = completionService.take();
                         ChannelResponse response = future.get();
                         response.channel.write(wrapper(response.webResponse));
+                        log.info("master get response thread success");
                     } catch (Exception e) {
                         log.error("master handler future take error");
                     }
@@ -67,7 +67,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
             case REQUEST:
                 Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 if (request.getOperate() == Operate.HeartBeat) {
-                    masterDoHeartBeat.dealHeartBeat(masterContext, channel, request);
+                    masterDoHeartBeat.handleHeartBeat(masterContext, channel, request);
                 }
                 break;
             case WEB_REUQEST:
@@ -112,16 +112,15 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 log.error("unknown request type : {}", socketMessage.getKind());
                 break;
         }
-        super.channelActive(ctx);
+        super.channelRead(ctx, msg);
     }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        masterContext.getWorkMap().put(channel, new MasterWorkHolder());
+        masterContext.getWorkMap().put(channel, new MasterWorkHolder(ctx.channel()));
         SocketAddress remoteAddress = channel.remoteAddress();
-        log.info("worker client connect success : {}", remoteAddress.toString());
-        super.channelRegistered(ctx);
+        log.info("worker client channel registered connect success : {}", remoteAddress.toString());
     }
 
     @Override
@@ -131,7 +130,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
+        Channel channel = ctx.channel();
+        SocketAddress remoteAddress = channel.remoteAddress();
+        log.info("worker client channel active success : {}", remoteAddress.toString());
     }
 
     @Override

@@ -1,6 +1,9 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.vo.HeraActionVo;
+import com.dfire.common.kv.Tuple;
+import com.dfire.common.vo.JobStatus;
 
 import java.util.List;
 
@@ -11,16 +14,30 @@ import java.util.List;
  */
 public interface HeraJobActionService {
 
+
     int insert(HeraAction heraAction);
 
     int delete(String id);
 
-    int update(HeraAction heraJobHistory);
+    int update(HeraAction heraAction);
 
     List<HeraAction> getAll();
 
-    public HeraAction findById(String actionId);
+    HeraAction findById(String actionId);
 
-    public List<HeraAction> findByJobId(String jobId);
+    List<HeraAction> findByJobId(String jobId);
+
+    int updateStatus(JobStatus jobStatus);
+
+    Tuple<HeraActionVo, JobStatus> findHeraActionVo(String jobId);
+
+    /**
+     * 查找当前版本的运行状态
+     *
+     * @param actionId
+     * @return
+     */
+    JobStatus findJobStatus(String actionId);
+
 
 }

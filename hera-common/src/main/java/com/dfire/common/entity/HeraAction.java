@@ -43,7 +43,7 @@ public class HeraAction {
 
     private Integer groupId;
 
-    private Long historyId;
+    private String historyId;
 
     private String host;
 

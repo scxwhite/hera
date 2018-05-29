@@ -30,7 +30,7 @@ public interface HeraHostGroupService {
 
     HeraHostGroup findById(int id);
 
-    public Map<String, HeraHostGroupVo> getAllHostGroupInfo();
+    public Map<Integer, HeraHostGroupVo> getAllHostGroupInfo();
 
 
 }

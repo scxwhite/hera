@@ -1,11 +1,18 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.vo.HeraActionVo;
+import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
 import com.dfire.common.service.HeraJobActionService;
+import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.util.StringUtil;
+import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,5 +56,33 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public List<HeraAction> findByJobId(String jobId) {
         HeraAction heraAction = HeraAction.builder().jobId(jobId).build();
         return heraJobActionMapper.findByJobId(heraAction);
+    }
+
+    @Override
+    public int updateStatus(JobStatus jobStatus) {
+        HeraAction heraAction = findById(jobStatus.getJobId());
+        heraAction.setGmtModified(new Date());
+
+        HeraAction tmp  = BeanConvertUtils.convert(jobStatus);
+        heraAction.setStatus(tmp.getStatus());
+        heraAction.setReadyDependency(jobStatus.getReadyDependency().toString());
+        heraAction.setHistoryId(jobStatus.getHistoryId());
+        return update(heraAction);
+    }
+
+    @Override
+    public Tuple<HeraActionVo, JobStatus> findHeraActionVo(String actionId) {
+        HeraAction heraAction = findById(actionId);
+        if(heraAction == null) {
+            return null;
+        }
+        Tuple<HeraActionVo, JobStatus> tuple = BeanConvertUtils.convert(heraAction);
+        return tuple;
+    }
+
+    @Override
+    public JobStatus findJobStatus(String actionId) {
+        Tuple<HeraActionVo, JobStatus> tuple = findHeraActionVo(actionId);
+        return tuple.getTarget();
     }
 }

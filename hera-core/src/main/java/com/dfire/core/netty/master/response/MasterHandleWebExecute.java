@@ -31,7 +31,7 @@ public class MasterHandleWebExecute {
             return webResponse;
         } else if(request.getEk() == ExecuteKind.DebugKind) {
             String debugId = request.getId();
-            HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());;
+            HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
             log.info("receive web debug response, debugId = " + debugId);
             context.getMaster().debug(debugHistory);
 

@@ -45,7 +45,6 @@ $(function(){
     }
 
     var zNodes = getDataStore("/developCenter/init.do");
-    console.log(zNodes);
 
     function getDataStore(url) {
         var dataStore;
@@ -286,8 +285,6 @@ $(function(){
     }
 
     $("#execute").click(function () {
-        debugger
-
         var id = $("#id").text();
         var script = $("#script").val();
         var id = '253';

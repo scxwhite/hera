@@ -42,6 +42,6 @@ public class HeraDebugHistory {
 
     private String log;
 
-    private String hostGroupId;
+    private int hostGroupId;
 
 }

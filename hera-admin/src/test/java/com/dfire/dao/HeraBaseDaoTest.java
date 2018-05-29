@@ -78,7 +78,7 @@ public class HeraBaseDaoTest {
         heraDebugHistory = HeraDebugHistory
                 .builder()
                 .fileId("1")
-                .hostGroupId("1")
+                .hostGroupId(1)
                 .owner("import")
                 .gmtCreate(new Date())
                 .gmtModified(new Date())
@@ -223,7 +223,7 @@ public class HeraBaseDaoTest {
         HeraHostGroup group = heraHostGroupService.findById(1);
         System.out.println(group.getName());
 
-        Map<String, HeraHostGroupVo> map = heraHostGroupService.getAllHostGroupInfo();
+        Map<Integer, HeraHostGroupVo> map = heraHostGroupService.getAllHostGroupInfo();
         System.out.println(map.toString());
 
     }

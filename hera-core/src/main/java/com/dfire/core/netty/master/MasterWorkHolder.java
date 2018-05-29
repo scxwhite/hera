@@ -26,4 +26,9 @@ public class MasterWorkHolder {
     private Map<String, Boolean> debugRunning = new ConcurrentHashMap<String, Boolean>();
 
     public HeartBeatInfo heartBeatInfo;
+
+    public MasterWorkHolder(Channel channel) {
+        this.channel = channel;
+    }
+
 }

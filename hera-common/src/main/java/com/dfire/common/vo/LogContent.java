@@ -1,9 +1,7 @@
 package com.dfire.common.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -15,12 +13,10 @@ import java.io.StringWriter;
  */
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class LogContent {
 
     private int lines = 0;
-    private StringBuffer content = new StringBuffer();
+    private  StringBuffer content;
 
     public void appendConsole(String log) {
         if (lines < 20000) {
@@ -46,11 +42,17 @@ public class LogContent {
 
     public void appendHera(String log) {
         lines++;
+        if(content == null) {
+            content = new StringBuffer();
+        }
         content.append("HERA# ").append(log).append("\n");
     }
 
     public void append(String log) {
         lines++;
+        if(content == null) {
+            content = new StringBuffer();
+        }
         content.append(log).append("\n");
     }
 

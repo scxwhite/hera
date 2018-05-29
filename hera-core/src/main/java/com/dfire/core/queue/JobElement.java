@@ -13,6 +13,7 @@ import lombok.Data;
 @Builder
 public class JobElement {
 
+    //版本号id
     private String jobId;
 
     private int hostGroupId;

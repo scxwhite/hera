@@ -27,6 +27,11 @@ public interface HeraJobService {
 
     List<HeraJob> findByPid(int groupId);
 
+    /**
+     * 构建job树形目录结构
+     *
+     * @return
+     */
     List<HeraJobTreeNodeVo> buildJobTree();
 
 }

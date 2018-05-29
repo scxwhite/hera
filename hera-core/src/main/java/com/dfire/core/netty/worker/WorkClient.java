@@ -4,14 +4,18 @@ package com.dfire.core.netty.worker;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.util.SpringContextHolder;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.lock.DistributeLock;
-import com.dfire.core.message.Protocol.*;
+import com.dfire.core.message.Protocol.ExecuteKind;
+import com.dfire.core.message.Protocol.SocketMessage;
+import com.dfire.core.message.Protocol.Status;
+import com.dfire.core.message.Protocol.WebResponse;
 import com.dfire.core.netty.worker.request.WorkHandleWebCancel;
 import com.dfire.core.netty.worker.request.WorkHandleWebUpdate;
-import com.dfire.core.netty.worker.request.WorkerHeartBeat;
 import com.dfire.core.netty.worker.request.WorkerHandleWebExecute;
+import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
 import com.dfire.core.schedule.ScheduleInfoLog;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -28,6 +32,7 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
@@ -51,11 +56,18 @@ public class WorkClient {
     private WorkContext workContext = new WorkContext();
     private ScheduledExecutorService service;
 
-    @Autowired
-    WorkerHandleWebExecute workerWebExecute;
 
+    /**
+     * ProtobufVarint32LengthFieldPrepender:对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
+     *
+     * ProtobufVarint32FrameDecoder:针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
+     *
+     *
+     */
     @Autowired
-    public void WorkClient() {
+    public void WorkClient(ApplicationContext applicationContext) {
+        workContext.setWorkClient(this);
+        workContext.setApplicationContext(applicationContext);
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
@@ -63,26 +75,26 @@ public class WorkClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new ProtobufVarint32FrameDecoder())
-                                .addLast(new ProtobufDecoder(SocketMessage.getDefaultInstance()))
-                                .addLast(new ProtobufVarint32LengthFieldPrepender())
-                                .addLast(new ProtobufEncoder())
+                        ch.pipeline().addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
+                                .addLast("decoder", new ProtobufDecoder(SocketMessage.getDefaultInstance()))
+                                .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
+                                .addLast("encoder", new ProtobufEncoder())
                                 .addLast(new WorkHandler(workContext));
                     }
                 });
         log.info("start work client success ");
-        workContext.setWorkClient(this);
 
-        service = Executors.newScheduledThreadPool(2);
+
+        service = Executors.newScheduledThreadPool(1);
         service.scheduleAtFixedRate(new Runnable() {
-            private WorkerHeartBeat heartBeat = new WorkerHeartBeat();
+            private WorkerHandlerHeartBeat workerHandlerHeartBeat = new WorkerHandlerHeartBeat();
             private int failCount = 0;
 
             @Override
             public void run() {
                 try {
                     if (workContext.getServerChannel() != null) {
-                        ChannelFuture channelFuture = heartBeat.send(workContext);
+                        ChannelFuture channelFuture = workerHandlerHeartBeat.send(workContext);
                         channelFuture.addListener((future) -> {
                             if (!future.isSuccess()) {
                                 failCount++;
@@ -195,6 +207,7 @@ public class WorkClient {
             try {
                 if (future.isSuccess()) {
                     workContext.setServerChannel(future.channel());
+                    log.info(workContext.getServerChannel().toString());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -239,9 +252,9 @@ public class WorkClient {
         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
         history.setEndTime(new Date());
         String illustrate = history.getIllustrate();
-        if(illustrate!=null && illustrate.trim().length()>0){
-            history.setIllustrate(illustrate+"；手动取消该任务");
-        }else{
+        if (illustrate != null && illustrate.trim().length() > 0) {
+            history.setIllustrate(illustrate + "；手动取消该任务");
+        } else {
             history.setIllustrate("手动取消该任务");
         }
         history.setStatus(com.dfire.common.enums.Status.FAILED);
@@ -259,9 +272,9 @@ public class WorkClient {
         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
         history.setEndTime(new Date());
         String illustrate = history.getIllustrate();
-        if(illustrate!=null && illustrate.trim().length()>0){
-            history.setIllustrate(illustrate+"；手动取消该任务");
-        }else{
+        if (illustrate != null && illustrate.trim().length() > 0) {
+            history.setIllustrate(illustrate + "；手动取消该任务");
+        } else {
             history.setIllustrate("手动取消该任务");
         }
         history.setStatus(com.dfire.common.enums.Status.FAILED);
@@ -273,7 +286,7 @@ public class WorkClient {
 
 
     public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        WebResponse response = workerWebExecute.handleWebExecute(workContext, kind, id).get();
+        WebResponse response = new WorkerHandleWebExecute().handleWebExecute(workContext, kind, id).get();
         if (response.getStatus() == Status.ERROR) {
             log.error("netty manual web request get jobStatus error");
         }
@@ -281,7 +294,7 @@ public class WorkClient {
 
     public void cancelJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
-        if(webResponse.getStatus() == Status.ERROR) {
+        if (webResponse.getStatus() == Status.ERROR) {
             log.error("cancel from web exception");
         }
 
@@ -289,7 +302,7 @@ public class WorkClient {
 
     public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {
         WebResponse webResponse = new WorkHandleWebUpdate().handleUpdate(workContext, jobId).get();
-        if(webResponse.getStatus() == Status.ERROR) {
+        if (webResponse.getStatus() == Status.ERROR) {
             log.error("cancel from web exception");
         }
 

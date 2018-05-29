@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
  * @time: Created in 19:22 2018/1/12
  * @desc
  */
-@Service("profileService")
 public interface HeraProfileService {
 
     HeraProfileVo findByOwner(String owner);

@@ -34,6 +34,6 @@ public class HeraFile {
 
     private Date gmtModified;
 
-    private String hostGroupId;
+    private Integer hostGroupId;
 
 }

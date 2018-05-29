@@ -24,7 +24,7 @@ import java.util.concurrent.Future;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 下午4:20 2018/4/25
- * @desc
+ * @desc worker job 最终执行体，收到master handler执行请求的时候，开始创建Job processor
  */
 @Slf4j
 public class WorkExecuteJob {
@@ -63,7 +63,7 @@ public class WorkExecuteJob {
             });
         }
 
-        final JobStatus jobStatus = workContext.getHeraGroupService().getJobStatus(jobId);
+        final JobStatus jobStatus = workContext.getHeraJobActionService().findJobStatus(jobId);
         final HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(jobStatus.getHistoryId());
         Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
             @Override
@@ -153,7 +153,7 @@ public class WorkExecuteJob {
             });
         }
 
-        final JobStatus jobStatus = workContext.getHeraGroupService().getJobStatus(jobId);
+        final JobStatus jobStatus = workContext.getHeraJobActionService().findJobStatus(jobId);
         final HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(jobStatus.getHistoryId());
         Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
             @Override
@@ -259,8 +259,8 @@ public class WorkExecuteJob {
                     else {
                         debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
                     }
-                    history.getLog().appendHera("exitCode =" + exitCode);
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
+                    debugHistory.getLog().appendHera("exitCode =" + exitCode);
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
                     log.info("update debug jobId = " + debugId + " success");
 
                 }

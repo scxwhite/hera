@@ -2,6 +2,7 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraGroupService;
+import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.core.job.Job;
 import io.netty.channel.Channel;
@@ -22,7 +23,6 @@ import java.util.concurrent.Executors;
  */
 @Data
 @NoArgsConstructor
-@ToString(exclude = "debugHistoryService")
 public class WorkContext {
 
     public static String host;
@@ -37,10 +37,6 @@ public class WorkContext {
     private ExecutorService workThreadPool = Executors.newCachedThreadPool();
     private ApplicationContext applicationContext;
 
-    private HeraDebugHistoryService debugHistoryService;
-    private HeraJobHistoryService jobHistoryService;
-    private HeraGroupService heraGroupService;
-
     static {
         try {
             host = InetAddress.getLocalHost().getHostAddress();
@@ -51,17 +47,20 @@ public class WorkContext {
     }
 
     public HeraDebugHistoryService getDebugHistoryService() {
-        return (HeraDebugHistoryService) applicationContext.getBean("debugHistoryService");
+        return (HeraDebugHistoryService) applicationContext.getBean("heraDebugHistoryService");
     }
 
     public HeraJobHistoryService getJobHistoryService() {
-        return (HeraJobHistoryService) applicationContext.getBean("jobHistoryService");
+        return (HeraJobHistoryService) applicationContext.getBean("heraJobHistoryService");
     }
 
     public HeraGroupService getHeraGroupService() {
         return (HeraGroupService) applicationContext.getBean("heraGroupService");
     }
 
+    public HeraJobActionService getHeraJobActionService() {
+        return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
+    }
 
 
 

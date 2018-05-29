@@ -21,7 +21,7 @@ import java.util.Map;
  * @time: Created in 22:26 2018/1/10
  * @desc
  */
-@Service("hostGroupService")
+@Service("heraHostGroupService")
 @PropertySource(value = "classpath:config.yml", ignoreResourceNotFound = true)
 @ConfigurationProperties("hera")
 public class HeraHostGroupServiceImpl implements HeraHostGroupService {
@@ -59,8 +59,8 @@ public class HeraHostGroupServiceImpl implements HeraHostGroupService {
     }
 
     @Override
-    public Map<String, HeraHostGroupVo> getAllHostGroupInfo() {
-        Map<String, HeraHostGroupVo> hostGroupInfoMap = new HashMap<>();
+    public Map<Integer, HeraHostGroupVo> getAllHostGroupInfo() {
+        Map<Integer, HeraHostGroupVo> hostGroupInfoMap = new HashMap<>();
         List<HeraHostGroup> groupList = getAll();
         List<HeraHostRelation> relationList = heraHostRelationService.getAll();
         groupList.forEach(heraHostGroup -> {
@@ -78,7 +78,7 @@ public class HeraHostGroupServiceImpl implements HeraHostGroupService {
                     }
                 });
                 vo.setHosts(hosts);
-                hostGroupInfoMap.put(String.valueOf(heraHostGroup.getId()), vo);
+                hostGroupInfoMap.put(heraHostGroup.getId(), vo);
             }
         });
         return hostGroupInfoMap;

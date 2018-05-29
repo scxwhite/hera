@@ -1,6 +1,5 @@
 package com.dfire.core.netty.master.response;
 
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.ResponseListener;
@@ -24,7 +23,7 @@ public class MasterExecuteJob {
     public Future<Response> executeJob(final MasterContext context, final MasterWorkHolder holder, ExecuteKind kind, final String id) {
         if (kind == ExecuteKind.DebugKind) {
             return executeDebugJob(context, holder, id);
-        } else if(kind == ExecuteKind.ScheduleKind) {
+        } else if (kind == ExecuteKind.ScheduleKind) {
             executeScheduleJob(context, holder, id);
         } else if (kind == ExecuteKind.ManualKind) {
             executeManualJob(context, holder, id);
@@ -52,6 +51,7 @@ public class MasterExecuteJob {
                 .build();
         Future<Response> future = context.getSchedulePool().submit(new Callable<Response>() {
             private Response result;
+
             @Override
             public Response call() throws Exception {
                 final CountDownLatch latch = new CountDownLatch(1);
@@ -59,9 +59,10 @@ public class MasterExecuteJob {
                     @Override
                     public void onWebResponse(WebResponse webResponse) {
                     }
+
                     @Override
                     public void onResponse(Response response) {
-                        if(response.getRid() == request.getRid()) {
+                        if (response.getRid() == request.getRid()) {
                             context.getHandler().removeListener(this);
                             result = response;
                             latch.countDown();
@@ -101,13 +102,14 @@ public class MasterExecuteJob {
                 .build();
         Future<Response> future = context.getSchedulePool().submit(new Callable<Response>() {
             private Response result;
+
             @Override
             public Response call() throws Exception {
                 final CountDownLatch latch = new CountDownLatch(1);
                 context.getHandler().addListener(new ResponseListener() {
                     @Override
                     public void onResponse(Response response) {
-                        if(response.getRid() == request.getRid()) {
+                        if (response.getRid() == request.getRid()) {
                             context.getHandler().removeListener(this);
                             result = response;
                             latch.countDown();
@@ -117,7 +119,7 @@ public class MasterExecuteJob {
 
                     @Override
                     public void onWebResponse(WebResponse webResponse) {
-                        }
+                    }
                 });
                 latch.await();
                 holder.getRunning().remove(jobId);
@@ -132,14 +134,23 @@ public class MasterExecuteJob {
 
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder holder, String id) {
         holder.getDebugRunning().put(id, false);
-        DebugMessage message = DebugMessage.newBuilder().setDebugId(id).build();
+        DebugMessage message = DebugMessage
+                .newBuilder()
+                .setDebugId(id)
+                .build();
         final Request request = Request.newBuilder()
-                                    .setRid(AtomicIncrease.getAndIncrement())
-                                    .setOperate(Operate.Debug)
-                                    .setBody(message.toByteString())
-                                    .build();
+                .setRid(AtomicIncrease.getAndIncrement())
+                .setOperate(Operate.Debug)
+                .setBody(message.toByteString())
+                .build();
+        SocketMessage socketMessage = SocketMessage
+                .newBuilder()
+                .setKind(SocketMessage.Kind.REQUEST)
+                .setBody(request.toByteString())
+                .build();
         Future<Response> future = context.getThreadPool().submit(new Callable<Response>() {
             private Response response;
+
             @Override
             public Response call() throws Exception {
                 final CountDownLatch latch = new CountDownLatch(1);
@@ -153,19 +164,22 @@ public class MasterExecuteJob {
                         }
                     }
                     @Override
-                    public void onWebResponse(WebResponse resp) {}
+                    public void onWebResponse(WebResponse resp) { }
                 });
                 try {
                     latch.await();
                 } finally {
                     holder.getDebugRunning().remove(id);
                 }
-
                 return response;
             }
         });
-        holder.getDebugRunning().remove(id);
-        log.info("master send debug command to worker,rid=" + request.getRid()+",debugId=" + id);
+
+        /**
+         * writeAndFlush 和 write有和区别，为何使用write workerHandler无法接收数据
+         */
+        holder.getChannel().writeAndFlush(socketMessage);
+        log.info("master send debug command to worker,rid=" + request.getRid() + ",debugId=" + id);
         return future;
     }
 }

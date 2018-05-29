@@ -16,16 +16,17 @@ public class WithProcessJob extends AbstractJob {
 
     private List<Job> pres;
     private List<Job> posts;
-    private Job core;
+    private Job job;
     private HeraFileService fileService;
+
     private Job running;
 
-    public WithProcessJob(JobContext jobContext, List<Job> pres, List<Job> posts, Job core, ApplicationContext applicationContext) {
+    public WithProcessJob(JobContext jobContext, List<Job> pres, List<Job> posts, Job job, ApplicationContext applicationContext) {
         super(jobContext);
         this.pres = pres;
         this.posts = posts;
-        this.core = core;
-        this.fileService = (HeraFileService) applicationContext.getBean("fileService");
+        this.job = job;
+        this.fileService = (HeraFileService) applicationContext.getBean("heraFileService");
     }
 
 
@@ -63,10 +64,10 @@ public class WithProcessJob extends AbstractJob {
         Integer exitCode = -1;
         jobContext.setCoreExitCode(exitCode);
         try {
-            if(isCanceled()) {
+            if(!isCanceled()) {
                 log("开始执行核心job");
-                running = core;
-                exitCode = core.run();
+                running = job;
+                exitCode = job.run();
                 jobContext.setCoreExitCode(exitCode);
             }
         } catch (Exception e) {

@@ -1,8 +1,6 @@
 package com.dfire.core.lock;
 
-import com.dfire.common.entity.HeraHostRelation;
 import com.dfire.common.entity.HeraLock;
-import com.dfire.common.service.HeraHostGroupService;
 import com.dfire.common.service.HeraHostRelationService;
 import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
@@ -62,7 +60,7 @@ public class DistributeLock {
             public void run() {
                 getLock();
             }
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 1, 3, TimeUnit.SECONDS);
     }
 
     public void getLock() {
@@ -88,7 +86,6 @@ public class DistributeLock {
             long lockTime = heraLock.getServerUpdate().getTime();
             long interval = currentTime - lockTime;
             if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
-                log.info("server lock time exceed 5 minutes and will happen master switch");
                 heraLock.setHost(host);
                 heraLock.setServerUpdate(new Date());
                 heraLock.setSubgroup("online");
@@ -97,16 +94,12 @@ public class DistributeLock {
                 heraSchedule.startup();
             } else {
                 heraSchedule.shutdown();//非主节点，调度器不执行
-                log.info("shutdown worker's  schedule service ");
             }
         }
 
         try {
-            log.info("work try to connect master ....");
             workClient.connect(heraLock.getHost());
-            log.info("work connect master success...");
         } catch (Exception e) {
-            log.info("client worker connect master server exception:{}", e);
         }
     }
 
@@ -120,9 +113,4 @@ public class DistributeLock {
 
         }
     }
-
-    public static void main(String[] args) {
-        System.out.println("ss ");
-    }
-
 }

@@ -12,6 +12,7 @@ import com.dfire.common.processor.JobProcessor;
 import com.dfire.common.processor.Processor;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.common.service.HeraGroupService;
+import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraProfileService;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
@@ -55,7 +56,7 @@ public class JobUtils {
         //权限控制判断，暂时不做
         HeraFileService heraFileService = (HeraFileService) applicationContext.getBean("heraFileService");
         String owner = heraFileService.findById(heraDebugHistory.getId()).getOwner();
-        HeraProfileService heraProfileService = (HeraProfileService) applicationContext.getBean("profileService");
+        HeraProfileService heraProfileService = (HeraProfileService) applicationContext.getBean("heraProfileService");
         HeraProfileVo heraProfile = heraProfileService.findByOwner(owner);
         if (heraProfile != null && heraProfile.getHadoopConf() != null) {
             for (String key : heraProfile.getHadoopConf().keySet())
@@ -91,9 +92,9 @@ public class JobUtils {
         }
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
         List<Map<String, String>> resource = jobBean.getHierarchyResources();
-        HeraGroupService heraGroupService = (HeraGroupService) applicationContext.getBean("heraGroupService");
+        HeraJobActionService heraJobActionService = (HeraJobActionService) applicationContext.getBean("heraGroupService");
         String jobId = jobBean.getHeraJobVo().getId();
-        String script = heraGroupService.getHeraJobVo(jobId).getSource().getScript();
+        String script = heraJobActionService.findHeraActionVo(jobId).getSource().getScript();
         String actionDate = history.getId().substring(0, 12) + "00";
         if (StringUtils.isNotBlank(actionDate) && actionDate.length() == 14) {
             script = RenderHierarchyProperties.render(script, actionDate);

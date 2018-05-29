@@ -1,6 +1,13 @@
 package com.dfire.common.entity.vo;
 
+import com.dfire.common.enums.JobRunType;
+import com.dfire.common.enums.JobScheduleType;
+import com.dfire.common.processor.Processor;
+import lombok.Builder;
+import lombok.Data;
+
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -8,6 +15,8 @@ import java.util.Map;
  * @time: Created in 上午11:00 2018/5/16
  * @desc
  */
+@Builder
+@Data
 public class HeraActionVo {
 
     private String id;
@@ -16,15 +25,15 @@ public class HeraActionVo {
 
     private Integer auto = 0;
 
-    private String configs;
+    private Map<String, String> configs;
 
     private String cronExpression;
 
     private String cycle;
 
-    private String dependencies;
+    private List<String> dependencies;
 
-    private String jobDependencies;
+    private List<String> jobDependencies;
 
     private String description;
 
@@ -34,7 +43,7 @@ public class HeraActionVo {
 
     private Integer groupId;
 
-    private Long historyId;
+    private String historyId;
 
     private String host;
 
@@ -48,17 +57,17 @@ public class HeraActionVo {
 
     private String owner;
 
-    private String postProcessors;
+    private List<Processor> postProcessors;
 
-    private String preProcessors;
+    private List<Processor> preProcessors;
 
-    private String readyDependency;
+    private List<String> readyDependency;
 
-    private Map<String, String> resources;
+    private List<Map<String, String>> resources;
 
-    private String runType;
+    private JobRunType runType;
 
-    private Integer scheduleType;
+    private JobScheduleType scheduleType;
 
     private String script;
 
@@ -75,4 +84,5 @@ public class HeraActionVo {
     private String timezone;
 
     private Integer hostGroupId;
+
 }

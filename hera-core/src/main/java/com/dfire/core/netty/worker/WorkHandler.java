@@ -14,17 +14,37 @@ import java.util.concurrent.*;
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 1:32 2018/1/4
  * @desc SocketMessage为RPC消息体
+ *
  */
 @Slf4j
 public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
-
 
     private CompletionService<Response> completionService = new ExecutorCompletionService<Response>(Executors.newCachedThreadPool());
     private WorkContext workContext;
 
     public WorkHandler(final WorkContext workContext) {
         this.workContext = workContext;
-        this.workContext.setHandler(this);
+        workContext.setHandler(this);
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Future<Response> future = completionService.take();
+                        Response response = future.get();
+                        if(workContext.getServerChannel() != null) {
+                            workContext.getServerChannel().write(wrapper(response));
+                        }
+                        log.info("worker get response thread success");
+                    } catch (Exception e) {
+                        log.error("worker handler take future exception");
+                    }
+                }
+
+            }
+        });
+
     }
 
     private List<ResponseListener> listeners = new CopyOnWriteArrayList<ResponseListener>();
@@ -37,7 +57,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
         listeners.add(listener);
     }
 
-    public SocketMessage wapper(Response response) {
+    public SocketMessage wrapper(Response response) {
         return SocketMessage
                 .newBuilder()
                 .setKind(SocketMessage.Kind.RESPONSE)
@@ -46,8 +66,8 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, SocketMessage msg) throws Exception {
-        SocketMessage socketMessage = (SocketMessage) msg;
+     protected void channelRead0(ChannelHandlerContext ctx, SocketMessage msg) throws Exception {
+        SocketMessage socketMessage = msg;
         switch (socketMessage.getKind()) {
             case REQUEST:
                 final Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
@@ -69,20 +89,21 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                         }
                     });
                 }
+                break;
             case RESPONSE:
                 final Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 for(ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
+                break;
             case WEB_RESPONSE:
                 final WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 for(ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }
+                break;
 
         }
-        super.channelActive(ctx);
-        ctx.writeAndFlush(msg);
     }
 
     @Override
@@ -93,7 +114,6 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        ctx.close();
         log.info("客户端与服务端连接关闭");
     }
 

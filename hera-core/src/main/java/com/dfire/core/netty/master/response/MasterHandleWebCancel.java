@@ -193,7 +193,7 @@ public class MasterHandleWebCancel {
         }
 
         if (webResponse != null) {
-            JobStatus jobStatus = context.getHeraGroupService().getJobStatus(jobId);
+            JobStatus jobStatus = context.getHeraJobActionService().findJobStatus(jobId);
             jobStatus.setStatus(com.dfire.common.enums.Status.WAIT);
             jobStatus.setHistoryId(null);
             context.getHeraJobHistoryService().updateJobStatus(jobStatus);

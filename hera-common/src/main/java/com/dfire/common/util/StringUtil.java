@@ -68,19 +68,21 @@ public class StringUtil {
         return jsonObject.toString();
     }
 
-    public static Processor convertProcessorToList(String processor) {
+    public static List<Processor> convertProcessorToList(String processor) {
+        List<Processor> list = new ArrayList<>();
         Processor result = null;
         if(processor.equals("[]")) {
-            return result;
+            return list;
         }
         JSONObject jsonObject = JSONObject.parseObject(processor);
         String id = jsonObject.getString("id");
         if (StringUtils.isNotBlank(id)) {
             if (id.equals("download")) {
                 result = new DownProcessor();
+                list.add(result);
             }
         }
-        return result;
+        return list;
     }
 
     public static String convertProcessorToList(List<Processor> list) {

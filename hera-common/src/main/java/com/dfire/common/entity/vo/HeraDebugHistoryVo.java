@@ -39,7 +39,7 @@ public class HeraDebugHistoryVo {
 
     private JobRunType runType;
 
-    private LogContent log;
+    private LogContent log ;
 
     private String host;
 

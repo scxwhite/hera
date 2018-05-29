@@ -39,7 +39,7 @@ public class HeraJobHistoryVo {
 
     private Date statisticsEndTime;
 
-    private LogContent log = new LogContent();
+    private LogContent log;
 
     private String timezone;
 

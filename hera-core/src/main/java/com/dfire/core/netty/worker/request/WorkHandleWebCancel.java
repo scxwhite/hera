@@ -36,17 +36,17 @@ public class WorkHandleWebCancel {
             @Override
             public WebResponse call() throws Exception {
                 final CountDownLatch latch = new CountDownLatch(1);
+                log.info("Work start Handle Web Cancel, requestId = " + request.getRid());
                 workContext.getHandler().addListener(new ResponseListener() {
                     @Override
-                    public void onResponse(Response response) {
-                    }
-
+                    public void onResponse(Response response) { }
                     @Override
                     public void onWebResponse(WebResponse response) {
                         if (request.getRid() == request.getRid()) {
                             workContext.getHandler().removeListener(this);
                             webResponse = response;
                             latch.countDown();
+                            log.info("Work end Handle Web Cancel, requestId = " + request.getRid());
                         }
                     }
                 });
