@@ -118,11 +118,6 @@
         </encoder>
     </appender>
 
-    <logger name="com.alibaba.dubbo.rpc.filter.TimeoutFilter" additivity="false">
-        <level value="INFO"/>
-        <appender-ref ref="TIME_OUT"/>
-        <appender-ref ref="ALERT_MONITOR"/>
-    </logger>
 
     <!--控制台打印资源加载信息-->
     <root>
@@ -140,9 +135,5 @@
     <logger name="org.mybatis" level="INFO"/>
     <logger name="com.alibaba" level="WARN"/>
     <logger name="org.apache" level="WARN"/>
-    <logger name="com.dianping" level="WARN"/>
-    <logger name="org.apache.zookeeper.ClientCnxn" level="WARN"/>
-    <logger name="org.I0Itec" level="WARN"/>
-    <logger name="RocketmqClient" level="WARN"/>
     <logger name="druid.sql" level="WARN"/>
 </configuration>

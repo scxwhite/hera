@@ -34,11 +34,21 @@ public class WorkExecuteJob {
             return debug(workContext, request);
         } else if (request.getOperate() == Operate.Manual) {
             return manual(workContext, request);
-        } else if(request.getOperate() == Operate.Schedule) {
+        } else if (request.getOperate() == Operate.Schedule) {
             return schedule(workContext, request);
         }
         return null;
     }
+
+
+    /**
+     * worker中，调度中心手动执行任务最终执行位置，JobUtils.createDebugJob创建job文件到服务器，拼接shell，并调用命令执行
+     *
+     * @param workContext
+     * @param request
+     * @return
+     */
+
 
     private Future<Response> manual(WorkContext workContext, Request request) {
         ExecuteMessage message = null;
@@ -49,7 +59,7 @@ public class WorkExecuteJob {
         }
         final String jobId = message.getJobId();
         log.info("worker received master request to run manual job, jobId :" + jobId);
-        if(workContext.getRunning().containsKey(jobId)) {
+        if (workContext.getRunning().containsKey(jobId)) {
             log.info("job is running, can not run again, jobId :" + jobId);
             return workContext.getWorkThreadPool().submit(new Callable<Response>() {
                 @Override
@@ -76,7 +86,7 @@ public class WorkExecuteJob {
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                         + File.separator + date + File.separator + "manual-" + history.getId());
-                if(!directory.exists()) {
+                if (!directory.exists()) {
                     directory.mkdir();
                 }
 
@@ -93,7 +103,7 @@ public class WorkExecuteJob {
                 } finally {
                     HeraJobHistoryVo heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
                     heraJobHistory.setEndTime(new Date());
-                    if(exitCode == 0) {
+                    if (exitCode == 0) {
                         heraJobHistory.setStatus(com.dfire.common.enums.Status.SUCCESS);
                     } else {
                         heraJobHistory.setStatus(com.dfire.common.enums.Status.FAILED);
@@ -108,10 +118,10 @@ public class WorkExecuteJob {
 
                 Status status = Status.OK;
                 String errorText = "";
-                if(exitCode != 0) {
+                if (exitCode != 0) {
                     status = Status.ERROR;
                 }
-                if(exception != null) {
+                if (exception != null) {
                     errorText = exception.getMessage();
                 }
 
@@ -130,6 +140,14 @@ public class WorkExecuteJob {
 
     }
 
+    /**
+     * worker中，调度中心自动调度任务最终执行位置，JobUtils.createDebugJob创建job文件到服务器，拼接shell，并调用命令执行
+     *
+     * @param workContext
+     * @param request
+     * @return
+     */
+
     private Future<Response> schedule(WorkContext workContext, Request request) {
         ExecuteMessage message = null;
         try {
@@ -139,7 +157,7 @@ public class WorkExecuteJob {
         }
         final String jobId = message.getJobId();
         log.info("worker received master request to run schedule, jobId :" + jobId);
-        if(workContext.getRunning().containsKey(jobId)) {
+        if (workContext.getRunning().containsKey(jobId)) {
             log.info("job is running, can not run again, jobId :" + jobId);
             return workContext.getWorkThreadPool().submit(new Callable<Response>() {
                 @Override
@@ -166,7 +184,7 @@ public class WorkExecuteJob {
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                         + File.separator + date + File.separator + history.getId());
-                if(!directory.exists()) {
+                if (!directory.exists()) {
                     directory.mkdir();
                 }
 
@@ -183,7 +201,7 @@ public class WorkExecuteJob {
                 } finally {
                     HeraJobHistoryVo heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
                     heraJobHistory.setEndTime(new Date());
-                    if(exitCode == 0) {
+                    if (exitCode == 0) {
                         heraJobHistory.setStatus(com.dfire.common.enums.Status.SUCCESS);
                     } else {
                         heraJobHistory.setStatus(com.dfire.common.enums.Status.FAILED);
@@ -198,10 +216,10 @@ public class WorkExecuteJob {
 
                 Status status = Status.OK;
                 String errorText = "";
-                if(exitCode != 0) {
+                if (exitCode != 0) {
                     status = Status.ERROR;
                 }
-                if(exception != null) {
+                if (exception != null) {
                     errorText = exception.getMessage();
                 }
 
@@ -220,6 +238,13 @@ public class WorkExecuteJob {
 
     }
 
+    /**
+     * worker中，开发中心脚本执行最终执行位置，JobUtils.createDebugJob创建job文件到服务器，拼接shell，并调用命令执行
+     *
+     * @param workContext
+     * @param request
+     * @return
+     */
     private Future<Response> debug(WorkContext workContext, Request request) {
         DebugMessage debugMessage = null;
         try {
@@ -238,7 +263,7 @@ public class WorkExecuteJob {
 
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator);
-                if(!directory.exists()) {
+                if (!directory.exists()) {
                     directory.mkdirs();
                 }
                 Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
@@ -252,24 +277,25 @@ public class WorkExecuteJob {
                 } catch (Exception e) {
                     exception = e;
                     history.getLog().appendHeraException(e);
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                 } finally {
-                    HeraDebugHistoryVo debugHistory = workContext.getDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
-                    debugHistory.setEndTime(new Date());
-                    if(exitCode == 0) debugHistory.setStatus(com.dfire.common.enums.Status.SUCCESS);
-                    else {
-                        debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
+                    HeraDebugHistoryVo debugHistoryVo = workContext.getDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
+                    debugHistoryVo.setEndTime(new Date());
+                    if (exitCode == 0) {
+                        debugHistoryVo.setStatus(com.dfire.common.enums.Status.SUCCESS);
+                    } else {
+                        debugHistoryVo.setStatus(com.dfire.common.enums.Status.FAILED);
                     }
-                    debugHistory.getLog().appendHera("exitCode =" + exitCode);
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
-                    log.info("update debug jobId = " + debugId + " success");
-
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistoryVo));
+                    debugHistoryVo.getLog().appendHera("exitCode =" + exitCode);
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistoryVo));
                 }
                 Status status = Status.OK;
                 String errorText = "";
-                if(exitCode != 0) {
+                if (exitCode != 0) {
                     status = Status.ERROR;
                 }
-                if(exception != null && exception.getMessage() != null) {
+                if (exception != null && exception.getMessage() != null) {
                     errorText = exception.getMessage();
                 }
                 Response response = Response.newBuilder()
@@ -281,7 +307,7 @@ public class WorkExecuteJob {
                 return response;
             }
         });
-        return  future;
+        return future;
     }
 
 }

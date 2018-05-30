@@ -32,9 +32,6 @@ public class MasterHandleHeartBeat {
             heartBeatInfo.setDebugRunning(heartBeatMessage.getDebugRunningsList());
             heartBeatInfo.setManualRunning(heartBeatMessage.getManualRunningsList());
             worker.setHeartBeatInfo(heartBeatInfo);
-//            if (worker.heartBeatInfo == null || heartBeatInfo.timestamp.getTime() > worker.heartBeatInfo.timestamp.getTime()) {
-//                worker.heartBeatInfo = heartBeatInfo;
-//            }
             log.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();

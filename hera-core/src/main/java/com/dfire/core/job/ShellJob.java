@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.RunningJobKeys;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.util.CommandUtils;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
@@ -16,15 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author xiaosuda
- * @date 2018/4/13
+ * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
+ * @time: Created in 上午12:30 2018/4/26
+ * @desc  shell脚本执行类，拼接shell文件，执行文件执行命令
  */
+
 @Slf4j
 public class ShellJob extends ProcessJob {
 
     private String shell;
-
 
     public ShellJob(JobContext jobContext) {
         super(jobContext);
@@ -57,9 +58,7 @@ public class ShellJob extends ProcessJob {
             outputStreamWriter = new OutputStreamWriter(
                     new FileOutputStream(f),
                     Charset.forName(jobContext.getProperties().getProperty("hera.encode", "utf-8")));
-
             outputStreamWriter.write(script);
-
             getProperties().setProperty(RunningJobKeys.RUN_SHELLPATH, f.getAbsolutePath());
 
         } catch (IOException e) {
@@ -74,10 +73,10 @@ public class ShellJob extends ProcessJob {
         String user = "";
         if (jobContext.getRunType() == JobContext.SCHEDULE_RUN || jobContext.getRunType() == JobContext.MANUAL_RUN) {
             user = jobContext.getHeraJobHistory().getOperator();
-            shellPrefix = "sudo -u " + user;
+            shellPrefix = "sudo su " + user;
         } else if (jobContext.getRunType() == JobContext.DEBUG_RUN) {
             user = jobContext.getDebugHistory().getOwner();
-            shellPrefix = "sudo -u " + user;
+            shellPrefix = "sudo su " + user;
         } else if (jobContext.getRunType() == JobContext.SYSTEM_RUN) {
             shellPrefix = "";
         } else {
@@ -100,25 +99,22 @@ public class ShellJob extends ProcessJob {
             list.add("dos2unix " + shellFilePath);
             log("dos2unix file:" + shellFilePath);
         }
-        //以当前用户执行shell
+
         if (shellPrefix.trim().length() > 0) {
-            String envFilePath = this.getClass().getClassLoader().getResource("/").getPath() + "env.sh";
             String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
-            String localEnvFilePath = jobContext.getWorkDir() + File.separator + "env.sh";
-            File f = new File(envFilePath);
-            if (f.exists()) {
-                list.add("cp " + envFilePath + " " + jobContext.getWorkDir());
-                File tmpFile = new File(tmpFilePath);
-                OutputStreamWriter tmpWriter = null;
+
+            File tmpFile = new File(tmpFilePath);
+            OutputStreamWriter tmpWriter = null;
+
+            if(!tmpFile.exists()) {
                 try {
-                    if (!tmpFile.exists()) {
-                        tmpFile.createNewFile();
-                    }
+                    tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write("source " + localEnvFilePath + "; source" + shellFilePath);
+
+                    tmpWriter.write("source" + shellFilePath);
                 } catch (Exception e) {
-                    jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+                    jobContext.getDebugHistory().getLog().appendHeraException(e);
                 } finally {
                     IOUtils.closeQuietly(tmpWriter);
                 }
@@ -126,8 +122,9 @@ public class ShellJob extends ProcessJob {
                 list.add(CommandUtils.getRunShCommand(shellPrefix,tmpFilePath));
             } else {
                 list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-                list.add(CommandUtils.getRunShCommand(shellPrefix,shellFilePath));
+                list.add(CommandUtils.getRunShCommand(shellPrefix,tmpFilePath));
             }
+
         } else {
             list.add("sh " + shellFilePath);
         }
@@ -136,7 +133,8 @@ public class ShellJob extends ProcessJob {
     }
 
     @Override
-    public int run() {
+    public int run() throws Exception {
         return super.run();
     }
+
 }

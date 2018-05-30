@@ -38,12 +38,12 @@ public class HiveJob extends ProcessJob {
     }
 
     @Override
-    public int run() {
+    public int run() throws Exception {
         Integer exitCode = runInner();
         return exitCode;
     }
 
-    private Integer runInner() {
+    private Integer runInner() throws Exception {
         String script = getProperties().getLocalProperty(RunningJobKeys.JOB_SCRIPT);
         File file = new File(jobContext.getWorkDir() + File.separator + new Date().getTime() + ".hive");
         if (!file.exists()) {

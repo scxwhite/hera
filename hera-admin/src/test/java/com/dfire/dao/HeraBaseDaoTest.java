@@ -3,9 +3,11 @@ package com.dfire.dao;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
+import com.dfire.common.enums.Status;
 import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.HeraHostGroupVo;
+import com.dfire.common.vo.LogContent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -131,30 +133,14 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraDebugHistoryDaoTest() {
-        String id = heraDebugHistoryService.insert(heraDebugHistory);
-        System.out.printf(id);
-
-        heraDebugHistory.setId("14");
-        heraDebugHistory.setRunType("shell");
-        heraDebugHistory.setExecuteHost("127.0.0.1");
-        heraDebugHistory.setStatus("running");
-        heraDebugHistory.setLog("hera running");
-        heraDebugHistoryService.update(heraDebugHistory);
-
-        List<HeraDebugHistory> list = heraDebugHistoryService.getAll();
-        System.out.println(list.size());
-
-        heraDebugHistory.setId("14");
-        HeraDebugHistoryVo debugHistoryVo = heraDebugHistoryService.findById(heraDebugHistory);
-        System.out.println(debugHistoryVo.getStatus());
-        System.out.println(debugHistoryVo.getLog());
-        heraDebugHistory.setId("12");
-        heraDebugHistoryService.delete(13);
-
-        heraDebugHistory.setId("14");
-        HeraDebugHistory history = BeanConvertUtils.convert(debugHistoryVo);
+        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById(HeraDebugHistory.builder().id("164").build());
+        debugHistory.setStatus(Status.RUNNING);
+        heraDebugHistoryService.update(BeanConvertUtils.convert(debugHistory));
+        HeraDebugHistory history = BeanConvertUtils.convert(debugHistory);
+        history.setLog("test111");
+        heraDebugHistoryService.update(history);
+        System.out.println(debugHistory.getStatus().toString());
         System.out.println(history.getLog());
-        System.out.println(history.getStatus());
 
     }
 

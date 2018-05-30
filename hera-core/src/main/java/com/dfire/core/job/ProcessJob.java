@@ -66,7 +66,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             }
         });
 
-        if (jobType != null && jobType.equals("HiveJob")) {
+        if (jobType != null && jobType.equals("hive")) {
             Configuration coreC = ConfUtil.getDefaultCoreSite();
             for (String key : core.keySet()) {
                 coreC.set(key, core.get(key));
@@ -146,7 +146,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
 
     @Override
-    public int run()  {
+    public int run() throws Exception {
         int exitCode = -999;
         String jobType = jobContext.getProperties().getAllProperties().get(RunningJobKeys.JOB_RUN_TYPE);
         buildHiveConf(jobType);
@@ -158,7 +158,6 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
         List<String> commands = getCommandList();
         ExecutorService executor = Executors.newCachedThreadPool();
-
 
         commands.stream().forEach(command -> {
             ProcessBuilder builder = new ProcessBuilder(partitionCommandLine(command));

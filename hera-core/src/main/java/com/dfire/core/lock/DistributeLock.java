@@ -54,13 +54,13 @@ public class DistributeLock {
     @PostConstruct
     public void init() {
         heraSchedule = new HeraSchedule(applicationContext);
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(3);
+        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
         service.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 getLock();
             }
-        }, 1, 3, TimeUnit.SECONDS);
+        }, 5, 5, TimeUnit.SECONDS);
     }
 
     public void getLock() {

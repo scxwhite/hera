@@ -75,4 +75,14 @@ public class HeraStringUtilTest {
     public void testDateUtil() {
         System.out.println(DateUtil.getTodayStringForAction());
     }
+
+
+    @Test
+    public void filePathTest() {
+        String path = this.getClass().getClassLoader().getResource("").getPath();
+        if(path != null) {
+            System.out.println(path);
+        }
+
+    }
 }

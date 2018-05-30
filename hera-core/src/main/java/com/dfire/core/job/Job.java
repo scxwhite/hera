@@ -1,6 +1,5 @@
 package com.dfire.core.job;
 
-import java.io.IOException;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -9,7 +8,7 @@ import java.io.IOException;
  */
 public interface Job {
 
-    int run() throws IOException;
+    int run() throws Exception;
 
     void cancel();
 

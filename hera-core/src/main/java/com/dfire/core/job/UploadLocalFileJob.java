@@ -8,8 +8,9 @@ import java.util.List;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 下午5:57 2018/5/1
- * @desc
+ * @desc 文件上传，先上传服务器，然后存入hadoop
  */
+
 @Slf4j
 public class UploadLocalFileJob extends ProcessJob {
 

@@ -66,15 +66,15 @@ public class BeanConvertUtils {
         return jobHistory;
     }
 
-    public static HeraDebugHistoryVo convert(HeraDebugHistory heraJobHistory) {
+    public static HeraDebugHistoryVo convert(HeraDebugHistory heraDebugHistory) {
         HeraDebugHistoryVo heraJobHistoryVo = HeraDebugHistoryVo.builder().build();
-        BeanUtils.copyProperties(heraJobHistory, heraJobHistoryVo);
-        heraJobHistoryVo.setStatus(Status.parse(heraJobHistory.getStatus()));
-        heraJobHistoryVo.setRunType(JobRunType.parser(heraJobHistory.getRunType()));
-        if(StringUtils.isBlank(heraJobHistory.getLog())) {
+        BeanUtils.copyProperties(heraDebugHistory, heraJobHistoryVo);
+        heraJobHistoryVo.setStatus(Status.parse(heraDebugHistory.getStatus()));
+        heraJobHistoryVo.setRunType(JobRunType.parser(heraDebugHistory.getRunType()));
+        if(StringUtils.isBlank(heraDebugHistory.getLog())) {
             heraJobHistoryVo.setLog(LogContent.builder().build());
         } else {
-            heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
+            heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraDebugHistory.getLog())).build());
         }
         return heraJobHistoryVo;
 

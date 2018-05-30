@@ -35,7 +35,7 @@ public class HeraGlobalEnvironment {
     private static String downloadDir;
 
 
-    @Value("${hera.exclude-file}")
+    @Value("${hera.dos2unix-exclude-file}")
     public void setExcludeFile(String excludeFile) {
         this.excludeFile = excludeFile;
     }

@@ -15,7 +15,7 @@ public class HadoopShellJob extends ShellJob {
     }
 
     @Override
-    public int run() {
+    public int run() throws Exception {
         return super.run();
     }
 }

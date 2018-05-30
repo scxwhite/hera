@@ -117,7 +117,7 @@ public class WorkClient {
                 }
             }
 
-        }, 5, 5, TimeUnit.SECONDS);
+        }, 0, 10, TimeUnit.SECONDS);
 
         service.scheduleAtFixedRate(new Runnable() {
 

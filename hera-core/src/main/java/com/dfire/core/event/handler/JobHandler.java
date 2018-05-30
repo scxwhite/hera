@@ -94,20 +94,25 @@ public class JobHandler extends AbstractHandler {
                 if(jobStatus.getHistoryId() != null) {
                     HeraJobHistoryVo heraJobHistory = jobHistoryService.findJobHistory(jobId);
                     if(heraJobHistory != null && heraJobHistory.getStatus().equals(Status.RUNNING)) {
-                        JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
-                        heraJobHistory.setIllustrate("启动服务器发现正在running状态，判断状态已经丢失，进行重试操作");
-                        tmp.setHeraJobHistory(heraJobHistory);
-                        new CancelHadoopJob(tmp).run();
-                        master.run(heraJobHistory);
-                        log.info("重启running job success");
+                        try {
+                            JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
+                            heraJobHistory.setIllustrate("启动服务器发现正在running状态，判断状态已经丢失，进行重试操作");
+                            tmp.setHeraJobHistory(heraJobHistory);
+                            new CancelHadoopJob(tmp).run();
+                            master.run(heraJobHistory);
+                        } catch (Exception e) {
+                        }
+
                     } else if(heraJobHistory != null && heraJobHistory.getStatus().equals(Status.FAILED) &&
                             heraJobHistory.getIllustrate().equals("work断开连接，主动取消该任务")) {
-                        JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
-                        heraJobHistory.setIllustrate("启动服务器发现worker与master断开连接，worker主动取消任务，进行重试操作");
-                        tmp.setHeraJobHistory(heraJobHistory);
-                        new CancelHadoopJob(tmp).run();
-                        master.run(heraJobHistory);
-                        log.info("重启running job success");
+                        try {
+                            JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
+                            heraJobHistory.setIllustrate("启动服务器发现worker与master断开连接，worker主动取消任务，进行重试操作");
+                            tmp.setHeraJobHistory(heraJobHistory);
+                            new CancelHadoopJob(tmp).run();
+                            master.run(heraJobHistory);
+                        } catch (Exception e) {
+                        }
                     }
                 } else {
                     HeraJobVo heraJobVo = heraGroupService.getUpstreamJobBean(jobId).getHeraJobVo();

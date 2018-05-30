@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 上午12:13 2018/4/26
- * @desc
+ * @desc  任务执行体job的创建工具，创建任务依据任务配置创建任务前置处理，核心执行体，后置处理，以及脚本中的变量替换
  */
 @Slf4j
 public class JobUtils {
@@ -70,8 +70,10 @@ public class JobUtils {
         pres.add(new DownLoadJob(jobContext));
         Job core = null;
         if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunType.Shell.toString())) {
+            jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunType.Shell.toString());
             core = new ShellJob(jobContext);
         } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunType.Hive.toString())) {
+            jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunType.Hive.toString());
             core = new HadoopShellJob(jobContext);
         }
         Job job = new WithProcessJob(jobContext, pres, new ArrayList<>(), core, applicationContext);

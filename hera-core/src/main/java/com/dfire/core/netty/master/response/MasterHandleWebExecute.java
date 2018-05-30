@@ -37,7 +37,7 @@ public class MasterHandleWebExecute {
 
             WebResponse webResponse = WebResponse.newBuilder()
                     .setRid(request.getRid())
-                    .setOperate(WebOperate.ExecuteDebug)
+                    .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
             log.info("send web debug response, debugId = " + debugId);
