@@ -71,10 +71,10 @@ public class JobUtils {
         Job core = null;
         if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunType.Shell.toString())) {
             jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunType.Shell.toString());
-            core = new ShellJob(jobContext);
+            core = new HadoopShellJob(jobContext);
         } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunType.Hive.toString())) {
             jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunType.Hive.toString());
-            core = new HadoopShellJob(jobContext);
+            core = new HiveJob(jobContext, applicationContext);
         }
         Job job = new WithProcessJob(jobContext, pres, new ArrayList<>(), core, applicationContext);
         return job;

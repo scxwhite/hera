@@ -81,10 +81,10 @@ public class HiveJob extends ProcessJob {
         String user = "";
         if (jobContext.getRunType() == 1 || jobContext.getRunType() == 2) {
             user = jobContext.getHeraJobHistory().getOperator();
-            shellPrefix = "sudo -u" + user;
+            shellPrefix = "sudo -u " + user;
         } else if (jobContext.getRunType() == 3) {
             user = jobContext.getDebugHistory().getOwner();
-            shellPrefix = "sudo -u" + user;
+            shellPrefix = "sudo -u " + user;
         } else if (jobContext.getRunType() == 4) {
             shellPrefix = "";
         } else {
@@ -105,38 +105,34 @@ public class HiveJob extends ProcessJob {
 
         if (isDocToUnix) {
             list.add("dos2unix " + hiveFilePath);
-            list.add("dos2unix file" + hiveFilePath);
+            log("dos2unix file" + hiveFilePath);
         }
 
-        sb.append("f").append(hiveFilePath);
+        sb.append(" -f ").append(hiveFilePath);
 
         if (shellPrefix.trim().length() > 0) {
-            String envFilePath = this.getClass().getClassLoader().getResource("/").getPath() + "env.sh";
+
             String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
-            String localEnvFilePath = jobContext.getWorkDir() + File.separator + "env.sh";
-            File file = new File(envFilePath);
-            if (file.exists()) {
-                list.add("cp " + envFilePath + " " + jobContext.getWorkDir());
-                File tmpFile = new File(tmpFilePath);
-                OutputStreamWriter tmpWriter = null;
+            File tmpFile = new File(tmpFilePath);
+            OutputStreamWriter tmpWriter = null;
+            if (!tmpFile.exists()) {
                 try {
-                    if (!tmpFile.exists()) {
-                        tmpFile.createNewFile();
-                    }
+                    tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write("source " + localEnvFilePath + "; source" + sb.toString());
+                    tmpWriter.write("source " + tmpFile + "; hive" + sb.toString());
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
                     IOUtils.closeQuietly(tmpWriter);
                 }
-                list.add("chmod -R 777" + jobContext.getWorkDir());
-                list.add(shellPrefix + " sh" + tmpFilePath);
+                list.add("chmod -R 777 " + jobContext.getWorkDir());
+                list.add(shellPrefix + " sh " + tmpFilePath);
             } else {
-                list.add("chmod -R 777" + jobContext.getWorkDir());
-                list.add(shellPrefix + " hive" + sb.toString());
+                list.add("chmod -R 777 " + jobContext.getWorkDir());
+                list.add(shellPrefix + " hive " + sb.toString());
             }
+
         } else {
             list.add("hive" + sb.toString());
         }

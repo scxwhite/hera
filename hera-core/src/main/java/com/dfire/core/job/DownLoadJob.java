@@ -1,6 +1,7 @@
 package com.dfire.core.job;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class DownLoadJob extends AbstractJob{
     }
 
     @Override
-    public int run() {
+    public int run() throws IOException {
         List<Job> jobList = new ArrayList<>();
         for(Map<String, String> map : jobContext.getResources()) {
             if(map.get("uri") != null) {

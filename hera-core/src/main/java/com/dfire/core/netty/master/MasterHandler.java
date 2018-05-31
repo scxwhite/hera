@@ -26,7 +26,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     private MasterContext masterContext;
 
-    private MasterHandleWebDebug handleWebDebug = new MasterHandleWebDebug();
+    private MasterHandleWebDebug masterHandleWebDebug = new MasterHandleWebDebug();
 
     private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
 
@@ -73,11 +73,11 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
             case WEB_REUQEST:
                 final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 switch (webRequest.getOperate()) {
-                    case ExecuteDebug:
+                    case ExecuteJob:
                         completionService.submit(new Callable<ChannelResponse>() {
                             @Override
                             public ChannelResponse call() throws Exception {
-                                return new ChannelResponse(channel, handleWebDebug.handleWebDebug(masterContext, webRequest));
+                                return new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest));
                             }
                         });
                         break;
@@ -97,21 +97,31 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                             }
                         });
                         break;
-                    case ExecuteJob:
+                    case ExecuteDebug:
                         completionService.submit(new Callable<ChannelResponse>() {
                             @Override
                             public ChannelResponse call() throws Exception {
-                                return new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest));
+                                return new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest));
                             }
                         });
                         break;
+
                 }
                 break;
-
+            case RESPONSE:
+                for(ResponseListener listener : listeners) {
+                     listener.onResponse(Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                }
+                break;
+            case WEB_RESPONSE:
+                for(ResponseListener listener : listeners) {
+                    listener.onWebResponse(WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                }
             default:
                 log.error("unknown request type : {}", socketMessage.getKind());
                 break;
         }
+
         super.channelRead(ctx, msg);
     }
 

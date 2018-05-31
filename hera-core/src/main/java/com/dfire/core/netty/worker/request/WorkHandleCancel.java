@@ -113,7 +113,7 @@ public class WorkHandleCancel {
                             .build();
                 }
             });
-            HeraDebugHistoryVo debugHistory = workContext.getDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
+            HeraDebugHistoryVo debugHistory = workContext.getDebugHistoryService().findById(debugId);
             debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
             debugHistory.setEndTime(new Date());
             workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));

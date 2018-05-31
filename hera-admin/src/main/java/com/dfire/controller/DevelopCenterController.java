@@ -110,9 +110,9 @@ public class DevelopCenterController {
                         .script(script)
                         .owner(file.getOwner())
                         .build();
-                if(file.getType().equals("2")) {
+                if(file.getType().equals("1")) {
                     history.setRunType("shell");
-                } else if(file.getType().equals("1")) {
+                } else if(file.getType().equals("2")) {
                     history.setRunType("hive");
                 }
                 String newId = debugHistoryService.insert(history);

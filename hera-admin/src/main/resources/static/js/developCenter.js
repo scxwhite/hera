@@ -287,9 +287,9 @@ $(function(){
     $("#execute").click(function () {
         var id = $("#id").text();
         var script = $("#script").val();
-        var id = '253';
+        var id = '90';
 
-        script = 'ls';
+        script = 'show databases';
 
         var parameter = "id=" + id + "&script=" + script;
         var result = null;

@@ -47,8 +47,9 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     }
 
     @Override
-    public HeraDebugHistoryVo findById(HeraDebugHistory heraDebugHistory) {
-        HeraDebugHistory history= heraDebugHistoryMapper.findById(heraDebugHistory);
+    public HeraDebugHistoryVo findById(String id) {
+        HeraDebugHistory debugHistory = HeraDebugHistory.builder().id(id).build();
+        HeraDebugHistory history= heraDebugHistoryMapper.findById(debugHistory);
         return BeanConvertUtils.convert(history);
     }
 

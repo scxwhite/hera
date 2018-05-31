@@ -26,8 +26,12 @@ public class HeraUpdateLangDriver extends XMLLanguageDriver implements LanguageD
             StringBuilder sb = new StringBuilder();
             sb.append("<set>");
 
+
             for (Field field : parameterType.getDeclaredFields()) {
                 String tmp = "<if test=\"_field != null\">_column=#{_field},</if>";
+                if(field.getName().equalsIgnoreCase("id")) {
+                    continue;
+                }
                 sb.append(tmp.replaceAll("_field", field.getName()).replaceAll("_column",
                         CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName())));
             }

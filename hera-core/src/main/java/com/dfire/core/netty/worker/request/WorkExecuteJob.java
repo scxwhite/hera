@@ -253,7 +253,7 @@ public class WorkExecuteJob {
             e.printStackTrace();
         }
         String debugId = debugMessage.getDebugId();
-        HeraDebugHistoryVo history = workContext.getDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
+        HeraDebugHistoryVo history = workContext.getDebugHistoryService().findById(debugId);
         Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
             @Override
             public Response call() throws Exception {
@@ -272,23 +272,30 @@ public class WorkExecuteJob {
 
                 int exitCode = -1;
                 Exception exception = null;
+
+                HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
                 try {
                     exitCode = job.run();
                 } catch (Exception e) {
                     exception = e;
-                    history.getLog().appendHeraException(e);
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
+                    heraDebugHistoryVo.getLog().appendHeraException(e);
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(heraDebugHistoryVo));
                 } finally {
-                    HeraDebugHistoryVo debugHistoryVo = workContext.getDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
-                    debugHistoryVo.setEndTime(new Date());
+                    heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
+                    heraDebugHistoryVo.setEndTime(new Date());
                     if (exitCode == 0) {
-                        debugHistoryVo.setStatus(com.dfire.common.enums.Status.SUCCESS);
+                        heraDebugHistoryVo.setStatus(com.dfire.common.enums.Status.SUCCESS);
                     } else {
-                        debugHistoryVo.setStatus(com.dfire.common.enums.Status.FAILED);
+                        heraDebugHistoryVo.setStatus(com.dfire.common.enums.Status.FAILED);
                     }
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistoryVo));
-                    debugHistoryVo.getLog().appendHera("exitCode =" + exitCode);
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistoryVo));
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(heraDebugHistoryVo));
+
+
+                    heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
+                    heraDebugHistoryVo.getLog().appendHera("exitCode =" + exitCode);
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(heraDebugHistoryVo));
+
+                    workContext.getDebugRunning().remove(debugId);
                 }
                 Status status = Status.OK;
                 String errorText = "";

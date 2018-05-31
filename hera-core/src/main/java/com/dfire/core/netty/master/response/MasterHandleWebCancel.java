@@ -41,7 +41,7 @@ public class MasterHandleWebCancel {
     private WebResponse handleDebugCancel(MasterContext context, WebRequest request) {
         WebResponse webResponse = null;
         String debugId = request.getId();
-        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
+        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
         for (JobElement element : new ArrayList<JobElement>(context.getDebugQueue())) {
             if (element.getJobId().equals(debugId)) {
                 webResponse = WebResponse.newBuilder()
@@ -85,7 +85,7 @@ public class MasterHandleWebCancel {
                     .setErrorText("Manual任务中找不到匹配的job(" + debugHistory.getId() + "," + debugHistory.getId() + ")，无法执行取消命令")
                     .build();
         }
-        debugHistory = context.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(debugId).build());
+        debugHistory = context.getHeraDebugHistoryService().findById(debugId);
         debugHistory.setEndTime(new Date());
         debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
         context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));

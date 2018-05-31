@@ -24,7 +24,7 @@ public interface HeraDebugHistoryService {
 
     List<HeraDebugHistory> getAll();
 
-    HeraDebugHistoryVo findById(HeraDebugHistory heraDebugHistory);
+    HeraDebugHistoryVo findById(String id);
 
 
 }

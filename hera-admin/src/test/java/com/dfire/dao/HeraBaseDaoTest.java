@@ -133,11 +133,13 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraDebugHistoryDaoTest() {
-        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById(HeraDebugHistory.builder().id("164").build());
+        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById("187");
         debugHistory.setStatus(Status.RUNNING);
         heraDebugHistoryService.update(BeanConvertUtils.convert(debugHistory));
         HeraDebugHistory history = BeanConvertUtils.convert(debugHistory);
-        history.setLog("test111");
+        history.setLog("test11ssss1");
+        history.setGmtCreate(new Date());
+        history.setGmtModified(new Date());
         heraDebugHistoryService.update(history);
         System.out.println(debugHistory.getStatus().toString());
         System.out.println(history.getLog());

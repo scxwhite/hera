@@ -84,8 +84,7 @@ public class WorkClient {
                 });
         log.info("start work client success ");
 
-
-        service = Executors.newScheduledThreadPool(1);
+        service = Executors.newScheduledThreadPool(2);
         service.scheduleAtFixedRate(new Runnable() {
             private WorkerHandlerHeartBeat workerHandlerHeartBeat = new WorkerHandlerHeartBeat();
             private int failCount = 0;
@@ -188,10 +187,16 @@ public class WorkClient {
                     }
                 }
             }
-        }, 0, 3, TimeUnit.SECONDS);
+        }, 0, 10, TimeUnit.SECONDS);
 
     }
 
+    /**
+     * 机器启动spring-boot时，worker向主节点发起netty请求连接，成功之后，worker异步获取channel,并设置在work context中
+     *
+     * @param host
+     * @throws Exception
+     */
     public synchronized void connect(String host) throws Exception {
         if (workContext.getServerChannel() != null) {
             if (workContext.getServerHost().equals(host)) {
@@ -285,6 +290,14 @@ public class WorkClient {
     }
 
 
+    /**
+     * 页面开发中心发动执行脚本时，发起请求，
+     *
+     * @param kind
+     * @param id
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         WebResponse response = new WorkerHandleWebExecute().handleWebExecute(workContext, kind, id).get();
         if (response.getStatus() == Status.ERROR) {

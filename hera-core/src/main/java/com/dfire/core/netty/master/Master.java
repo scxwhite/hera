@@ -593,7 +593,7 @@ public class Master {
         new Thread() {
             @Override
             public void run() {
-                HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(jobId).build());
+                HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(jobId);
                 history.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
                 masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
                 Exception exception = null;
@@ -609,7 +609,7 @@ public class Master {
                 if (!success) {
                     exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
                     log.info("debug job error");
-                    history = masterContext.getHeraDebugHistoryService().findById(HeraDebugHistory.builder().id(jobId).build());
+                    history = masterContext.getHeraDebugHistoryService().findById(jobId);
                     HeraDebugFailEvent failEvent = HeraDebugFailEvent.builder()
                             .debugHistory(BeanConvertUtils.convert(history))
                             .throwable(exception)
