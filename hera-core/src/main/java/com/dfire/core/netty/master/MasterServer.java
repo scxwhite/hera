@@ -1,6 +1,5 @@
 package com.dfire.core.netty.master;
 
-import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.Protocol;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -17,7 +16,7 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -27,6 +26,7 @@ import java.net.InetSocketAddress;
 @Slf4j
 public class MasterServer {
 
+    //服务引导，监听传入连接
     private ServerBootstrap serverBootstrap;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workGroup;
@@ -34,25 +34,26 @@ public class MasterServer {
     /**
      * ProtobufVarint32LengthFieldPrepender:对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
      * ProtobufVarint32FrameDecoder:针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
+     *
      * @param handler
      */
-    public  MasterServer(final ChannelHandler handler) {
+    public MasterServer(final ChannelHandler handler) {
         serverBootstrap = new ServerBootstrap();
-        bossGroup = new NioEventLoopGroup(1);
-        workGroup = new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup(1);//监听本地服务端口
+        workGroup = new NioEventLoopGroup();//处理已经连接的channel
         serverBootstrap.group(bossGroup, workGroup)
-                       .channel(NioServerSocketChannel.class)
-                       .childHandler(new ChannelInitializer<SocketChannel>() {
-                           @Override
-                           protected void initChannel(SocketChannel ch) throws Exception {
-                               ch.pipeline().addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
-                                       .addLast("decoder", new ProtobufDecoder(Protocol.SocketMessage.getDefaultInstance()))
-                                       .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
-                                       .addLast("encoder", new ProtobufEncoder())
-                                       .addLast(new IdleStateHandler(0,0, 10))
-                                       .addLast("handler", handler);
-                           }
-                       });
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch) throws Exception {
+                        ch.pipeline().addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
+                                .addLast("decoder", new ProtobufDecoder(Protocol.SocketMessage.getDefaultInstance()))
+                                .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
+                                .addLast("encoder", new ProtobufEncoder())
+                                .addLast(new IdleStateHandler(0, 0, 10, TimeUnit.SECONDS))
+                                .addLast("handler", handler);
+                    }
+                });
     }
 
     public synchronized boolean start(int port) {
@@ -62,9 +63,9 @@ public class MasterServer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        if(channelFuture.isSuccess()) {
+        if (channelFuture.isSuccess()) {
             log.info("start master server success");
-        } else if(!channelFuture.isSuccess()) {
+        } else if (!channelFuture.isSuccess()) {
 
         }
 

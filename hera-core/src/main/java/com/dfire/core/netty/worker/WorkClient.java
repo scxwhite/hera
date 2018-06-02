@@ -4,7 +4,6 @@ package com.dfire.core.netty.worker;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.SpringContextHolder;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.lock.DistributeLock;
@@ -29,6 +28,7 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +51,7 @@ import java.util.concurrent.*;
 @Component
 public class WorkClient {
 
+    //客户端引导，发起连接
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext = new WorkContext();
@@ -59,10 +60,8 @@ public class WorkClient {
 
     /**
      * ProtobufVarint32LengthFieldPrepender:对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
-     *
+     * <p>
      * ProtobufVarint32FrameDecoder:针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
-     *
-     *
      */
     @Autowired
     public void WorkClient(ApplicationContext applicationContext) {
@@ -75,7 +74,8 @@ public class WorkClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
+                        ch.pipeline().addLast(new IdleStateHandler(0, 0, 5, TimeUnit.SECONDS))
+                                .addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
                                 .addLast("decoder", new ProtobufDecoder(SocketMessage.getDefaultInstance()))
                                 .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
                                 .addLast("encoder", new ProtobufEncoder())

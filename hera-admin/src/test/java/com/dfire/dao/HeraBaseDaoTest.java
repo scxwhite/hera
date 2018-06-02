@@ -8,6 +8,10 @@ import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.HeraHostGroupVo;
 import com.dfire.common.vo.LogContent;
+import com.dfire.core.lock.DistributeLock;
+import com.dfire.core.netty.master.Master;
+import com.dfire.core.netty.master.MasterContext;
+import com.dfire.core.schedule.HeraSchedule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,10 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -58,6 +61,9 @@ public class HeraBaseDaoTest {
     HeraFile heraFile;
     HeraGroup heraGroup;
     HeraLock heraLock;
+
+    @Autowired
+    DistributeLock distributeLock;
 
 
     @Before
@@ -220,6 +226,48 @@ public class HeraBaseDaoTest {
     public void heraJobDaoTest() {
         List<HeraJobTreeNodeVo> list = heraJobService.buildJobTree();
         System.out.println(list.size());
+        String s = "91";
+        String[] a = s.split(",");
+        System.out.println(a.length);
+    }
+
+    @Test
+    public void generateActionTest() {
+
+        try {
+
+            Field heraScheduleField = distributeLock.getClass().getDeclaredField("heraSchedule");
+            heraScheduleField.setAccessible(true);
+            HeraSchedule heraSchedule = (HeraSchedule) heraScheduleField.get(distributeLock);
+            heraSchedule.startup();
+            if(heraSchedule != null) {
+                Field masterContextField = heraSchedule.getClass().getDeclaredField("masterContext");
+                masterContextField.setAccessible(true);
+                MasterContext masterContext = (MasterContext) masterContextField.get(heraSchedule);
+                if(masterContext != null) {
+                    Master master = masterContext.getMaster();
+                    List<Integer> integerList = Arrays.asList(new Integer[] {38,37});
+
+                    Calendar calendar = Calendar.getInstance();
+                    Date now = calendar.getTime();
+                    SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
+
+                    Map<Long, HeraAction> actionMap = new HashMap<>();
+
+                    List<HeraJob> heraJobList = heraJobService.getAll();
+
+                    master.generateScheduleJobAction(heraJobList, now, dfDate, actionMap);
+                    master.generateDependJobAction(heraJobList, now,dfDate, actionMap, 0);
+
+
+                }
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

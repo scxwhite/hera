@@ -1,17 +1,18 @@
 package com.dfire.api;
 
 import com.dfire.common.util.DateUtil;
+import com.dfire.common.util.HeraDateTool;
 import com.dfire.common.util.RenderHierarchyProperties;
 import com.dfire.common.util.StringUtil;
 import com.dfire.core.job.ProcessJob;
+import com.dfire.core.util.CronParse;
 import org.junit.Test;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +63,7 @@ public class HeraStringUtilTest {
         System.out.println( LocalDate.parse("2018-09-23", formatter));
         System.out.println( LocalDate.parse("09-23-2018", formatter));
         System.out.println( LocalDate.parse("23/09/2018", formatter));
+        System.out.println(DateUtil.getTodayStringForAction());
     }
 
     @Test
@@ -74,6 +76,28 @@ public class HeraStringUtilTest {
     @Test
     public void testDateUtil() {
         System.out.println(DateUtil.getTodayStringForAction());
+
+        String currString = DateUtil.getNextDayString().getSource();
+        Date nextDay = DateUtil.getNextDayString().getTarget();
+        SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
+
+        System.out.println(currString);
+        System.out.println(dfDate.format(nextDay));
+
+        List<String> list = new ArrayList<>();
+        String cron = "0 0 2 * * ?";
+        String cronDate = dfDate.format(nextDay);
+        boolean isCronExp = CronParse.Parser(cron, cronDate, list);
+        System.out.println(list.size());
+
+
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+
+
+        SimpleDateFormat dateFormat=new SimpleDateFormat("yyyyMMdd0000000000");
+        String actionDate = dateFormat.format(now);
+        System.out.println(actionDate);
     }
 
 

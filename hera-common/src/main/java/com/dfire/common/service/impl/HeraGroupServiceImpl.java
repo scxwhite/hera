@@ -35,11 +35,6 @@ public class HeraGroupServiceImpl implements HeraGroupService {
 
 
     @Override
-    public void updateJob(HeraJobVo heraJobVo) {
-
-    }
-
-    @Override
     public int insert(HeraGroup heraFile) {
         return heraGroupMapper.insert(heraFile);
     }

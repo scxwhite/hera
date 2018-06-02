@@ -18,9 +18,6 @@ public interface HeraGroupService {
 
     HeraJobBean getUpstreamJobBean(String jobId);
 
-    void updateJob(HeraJobVo heraJobVo);
-
-
     int insert(HeraGroup heraGroup);
 
     int delete(int id);

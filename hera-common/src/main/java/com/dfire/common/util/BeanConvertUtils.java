@@ -113,7 +113,7 @@ public class BeanConvertUtils {
         heraAction.setPreProcessors(StringUtil.convertProcessorToList(heraJobVo.getPreProcessors()));
         heraAction.setResources(StringUtil.convertResoureToString(heraJobVo.getResources()));
         heraAction.setConfigs(StringUtil.convertMapToString(heraJobVo.getConfigs()));
-        heraAction.setId(heraJobVo.getId());
+        heraAction.setJobId(heraJobVo.getId());
         return heraAction;
     }
 
