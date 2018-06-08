@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.RunningJobKeys;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.util.CommandUtils;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
@@ -19,7 +18,7 @@ import java.util.List;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 上午12:30 2018/4/26
- * @desc  shell脚本执行类，拼接shell文件，执行文件执行命令
+ * @desc shell脚本执行类，拼接shell文件，执行文件执行命令
  */
 
 @Slf4j
@@ -39,7 +38,8 @@ public class ShellJob extends ProcessJob {
     /**
      * 脚本执行命令集合
      * 主要包括：切换用户，修改文件权限，执行制定脚本
-     * @return  命令集合
+     *
+     * @return 命令集合
      */
     @Override
     public List<String> getCommandList() {
@@ -106,7 +106,7 @@ public class ShellJob extends ProcessJob {
             File tmpFile = new File(tmpFilePath);
             OutputStreamWriter tmpWriter = null;
 
-            if(!tmpFile.exists()) {
+            if (!tmpFile.exists()) {
                 try {
                     tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
@@ -119,10 +119,10 @@ public class ShellJob extends ProcessJob {
                     IOUtils.closeQuietly(tmpWriter);
                 }
                 list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-                list.add(CommandUtils.getRunShCommand(shellPrefix,tmpFilePath));
+                list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
             } else {
                 list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-                list.add(CommandUtils.getRunShCommand(shellPrefix,tmpFilePath));
+                list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
             }
 
         } else {

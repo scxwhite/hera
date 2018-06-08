@@ -1,6 +1,7 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraFile;
+import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 
 import java.util.List;
 
@@ -27,6 +28,8 @@ public interface HeraFileService {
     List<HeraFile> findByParent(HeraFile heraFile);
 
     List<HeraFile> findByOwner(String heraFile);
+
+    List<HeraFileTreeNodeVo> buildFileTree(String user);
 
 
 }

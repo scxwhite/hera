@@ -26,5 +26,7 @@ public interface HeraDebugHistoryService {
 
     HeraDebugHistoryVo findById(String id);
 
+    List<HeraDebugHistory> findByFileId(String fileId);
+
 
 }

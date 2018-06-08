@@ -39,8 +39,8 @@ public class MasterServer {
      */
     public MasterServer(final ChannelHandler handler) {
         serverBootstrap = new ServerBootstrap();
-        bossGroup = new NioEventLoopGroup(1);//监听本地服务端口
-        workGroup = new NioEventLoopGroup();//处理已经连接的channel
+        bossGroup = new NioEventLoopGroup(1);//服务端接受客户端的连接， Reactor线程组
+        workGroup = new NioEventLoopGroup();//SocketChannel的网络读写
         serverBootstrap.group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {

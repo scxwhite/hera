@@ -75,7 +75,7 @@ public class MasterExecuteJob {
                 return result;
             }
         });
-        holder.getChannel().write(socketMessage);
+        holder.getChannel().writeAndFlush(socketMessage);
         return future;
     }
 
@@ -126,7 +126,7 @@ public class MasterExecuteJob {
                 return result;
             }
         });
-        holder.getChannel().write(socketMessage);
+        holder.getChannel().writeAndFlush(socketMessage);
         return future;
 
     }

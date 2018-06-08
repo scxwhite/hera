@@ -7,6 +7,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.5 -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-tab.css">
     <!-- Font Awesome -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"> -->
     <link rel="stylesheet" href="${request.contextPath}/plugins/font-awesome-4.5.0/css/font-awesome.min.css">
@@ -36,6 +37,7 @@
 	<script src="${request.contextPath}/adminlte/plugins/jQuery/jquery-2.2.3.min.js"></script>
 	<!-- Bootstrap 3.3.5 -->
 	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap.min.js"></script>
+	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-tab.js"></script>
 	<!-- FastClick -->
 	<script src="${request.contextPath}/adminlte/plugins/fastclick/fastclick.min.js"></script>
 	<!-- AdminLTE App -->

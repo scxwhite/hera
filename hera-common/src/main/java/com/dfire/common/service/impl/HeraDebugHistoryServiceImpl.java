@@ -53,5 +53,11 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
         return BeanConvertUtils.convert(history);
     }
 
+    @Override
+    public List<HeraDebugHistory> findByFileId(String fileId) {
+        HeraDebugHistory history = HeraDebugHistory.builder().fileId(fileId).build();
+        return heraDebugHistoryMapper.findByFileId(history);
+    }
+
 
 }

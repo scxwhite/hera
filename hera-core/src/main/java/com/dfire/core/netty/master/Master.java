@@ -43,13 +43,14 @@ import java.util.stream.Collectors;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 16:24 2018/1/12
- * @desc
+ * @desc hera核心任务调度器
  */
 @Slf4j
 public class Master {
 
     private MasterContext masterContext;
     private Map<Long, HeraAction> heraActionMap;
+
 
     public Master(final MasterContext masterContext) {
 
@@ -715,8 +716,5 @@ public class Master {
         }
         masterContext.getHeraJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(heraJobHistory));
         return heraJobHistory;
-
     }
-
-
 }

@@ -9,9 +9,9 @@
 
 <style type="text/css">
     div#rMenu {
-        position:absolute;
-        visibility:hidden;
-        top:0;
+        position: absolute;
+        visibility: hidden;
+        top: 0;
         background-color: #555;
         text-align: left;
         padding: 2px;
@@ -29,7 +29,7 @@
         vertical-align: baseline;
     }
 
-    div#rMenu ul li{
+    div#rMenu ul li {
         margin: 1px 0;
         padding: 0 5px;
         cursor: pointer;
@@ -48,63 +48,100 @@
 	<@netCommon.commonLeft "developCenter" />
 
     <div class="content-wrapper">
+        <section class="content">
 
-        <section class="content" >
-            <div class="container-fluid">
-                <div class="row-fluid">
-                    <div class="col-md-5 panel panel-primary" style="height:10px;padding-bottom:70%">
+            <div class="row">
 
-                        <div >
-                            <ul id="documentTree" class="ztree"></ul>
-                        </div>
-
-                        <div id="rMenu">
-                            <ul>
-                                <li id="addFolder" >增加文件夹</li>
-                                <li id="addHiveFile" >新建Hive</li>
-                                <li id="addShellFile" >新建Shell</li>
-                                <li id="rename" >重命名</li>
-                                <li id="openFile" >打开</li>
-                                <li id="removeFile"> 删除</li>
-                                <li id="copyFile" >复制文件</li>
-                            </ul>
-                        </div>
-
+                <div class="col-md-2 panel panel-primary" style="height:10px;padding-bottom:70%">
+                    <div>
+                        <ul id="documentTree" class="ztree"></ul>
                     </div>
-
-                    <div class="col-md-7 panel panel-primary" style="height:10px;padding-bottom:70%">
-
-                        <form>
-                            <button id="execute" type="submit" class="btn btn-success btn-sm">执行</button>
-                            <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码</button>
-                        </form>
-                        </br>
-
-                        <div class="row">
-                        <div  class="span8" style="height: 600px;overflow-y:auto">
-                            <div class="box-body pad" >
-                                <label id="id" hidden></label>
-                                <form>
-                                    <textarea id="script" class="textarea" placeholder="编写脚本" style="width: 100%; height: 500px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="span4" >
-                            <div class="box-body pad" >
-                                <form>
-                                    <textarea id="log" class="textarea" placeholder="运行日志" style="width: 100%; height: 100px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
-                                </form>
-                            </div>
-                        </div>
-
-                        </div>
-
+                    <div id="rMenu">
+                        <ul>
+                            <li id="addFolder">增加文件夹</li>
+                            <li id="addHiveFile">新建Hive</li>
+                            <li id="addShellFile">新建Shell</li>
+                            <li id="rename">重命名</li>
+                            <li id="openFile">打开</li>
+                            <li id="removeFile"> 删除</li>
+                            <li id="copyFile">复制文件</li>
+                        </ul>
                     </div>
-
                 </div>
+
+                <div class="col-md-10 panel panel-primary" >
+                    <div id="config" class="box box-success" style="height:8px">
+                        <div class="box-header with-border">
+                            <div class="form-group">
+                                <button id="execute" type="submit" class="btn btn-success btn-sm">执行</button>
+                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码
+                                </button>
+                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">上传资源
+                                </button>
+                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">同步任务
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    </br>
+
+                <#--tab框-->
+                    <div id="tabContainer"></div>
+
+                    <div id="scriptEditor" class="box box-success" style="display: block">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <textarea id="jobScript" class="form-control" rows="35" placeholder="编写脚本 "></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    </br>
+
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs" id="logTab">
+                            <li class="active"><a href="#tab_1" data-toggle="tab">编辑</a></li>
+                            <li><a href="#tab_2" data-toggle="tab">调试历史</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="tab_1">
+                                <textarea id="logDetail" class="form-control" rows="35" placeholder="运行日志 "></textarea>
+                            </div>
+
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="tab_2">
+                                <table id="allLogTable" class="allDetailTable"/></table>
+                                <div class="modal" id="debugLogDetail" tabindex="-1" role="dialog"
+                                     aria-labelledby="title">
+                                    <div class="modal-dialog" style="width: 1300px">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&time</button>
+                                                <div class="modal-title">
+                                                    详细日志
+                                                </div>
+                                            </div>
+                                            <div class="modal-body">
+                                                <table class="table " id="debugLogDetailTable">
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.tab-pane -->
+                        </div>
+                        <!-- /.tab-content -->
+                    </div>
+                    <!-- nav-tabs-custom -->
+                </div>
+
+            </div>
+        <#--row-->
+
         </section>
     </div>
+<#--content-wrapper-->
 
 <@netCommon.commonScript />
     <script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>

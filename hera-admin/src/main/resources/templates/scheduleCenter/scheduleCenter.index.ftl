@@ -47,10 +47,9 @@
     <!-- left -->
 	<@netCommon.commonLeft "developCenter" />
 
-
     <style type="text/css">
-        .modal.fade.in{
-            top:190px;
+        .modal.fade.in {
+            top: 190px;
         }
     </style>
 
@@ -73,12 +72,14 @@
                         </div>
 
 
-
-                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="addConfig" aria-hidden="true">
+                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="addConfig"
+                             aria-hidden="true">
                             <div class="modal-dialog" style="height:100px;">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            &times;
+                                        </button>
                                         <h4 class="modal-title" id="title">选择Job版本</h4>
                                     </div>
                                     <div class="modal-body">
@@ -229,7 +230,7 @@
 
                         </div>
 
-                        <div id="config" class="box box-success" style="display: none">
+                        <div id="config" class="box box-success" style="display: block">
                             <div class="box-body">
                                 <div class="form-group">
                                     <label>配置项信息</label>
@@ -241,8 +242,7 @@
                             <div class="box-body">
                                 <div class="form-group">
                                     <label>脚本</label>
-                                    <textarea id="jobScript" class="form-control" rows="10"
-                                              placeholder="Enter ..."></textarea>
+                                    <textarea id="jobScript" class="form-control" rows="10" placeholder="Enter ..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -324,7 +324,9 @@
                                     </li>
                                     <br>
                                     <li>
-                                        <button id="manual" class="btn btn-primary" type="button" data-toggle="modal" >手动执行</button>
+                                        <button id="manual" class="btn btn-primary" type="button" data-toggle="modal">
+                                            手动执行
+                                        </button>
                                     </li>
                                     <br>
                                     <li>
@@ -348,10 +350,12 @@
                                 </ul>
                             </div>
                         </div>
-
+                    </div>
+                </div>
+            </div>
         </section>
-
     </div>
+</div>
 </div>
 
 

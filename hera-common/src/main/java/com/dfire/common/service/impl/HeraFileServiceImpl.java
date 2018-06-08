@@ -1,12 +1,15 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraFile;
+import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.mapper.HeraFileMapper;
 import com.dfire.common.service.HeraFileService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.dfire.common.service.HeraUserService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,6 +74,32 @@ public class HeraFileServiceImpl implements HeraFileService {
     public List<HeraFile> findByOwner(String owner) {
         HeraFile heraFile = HeraFile.builder().owner(owner).build();
         return heraFileMapper.findByOwner(heraFile);
+    }
+
+    /**
+     * 构建开发中心文件树
+     *
+     * @param user
+     * @return
+     */
+    @Override
+    public List<HeraFileTreeNodeVo> buildFileTree(String user) {
+        List<HeraFile> fileVoList = this.findByOwner("biadmin");
+        List<HeraFileTreeNodeVo> list = fileVoList.stream().map(file -> {
+            HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
+            if (file.getParent() == null || StringUtils.isBlank(file.getParent())) {
+                vo.setParent(null);
+            } else {
+                vo.setParent(file.getParent());
+            }
+            if (file.getType().equals("1")) {
+                vo.setIsParent(true);
+            } else if (file.getType().equals("2")) {
+                vo.setIsParent(false);
+            }
+            return vo;
+        }).collect(Collectors.toList());
+        return list;
     }
 
 }

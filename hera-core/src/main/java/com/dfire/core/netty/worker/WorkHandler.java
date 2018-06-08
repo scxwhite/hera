@@ -109,12 +109,13 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("客户端与服务端连接开启");
-        super.channelActive(ctx);
+        ctx.fireChannelActive();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.info("客户端与服务端连接关闭");
+        ctx.fireChannelInactive();
     }
 
     @Override

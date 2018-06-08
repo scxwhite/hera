@@ -43,5 +43,9 @@ public interface HeraDebugHistoryMapper {
     @Lang(HeraSelectInLangDriver.class)
     List<HeraDebugHistory> findByIds(@Param("list") List<Integer> list);
 
+    @Select("select * from hera_debug_history where file_id = #{fileId} ")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraDebugHistory> findByFileId(HeraDebugHistory heraDebugHistory);
+
 
 }

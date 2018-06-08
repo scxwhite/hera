@@ -16,7 +16,7 @@ import java.io.StringWriter;
 public class LogContent {
 
     private int lines = 0;
-    private  StringBuffer content;
+    private StringBuffer content;
 
     public void appendConsole(String log) {
         if (lines < 20000) {
@@ -42,7 +42,7 @@ public class LogContent {
 
     public void appendHera(String log) {
         lines++;
-        if(content == null) {
+        if (content == null) {
             content = new StringBuffer();
         }
         content.append("HERA# ").append(log).append("\n");
@@ -50,7 +50,7 @@ public class LogContent {
 
     public void append(String log) {
         lines++;
-        if(content == null) {
+        if (content == null) {
             content = new StringBuffer();
         }
         content.append(log).append("\n");

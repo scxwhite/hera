@@ -8,7 +8,6 @@ import com.dfire.common.service.HeraFileService;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +19,6 @@ import org.springframework.web.context.request.async.WebAsyncTask;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -47,22 +45,7 @@ public class DevelopCenterController {
     @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
     public List<HeraFileTreeNodeVo> initFileTree() {
-
-        List<HeraFile> fileVoList = heraFileService.findByOwner("biadmin");
-        List<HeraFileTreeNodeVo> list = fileVoList.stream().map(file -> {
-            HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
-            if (file.getParent() == null || StringUtils.isBlank(file.getParent())) {
-                vo.setParent(null);
-            } else {
-                vo.setParent(file.getParent());
-            }
-            if (file.getType().equals("1")) {
-                vo.setIsParent(true);
-            } else if (file.getType().equals("2")) {
-                vo.setIsParent(false);
-            }
-            return vo;
-        }).collect(Collectors.toList());
+        List<HeraFileTreeNodeVo> list = heraFileService.buildFileTree("biadmin");
         return list;
     }
 
@@ -123,8 +106,14 @@ public class DevelopCenterController {
             }
         });
         return webAsyncTask;
-
     }
 
+
+    @RequestMapping(value = "findDebugHistory", method = RequestMethod.GET)
+    @ResponseBody
+    public List<HeraDebugHistory> findDebugHistory(String fileId) {
+        List<HeraDebugHistory> list = debugHistoryService.findByFileId(fileId);
+        return list;
+    }
 
 }
