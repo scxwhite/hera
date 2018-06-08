@@ -85,7 +85,7 @@ public class Master {
                 log.info("refresh host group success,start clear schedule");
 
                 try {
-                    String currdate = DateUtil.getTodayStringForAction();
+                    String currDate = DateUtil.getTodayStringForAction();
 
                     Calendar calendar = Calendar.getInstance();
                     calendar.add(Calendar.DAY_OF_MONTH, +1);
@@ -98,7 +98,7 @@ public class Master {
                         if (actionMapNew != null && actionMapNew.size() > 0) {
                             List<Long> actionIdList = new ArrayList<>();
                             for (Long actionId : actionMapNew.keySet()) {
-                                Long tmp = Long.parseLong(currdate) - 15000000;
+                                Long tmp = Long.parseLong(currDate) - 15000000;
                                 if (actionId < tmp) {//超过15分钟，job开始检测漏泡
                                     int retryCount = 0;
                                     rollBackLostJob(actionId, actionMapNew, retryCount, actionIdList);
@@ -111,10 +111,10 @@ public class Master {
                             if (handlers != null && handlers.size() > 0) {
                                 handlers.forEach(handler -> {
                                     JobHandler jobHandler = (JobHandler) handler;
-                                    String jobId = jobHandler.getJobId();
-                                    if (Long.parseLong(jobId) < (Long.parseLong(currdate) - 15000000)) {
+                                    String jobId = jobHandler.getActionId();
+                                    if (Long.parseLong(jobId) < (Long.parseLong(currDate) - 15000000)) {
                                         masterContext.getQuartzSchedulerService().deleteJob(jobId);
-                                    } else if (Long.parseLong(jobId) >= Long.parseLong(currdate) && Long.parseLong(jobId) < Long.parseLong(nextDay)) {
+                                    } else if (Long.parseLong(jobId) >= Long.parseLong(currDate) && Long.parseLong(jobId) < Long.parseLong(nextDay)) {
                                         if (actionMapNew.containsKey(Long.parseLong(jobId))) {
                                             masterContext.getQuartzSchedulerService().deleteJob(jobId);
                                             masterContext.getHeraJobActionService().delete(jobId);
@@ -665,9 +665,9 @@ public class Master {
     }
 
     public HeraJobHistoryVo run(HeraJobHistoryVo heraJobHistory) {
-        String jobId = heraJobHistory.getJobId();
+        String actionId = heraJobHistory.getActionId();
         int priorityLevel = 3;
-        HeraActionVo heraJobVo = masterContext.getHeraJobActionService().findHeraActionVo(jobId).getSource();
+        HeraActionVo heraJobVo = masterContext.getHeraJobActionService().findHeraActionVo(actionId).getSource();
         String priorityLevelValue = heraJobVo.getConfigs().get("run.priority.level");
         if (priorityLevelValue != null) {
             priorityLevel = Integer.parseInt(priorityLevelValue);
@@ -680,7 +680,7 @@ public class Master {
         heraJobHistory.setStatus(Status.RUNNING);
         if (heraJobHistory.getTriggerType() == TriggerType.MANUAL_RECOVER) {
             for (JobElement jobElement : new ArrayList<JobElement>(masterContext.getScheduleQueue())) {
-                if (jobElement.getJobId().equals(jobId)) {
+                if (jobElement.getJobId().equals(actionId)) {
                     heraJobHistory.getLog().append("已经在队列中，无法再次运行");
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
@@ -690,7 +690,7 @@ public class Master {
             }
             for (Channel key : masterContext.getWorkMap().keySet()) {
                 MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
-                if (workHolder.getRunning().containsKey(jobId)) {
+                if (workHolder.getRunning().containsKey(actionId)) {
                     heraJobHistory.getLog().append("已经在队列中，无法再次运行");
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());

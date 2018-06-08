@@ -17,14 +17,14 @@ import lombok.Builder;
 public class JobGroupCache {
 
     //版本号id
-    private final String jobId;
+    private final String actionId;
     private HeraActionVo heraActionVo;
 
     private HeraJobActionService heraJobActionService;
 
     public HeraActionVo getHeraActionVo() {
         if(heraActionVo == null) {
-            Tuple<HeraActionVo, JobStatus> jobStatusTuple = heraJobActionService.findHeraActionVo(jobId);
+            Tuple<HeraActionVo, JobStatus> jobStatusTuple = heraJobActionService.findHeraActionVo(actionId);
             if(jobStatusTuple != null) {
                 heraActionVo = jobStatusTuple.getSource();
             } else {
@@ -35,7 +35,7 @@ public class JobGroupCache {
     }
 
     public void refresh() {
-        Tuple<HeraActionVo, JobStatus> jobStatusTuple = heraJobActionService.findHeraActionVo(jobId);
+        Tuple<HeraActionVo, JobStatus> jobStatusTuple = heraJobActionService.findHeraActionVo(actionId);
         if(jobStatusTuple != null) {
             heraActionVo = jobStatusTuple.getSource();
         } else {
