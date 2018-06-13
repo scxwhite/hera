@@ -5,3 +5,4 @@
 target
 hera-common-1.0-SNAPSHOT.jar
 target/
+*.log
