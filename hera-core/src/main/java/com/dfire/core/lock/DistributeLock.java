@@ -5,14 +5,13 @@ import com.dfire.common.service.HeraHostRelationService;
 import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.HeraSchedule;
+import com.dfire.core.util.NetUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -45,8 +44,9 @@ public class DistributeLock {
 
     static {
         try {
-            host = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
+            host = NetUtils.getLocalAddress();
+            System.out.println("------------------------------my host is :" + host);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -100,6 +100,7 @@ public class DistributeLock {
         try {
             workClient.connect(heraLock.getHost());
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -110,7 +111,6 @@ public class DistributeLock {
         } else {
             log.info(host + "is not in master group " + preemptionHostList.toString());
             return false;
-
         }
     }
 }

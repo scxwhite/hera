@@ -84,9 +84,7 @@ public class DevelopCenterController {
     @GetMapping("/debug")
     public WebAsyncTask<String> debug(String id, String script) throws ExecutionException, InterruptedException {
 
-        WebAsyncTask<String> webAsyncTask = new WebAsyncTask<>(3000, new Callable<String>() {
-            @Override
-            public String call() throws Exception {
+        return new WebAsyncTask<>(3000, () -> {
                 HeraFile file = heraFileService.findById(id);
                 HeraDebugHistory history = HeraDebugHistory.builder()
                         .fileId(id)
@@ -101,11 +99,8 @@ public class DevelopCenterController {
                 String newId = debugHistoryService.insert(history);
                 System.out.println(history.getId());
                 workClient.executeJobFromWeb(ExecuteKind.DebugKind, newId);
-
                 return file.getId();
-            }
         });
-        return webAsyncTask;
     }
 
 

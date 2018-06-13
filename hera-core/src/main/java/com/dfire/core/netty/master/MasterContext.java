@@ -49,9 +49,9 @@ public class MasterContext {
      *      3. debugQueue，任务会先进入到exceptionQueue队列，等待被扫描调度，随后进入调度队列
      */
     private Queue scheduleQueue = new PriorityBlockingQueue();
-    private Queue<JobElement> exceptionQueue = new LinkedBlockingQueue();
-    private Queue<JobElement> debugQueue = new ArrayBlockingQueue(1000);
-    private Queue<JobElement> manualQueue = new ArrayBlockingQueue(1000);
+    private Queue<JobElement> exceptionQueue = new LinkedBlockingQueue<>();
+    private Queue<JobElement> debugQueue = new ArrayBlockingQueue<>(1000);
+    private Queue<JobElement> manualQueue = new ArrayBlockingQueue<>(1000);
 
     private MasterHandler handler;
     private MasterServer masterServer;

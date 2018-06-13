@@ -18,9 +18,10 @@ public class MasterHandleWebDebug {
 
         String debugId = request.getId();
         Queue<JobElement> queue = context.getDebugQueue();
-        for(JobElement jobElement : queue) {
-            if(jobElement.getJobId().equals(debugId)) {
-                WebResponse response = WebResponse.newBuilder()
+        WebResponse response;
+        for (JobElement jobElement : queue) {
+            if (jobElement.getJobId().equals(debugId)) {
+                response = WebResponse.newBuilder()
                         .setRid(request.getRid())
                         .setOperate(WebOperate.ExecuteDebug)
                         .setStatus(Status.ERROR)
@@ -31,13 +32,11 @@ public class MasterHandleWebDebug {
         }
         HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
         context.getMaster().debug(debugHistory);
-
-        WebResponse response = WebResponse.newBuilder()
+        return WebResponse.newBuilder()
                 .setRid(request.getRid())
                 .setOperate(WebOperate.ExecuteDebug)
                 .setStatus(Status.OK)
                 .build();
-        return response;
     }
 
 

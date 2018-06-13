@@ -105,6 +105,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                             }
                         });
                         break;
+                    default:
+                        log.error("can not recognition");
+                        break;
 
                 }
                 break;
