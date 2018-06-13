@@ -59,5 +59,15 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
         return heraDebugHistoryMapper.findByFileId(history);
     }
 
+    @Override
+    public int updateStatus(HeraDebugHistory heraDebugHistory) {
+        return heraDebugHistoryMapper.updateStatus(heraDebugHistory);
+    }
+
+    @Override
+    public int updateLog(HeraDebugHistory heraDebugHistory) {
+        return heraDebugHistoryMapper.updateLog(heraDebugHistory);
+    }
+
 
 }

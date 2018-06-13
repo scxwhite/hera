@@ -49,7 +49,6 @@ public class HeraJobHistoryVo {
 
     private int hostGroupId;
 
-
-    Map<String, String> properties = new HashMap<>();
+    Map<String, String> properties;
 
 }

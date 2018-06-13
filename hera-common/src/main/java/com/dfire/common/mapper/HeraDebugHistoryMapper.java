@@ -47,5 +47,13 @@ public interface HeraDebugHistoryMapper {
     @Lang(HeraSelectLangDriver.class)
     List<HeraDebugHistory> findByFileId(HeraDebugHistory heraDebugHistory);
 
+    @Update("update hera_debug_history status = #{status} where id = #{id}")
+    int updateStatus(HeraDebugHistory heraDebugHistory);
+
+    @Update("update hera_debug_history log = #{log} where id = #{id}")
+    int updateLog(HeraDebugHistory heraDebugHistory);
+
+
+
 
 }

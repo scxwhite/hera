@@ -195,7 +195,6 @@ public class WorkExecuteJob {
                 Exception exception = null;
                 try {
                     exitCode = job.run();
-
                 } catch (Exception e) {
                     exception = e;
                     history.getLog().appendHeraException(e);
@@ -275,6 +274,7 @@ public class WorkExecuteJob {
                 Exception exception = null;
                 try {
                     exitCode = job.run();
+                    System.out.println("debug-thread: " + Thread.currentThread().getName());
                     workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                 } catch (Exception e) {
                     exception = e;
@@ -288,11 +288,11 @@ public class WorkExecuteJob {
                     } else {
                         heraDebugHistoryVo.setStatus(com.dfire.common.enums.Status.FAILED);
                     }
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(heraDebugHistoryVo));
+                    workContext.getDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
 
 
                     heraDebugHistoryVo.getLog().appendHera("exitCode =" + exitCode);
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(heraDebugHistoryVo));
+                    workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(heraDebugHistoryVo));
 
                     workContext.getDebugRunning().remove(debugId);
                 }

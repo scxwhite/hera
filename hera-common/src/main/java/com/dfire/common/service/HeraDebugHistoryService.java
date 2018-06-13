@@ -28,5 +28,9 @@ public interface HeraDebugHistoryService {
 
     List<HeraDebugHistory> findByFileId(String fileId);
 
+    int updateStatus(HeraDebugHistory heraDebugHistory);
+
+    int updateLog(HeraDebugHistory heraDebugHistory);
+
 
 }

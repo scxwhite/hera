@@ -164,8 +164,8 @@ public class WorkClient {
 
                 for (Job job : new HashSet<Job>(workContext.getRunning().values())) {
                     try {
-                        HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
-                        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
+                        HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
+                        workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
                     } catch (Exception e) {
                         editDebugLog(job, e);
                     }
@@ -173,8 +173,8 @@ public class WorkClient {
 
                 for (Job job : new HashSet<Job>(workContext.getManualRunning().values())) {
                     try {
-                        HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
-                        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
+                        HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
+                        workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
                     } catch (Exception e) {
                         editLog(job, e);
                     }
@@ -189,7 +189,7 @@ public class WorkClient {
                     }
                 }
             }
-        }, 0, 10, TimeUnit.SECONDS);
+        }, 0, 3, TimeUnit.SECONDS);
 
     }
 

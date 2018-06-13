@@ -23,6 +23,6 @@ public class HeraGroupVo {
     private String description;
 
 
-    private Map<String, String> properties=new HashMap<String, String>();
-    private List<Map<String,String>> resources=new ArrayList<Map<String,String>>();
+    private Map<String, String> properties;
+    private List<Map<String,String>> resources;
 }

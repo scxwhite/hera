@@ -76,8 +76,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                     case ExecuteJob:
                         completionService.submit(new Callable<ChannelResponse>() {
                             @Override
-                            public ChannelResponse call() throws Exception {
-                                return new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest));
+                            public ChannelResponse call() throws Exception { return new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest));
                             }
                         });
                         break;
@@ -105,6 +104,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                             }
                         });
                         break;
+                        default:
+                            log.error("unknown operate error");
+                            break;
 
                 }
                 break;
@@ -117,6 +119,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 for(ResponseListener listener : listeners) {
                     listener.onWebResponse(WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
+                break;
             default:
                 log.error("unknown request type : {}", socketMessage.getKind());
                 break;
