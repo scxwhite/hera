@@ -183,7 +183,7 @@ public class WorkClient {
                 for (Job job : new HashSet<Job>(workContext.getDebugRunning().values())) {
                     try {
                         HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
-                        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
+                        workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
                     } catch (Exception e) {
                         editDebugLog(job, e);
                     }

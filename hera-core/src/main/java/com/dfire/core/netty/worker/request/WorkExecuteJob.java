@@ -291,9 +291,7 @@ public class WorkExecuteJob {
                     workContext.getDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
 
 
-                    heraDebugHistoryVo.getLog().appendHera("exitCode =" + exitCode);
-                    workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(heraDebugHistoryVo));
-
+                    history.getLog().appendHera("exitCode =" + exitCode);
                     workContext.getDebugRunning().remove(debugId);
                 }
                 Status status = Status.OK;

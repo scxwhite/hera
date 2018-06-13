@@ -50,7 +50,7 @@ public interface HeraDebugHistoryMapper {
     @Update("update hera_debug_history set status = #{status}, end_time = #{endTime} where id = #{id}")
     int updateStatus(HeraDebugHistory heraDebugHistory);
 
-    @Update("update hera_debug_history log = #{log}  where id = #{id}")
+    @Update("update hera_debug_history set log = #{log}  where id = #{id}")
     int updateLog(HeraDebugHistory heraDebugHistory);
 
 
