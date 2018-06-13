@@ -28,7 +28,7 @@ public abstract class AbstractJob implements Job {
         return jobContext;
     }
 
-    public HierarchyProperties getProperties(){
+    public HierarchyProperties getProperties() {
         return jobContext.getProperties();
     }
 
@@ -36,28 +36,29 @@ public abstract class AbstractJob implements Job {
         return StringUtils.isBlank(jobContext.getProperties().getProperty(key)) ? defaultValue : jobContext.getProperties().getProperty(key);
     }
 
-    protected void logConsole(String log){
-        if(jobContext.getHeraJobHistory()!=null){
+    protected void logConsole(String log) {
+        if (jobContext.getHeraJobHistory() != null) {
             jobContext.getHeraJobHistory().getLog().appendConsole(log);
         }
-        if(jobContext.getDebugHistory()!=null){
+        if (jobContext.getDebugHistory() != null) {
             jobContext.getDebugHistory().getLog().appendConsole(log);
         }
     }
 
-    protected void log(String log){
-        if(jobContext.getHeraJobHistory()!=null){
+    protected void log(String log) {
+        if (jobContext.getHeraJobHistory() != null) {
             jobContext.getHeraJobHistory().getLog().appendHera(log);
         }
-        if(jobContext.getDebugHistory()!=null){
+        if (jobContext.getDebugHistory() != null) {
             jobContext.getDebugHistory().getLog().appendHera(log);
         }
     }
-    protected void log(Exception e){
-        if(jobContext.getHeraJobHistory()!=null){
+
+    protected void log(Exception e) {
+        if (jobContext.getHeraJobHistory() != null) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         }
-        if(jobContext.getDebugHistory()!=null){
+        if (jobContext.getDebugHistory() != null) {
             jobContext.getDebugHistory().getLog().appendHeraException(e);
         }
     }

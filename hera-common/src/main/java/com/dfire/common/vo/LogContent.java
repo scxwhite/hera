@@ -22,8 +22,7 @@ public class LogContent {
     private static final String ERROR = "error";
 
     public void appendConsole(String log) {
-        System.out.println("脚本执行结果" + log);
-        if (lines < COUNT) {
+        if (lines < 20000) {
             lines++;
             if (log.toLowerCase().contains(ERROR)
                     || log.toLowerCase().contains("failed")

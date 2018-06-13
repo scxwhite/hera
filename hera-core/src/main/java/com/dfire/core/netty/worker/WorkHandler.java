@@ -1,10 +1,11 @@
 package com.dfire.core.netty.worker;
 
-import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.message.Protocol.*;
+import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
-import io.netty.channel.*;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -14,7 +15,6 @@ import java.util.concurrent.*;
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 1:32 2018/1/4
  * @desc SocketMessage为RPC消息体
- *
  */
 @Slf4j
 public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
@@ -33,7 +33,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                     try {
                         Future<Response> future = completionService.take();
                         Response response = future.get();
-                        if(workContext.getServerChannel() != null) {
+                        if (workContext.getServerChannel() != null) {
                             workContext.getServerChannel().write(wrapper(response));
                         }
                         log.info("worker get response thread success");
@@ -66,23 +66,25 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
 
     @Override
-     protected void channelRead0(ChannelHandlerContext ctx, SocketMessage msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, SocketMessage msg) throws Exception {
         SocketMessage socketMessage = msg;
         switch (socketMessage.getKind()) {
             case REQUEST:
                 final Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 Operate operate = request.getOperate();
-                if(operate == Operate.Schedule || operate == Operate.Manual || operate == Operate.Debug) {
+                if (operate == Operate.Schedule || operate == Operate.Manual || operate == Operate.Debug) {
                     completionService.submit(new Callable<Response>() {
                         private WorkExecuteJob workExecuteJob = new WorkExecuteJob();
+
                         @Override
                         public Response call() throws Exception {
                             return workExecuteJob.execute(workContext, request).get();
                         }
                     });
-                } else if(operate == Operate.Cancel) {
+                } else if (operate == Operate.Cancel) {
                     completionService.submit(new Callable<Response>() {
                         private WorkHandleCancel workHandleCancel = new WorkHandleCancel();
+
                         @Override
                         public Response call() throws Exception {
                             return workHandleCancel.handleCancel(workContext, request).get();
@@ -92,15 +94,18 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                 break;
             case RESPONSE:
                 final Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                for(ResponseListener listener : listeners) {
+                for (ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
                 break;
             case WEB_RESPONSE:
                 final WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                for(ResponseListener listener : listeners) {
+                for (ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }
+                break;
+            default:
+                log.error("can not recognition ");
                 break;
 
         }

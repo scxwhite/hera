@@ -76,7 +76,8 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                     case ExecuteJob:
                         completionService.submit(new Callable<ChannelResponse>() {
                             @Override
-                            public ChannelResponse call() throws Exception { return new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest));
+                            public ChannelResponse call() throws Exception {
+                                return new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest));
                             }
                         });
                         break;
@@ -104,19 +105,18 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                             }
                         });
                         break;
-                        default:
-                            log.error("unknown operate error");
-                            break;
-
+                    default:
+                        log.error("unknown operate error");
+                        break;
                 }
                 break;
             case RESPONSE:
-                for(ResponseListener listener : listeners) {
-                     listener.onResponse(Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                for (ResponseListener listener : listeners) {
+                    listener.onResponse(Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
                 break;
             case WEB_RESPONSE:
-                for(ResponseListener listener : listeners) {
+                for (ResponseListener listener : listeners) {
                     listener.onWebResponse(WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
                 break;
@@ -166,7 +166,6 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     public void removeListener(ResponseListener listener) {
         listeners.remove(listener);
     }
-
 
 
     private class ChannelResponse {
