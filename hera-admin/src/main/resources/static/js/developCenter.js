@@ -343,6 +343,7 @@ $(function () {
         });
         for (var j = 0; j < folderNode.length; j++) {//遍历目录节点，设置isParent属性为true;
             folderNode[j].isParent = true;
+            folderNode[j].directory = 0;
         }
         treeObj.refresh();//调用api自带的refresh函数。
     }
@@ -352,7 +353,7 @@ $(function () {
         var id = $("#id").text();
         var script = $("#script").val();
         var id = '64';
-        script = 'ls';
+        script = 'ls /';
         var parameter = "id=" + id + "&script=" + script;
         var result = null;
 
