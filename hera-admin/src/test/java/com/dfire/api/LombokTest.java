@@ -1,5 +1,7 @@
 package com.dfire.api;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
@@ -56,5 +58,11 @@ public class LombokTest {
         list2.add(e1);
         System.out.println(Arrays.deepEquals(list1.toArray(), list2.toArray()));
 
+    }
+
+    @Test
+    public void ip() throws UnknownHostException {
+        String host = InetAddress.getLocalHost().getHostAddress();
+        System.out.println(host);
     }
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ExecutorService ;
 import java.util.concurrent.Executors;
 
 /**
@@ -31,6 +31,9 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         envMap = new HashMap<>(System.getenv());
     }
 
+    /**
+     * @return
+     */
     public abstract List<String> getCommandList();
 
     @Override
@@ -43,7 +46,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         log.info("获取命令");
 
         List<String> commands = getCommandList();
-//        ExecutorService threadPool = Executors.newFixedThreadPool(2, new HeraHandlerThreadFactory());
+        ExecutorService threadPool = Executors.newCachedThreadPool(new HeraHandlerThreadFactory());
 
         for (String command : commands) {
 
@@ -220,11 +223,13 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         @Override
         public void run() {
             try {
+
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     logConsole(line);
                 }
+
             } catch (Exception e) {
                 log(e);
                 log(threadName + ": 接收日志出错，退出日志接收");

@@ -15,14 +15,17 @@ import java.io.StringWriter;
 @Builder
 public class LogContent {
 
-    private int lines = 0;
+    private int lines;
     private StringBuffer content;
+
+    private static final int COUNT = 20000;
+    private static final String ERROR = "error";
 
     public void appendConsole(String log) {
         System.out.println("脚本执行结果" + log);
-        if (lines < 20000) {
+        if (lines < COUNT) {
             lines++;
-            if (log.toLowerCase().contains("error")
+            if (log.toLowerCase().contains(ERROR)
                     || log.toLowerCase().contains("failed")
                     || log.contains("FileNotFoundException")
                     || log.contains("NullPointException")
@@ -35,7 +38,7 @@ public class LogContent {
             } else {
                 content.append("CONSOLE# ").append(log).append("\n");
             }
-            if (lines == 20000) {
+            if (lines == COUNT) {
                 content.append("HERA# 控制台输出信息过多，停止记录，建议您优化自己的Job");
             }
         }

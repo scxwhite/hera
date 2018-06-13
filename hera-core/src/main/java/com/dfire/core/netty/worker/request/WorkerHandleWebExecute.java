@@ -39,7 +39,9 @@ public class WorkerHandleWebExecute {
                 log.info("Worker start Handle Web Execute, requestId = " + request.getRid());
                 workContext.getHandler().addListener(new ResponseListener() {
                     @Override
-                    public void onResponse(Response response) { }
+                    public void onResponse(Response response) {
+                    }
+
                     @Override
                     public void onWebResponse(WebResponse response) {
                         if (request.getRid() == request.getRid()) {

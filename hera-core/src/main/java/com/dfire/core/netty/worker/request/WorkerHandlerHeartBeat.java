@@ -21,8 +21,7 @@ public class WorkerHandlerHeartBeat {
 
 
     public ChannelFuture send(WorkContext context) {
-        //创建任务运行目录 /tmp/hera
-        JobContext jobContext = JobContext.getTempJobContext(JobContext.SYSTEM_RUN);
+        JobContext jobContext = JobContext.getTempJobContext(JobContext.SYSTEM_RUN);//创建任务运行目录 /tmp/hera
         MemUseRateJob memUseRateJob = new MemUseRateJob(1);
         memUseRateJob.readMemUsed();
         jobContext.putData("memTotal", memUseRateJob.getMemTotal());
