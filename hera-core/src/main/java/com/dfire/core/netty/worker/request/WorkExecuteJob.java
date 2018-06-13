@@ -269,7 +269,7 @@ public class WorkExecuteJob {
                 }
                 Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
                         directory.getAbsolutePath(), workContext.getApplicationContext());
-                workContext.getDebugRunning().put(debugId, job);
+                workContext.getDebugRunning().putIfAbsent(debugId, job);
 
                 int exitCode = -1;
                 Exception exception = null;
@@ -288,8 +288,10 @@ public class WorkExecuteJob {
                         heraDebugHistoryVo.setStatus(com.dfire.common.enums.Status.FAILED);
                     }
                     workContext.getDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
-                    Thread.sleep(3000);
+                    HeraDebugHistoryVo debugHistory = workContext.getDebugRunning().get(debugId).getJobContext().getDebugHistory();
+                    workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(debugHistory));
                     workContext.getDebugRunning().remove(debugId);
+
                 }
                 Status status = Status.OK;
                 String errorText = "";

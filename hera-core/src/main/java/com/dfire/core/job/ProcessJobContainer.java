@@ -1,10 +1,7 @@
 package com.dfire.core.job;
 
-import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
-import com.dfire.common.util.BeanConvertUtils;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;

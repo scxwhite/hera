@@ -6,7 +6,8 @@ import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.core.job.Job;
 import io.netty.channel.Channel;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.context.ApplicationContext;
 
 import java.net.InetAddress;
@@ -27,7 +28,7 @@ public class WorkContext {
 
     public static String host;
     public static Integer cpuCoreNum;
-    public  String serverHost;
+    public String serverHost;
     private Channel serverChannel;
     private Map<String, Job> running = new ConcurrentHashMap<String, Job>();
     private Map<String, Job> manualRunning = new ConcurrentHashMap<String, Job>();
@@ -61,10 +62,6 @@ public class WorkContext {
     public HeraJobActionService getHeraJobActionService() {
         return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
     }
-
-
-
-
 
 
 }
