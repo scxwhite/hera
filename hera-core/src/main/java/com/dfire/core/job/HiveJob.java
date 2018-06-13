@@ -33,7 +33,7 @@ public class HiveJob extends ProcessJob {
     public HiveJob(JobContext jobContext, ApplicationContext applicationContext) {
         super(jobContext);
         this.applicationContext = applicationContext;
-        heraFileService = (HeraFileService) applicationContext.getBean("heraFileService");
+        this.heraFileService = (HeraFileService) this.applicationContext.getBean("heraFileService");
         jobContext.getProperties().setProperty(RunningJobKeys.JOB_RUN_TYPE, "HiveJob");
     }
 
@@ -52,7 +52,6 @@ public class HiveJob extends ProcessJob {
             } catch (IOException e) {
                 log.error("创建.hive失败");
             }
-
         }
 
         OutputStreamWriter writer = null;

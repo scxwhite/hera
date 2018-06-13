@@ -106,7 +106,7 @@
         for (var i = 0; i < data.length; i++) {
             if (this.options.loadAll || this.options.showIndex == i) {
                 if (data[i].url) {
-                    $("#" + data[i].id).load(data[i].url,data[i].param);
+                    $("#" + data[i].id).load(data[i].url, data[i].param);
                     this.stateObj[data[i].id] = true;
                 } else {
                     console.error("id=" + data[i].id + "的tab页未指定url");
@@ -114,10 +114,10 @@
                 }
             } else {
                 this.stateObj[data[i].id] = false;
-                (function (id, url,paramter) {
+                (function (id, url, paramter) {
                     self.$element.find(".nav-tabs a[href='#" + id + "']").on('show.bs.tab', function () {
                         if (!self.stateObj[id]) {
-                            $("#" + id).load(url,paramter);
+                            $("#" + id).load(url, paramter);
                             self.stateObj[id] = true;
                         }
                     });
@@ -129,7 +129,7 @@
         this.$element.find(".nav-tabs li a i.closeable").each(function (index, item) {
             $(item).click(function () {
                 var href = $(this).parents("a").attr("href").substring(1);
-                if(self.getCurrentTabId()==href){
+                if (self.getCurrentTabId() == href) {
                     self.$element.find(".nav-tabs li:eq(0) a").tab("show");
                 }
                 $(this).parents("li").remove();
@@ -140,8 +140,8 @@
     }
 
     //新增一个tab页
-    BaseTab.prototype.addTab=function (obj) {
-        var self=this;
+    BaseTab.prototype.addTab = function (obj) {
+        var self = this;
         //nav-tab
         var ul_li = $(this.template.ul_li.format(obj.id, obj.text));
         //如果可关闭,插入关闭图标，并绑定关闭事件
@@ -151,23 +151,34 @@
             ul_li.find("a").append(ul_li_close);
             ul_li.find("a").append("&nbsp;");
         }
-        
+
         this.$element.find(".nav-tabs:eq(0)").append(ul_li);
         //div-content
         var div_content_panel = $(this.template.div_content_panel.format(obj.id));
         this.$element.find(".tab-content:eq(0)").append(div_content_panel);
-        $("#" + obj.id).load(obj.url,obj.paramter);
+        debugger
+        var id = obj.id;
+
+        $("#" + obj.id).load(obj.url, obj.paramter);
         this.stateObj[obj.id] = true;
 
-        if(obj.closeable){
+        if (obj.closeable) {
             this.$element.find(".nav-tabs li a[href='#" + obj.id + "'] i.closeable").click(function () {
-                var href = $(this).parents("a").attr("href").substring(1);
-                if(self.getCurrentTabId()==href){
+                debugger
+                var href = $(this).parents("a").attr("href").substring(1);// id
+                var tabData = JSON.parse(localStorage.getItem('tabData'));
+                console.log(tabData);
+                tabData = tabData.filter(function(item) {
+                    return item['id'] != href;
+                });
+                localStorage.setItem("tabData", JSON.stringify(tabData));
+                console.log(tabData);
+                if (self.getCurrentTabId() == href) {
                     self.$element.find(".nav-tabs li:eq(0) a").tab("show");
                 }
                 $(this).parents("li").remove();
                 $("#" + href).remove();
-                
+
             })
         }
 
@@ -175,38 +186,39 @@
     }
 
     //根据id获取活动也标签名
-    BaseTab.prototype.find=function (tabId) {
+    BaseTab.prototype.find = function (tabId) {
         return this.$element.find(".nav-tabs li a[href='#" + tabId + "']").text();
     }
-    
+
     // 删除活动页
-    BaseTab.prototype.remove=function (tabId) {
-    	var self=this;
+    BaseTab.prototype.remove = function (tabId) {
+        var self = this;
         $("#" + tabId).remove();
         this.$element.find(".nav-tabs li a[href='#" + tabId + "']").parents("li").remove();
+
     }
-    
+
     // 重新加载页面
-    BaseTab.prototype.reload=function (obj) {
-    	var self=this;
-    	if(self.find(obj.id)!=null){
-    		$("#" + obj.id).remove();
-    		this.$element.find(".nav-tabs li a[href='#" + obj.id + "']").parents("li").remove();
-    		self.addTab(obj);
-    	}else{
-    		self.addTab(obj);
-    	}
+    BaseTab.prototype.reload = function (obj) {
+        var self = this;
+        if (self.find(obj.id) != null) {
+            $("#" + obj.id).remove();
+            this.$element.find(".nav-tabs li a[href='#" + obj.id + "']").parents("li").remove();
+            self.addTab(obj);
+        } else {
+            self.addTab(obj);
+        }
     }
 
     //根据id设置活动tab页
-    BaseTab.prototype.showTab=function (tabId) {
+    BaseTab.prototype.showTab = function (tabId) {
         this.$element.find(".nav-tabs li a[href='#" + tabId + "']").tab("show");
     }
 
     //获取当前活动tab页的ID
-    BaseTab.prototype.getCurrentTabId=function () {
-        var href=this.$element.find(".nav-tabs li.active a").attr("href");
-        href=href.substring(1);
+    BaseTab.prototype.getCurrentTabId = function () {
+        var href = this.$element.find(".nav-tabs li.active a").attr("href");
+        href = href.substring(1);
         return href;
     }
 
@@ -217,4 +229,6 @@
             s = s.replace(new RegExp("\\{" + i + "\\}", "g"), arguments[i]);
         return s;
     };
+
+
 })(jQuery, window, document)

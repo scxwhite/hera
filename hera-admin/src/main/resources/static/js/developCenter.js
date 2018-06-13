@@ -70,6 +70,7 @@ $(function () {
 
     }
 
+
     $('body').on('click', 'a[data-toggle=\'tab\']', function (e) {
         e.preventDefault()
         var tab_name = this.getAttribute('href')
@@ -350,8 +351,8 @@ $(function () {
     $("#execute").click(function () {
         var id = $("#id").text();
         var script = $("#script").val();
-        var id = '90';
-        script = 'show databases';
+        var id = '64';
+        script = 'ls';
         var parameter = "id=" + id + "&script=" + script;
         var result = null;
 
@@ -371,16 +372,20 @@ $(function () {
     var tableObject = new TableInit();
     tableObject.init();
 
+    debugger
     var storeData = JSON.parse(localStorage.getItem('tabData'))
-    for(var i = 0; i < storeData.length; i++) {
-         $("#tabContainer").tabs({
-            data: storeData[i],
-            showIndex: 0,
-            loadAll: true
-        });
+    if(storeData != null) {
+        for(var i = 0; i < storeData.length; i++) {
+            $("#tabContainer").tabs({
+                data: storeData[i],
+                showIndex: 0,
+                loadAll: true
+            });
 
-        $("#tabContainer").data("tabs").addTab(storeData[i]);
+            $("#tabContainer").data("tabs").addTab(storeData[i]);
+        }
     }
+
 });
 
 var TableInit = function () {

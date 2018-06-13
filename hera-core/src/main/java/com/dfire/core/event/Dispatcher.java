@@ -1,6 +1,9 @@
 package com.dfire.core.event;
 
-import com.dfire.core.event.base.*;
+import com.dfire.core.event.base.AbstractObservable;
+import com.dfire.core.event.base.ApplicationEvent;
+import com.dfire.core.event.base.EventType;
+import com.dfire.core.event.base.MvcEvent;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.AbstractListener;
@@ -33,13 +36,13 @@ public class Dispatcher extends AbstractObservable {
     }
 
     public void addJobHandler(JobHandler jobHandler) {
-        if(!jobHandlers.contains(jobHandler)) {
+        if (!jobHandlers.contains(jobHandler)) {
             jobHandlers.add(jobHandler);
         }
     }
 
-    public void removeJobhandler(JobHandler jobHandler) {
-        if(jobHandlers.contains(jobHandler)) {
+    public void removeJobHandler(JobHandler jobHandler) {
+        if (jobHandlers.contains(jobHandler)) {
             jobHandlers.remove(jobHandler);
         }
     }
@@ -68,15 +71,14 @@ public class Dispatcher extends AbstractObservable {
     }
 
 
-
     public void dispatch(ApplicationEvent applicationEvent) {
         MvcEvent mvcEvent = new MvcEvent(this, applicationEvent);
         mvcEvent.setApplicationEvent(applicationEvent);
-        if(fireEvent(beforeDispatch, mvcEvent)) {
+        if (fireEvent(beforeDispatch, mvcEvent)) {
             List<AbstractHandler> jobHandlersCopy = new ArrayList<>(jobHandlers);
-            for(AbstractHandler jobHandler : jobHandlersCopy) {
-                if(jobHandler.canHandle(applicationEvent)) {
-                    if(! jobHandler.isInitialized()) {
+            for (AbstractHandler jobHandler : jobHandlersCopy) {
+                if (jobHandler.canHandle(applicationEvent)) {
+                    if (!jobHandler.isInitialized()) {
                         jobHandler.setInitialized(true);
                     }
                     jobHandler.handleEvent(applicationEvent);

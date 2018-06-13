@@ -30,11 +30,6 @@ public class ShellJob extends ProcessJob {
         super(jobContext);
     }
 
-    public ShellJob(JobContext jobContext, String shell) {
-        this(jobContext);
-        this.shell = shell;
-    }
-
     /**
      * 脚本执行命令集合
      * 主要包括：切换用户，修改文件权限，执行制定脚本
@@ -112,17 +107,19 @@ public class ShellJob extends ProcessJob {
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
 
-                    tmpWriter.write("source" + shellFilePath);
+                    tmpWriter.write("source " + shellFilePath);
                 } catch (Exception e) {
                     jobContext.getDebugHistory().getLog().appendHeraException(e);
                 } finally {
                     IOUtils.closeQuietly(tmpWriter);
                 }
                 list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-                list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
+                String command = "sh " + tmpFilePath;
+                list.add(command);
             } else {
                 list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-                list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
+                String command = "sh " + tmpFilePath;
+                list.add(command);
             }
 
         } else {

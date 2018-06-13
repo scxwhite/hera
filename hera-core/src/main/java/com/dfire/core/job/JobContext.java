@@ -1,7 +1,5 @@
 package com.dfire.core.job;
 
-import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.HeraDateTool;

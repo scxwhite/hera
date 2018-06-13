@@ -38,7 +38,7 @@ import java.util.Map;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 下午5:24 2018/4/19
- * @desc 任务事件处理器
+ * @desc job执行生命周期事件处理器, 每种任务执行状态都对应相应事件
  */
 @Builder
 @Slf4j
@@ -126,7 +126,6 @@ public class JobHandler extends AbstractHandler {
                             .build();
                     masterContext.getHeraJobHistoryService().addHeraJobHistory(BeanConvertUtils.convert(history));
                     master.run(history);
-
                 }
             }
         }
@@ -143,12 +142,9 @@ public class JobHandler extends AbstractHandler {
                     heraActionVo.setAuto(0);
                     log.error("创建任务的quartz定时调度失败");
                     heraJobActionService.updateStatus(jobStatus);
-
                 }
             }
-
         }
-
     }
 
 
@@ -195,6 +191,7 @@ public class JobHandler extends AbstractHandler {
                     }
                 }
             }
+            log.info("received a success dependency job with jobId:" + jobId);
             jobStatus.getReadyDependency().put(jobId, String.valueOf(new Date().getTime()));
             heraJobActionService.updateStatus(jobStatus);
         }
@@ -274,7 +271,7 @@ public class JobHandler extends AbstractHandler {
         cache.refresh();
         HeraActionVo heraActionVo = cache.getHeraActionVo();
         if (heraActionVo == null) {
-            masterContext.getDispatcher().removeJobhandler(this);
+            masterContext.getDispatcher().removeJobHandler(this);
             destroy();
             log.info("清除删除的任务的quartz调度");
             return;
@@ -303,7 +300,7 @@ public class JobHandler extends AbstractHandler {
         }
 
         // 如果是依赖任务 说明原来是独立任务，现在变成依赖任务，需要删除原来的定时调度
-        if(heraActionVo.getScheduleType() == JobScheduleType.Dependent) {
+        if (heraActionVo.getScheduleType() == JobScheduleType.Dependent) {
             if (jobDetail != null) {
                 try {
                     masterContext.getQuartzSchedulerService().getScheduler().deleteJob(jobKey);
