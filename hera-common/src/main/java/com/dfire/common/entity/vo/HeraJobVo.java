@@ -4,8 +4,10 @@ import com.dfire.common.enums.JobRunType;
 import com.dfire.common.enums.JobScheduleType;
 import com.dfire.common.enums.Status;
 import com.dfire.common.processor.Processor;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.*;
 
@@ -16,6 +18,8 @@ import java.util.*;
  */
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class HeraJobVo {
 
     private String id;
@@ -28,7 +32,7 @@ public class HeraJobVo {
 
     private String cycle;
 
-    private List<String> dependencies;
+    private String dependencies;
 
     private String description;
 
@@ -62,7 +66,7 @@ public class HeraJobVo {
 
     private JobRunType runType;
 
-    private JobScheduleType scheduleType;
+    private String scheduleType;
 
     private String script;
 
@@ -81,5 +85,15 @@ public class HeraJobVo {
     private int hostGroupId;
 
     private Long mustEndMinute;
+
+    private String rollBackTimes;
+
+    private String rollBackWaitTime;
+
+    private String runPriorityLevel;
+
+    private String selfConfigs;
+
+    private String resource;
 
 }

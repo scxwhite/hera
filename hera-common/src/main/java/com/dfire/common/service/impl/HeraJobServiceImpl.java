@@ -59,7 +59,7 @@ public class HeraJobServiceImpl implements HeraJobService {
 
     @Override
     public List<HeraJob> findByPid(int groupId) {
-        HeraJob heraJob = new HeraJob().builder().groupId(groupId).build();
+        HeraJob heraJob = HeraJob.builder().groupId(groupId).build();
         return heraJobMapper.findByPid(heraJob);
     }
 
@@ -67,17 +67,12 @@ public class HeraJobServiceImpl implements HeraJobService {
     public List<HeraJobTreeNodeVo> buildJobTree() {
         List<HeraGroup> groups = groupService.getAll();
         List<HeraJob> jobs = heraJobMapper.getAll();
-        Map<Integer, HeraGroup> groupMap = groups.stream().collect(Collectors.toMap(group -> group.getId(), s -> s, (t, v) -> t));
-        Map<Integer, HeraJob> jobMap = jobs.stream().collect(Collectors.toMap(job -> job.getId(), j -> j, (t, v) -> t));
         List<HeraJobTreeNodeVo> list = groups.stream()
                 .filter(group -> group.getExisted() == 1)
-                .map(g -> {
-                    return HeraJobTreeNodeVo.builder().id(g.getId() + "").parent(g.getParent() + "").isParent(true).name(g.getName()).build();
-                }).collect(Collectors.toList());
+                .map(g -> HeraJobTreeNodeVo.builder().id(g.getId() + "").parent(g.getParent() + "").directory(g.getDirectory()).isParent(true).name(g.getName() + "(" + g.getId() + ")").build()
+                ).collect(Collectors.toList());
         List<HeraJobTreeNodeVo> jobList = jobs.stream()
-                .map(job -> {
-                    return HeraJobTreeNodeVo.builder().id(job.getId() + "").parent(job.getGroupId() + "").isParent(false).name(job.getName()).build();
-                }).collect(Collectors.toList());
+                .map(job -> HeraJobTreeNodeVo.builder().id(job.getId() + "").parent(job.getGroupId() + "").isParent(false).name(job.getName() + "(" + job.getId() + ")").build()).collect(Collectors.toList());
         list.addAll(jobList);
         return list;
     }

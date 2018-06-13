@@ -1,10 +1,14 @@
 package com.dfire.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraUser;
+import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.BeanConvertUtils;
@@ -32,6 +36,8 @@ public class ScheduleCenterController {
     HeraJobService heraJobService;
     @Autowired
     HeraJobActionService heraJobActionService;
+    @Autowired
+    HeraGroupService heraGroupService;
 
     @Autowired
     WorkClient workClient;
@@ -63,6 +69,13 @@ public class ScheduleCenterController {
         return heraJobVo;
     }
 
+    @RequestMapping(value = "/getGroupMessage", method = RequestMethod.GET)
+    @ResponseBody
+    public HeraGroupVo getGroupMessage(Integer groupId) {
+        HeraGroup group = heraGroupService.findById(groupId);
+        HeraGroupVo heraGroupVo = BeanConvertUtils.convert(group);
+        return heraGroupVo;
+    }
 
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
@@ -78,6 +91,13 @@ public class ScheduleCenterController {
         return list;
 
     }
+    @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean updateJobMessage(HeraJobVo heraJobVo) {
+        System.out.println(JSONObject.toJSONString(heraJobVo));
+        HeraJob heraJob = BeanConvertUtils.convertToHeraJob(heraJobVo);
+        return true;
 
+    }
 
 }

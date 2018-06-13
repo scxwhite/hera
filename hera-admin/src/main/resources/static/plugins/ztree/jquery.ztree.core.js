@@ -50,7 +50,9 @@
             folder: {
                 OPEN: "open",
                 CLOSE: "close",
-                DOCU: "docu"
+                DOCU: "docu",
+                OPEN2: "open2",
+                CLOSE2: "close2"
             },
             node: {
                 CURSELECTED: "curSelectedNode"
@@ -1222,10 +1224,17 @@
                     if (node.iconOpen && node.iconClose) {
                         icoObj.attr("style", view.makeNodeIcoStyle(setting, node));
                     }
-
+                    var dir = node.directory;
                     if (node.open) {
-                        view.replaceSwitchClass(node, switchObj, consts.folder.OPEN);
-                        view.replaceIcoClass(node, icoObj, consts.folder.OPEN);
+
+                        if (dir == 1) {
+                            view.replaceSwitchClass(node, switchObj, consts.folder.OPEN2);
+                            view.replaceIcoClass(node, icoObj, consts.folder.OPEN2);
+                        } else {
+                            view.replaceSwitchClass(node, switchObj, consts.folder.OPEN);
+                            view.replaceIcoClass(node, icoObj, consts.folder.OPEN);
+                        }
+
                         if (animateFlag == false || setting.view.expandSpeed == "") {
                             ulObj.show();
                             tools.apply(callback, []);
@@ -1238,8 +1247,15 @@
                             }
                         }
                     } else {
-                        view.replaceSwitchClass(node, switchObj, consts.folder.CLOSE);
-                        view.replaceIcoClass(node, icoObj, consts.folder.CLOSE);
+                        if (dir == 1) {
+                            view.replaceSwitchClass(node, switchObj, consts.folder.CLOSE2);
+                            view.replaceIcoClass(node, icoObj, consts.folder.CLOSE2);
+                        } else {
+                            view.replaceSwitchClass(node, switchObj, consts.folder.CLOSE);
+                            view.replaceIcoClass(node, icoObj, consts.folder.CLOSE);
+                        }
+
+
                         if (animateFlag == false || setting.view.expandSpeed == "" || !(children && children.length > 0)) {
                             ulObj.hide();
                             tools.apply(callback, []);
@@ -1334,12 +1350,16 @@
             makeNodeIcoClass: function (setting, node) {
                 var icoCss = ["ico"];
                 if (!node.isAjaxing) {
-                    var isParent = data.nodeIsParent(setting, node);
                     icoCss[0] = (node.iconSkin ? node.iconSkin + "_" : "") + icoCss[0];
-                    if (isParent) {
+                    var dir = node.directory;
+                    if (dir == 0) {
                         icoCss.push(node.open ? consts.folder.OPEN : consts.folder.CLOSE);
+                    } else if (dir == 1){
+                        icoCss.push(node.open ? consts.folder.OPEN2 : consts.folder.CLOSE2);
+
                     } else {
                         icoCss.push(consts.folder.DOCU);
+
                     }
                 }
                 return consts.className.BUTTON + " " + icoCss.join('_');
@@ -1587,6 +1607,8 @@
                 var tmpList = tmpName.split("_");
                 switch (newName) {
                     case consts.folder.OPEN:
+                    case consts.folder.OPEN2:
+                    case consts.folder.CLOSE2:
                     case consts.folder.CLOSE:
                     case consts.folder.DOCU:
                         tmpList[tmpList.length - 1] = newName;
@@ -1610,6 +1632,8 @@
                     case consts.folder.OPEN:
                     case consts.folder.CLOSE:
                     case consts.folder.DOCU:
+                    case consts.folder.OPEN2:
+                    case consts.folder.CLOSE2:
                         tmpList[1] = newName;
                         break;
                 }

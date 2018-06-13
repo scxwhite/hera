@@ -17,6 +17,7 @@ function formDataLoad(domId, obj) {
                         $(dom).val(obj[property]);
                     } else {
                         $(dom).val(obj[property]);
+                        $(dom).text(obj[property]);
                     }
                 });
             }

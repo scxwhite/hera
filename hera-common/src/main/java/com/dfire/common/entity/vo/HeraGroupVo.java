@@ -17,13 +17,11 @@ import java.util.Map;
 @Data
 public class HeraGroupVo {
 
-    private String id;
-    private String parent;
+    private int id;
     private String name;
     private String owner;
-    private String desc;
-    private boolean directory;
-    private int isExisted;
+    private String description;
+
 
     private Map<String, String> properties=new HashMap<String, String>();
     private List<Map<String,String>> resources=new ArrayList<Map<String,String>>();

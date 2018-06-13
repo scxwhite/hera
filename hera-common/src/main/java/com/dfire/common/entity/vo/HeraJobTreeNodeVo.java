@@ -14,6 +14,7 @@ public class HeraJobTreeNodeVo {
     String id;
     String parent;
     String name;
+    Integer directory;
     boolean isParent;
 
     public boolean getIsParent(){

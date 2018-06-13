@@ -13,8 +13,7 @@ import com.dfire.common.vo.LogContent;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -39,6 +38,12 @@ public class BeanConvertUtils {
         }
         BeanUtils.copyProperties(heraProfile, heraProfileVo);
         return heraProfile;
+    }
+
+    public static HeraGroupVo convert(HeraGroup heraGroup) {
+        HeraGroupVo heraGroupVo = HeraGroupVo.builder().build();
+        BeanUtils.copyProperties(heraGroup, heraGroupVo);
+        return heraGroupVo;
     }
 
     public static HeraJobHistoryVo convert(HeraJobHistory heraJobHistory) {
@@ -97,6 +102,9 @@ public class BeanConvertUtils {
         heraJobVo.setPreProcessors(StringUtil.convertProcessorToList(heraJob.getPreProcessors()));
         heraJobVo.setResources(StringUtil.convertResources(heraJob.getResources()));
         heraJobVo.setId(String.valueOf(heraJob.getId()));
+        heraJobVo.setAuto(Objects.equals("1", heraJob.getAuto()) ? "开启" : "关闭");
+        heraJobVo.setDependencies(heraJob.getDependencies());
+
         return heraJobVo;
     }
 
@@ -178,4 +186,14 @@ public class BeanConvertUtils {
     }
 
 
+    public static HeraJob convertToHeraJob(HeraJobVo heraJobVo) {
+        HeraJob heraJob = new HeraJob();
+        BeanUtils.copyProperties(heraJobVo, heraJob);
+        Map<String, String> configs = new HashMap<>();
+        configs.put("roll.back.times", heraJobVo.getRollBackTimes());
+        configs.put("roll.back.wait.time", heraJobVo.getRollBackWaitTime());
+        configs.put("run.priority.level", heraJobVo.getRunPriorityLevel());
+
+        return heraJob;
+    }
 }
