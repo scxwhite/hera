@@ -82,6 +82,7 @@ public class ProcessJobContainer extends AbstractJob {
             log("后置置处理单元" + job.getClass().getSimpleName() + "处理完毕");
             running = null;
         }
+        log("exitCode = " + exitCode);
         return exitCode;
     }
 
