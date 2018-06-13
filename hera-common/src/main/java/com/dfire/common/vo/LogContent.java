@@ -19,6 +19,7 @@ public class LogContent {
     private StringBuffer content;
 
     public void appendConsole(String log) {
+        System.out.println("脚本执行结果" + log);
         if (lines < 20000) {
             lines++;
             if (log.toLowerCase().contains("error")

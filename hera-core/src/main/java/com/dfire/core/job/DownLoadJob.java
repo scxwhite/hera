@@ -18,7 +18,7 @@ public class DownLoadJob extends AbstractJob{
     }
 
     @Override
-    public int run() throws IOException {
+    public int run() throws Exception {
         List<Job> jobList = new ArrayList<>();
         for(Map<String, String> map : jobContext.getResources()) {
             if(map.get("uri") != null) {
@@ -33,11 +33,7 @@ public class DownLoadJob extends AbstractJob{
         }
         Integer exitCode = 0;
         for(Job job : jobList) {
-            try {
                 exitCode = job.run();
-            } catch (Exception e) {
-                jobContext.getHeraJobHistory().getLog().appendHeraException(e);
-            }
         }
         return exitCode;
     }

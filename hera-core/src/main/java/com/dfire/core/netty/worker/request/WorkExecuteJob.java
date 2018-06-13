@@ -96,6 +96,7 @@ public class WorkExecuteJob {
                 Exception exception = null;
                 try {
                     exitCode = job.run();
+                    workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
                 } catch (Exception e) {
                     exception = e;
                     history.getLog().appendHeraException(e);//此处应该执行更新日志操作

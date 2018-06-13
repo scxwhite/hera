@@ -2,6 +2,7 @@ package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.util.HierarchyProperties;
+import com.dfire.core.exception.HeraCaughtExceptionHandler;
 import com.dfire.core.exception.HeraHandlerThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +43,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         log.info("获取命令");
 
         List<String> commands = getCommandList();
-        ExecutorService threadPool = Executors.newCachedThreadPool(new HeraHandlerThreadFactory());
+//        ExecutorService threadPool = Executors.newFixedThreadPool(2, new HeraHandlerThreadFactory());
 
         for (String command : commands) {
 
@@ -67,8 +68,10 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             InputStream errorStream = process.getErrorStream();
             Thread inputThread = new StreamThread(inputStream, threadName);
             Thread outputThread = new StreamThread(errorStream, threadName);
-            threadPool.execute(inputThread);
-            threadPool.execute(outputThread);
+            inputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
+            outputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
+            inputThread.start();
+            outputThread.start();
 
             exitCode = -999;
             try {
