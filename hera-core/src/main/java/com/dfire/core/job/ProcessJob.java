@@ -2,6 +2,8 @@ package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.util.HierarchyProperties;
+import com.dfire.core.exception.HeraCaughtExceptionHandler;
+import com.dfire.core.exception.HeraHandlerThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -39,10 +43,12 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         log.info("获取命令");
 
         List<String> commands = getCommandList();
+//        ExecutorService threadPool = Executors.newFixedThreadPool(2, new HeraHandlerThreadFactory());
 
         for (String command : commands) {
 
-            ProcessBuilder builder = new ProcessBuilder(partitionCommandLine(command));
+            String[] splitCommand = partitionCommandLine(command);
+            ProcessBuilder builder = new ProcessBuilder(splitCommand);
             builder.directory(new File(jobContext.getWorkDir()));
             builder.environment().putAll(envMap);
             try {
@@ -60,18 +66,26 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             }
             InputStream inputStream = process.getInputStream();
             InputStream errorStream = process.getErrorStream();
+            Thread inputThread = new StreamThread(inputStream, threadName);
+            Thread outputThread = new StreamThread(errorStream, threadName);
+            inputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
+            outputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
+            inputThread.start();
+            outputThread.start();
 
-            new StreamThread(inputStream, threadName).start();
+            exitCode = -999;
+            try {
+                exitCode = process.waitFor();
 
-            new StreamThread(errorStream, threadName).start();
-
-            exitCode = process.waitFor();
-            process = null;
+            } catch (InterruptedException e) {
+                log(e);
+            } finally {
+                process = null;
+            }
             if (exitCode != 0) {
                 return exitCode;
             }
         }
-
         return exitCode;
     }
 
@@ -217,4 +231,5 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             }
         }
     }
+
 }

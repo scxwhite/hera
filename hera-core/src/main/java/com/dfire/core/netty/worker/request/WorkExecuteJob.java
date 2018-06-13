@@ -96,6 +96,7 @@ public class WorkExecuteJob {
                 Exception exception = null;
                 try {
                     exitCode = job.run();
+                    workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
                 } catch (Exception e) {
                     exception = e;
                     history.getLog().appendHeraException(e);//此处应该执行更新日志操作
@@ -261,7 +262,7 @@ public class WorkExecuteJob {
                 workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
 
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator);
+                File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator + "debug-" + debugId);
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
@@ -271,16 +272,14 @@ public class WorkExecuteJob {
 
                 int exitCode = -1;
                 Exception exception = null;
-
-                HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
                 try {
                     exitCode = job.run();
                 } catch (Exception e) {
                     exception = e;
-                    heraDebugHistoryVo.getLog().appendHeraException(e);
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(heraDebugHistoryVo));
+                    history.getLog().appendHeraException(e);
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                 } finally {
-                    heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
+                    HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
                     heraDebugHistoryVo.setEndTime(new Date());
                     if (exitCode == 0) {
                         heraDebugHistoryVo.setStatus(com.dfire.common.enums.Status.SUCCESS);
@@ -290,7 +289,6 @@ public class WorkExecuteJob {
                     workContext.getDebugHistoryService().update(BeanConvertUtils.convert(heraDebugHistoryVo));
 
 
-                    heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
                     heraDebugHistoryVo.getLog().appendHera("exitCode =" + exitCode);
                     workContext.getDebugHistoryService().update(BeanConvertUtils.convert(heraDebugHistoryVo));
 

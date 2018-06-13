@@ -139,8 +139,8 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraDebugHistoryDaoTest() {
-        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById("187");
-        debugHistory.setStatus(Status.RUNNING);
+        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById("271");
+        debugHistory.setStatus(Status.FAILED);
         heraDebugHistoryService.update(BeanConvertUtils.convert(debugHistory));
         HeraDebugHistory history = BeanConvertUtils.convert(debugHistory);
         history.setLog("test11ssss1");

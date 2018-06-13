@@ -52,6 +52,7 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
+
     <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath}/logs_debug.log</file>
         <Append>true</Append>
@@ -104,6 +105,7 @@
             <charset>UTF-8</charset>
         </encoder>
     </appender>
+
     <appender name="TIME_OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${logPath}/timeout.log</file>
         <Append>true</Append>

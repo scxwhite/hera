@@ -20,6 +20,8 @@ public class HeraJobHistory {
 
     private String id;
 
+    private String actionId;
+
     private String jobId;
 
     private Date startTime;

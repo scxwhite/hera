@@ -37,7 +37,7 @@ public class HeraAddJobListener extends AbstractListener {
                 for (AbstractHandler handler : masterContext.getDispatcher().getJobHandlers()) {
                     if (handler instanceof JobHandler) {
                         JobHandler jobHandler = (JobHandler) handler;
-                        if (jobHandler.getJobId().equals(jobId)) {
+                        if (jobHandler.getActionId().equals(jobId)) {
                             exist = true;
                             break;
                         }
@@ -45,7 +45,7 @@ public class HeraAddJobListener extends AbstractListener {
                 }
                 if (!exist) {
                     JobHandler handler = JobHandler.builder()
-                            .jobId(jobId)
+                            .actionId(jobId)
                             .master(master)
                             .masterContext(masterContext)
                             .build();

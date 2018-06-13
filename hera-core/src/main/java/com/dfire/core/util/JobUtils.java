@@ -11,7 +11,6 @@ import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.JobProcessor;
 import com.dfire.common.processor.Processor;
 import com.dfire.common.service.HeraFileService;
-import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraProfileService;
 import com.dfire.common.util.BeanConvertUtils;
@@ -52,10 +51,10 @@ public class JobUtils {
         List<Map<String, String>> resources = new ArrayList<>();
         script = resolveScriptResource(resources, script, applicationContext);
         jobContext.setResources(resources);
-        hierarchyProperties.setProperty("job.script", script);
+        hierarchyProperties.setProperty(RunningJobKeys.JOB_SCRIPT, script);
         //权限控制判断，暂时不做
         HeraFileService heraFileService = (HeraFileService) applicationContext.getBean("heraFileService");
-        String owner = heraFileService.findById(heraDebugHistory.getId()).getOwner();
+        String owner = heraFileService.findById(heraDebugHistory.getFileId()).getOwner();
         HeraProfileService heraProfileService = (HeraProfileService) applicationContext.getBean("heraProfileService");
         HeraProfileVo heraProfile = heraProfileService.findByOwner(owner);
         if (heraProfile != null && heraProfile.getHadoopConf() != null) {
@@ -76,7 +75,7 @@ public class JobUtils {
             jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunType.Hive.toString());
             core = new HiveJob(jobContext, applicationContext);
         }
-        Job job = new WithProcessJob(jobContext, pres, new ArrayList<>(), core, applicationContext);
+        Job job = new ProcessJobContainer(jobContext, pres, new ArrayList<>(), core, applicationContext);
         return job;
     }
 
@@ -127,7 +126,7 @@ public class JobUtils {
         } else if (jobBean.getHeraJobVo().getRunType() == JobRunType.Hive) {
             core = new HiveJob(jobContext, applicationContext);
         }
-        Job job = new WithProcessJob(jobContext, pres, posts, core, applicationContext);
+        Job job = new ProcessJobContainer(jobContext, pres, posts, core, applicationContext);
         return job;
 
     }

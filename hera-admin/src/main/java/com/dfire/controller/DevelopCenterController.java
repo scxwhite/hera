@@ -91,7 +91,7 @@ public class DevelopCenterController {
                 HeraDebugHistory history = HeraDebugHistory.builder()
                         .fileId(id)
                         .script(script)
-                        .owner(file.getOwner())
+                        .owner("pjx")
                         .build();
                 if(file.getType().equals("1")) {
                     history.setRunType("shell");
