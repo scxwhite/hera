@@ -135,6 +135,11 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-common</artifactId>
             <version>${hera.common.version}</version>

@@ -1,6 +1,5 @@
 package com.dfire.core.netty.worker.request;
 
-import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
@@ -26,11 +25,11 @@ public class WorkHandleCancel {
             CancelMessage cancelMessage = CancelMessage.newBuilder()
                     .mergeFrom(request.getBody())
                     .build();
-            if(cancelMessage.getEk() == ExecuteKind.DebugKind) {
+            if (cancelMessage.getEk() == ExecuteKind.DebugKind) {
                 return cancelDebug(workContext, request, cancelMessage.getId());
-            } else if(cancelMessage.getEk() == ExecuteKind.ScheduleKind) {
+            } else if (cancelMessage.getEk() == ExecuteKind.ScheduleKind) {
                 return cancelSchedule(workContext, request, cancelMessage.getId());
-            } else if(cancelMessage.getEk() == ExecuteKind.ManualKind) {
+            } else if (cancelMessage.getEk() == ExecuteKind.ManualKind) {
                 return cancelManual(workContext, request, cancelMessage.getId());
             }
         } catch (InvalidProtocolBufferException e) {
@@ -43,7 +42,7 @@ public class WorkHandleCancel {
         HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(historyId);
         final String jobId = history.getJobId();
         log.info("worker receive cancel manual job, jobId =" + jobId);
-        if(!workContext.getManualRunning().containsKey(history.getId())) {
+        if (!workContext.getManualRunning().containsKey(history.getId())) {
             return workContext.getWorkThreadPool().submit(new Callable<Response>() {
                 @Override
                 public Response call() throws Exception {
@@ -73,7 +72,7 @@ public class WorkHandleCancel {
         HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(historyId);
         final String jobId = history.getJobId();
         log.info("worker receive cancel schedule job, jobId =" + jobId);
-        if(!workContext.getRunning().containsKey(history.getId())) {
+        if (!workContext.getRunning().containsKey(history.getId())) {
             return workContext.getWorkThreadPool().submit(new Callable<Response>() {
                 @Override
                 public Response call() throws Exception {
@@ -101,7 +100,7 @@ public class WorkHandleCancel {
 
     private Future<Response> cancelDebug(WorkContext workContext, Request request, String debugId) {
         Future<Response> future = null;
-        if(!workContext.getDebugRunning().containsKey(debugId)) {
+        if (!workContext.getDebugRunning().containsKey(debugId)) {
             future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
                 @Override
                 public Response call() throws Exception {

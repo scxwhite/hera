@@ -51,7 +51,9 @@ import java.util.concurrent.*;
 @Component
 public class WorkClient {
 
-    //客户端引导，发起连接
+    /**
+     * 客户端引导，发起连接
+     */
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext = new WorkContext();

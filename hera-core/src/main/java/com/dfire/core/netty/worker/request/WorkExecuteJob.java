@@ -99,7 +99,7 @@ public class WorkExecuteJob {
                     workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
                 } catch (Exception e) {
                     exception = e;
-                    history.getLog().appendHeraException(e);//此处应该执行更新日志操作
+                    history.getLog().appendHeraException(e);
                 } finally {
                     HeraJobHistoryVo heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
                     heraJobHistory.setEndTime(new Date());
@@ -195,9 +195,10 @@ public class WorkExecuteJob {
                 Exception exception = null;
                 try {
                     exitCode = job.run();
+
                 } catch (Exception e) {
                     exception = e;
-                    history.getLog().appendHeraException(e);//此处应该执行更新日志操作
+                    history.getLog().appendHeraException(e);
                 } finally {
                     HeraJobHistoryVo heraJobHistory = workContext.getJobHistoryService().findJobHistory(history.getId());
                     heraJobHistory.setEndTime(new Date());
@@ -274,6 +275,7 @@ public class WorkExecuteJob {
                 Exception exception = null;
                 try {
                     exitCode = job.run();
+                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                 } catch (Exception e) {
                     exception = e;
                     history.getLog().appendHeraException(e);
