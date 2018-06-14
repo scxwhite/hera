@@ -1,6 +1,7 @@
 $(function () {
     var focusId = -1;
     var focusItem = null;
+    var isGroup;
     var treeObj;
     var setting = {
         view: {
@@ -20,6 +21,7 @@ $(function () {
             onClick: leftClick
         }
     };
+
     function setDefaultSelectNode(id) {
         treeObj.selectNode(treeObj.getNodeByParam("id", id));
         leftClick();
@@ -40,7 +42,9 @@ $(function () {
         $('#script textarea').attr('disabled', val3);
         $('#resource textarea').attr('disabled', val3);
         $('#jobOperate').css("display", val1);
-        $('#jobEditOper').css("display", val2);
+        $('#editOperator').css("display", val2);
+        $('#groupMessage').css("display", "none");
+        $('#groupMessageEdit').css("display", "none");
     }
 
     //任务编辑
@@ -50,29 +54,89 @@ $(function () {
         initVal(focusItem.configs, "jobMsgEditForm");
         changeEditStyle(0);
     });
-    //组编辑
-    $('#jobEditOper [name="back"]').on('click', function () {
-        changeEditStyle(1);
+
+    //任务返回
+    $('#editOperator [name="back"]').on('click', function () {
+        if (!isGroup) {
+            changeEditStyle(1);
+        } else {
+            changeGroupStyle(1);
+
+        }
     });
-    $('#jobEditOper [name="save"]').on('click', function () {
-        $.ajax({
-            url: "scheduleCenter/updateJobMessage.do",
-            data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
+    $('#editOperator [name="save"]').on('click', function () {
+        if (!isGroup) {
+            $.ajax({
+                url: "scheduleCenter/updateJobMessage.do",
+                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
                 "&script=" + $('#script textarea').val() + "&resource=" + $('#resource textarea').val() +
                 "&id=" + focusId,
-            type: "post",
-            success: function (data) {
-                if (data == true) {
-                    leftClick();
+                type: "post",
+                success: function (data) {
+                    if (data == true) {
+                        leftClick();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            $.ajax({
+                url: "scheduleCenter/updateGroupMessage.do",
+                data: $('#groupMessageEdit form').serialize() + "&configs=" + $('#config textarea').val() +
+                "&resource=" + $('#resource textarea').val() + "&id=" + focusId,
+                type: "post",
+                success: function (data) {
+                    if (data == true) {
+                        leftClick();
+                    }
+                }
+            });
+        }
+
 
     });
-
+    //组编辑
     $('#groupOperate [name="edit"]').on('click', function () {
-        console.log("focusid: " + focusId)
+
+        formDataLoad("groupMessageEdit form", focusItem);
+        changeGroupStyle(0);
     });
+    //删除
+    $('#jobOperate [name="delete"]').on('click', function () {
+        if (confirm("确认删除 :" + focusItem.name + "?")) {
+            setDefaultSelectNode(focusItem.groupId);
+            $.ajax({
+                url: "scheduleCenter/deleteJob.do",
+                data: {
+                    id: focusId
+                },
+                type: "post",
+                success: function (data) {
+                    if (data == true) {
+                        setDefaultSelectNode(focusItem.groupId);
+                    }
+                }
+            });
+        }
+    });
+
+    function changeGroupStyle(status) {
+        var status1 = "none", status2 = "block", status3 = false;
+        if (status != 0) {
+            status1 = "block";
+            status2 = "none";
+            status3 = true;
+        }
+        $('#groupMessage').css("display", status1);
+        $('#groupOperate').css("display", status1);
+        $('#groupMessageEdit').css("display", status2);
+        $('#editOperator').css("display", status2);
+        var config = $("#config textarea");
+        var resource = $("#resource textarea");
+        config.attr("disabled", status3);
+        resource.attr("disabled", status3);
+        $("#resource").css("display", "block");
+        $("#config").css("display", "block");
+    }
 
     function initVal(configs, dom) {
         var val, userConfigs = "";
@@ -122,6 +186,8 @@ $(function () {
         var parameter = "jobId=" + id;
         //如果点击的是任务节点
         if (!selected.isParent) {
+            isGroup = false;
+
             $.ajax({
                 url: "/scheduleCenter/getJobMessage.do",
                 type: "get",
@@ -160,18 +226,23 @@ $(function () {
                 }
             });
         } else { //如果点击的是组节点
+            isGroup = true;
+
             $.ajax({
                 url: "scheduleCenter/getGroupMessage.do",
                 type: "get",
                 async: false,
                 data: {
-                    groupId : id
+                    groupId: id
                 },
                 success: function (data) {
+                    focusItem = data;
                     formDataLoad("groupMessage", data);
                 }
 
-            })
+            });
+            $('#config textarea:first').val(parseJson(focusItem.configs));
+
         }
         changeEditStyle(1);
         //组管理
@@ -193,11 +264,20 @@ $(function () {
             $("#jobOperate").css("display", "block");
             $("#script").css("display", "block");
         }
+        $('#resource textarea:first').val(focusItem.resource);
         $("#config").css("display", "block");
         $("#resource").css("display", "block");
         $("#inheritConfig").css("display", "block");
     }
 
+    function parseJson(obj) {
+        var objMap = JSON.parse(obj);
+        var res = "";
+        for (var x in objMap) {
+            res = res + x + "=" + objMap[x] + "\n";
+        }
+        return res;
+    }
 
     $("#manual").click(function () {
         $('#myModal').modal('show');
@@ -248,8 +328,6 @@ $(function () {
             folderNode[j].isParent = true;
         }
         treeObj.refresh();//调用api自带的refresh函数。
-
-
     }
 
     var zTree, rMenu;

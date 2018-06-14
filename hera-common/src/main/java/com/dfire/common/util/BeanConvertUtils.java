@@ -1,6 +1,5 @@
 package com.dfire.common.util;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.*;
 import com.dfire.common.enums.JobRunType;
@@ -8,7 +7,6 @@ import com.dfire.common.enums.JobScheduleType;
 import com.dfire.common.enums.Status;
 import com.dfire.common.enums.TriggerType;
 import com.dfire.common.kv.Tuple;
-import com.dfire.common.processor.Processor;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.common.vo.LogContent;
 import org.apache.commons.lang.StringUtils;
@@ -196,17 +194,35 @@ public class BeanConvertUtils {
         configs.put("run.priority.level", heraJobVo.getRunPriorityLevel());
         Optional<String> selfConfigs = Optional.ofNullable(heraJobVo.getSelfConfigs());
         selfConfigs.ifPresent(s -> {
-            String[] split = s.split("\\b");
-            Arrays.stream(split).forEach(x -> {
-                String[] pair = x.split("=");
-                if (pair.length == 2) {
-                    configs.put(pair[0], pair[1]);
-                }
-            });
+            stringToMap(s, configs);
             heraJob.setConfigs(StringUtil.convertMapToString(configs));
         });
         heraJob.setId(Integer.parseInt(heraJobVo.getId()));
         return heraJob;
+    }
+
+    public static HeraGroup convert(HeraGroupVo groupVo) {
+        HeraGroup heraGroup = new HeraGroup();
+        BeanUtils.copyProperties(groupVo, heraGroup);
+        Map<String, String> configs = new HashMap<>();
+        Optional<String> config = Optional.ofNullable(groupVo.getConfigs());
+        config.ifPresent(s -> {
+            stringToMap(s, configs);
+            heraGroup.setConfigs(StringUtil.convertMapToString(configs));
+        });
+
+        return heraGroup;
+    }
+
+    public static void stringToMap (String str, Map<String, String> configs){
+        str = str.trim();
+        String[] split = str.split("\\s");
+        Arrays.stream(split).forEach(x -> {
+            String[] pair = x.split("=");
+            if (pair.length == 2) {
+                configs.put(pair[0], pair[1]);
+            }
+        });
     }
 
 }

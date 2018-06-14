@@ -1,10 +1,10 @@
 package com.dfire.common.entity.vo;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,12 +15,15 @@ import java.util.Map;
  */
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class HeraGroupVo {
 
-    private int id;
+    private Integer id;
     private String name;
     private String owner;
     private String description;
+    private String configs;
 
 
     private Map<String, String> properties;

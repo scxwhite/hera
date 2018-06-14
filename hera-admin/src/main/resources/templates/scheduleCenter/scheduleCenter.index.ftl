@@ -264,6 +264,30 @@
 
                                 </div>
 
+                                <div id="groupMessageEdit" class="box-body" style="display: none;">
+                                    <form class="form-horizontal form-group-sm" role="form">
+                                        <form class="form-horizontal">
+                                            <div class="row">
+                                                <div class="col-lg-8 col-md-8 col-sm-8">
+                                                    <div class="form-group">
+                                                        <label class="control-label col-sm-4 col-lg-4 col-md-4">名称:</label>
+                                                        <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                            <input class="form-control" type="text" name="name">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="control-label col-sm-4 col-lg-4 col-md-4">描述:</label>
+                                                        <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                            <input class="form-control" type="text" name="description">
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                    </form>
+                                </div>
                                 <div id="jobMessageEdit" class="box-body" style="display: none;">
                                     <form class="form-horizontal form-group-sm" role="form" id="jobMsgEditForm">
 
@@ -446,7 +470,7 @@
                                             </li>
                                             <br>
                                             <li>
-                                                <button class="btn btn-primary btn-block" type="button">删除</button>
+                                                <button class="btn btn-primary btn-block" type="button" name="delete">删除</button>
                                             </li>
                                             <br>
                                             <li>
@@ -471,7 +495,8 @@
                                         </li>
                                         <br>
                                         <li>
-                                            <button class="btn btn-primary btn-block" type="button" name="edit">编辑</button>
+                                            <button class="btn btn-primary btn-block" type="button" name="edit">编辑
+                                            </button>
                                         </li>
                                         <br>
                                         <li>
@@ -482,7 +507,8 @@
                                         </li>
                                         <br>
                                         <li>
-                                            <button id="manualRecovery" class="btn btn-primary btn-block" type="button">手动恢复
+                                            <button id="manualRecovery" class="btn btn-primary btn-block" type="button">
+                                                手动恢复
                                             </button>
                                         </li>
                                         <br>
@@ -491,7 +517,7 @@
                                         </li>
                                         <br>
                                         <li>
-                                            <button class="btn btn-primary btn-block" type="button">删除</button>
+                                            <button class="btn btn-primary btn-block" type="button" name="delete">删除</button>
 
                                         </li>
                                         <br>
@@ -503,19 +529,23 @@
                                 </div>
                             </div>
 
-                            <div id="jobEditOper" class="box" style="display: none">
+                            <div id="editOperator" class="box" style="display: none">
                                 <div class="box-body">
                                     <ul class="list-unstyled">
                                         <li>
-                                            <button class="btn btn-primary btn-block" type="button" name="back">返回</button>
+                                            <button class="btn btn-primary btn-block" type="button" name="back">返回
+                                            </button>
                                         </li>
                                         <br>
                                         <li>
-                                            <button class="btn btn-primary btn-block" type="button" name="back">上传资源文件夹</button>
+                                            <button class="btn btn-primary btn-block" type="button" name="back">
+                                                上传资源文件夹
+                                            </button>
                                         </li>
                                         <br>
                                         <li>
-                                            <button class="btn btn-primary btn-block" type="button" name="save">保存</button>
+                                            <button class="btn btn-primary btn-block" type="button" name="save">保存
+                                            </button>
                                         </li>
                                         <br>
                                     </ul>

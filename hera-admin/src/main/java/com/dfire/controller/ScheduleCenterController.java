@@ -98,4 +98,12 @@ public class ScheduleCenterController {
         return heraJobService.update(heraJob) > 0;
     }
 
+    @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean updateGroupMessage(HeraGroupVo groupVo) {
+        HeraGroup heraGroup = BeanConvertUtils.convert(groupVo);
+        System.out.println(JSONObject.toJSONString(heraGroup));
+        return heraGroupService.update(heraGroup) > 0 ;
+    }
+
 }

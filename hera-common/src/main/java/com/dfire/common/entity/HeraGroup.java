@@ -19,13 +19,13 @@ import java.util.Date;
 @NoArgsConstructor
 public class HeraGroup {
 
-    private int id;
+    private Integer id;
 
     private String configs;
 
     private String description;
 
-    private int directory;
+    private Integer directory;
 
     private Date gmtCreate;
 
@@ -35,10 +35,10 @@ public class HeraGroup {
 
     private String owner;
 
-    private int parent;
+    private Integer parent;
 
     private String resources;
 
-    private int existed;
+    private Integer existed;
 
 }
