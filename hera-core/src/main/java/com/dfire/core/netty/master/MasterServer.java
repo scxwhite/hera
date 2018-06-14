@@ -52,7 +52,7 @@ public class MasterServer {
                                 .addLast("decoder", new ProtobufDecoder(Protocol.SocketMessage.getDefaultInstance()))
                                 .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
                                 .addLast("encoder", new ProtobufEncoder())
-                                .addLast(new IdleStateHandler(0, 0, 10, TimeUnit.HOURS))
+                                .addLast(new IdleStateHandler(0, 0, 10, TimeUnit.SECONDS))
                                 .addLast("handler", handler);
                     }
                 });

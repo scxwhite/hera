@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -268,18 +269,16 @@ public class WorkExecuteJob {
                 }
                 Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
                         directory.getAbsolutePath(), workContext.getApplicationContext());
-                workContext.getDebugRunning().put(debugId, job);
+                workContext.getDebugRunning().putIfAbsent(debugId, job);
 
                 int exitCode = -1;
                 Exception exception = null;
                 try {
                     exitCode = job.run();
                     System.out.println("debug-thread: " + Thread.currentThread().getName());
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                 } catch (Exception e) {
                     exception = e;
                     history.getLog().appendHeraException(e);
-                    workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
                 } finally {
                     HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
                     heraDebugHistoryVo.setEndTime(new Date());
@@ -289,10 +288,10 @@ public class WorkExecuteJob {
                         heraDebugHistoryVo.setStatus(com.dfire.common.enums.Status.FAILED);
                     }
                     workContext.getDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
-
-
-                    history.getLog().appendHera("exitCode =" + exitCode);
+                    HeraDebugHistoryVo debugHistory = workContext.getDebugRunning().get(debugId).getJobContext().getDebugHistory();
+                    workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(debugHistory));
                     workContext.getDebugRunning().remove(debugId);
+
                 }
                 Status status = Status.OK;
                 String errorText = "";

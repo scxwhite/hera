@@ -4,18 +4,17 @@ import com.dfire.common.kv.Tuple;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
- *
  * @author xiaosuda
  * @date 2018/4/20
  */
 public class DateUtil {
 
     private static final String default_formatter = "yyyy-MM-dd HH:mm:ss";
-
-
 
     public static String getTodayString() {
         SimpleDateFormat sdf = new SimpleDateFormat(default_formatter);
@@ -43,7 +42,7 @@ public class DateUtil {
 
     public static String getTodayStringForAction() {
         Date now = new Date();
-        SimpleDateFormat dfDateTime=new SimpleDateFormat("yyyyMMddHHmmss0000");
+        SimpleDateFormat dfDateTime = new SimpleDateFormat("yyyyMMddHHmmss0000");
         String currentDate = dfDateTime.format(now);
         return currentDate;
 
@@ -52,7 +51,7 @@ public class DateUtil {
     public static Tuple<String, Date> getNextDayString() {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, +1);
-        SimpleDateFormat dfNextDate=new SimpleDateFormat("yyyyMMdd0000000000");
+        SimpleDateFormat dfNextDate = new SimpleDateFormat("yyyyMMdd0000000000");
         String next = dfNextDate.format(cal.getTime());
         Tuple<String, Date> tuple = new Tuple<>();
         tuple.setSource(next);
@@ -72,6 +71,17 @@ public class DateUtil {
         return temp;
     }
 
+    public static Date longToDate(Long time) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(default_formatter);
+        String tmp = simpleDateFormat.format(time);
+        Date result = null;
+        try {
+            result = simpleDateFormat.parse(tmp);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
 
 }

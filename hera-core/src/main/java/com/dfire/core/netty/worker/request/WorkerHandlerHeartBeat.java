@@ -31,6 +31,7 @@ public class WorkerHandlerHeartBeat {
                 .setMemTotal(memUseRateJob.getMemTotal())
                 .setMemRate(memUseRateJob.getRate())
                 .setCpuLoadPerCore(1.5f)
+                .setTimestamp(System.currentTimeMillis())
                 .addAllDebugRunnings(context.getDebugRunning().keySet())
                 .addAllManualRunnings(context.getManualRunning().keySet())
                 .addAllRunnings(context.getRunning().keySet())

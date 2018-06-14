@@ -6,6 +6,8 @@ import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.HeraSchedule;
 import com.dfire.core.util.NetUtils;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -45,7 +47,6 @@ public class DistributeLock {
     static {
         try {
             host = NetUtils.getLocalAddress();
-            System.out.println("------------------------------my host is :" + host);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,16 +55,17 @@ public class DistributeLock {
     @PostConstruct
     public void init() {
         heraSchedule = new HeraSchedule(applicationContext);
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
-        service.scheduleAtFixedRate(new Runnable() {
+        TimerTask checkLockTask = new TimerTask() {
             @Override
-            public void run() {
-                getLock();
+            public void run(Timeout timeout) throws Exception {
+                checkLock();
+                workClient.workClientTimer.newTimeout(this, 3, TimeUnit.SECONDS);
             }
-        }, 5, 5, TimeUnit.HOURS);
+        };
+        workClient.workClientTimer.newTimeout(checkLockTask, 2, TimeUnit.SECONDS);
     }
 
-    public void getLock() {
+    public void checkLock() {
         log.info("start get lock");
         HeraLock heraLock = heraLockService.findById("online");
         if (heraLock == null) {

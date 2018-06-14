@@ -8,6 +8,7 @@ import com.dfire.core.util.CronParse;
 import org.junit.Test;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -107,5 +108,10 @@ public class HeraStringUtilTest {
             System.out.println(path);
         }
 
+    }
+
+    @Test
+    public void getDate() {
+        System.out.println(DateUtil.longToDate(System.currentTimeMillis()));
     }
 }

@@ -49,7 +49,7 @@ public class MasterExecuteJob {
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
-        Future<Response> future = context.getSchedulePool().submit(new Callable<Response>() {
+        Future<Response> future = context.getThreadPool().submit(new Callable<Response>() {
             private Response result;
 
             @Override
@@ -100,7 +100,7 @@ public class MasterExecuteJob {
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
-        Future<Response> future = context.getSchedulePool().submit(new Callable<Response>() {
+        Future<Response> future = context.getThreadPool().submit(new Callable<Response>() {
             private Response result;
 
             @Override
