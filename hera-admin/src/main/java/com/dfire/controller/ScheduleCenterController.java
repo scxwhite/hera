@@ -43,7 +43,6 @@ public class ScheduleCenterController {
     WorkClient workClient;
 
 
-
     @RequestMapping()
     public String login() {
         return "scheduleCenter/scheduleCenter.index";

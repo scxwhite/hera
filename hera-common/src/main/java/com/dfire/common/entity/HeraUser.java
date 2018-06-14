@@ -31,9 +31,9 @@ public class HeraUser {
 
     private String password;
 
-	private int user_type;
+	private int userType;
 
-	private int is_effective;
+	private int isEffective;
 
 	private String description;
 

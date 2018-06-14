@@ -45,5 +45,8 @@ public interface HeraUserMapper {
     @Lang(HeraSelectInLangDriver.class)
     List<HeraUser> findByIds(@Param("list") List<Integer> list);
 
+    @Update("update hera_user set is_effective = #{isEffective} where id = #{id}")
+    int updateEffective(@Param("id") String id, @Param("isEffective") String effective);
+
 
 }

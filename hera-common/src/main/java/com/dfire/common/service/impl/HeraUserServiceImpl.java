@@ -2,14 +2,9 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraUser;
 import com.dfire.common.mapper.HeraUserMapper;
-import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectInLangDriver;
-import com.dfire.common.mybatis.HeraSelectLangDriver;
-import com.dfire.common.mybatis.HeraUpdateLangDriver;
-import org.apache.ibatis.annotations.*;
+import com.dfire.common.service.HeraUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.dfire.common.service.HeraUserService;
 
 import java.util.List;
 
@@ -37,6 +32,7 @@ public class HeraUserServiceImpl implements HeraUserService {
 
     @Override
     public int update(HeraUser heraUser) {
+        heraUser.setIsEffective(1);
         return heraUserMapper.update(heraUser);
     }
 
@@ -59,5 +55,10 @@ public class HeraUserServiceImpl implements HeraUserService {
     @Override
     public List<HeraUser> findByIds(List<Integer> list) {
         return heraUserMapper.findByIds(list);
+    }
+
+    @Override
+    public int updateEffective(String id, String effective) {
+        return heraUserMapper.updateEffective(id, effective);
     }
 }

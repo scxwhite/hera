@@ -1,3 +1,54 @@
+
+
+var msgHeight;
+function successMsg(data) {
+    if(window.screen.width <= 767) {
+        msgHeight = 100;
+    } else {
+        msgHeight = 50;
+    }
+    if (data.success == true) {
+        success(data.message);
+        $("#table").bootstrapTable("refresh");
+    } else {
+        failure(data.message);
+    }
+
+}
+function success(msg) {
+    $('#alertSuccess').css({
+        "width" : 700,
+        "right" : ($(window).width() - 700) / 2,
+        "display": "block"
+    });
+    $('#alertSuccess #successText').text(msg);
+    $('#alertSuccess').animate({
+        top:msgHeight
+    },2000);
+    $('#alertSuccess').animate({
+        top:0
+    },2000,"linear",function () {
+        $('#alertSuccess').css("display","none");
+    });
+}
+function failure(msg) {
+
+    $('#alertFailure').css({
+        "width" : 500,
+        "right" : ($(window).width() - 500) / 2,
+        "display": "block"
+    });
+    $('#alertFailure #failureText').text(msg);
+    $('#alertFailure').animate({
+        top:msgHeight
+    },2000);
+    $('#alertFailure').animate({
+        top:0
+    },2000,"linear",function () {
+        $('#alertFailure').css("display","none");
+    });
+}
+
 function formDataLoad(domId, obj) {
     for (var property in obj) {
         if (obj.hasOwnProperty(property) == true) {
