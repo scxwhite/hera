@@ -29,6 +29,10 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import io.netty.util.Timer;
+import io.netty.util.TimerTask;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +62,7 @@ public class WorkClient {
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext = new WorkContext();
     private ScheduledExecutorService service;
-
+   public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 5, TimeUnit.SECONDS);
 
     /**
      * ProtobufVarint32LengthFieldPrepender:对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
@@ -86,13 +90,15 @@ public class WorkClient {
                 });
         log.info("start work client success ");
 
-        service = Executors.newScheduledThreadPool(2);
-        service.scheduleAtFixedRate(new Runnable() {
+
+
+        TimerTask heartBeatTask = new TimerTask() {
+
             private WorkerHandlerHeartBeat workerHandlerHeartBeat = new WorkerHandlerHeartBeat();
             private int failCount = 0;
 
             @Override
-            public void run() {
+            public void run(Timeout timeout) throws Exception {
                 try {
                     if (workContext.getServerChannel() != null) {
                         ChannelFuture channelFuture = workerHandlerHeartBeat.send(workContext);
@@ -115,12 +121,14 @@ public class WorkClient {
                 } catch (Exception e) {
                     log.info("heart beat send failed ：" + failCount);
                     log.error("heart beat error:", e);
+                } finally {
+                    workClientTimer.newTimeout(this, 3, TimeUnit.SECONDS);
                 }
             }
+        };
+        workClientTimer.newTimeout(heartBeatTask, 3, TimeUnit.SECONDS);
 
-        }, 0, 10, TimeUnit.SECONDS);
-
-        service.scheduleAtFixedRate(new Runnable() {
+        TimerTask jobLogUpdateTask = new TimerTask() {
 
             private void editLog(Job job, Exception e) {
                 try {
@@ -160,9 +168,8 @@ public class WorkClient {
             }
 
             @Override
-            public void run() {
-
-                for (Job job : new HashSet<Job>(workContext.getRunning().values())) {
+            public void run(Timeout timeout) throws Exception {
+                for (Job job : new HashSet<>(workContext.getRunning().values())) {
                     try {
                         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                         workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
@@ -171,7 +178,7 @@ public class WorkClient {
                     }
                 }
 
-                for (Job job : new HashSet<Job>(workContext.getManualRunning().values())) {
+                for (Job job : new HashSet<>(workContext.getManualRunning().values())) {
                     try {
                         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                         workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
@@ -180,7 +187,7 @@ public class WorkClient {
                     }
                 }
 
-                for (Job job : new HashSet<Job>(workContext.getDebugRunning().values())) {
+                for (Job job : new HashSet<>(workContext.getDebugRunning().values())) {
                     try {
                         HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
                         workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
@@ -188,9 +195,11 @@ public class WorkClient {
                         editDebugLog(job, e);
                     }
                 }
-            }
-        }, 0, 3, TimeUnit.SECONDS);
 
+                workClientTimer.newTimeout(this, 5, TimeUnit.SECONDS);
+            }
+        };
+        workClientTimer.newTimeout(jobLogUpdateTask, 5, TimeUnit.SECONDS);
     }
 
     /**

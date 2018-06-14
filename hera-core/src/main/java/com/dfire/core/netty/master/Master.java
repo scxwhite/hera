@@ -30,6 +30,8 @@ import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.util.CronParse;
 import io.netty.channel.Channel;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -77,126 +79,142 @@ public class Master {
         masterContext.refreshHostGroupCache();
         log.info("refresh hostGroup cache");
 
-        //漏泡检测，清理schedule线程，1小时调度一次
-        masterContext.getSchedulePool().scheduleAtFixedRate(() -> {
-            masterContext.refreshHostGroupCache();
-            log.info("refresh host group success,start clear schedule");
+        //漏泡检测，清理schedule线程，1小时调度一次,超过15分钟，job开始检测漏泡
+        TimerTask clearScheduleTask = new TimerTask() {
+            @Override
+            public void run(Timeout timeout) {
+                log.info("refresh host group success,start clear schedule");
 
-            try {
-                String currDate = DateUtil.getTodayStringForAction();
+                try {
+                    String currDate = DateUtil.getTodayStringForAction();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_MONTH, +1);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd0000000000");
+                    String nextDay = simpleDateFormat.format(calendar.getTime());
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.DAY_OF_MONTH, +1);
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd0000000000");
-                String nextDay = simpleDateFormat.format(calendar.getTime());
+                    Dispatcher dispatcher = masterContext.getDispatcher();
+                    if (dispatcher != null) {
+                        Map<Long, HeraAction> actionMapNew = heraActionMap;
+                        if (actionMapNew != null && actionMapNew.size() > 0) {
+                            List<Long> actionIdList = new ArrayList<>();
+                            for (Long actionId : actionMapNew.keySet()) {
+                                Long tmp = Long.parseLong(currDate) - 15000000;
+                                if (actionId < tmp) {
+                                    int retryCount = 0;
+                                    rollBackLostJob(actionId, actionMapNew, retryCount, actionIdList);
 
-                Dispatcher dispatcher = masterContext.getDispatcher();
-                if (dispatcher != null) {
-                    Map<Long, HeraAction> actionMapNew = heraActionMap;
-                    if (actionMapNew != null && actionMapNew.size() > 0) {
-                        List<Long> actionIdList = new ArrayList<>();
-                        for (Long actionId : actionMapNew.keySet()) {
-                            Long tmp = Long.parseLong(currDate) - 15000000;
-                            if (actionId < tmp) {//超过15分钟，job开始检测漏泡
-                                int retryCount = 0;
-                                rollBackLostJob(actionId, actionMapNew, retryCount, actionIdList);
+                                }
+                            }
+                            log.info("roll back action count:" + actionMapNew.size());
 
+                            List<AbstractHandler> handlers = dispatcher.getJobHandlers();
+                            if (handlers != null && handlers.size() > 0) {
+                                handlers.forEach(handler -> {
+                                    JobHandler jobHandler = (JobHandler) handler;
+                                    String jobId = jobHandler.getActionId();
+                                    if (Long.parseLong(jobId) < (Long.parseLong(currDate) - 15000000)) {
+                                        masterContext.getQuartzSchedulerService().deleteJob(jobId);
+                                    } else if (Long.parseLong(jobId) >= Long.parseLong(currDate) && Long.parseLong(jobId) < Long.parseLong(nextDay)) {
+                                        if (actionMapNew.containsKey(Long.parseLong(jobId))) {
+                                            masterContext.getQuartzSchedulerService().deleteJob(jobId);
+                                            masterContext.getHeraJobActionService().delete(jobId);
+                                        }
+                                    }
+                                });
                             }
                         }
-                        log.info("roll back action count:" + actionMapNew.size());
-
-                        List<AbstractHandler> handlers = dispatcher.getJobHandlers();
-                        if (handlers != null && handlers.size() > 0) {
-                            handlers.forEach(handler -> {
-                                JobHandler jobHandler = (JobHandler) handler;
-                                String jobId = jobHandler.getActionId();
-                                if (Long.parseLong(jobId) < (Long.parseLong(currDate) - 15000000)) {
-                                    masterContext.getQuartzSchedulerService().deleteJob(jobId);
-                                } else if (Long.parseLong(jobId) >= Long.parseLong(currDate) && Long.parseLong(jobId) < Long.parseLong(nextDay)) {
-                                    if (actionMapNew.containsKey(Long.parseLong(jobId))) {
-                                        masterContext.getQuartzSchedulerService().deleteJob(jobId);
-                                        masterContext.getHeraJobActionService().delete(jobId);
-                                    }
-                                }
-                            });
-                        }
                     }
-                }
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                masterContext.masterTimer.newTimeout(this, 30, TimeUnit.MINUTES);
             }
-        }, 1, 1, TimeUnit.HOURS);
+        };
+        masterContext.masterTimer.newTimeout(clearScheduleTask, 30, TimeUnit.MINUTES);
 
         //定时扫描JOB表,生成action表
-        masterContext.getSchedulePool().scheduleAtFixedRate(() -> {
+        TimerTask generateActionTask = new TimerTask() {
+            @Override
+            public void run(Timeout timeout) {
+                Calendar calendar = Calendar.getInstance();
+                Date now = calendar.getTime();
 
-            Calendar calendar = Calendar.getInstance();
-            Date now = calendar.getTime();
-
-            int executeHour = DateUtil.getCurrentHour(calendar);
-            int executeMinute = DateUtil.getCurrentMinute(calendar);
-            //凌晨生成版本，早上七点以后开始再次生成版本
-            boolean execute = (executeHour == 0 && executeMinute == 0)
-                    || (executeHour == 0 && executeMinute == 35)
-                    || (executeHour > 7 && executeMinute == 20)
-                    || (executeHour > 7 && executeMinute < 22);
-            if (execute) {
-                String currString = DateUtil.getTodayStringForAction();
-                if (executeHour == 23) {
-                    currString = DateUtil.getNextDayString().getSource();
-                    now = DateUtil.getNextDayString().getTarget();
-                }
-                log.info("开始生成任务版本, date" + currString);
-                List<HeraJob> jobList = masterContext.getHeraJobService().getAll();
-                Map<Long, HeraAction> actionMap = new HashMap<>();
-                SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
-                generateScheduleJobAction(jobList, now, dfDate, actionMap);
-                generateDependJobAction(jobList, now, dfDate, actionMap, 0);
-                if (executeHour < 23) {
-                    heraActionMap = actionMap;
-                }
-                log.info("生成任务及依赖任务版本成功" + actionMap.size());
-                Dispatcher dispatcher = masterContext.getDispatcher();
-                if (dispatcher != null) {
-                    if (actionMap.size() > 0) {
-                        for (Long id : actionMap.keySet()) {
-                            dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
-                            if (id > Long.parseLong(currString)) {
-                                masterContext.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateJob, id.toString()));
+                int executeHour = DateUtil.getCurrentHour(calendar);
+                int executeMinute = DateUtil.getCurrentMinute(calendar);
+                //凌晨生成版本，早上七点以后开始再次生成版本
+                boolean execute = (executeHour == 0 && executeMinute == 0)
+                        || (executeHour == 0 && executeMinute == 35)
+                        || (executeHour > 7 && executeMinute == 20)
+                        || (executeHour > 7 && executeMinute < 22);
+                if (execute) {
+                    String currString = DateUtil.getTodayStringForAction();
+                    if (executeHour == 23) {
+                        currString = DateUtil.getNextDayString().getSource();
+                        now = DateUtil.getNextDayString().getTarget();
+                    }
+                    log.info("开始生成任务版本, date" + currString);
+                    List<HeraJob> jobList = masterContext.getHeraJobService().getAll();
+                    Map<Long, HeraAction> actionMap = new HashMap<>();
+                    SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
+                    generateScheduleJobAction(jobList, now, dfDate, actionMap);
+                    generateDependJobAction(jobList, now, dfDate, actionMap, 0);
+                    if (executeHour < 23) {
+                        heraActionMap = actionMap;
+                    }
+                    log.info("生成任务及依赖任务版本成功" + actionMap.size());
+                    Dispatcher dispatcher = masterContext.getDispatcher();
+                    if (dispatcher != null) {
+                        if (actionMap.size() > 0) {
+                            for (Long id : actionMap.keySet()) {
+                                dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
+                                if (id > Long.parseLong(currString)) {
+                                    masterContext.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateJob, id.toString()));
+                                }
                             }
                         }
                     }
+                    log.info("添加任务到调度器中OK");
                 }
-                log.info("添加任务到调度器中OK");
+                masterContext.masterTimer.newTimeout(this, 30, TimeUnit.MINUTES);
             }
-        }, 1, 1, TimeUnit.MINUTES);
+        };
+        masterContext.masterTimer.newTimeout(generateActionTask, 30, TimeUnit.MINUTES);
 
         //扫描任务等待队列
-        masterContext.getSchedulePool().scheduleAtFixedRate(new Runnable() {
+        TimerTask scanWaitingQueueTask = new TimerTask() {
             @Override
-            public void run() {
+            public void run(Timeout timeout) throws Exception {
                 try {
                     scan();
+                    log.info("scanQueueTask run");
                 } catch (Exception e) {
                     log.error("scan queue exception");
                 }
-
+                masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
             }
-        }, 0, HeraGlobalEnvironment.getScanExceptionRate(), TimeUnit.MICROSECONDS);
+        };
+        masterContext.masterTimer.newTimeout(scanWaitingQueueTask, 3, TimeUnit.SECONDS);
 
-        //扫描exception队列
-        masterContext.getSchedulePool().scheduleAtFixedRate(new Runnable() {
+
+        //扫描任务等待队列
+        TimerTask scanExceptionQueueTask = new TimerTask() {
             @Override
-            public void run() {
-                scanExceptionQueue();
+            public void run(Timeout timeout) throws Exception {
+                try {
+                    scanExceptionQueue();
+                    log.info("scanQueueTask run");
+                } catch (Exception e) {
+                    log.error("scan queue exception");
+                }
+                masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
             }
-        }, 0, HeraGlobalEnvironment.getScanExceptionRate(), TimeUnit.MICROSECONDS);
+        };
+        masterContext.masterTimer.newTimeout(scanExceptionQueueTask, 3, TimeUnit.SECONDS);
 
-        //心跳传递部分代码
-        masterContext.getSchedulePool().scheduleAtFixedRate(new Runnable() {
+        TimerTask checkHeartBeatTask = new TimerTask() {
             @Override
-            public void run() {
+            public void run(Timeout timeout) {
                 Date now = new Date();
                 for (MasterWorkHolder worker : masterContext.getWorkMap().values()) {
                     Date timestamp = worker.getHeartBeatInfo().timestamp;
@@ -209,10 +227,10 @@ public class Master {
                     }
 
                 }
-
+                masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
             }
-        }, 0, 3, TimeUnit.SECONDS);
-
+        };
+        masterContext.masterTimer.newTimeout(checkHeartBeatTask, 2, TimeUnit.SECONDS);
 
     }
 

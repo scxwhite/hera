@@ -41,10 +41,8 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                         log.error("worker handler take future exception");
                     }
                 }
-
             }
         });
-
     }
 
     private List<ResponseListener> listeners = new CopyOnWriteArrayList<ResponseListener>();

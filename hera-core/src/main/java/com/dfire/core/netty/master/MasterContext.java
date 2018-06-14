@@ -7,6 +7,8 @@ import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
 import io.netty.channel.Channel;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -59,7 +61,8 @@ public class MasterContext {
     /**
      *     后面成可配置的
      */
-    private ScheduledExecutorService schedulePool = Executors.newScheduledThreadPool(12);
+
+    final Timer masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 5, TimeUnit.SECONDS);
 
     public MasterContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -76,7 +79,7 @@ public class MasterContext {
 
     public void destroy() {
         threadPool.shutdown();
-        schedulePool.shutdown();
+        masterTimer.stop();
         if(masterServer != null) {
             masterServer.shutdown();
         }
