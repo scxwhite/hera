@@ -88,8 +88,7 @@ public class WorkClient {
                                 .addLast(new WorkHandler(workContext));
                     }
                 });
-        log.info("start work client success ");
-
+        log.info("init work client success ");
 
         TimerTask heartBeatTask = new TimerTask() {
 

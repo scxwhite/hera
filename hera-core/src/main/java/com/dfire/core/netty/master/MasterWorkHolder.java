@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Data
 public class MasterWorkHolder {
 
-
     private Channel channel;
 
     private Map<String, Boolean> running = new ConcurrentHashMap<String, Boolean>();

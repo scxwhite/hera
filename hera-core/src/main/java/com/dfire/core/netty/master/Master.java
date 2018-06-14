@@ -53,7 +53,6 @@ public class Master {
     private MasterContext masterContext;
     private Map<Long, HeraAction> heraActionMap;
 
-
     public Master(final MasterContext masterContext) {
 
         this.masterContext = masterContext;
@@ -200,7 +199,7 @@ public class Master {
         //扫描任务等待队列
         TimerTask scanExceptionQueueTask = new TimerTask() {
             @Override
-            public void run(Timeout timeout) throws Exception {
+            public void run(Timeout timeout) {
                 try {
                     scanExceptionQueue();
                     log.info("scanQueueTask run");
