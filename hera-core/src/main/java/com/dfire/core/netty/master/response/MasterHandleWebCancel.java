@@ -63,7 +63,7 @@ public class MasterHandleWebCancel {
                         workHolder.getChannel(), ExecuteKind.DebugKind, debugId);
                 workHolder.getDebugRunning().remove(debugId);
                 try {
-                    future.get(10, TimeUnit.SECONDS);
+                    future.get(10, TimeUnit.HOURS);
                 } catch (Exception e) {
 
                 }
@@ -121,7 +121,7 @@ public class MasterHandleWebCancel {
                             workHolder.getChannel(), ExecuteKind.ManualKind, historyId);
                     workHolder.getManningRunning().remove(jobId);
                     try {
-                        future.get(10, TimeUnit.SECONDS);
+                        future.get(10, TimeUnit.HOURS);
                     } catch (Exception e) {
 
                     }
@@ -178,7 +178,7 @@ public class MasterHandleWebCancel {
                         workHolder.getChannel(), ExecuteKind.ScheduleKind, historyId);
                 workHolder.getRunning().remove(jobId);
                 try {
-                    future.get(10, TimeUnit.SECONDS);
+                    future.get(10, TimeUnit.HOURS);
                 } catch (Exception e) {
 
                 }

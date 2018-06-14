@@ -1,5 +1,6 @@
 package com.dfire.common.util;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.*;
 import com.dfire.common.enums.JobRunType;
@@ -49,7 +50,7 @@ public class BeanConvertUtils {
     public static HeraJobHistoryVo convert(HeraJobHistory heraJobHistory) {
         HeraJobHistoryVo heraJobHistoryVo = HeraJobHistoryVo.builder().build();
         BeanUtils.copyProperties(heraJobHistory, heraJobHistoryVo);
-        if(StringUtils.isBlank(heraJobHistory.getLog())) {
+        if (StringUtils.isBlank(heraJobHistory.getLog())) {
             heraJobHistoryVo.setLog(LogContent.builder().build());
         } else {
             heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
@@ -76,7 +77,7 @@ public class BeanConvertUtils {
         BeanUtils.copyProperties(heraDebugHistory, heraJobHistoryVo);
         heraJobHistoryVo.setStatus(Status.parse(heraDebugHistory.getStatus()));
         heraJobHistoryVo.setRunType(JobRunType.parser(heraDebugHistory.getRunType()));
-        if(StringUtils.isBlank(heraDebugHistory.getLog())) {
+        if (StringUtils.isBlank(heraDebugHistory.getLog())) {
             heraJobHistoryVo.setLog(LogContent.builder().build());
         } else {
             heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraDebugHistory.getLog())).build());
@@ -193,7 +194,19 @@ public class BeanConvertUtils {
         configs.put("roll.back.times", heraJobVo.getRollBackTimes());
         configs.put("roll.back.wait.time", heraJobVo.getRollBackWaitTime());
         configs.put("run.priority.level", heraJobVo.getRunPriorityLevel());
-
+        Optional<String> selfConfigs = Optional.ofNullable(heraJobVo.getSelfConfigs());
+        selfConfigs.ifPresent(s -> {
+            String[] split = s.split("\\b");
+            Arrays.stream(split).forEach(x -> {
+                String[] pair = x.split("=");
+                if (pair.length == 2) {
+                    configs.put(pair[0], pair[1]);
+                }
+            });
+            heraJob.setConfigs(StringUtil.convertMapToString(configs));
+        });
+        heraJob.setId(Integer.parseInt(heraJobVo.getId()));
         return heraJob;
     }
+
 }

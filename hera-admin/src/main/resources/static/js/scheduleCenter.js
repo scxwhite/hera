@@ -1,6 +1,7 @@
 $(function () {
     var focusId = -1;
     var focusItem = null;
+    var treeObj;
     var setting = {
         view: {
             showLine: false
@@ -19,7 +20,10 @@ $(function () {
             onClick: leftClick
         }
     };
-
+    function setDefaultSelectNode(id) {
+        treeObj.selectNode(treeObj.getNodeByParam("id", id));
+        leftClick();
+    }
     //切换任务编辑状态
     function changeEditStyle(status) {
         //默认 展示状态
@@ -54,10 +58,13 @@ $(function () {
         $.ajax({
             url: "scheduleCenter/updateJobMessage.do",
             data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
-                "&script=" + $('#script textarea').val() + "&rescources=" + $('#resource textarea').val(),
+                "&script=" + $('#script textarea').val() + "&resource=" + $('#resource textarea').val() +
+                "&id=" + focusId,
             type: "post",
             success: function (data) {
-
+                if (data == true) {
+                    leftClick();
+                }
             }
         });
 
@@ -177,22 +184,18 @@ $(function () {
             $("#addJob").attr("disabled", jobDisabled = dir == 0);
             $("#addGroup").attr("disabled", !jobDisabled);
             //设置任务相关信息不显示
-            $("#config").css("display", "none");
             $("#script").css("display", "none");
-            $("#resource").css("display", "none");
-            $("#inheritConfig").css("display", "none");
             $("#jobMessage").css("display", "none");
             $("#groupMessage").css("display", "block");
         } else { //任务管理
             $("#groupOperate").css("display", "none");
             $("#groupMessage").css("display", "none");
-
             $("#jobOperate").css("display", "block");
-            $("#config").css("display", "block");
             $("#script").css("display", "block");
-            $("#resource").css("display", "block");
-            $("#inheritConfig").css("display", "block");
         }
+        $("#config").css("display", "block");
+        $("#resource").css("display", "block");
+        $("#inheritConfig").css("display", "block");
     }
 
 
@@ -236,7 +239,7 @@ $(function () {
     //修正zTree的图标，让文件节点显示文件夹图标
     function fixIcon() {
         $.fn.zTree.init($("#jobTree"), setting, zNodes);
-        var treeObj = $.fn.zTree.getZTreeObj("jobTree");
+        treeObj = $.fn.zTree.getZTreeObj("jobTree");
         //过滤出sou属性为true的节点（也可用你自己定义的其他字段来区分，这里通过sou保存的true或false来区分）
         var folderNode = treeObj.getNodesByFilter(function (node) {
             return node.isParent
@@ -245,6 +248,8 @@ $(function () {
             folderNode[j].isParent = true;
         }
         treeObj.refresh();//调用api自带的refresh函数。
+
+
     }
 
     var zTree, rMenu;

@@ -60,7 +60,7 @@ public class DistributeLock {
             public void run() {
                 getLock();
             }
-        }, 5, 5, TimeUnit.SECONDS);
+        }, 5, 5, TimeUnit.HOURS);
     }
 
     public void getLock() {

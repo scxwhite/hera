@@ -76,7 +76,7 @@ public class WorkClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new IdleStateHandler(0, 0, 5, TimeUnit.SECONDS))
+                        ch.pipeline().addLast(new IdleStateHandler(0, 0, 5, TimeUnit.HOURS))
                                 .addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
                                 .addLast("decoder", new ProtobufDecoder(SocketMessage.getDefaultInstance()))
                                 .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
@@ -118,7 +118,7 @@ public class WorkClient {
                 }
             }
 
-        }, 0, 10, TimeUnit.SECONDS);
+        }, 0, 10, TimeUnit.HOURS);
 
         service.scheduleAtFixedRate(new Runnable() {
 
@@ -162,7 +162,7 @@ public class WorkClient {
             @Override
             public void run() {
 
-                for (Job job : new HashSet<Job>(workContext.getRunning().values())) {
+                for (Job job : new HashSet<>(workContext.getRunning().values())) {
                     try {
                         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                         workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
@@ -171,7 +171,7 @@ public class WorkClient {
                     }
                 }
 
-                for (Job job : new HashSet<Job>(workContext.getManualRunning().values())) {
+                for (Job job : new HashSet<>(workContext.getManualRunning().values())) {
                     try {
                         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                         workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
@@ -180,7 +180,7 @@ public class WorkClient {
                     }
                 }
 
-                for (Job job : new HashSet<Job>(workContext.getDebugRunning().values())) {
+                for (Job job : new HashSet<>(workContext.getDebugRunning().values())) {
                     try {
                         HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
                         workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
@@ -189,7 +189,7 @@ public class WorkClient {
                     }
                 }
             }
-        }, 0, 3, TimeUnit.SECONDS);
+        }, 0, 3, TimeUnit.HOURS);
 
     }
 
@@ -224,7 +224,7 @@ public class WorkClient {
         };
         ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, HeraGlobalEnvironment.getConnectPort()));
         connectFuture.addListener(futureListener);
-        if (!latch.await(2, TimeUnit.SECONDS)) {
+        if (!latch.await(2, TimeUnit.HOURS)) {
             connectFuture.removeListener(futureListener);
             connectFuture.cancel(true);
             throw new ExecutionException(new TimeoutException("connect server consumption of 2 seconds"));

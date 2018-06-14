@@ -94,10 +94,8 @@ public class ScheduleCenterController {
     @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)
     @ResponseBody
     public boolean updateJobMessage(HeraJobVo heraJobVo) {
-        System.out.println(JSONObject.toJSONString(heraJobVo));
         HeraJob heraJob = BeanConvertUtils.convertToHeraJob(heraJobVo);
-        return true;
-
+        return heraJobService.update(heraJob) > 0;
     }
 
 }

@@ -39,8 +39,10 @@ public class MasterServer {
      */
     public MasterServer(final ChannelHandler handler) {
         serverBootstrap = new ServerBootstrap();
-        bossGroup = new NioEventLoopGroup(1);//服务端接受客户端的连接， Reactor线程组
-        workGroup = new NioEventLoopGroup();//SocketChannel的网络读写
+        //服务端接受客户端的连接， Reactor线程组
+        bossGroup = new NioEventLoopGroup(1);
+        //SocketChannel的网络读写
+        workGroup = new NioEventLoopGroup();
         serverBootstrap.group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
@@ -50,7 +52,7 @@ public class MasterServer {
                                 .addLast("decoder", new ProtobufDecoder(Protocol.SocketMessage.getDefaultInstance()))
                                 .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
                                 .addLast("encoder", new ProtobufEncoder())
-                                .addLast(new IdleStateHandler(0, 0, 10, TimeUnit.SECONDS))
+                                .addLast(new IdleStateHandler(0, 0, 10, TimeUnit.HOURS))
                                 .addLast("handler", handler);
                     }
                 });
