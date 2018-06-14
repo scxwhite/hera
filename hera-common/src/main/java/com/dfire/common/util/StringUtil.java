@@ -105,14 +105,14 @@ public class StringUtil {
     }
 
     public static List<Map<String, String>> convertResources(String resource) {
-        List<Map<String, String>> tempRes = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> tempRes = new ArrayList<>();
 
         if (StringUtils.isNotBlank(resource)) {
 
             JSONArray resArray = JSONArray.parseArray(resource);
             for (int i = 0; i < resArray.size(); i++) {
                 JSONObject o = resArray.getJSONObject(i);
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 for (Object key : o.keySet()) {
                     map.put(key.toString(), o.getString(key.toString()));
                 }

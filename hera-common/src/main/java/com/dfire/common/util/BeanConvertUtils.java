@@ -7,7 +7,6 @@ import com.dfire.common.enums.JobScheduleType;
 import com.dfire.common.enums.Status;
 import com.dfire.common.enums.TriggerType;
 import com.dfire.common.kv.Tuple;
-import com.dfire.common.processor.Processor;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.common.vo.LogContent;
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +48,7 @@ public class BeanConvertUtils {
     public static HeraJobHistoryVo convert(HeraJobHistory heraJobHistory) {
         HeraJobHistoryVo heraJobHistoryVo = HeraJobHistoryVo.builder().build();
         BeanUtils.copyProperties(heraJobHistory, heraJobHistoryVo);
-        if(StringUtils.isBlank(heraJobHistory.getLog())) {
+        if (StringUtils.isBlank(heraJobHistory.getLog())) {
             heraJobHistoryVo.setLog(LogContent.builder().build());
         } else {
             heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
@@ -76,7 +75,7 @@ public class BeanConvertUtils {
         BeanUtils.copyProperties(heraDebugHistory, heraJobHistoryVo);
         heraJobHistoryVo.setStatus(Status.parse(heraDebugHistory.getStatus()));
         heraJobHistoryVo.setRunType(JobRunType.parser(heraDebugHistory.getRunType()));
-        if(StringUtils.isBlank(heraDebugHistory.getLog())) {
+        if (StringUtils.isBlank(heraDebugHistory.getLog())) {
             heraJobHistoryVo.setLog(LogContent.builder().build());
         } else {
             heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraDebugHistory.getLog())).build());
@@ -193,7 +192,37 @@ public class BeanConvertUtils {
         configs.put("roll.back.times", heraJobVo.getRollBackTimes());
         configs.put("roll.back.wait.time", heraJobVo.getRollBackWaitTime());
         configs.put("run.priority.level", heraJobVo.getRunPriorityLevel());
-
+        Optional<String> selfConfigs = Optional.ofNullable(heraJobVo.getSelfConfigs());
+        selfConfigs.ifPresent(s -> {
+            stringToMap(s, configs);
+            heraJob.setConfigs(StringUtil.convertMapToString(configs));
+        });
+        heraJob.setId(Integer.parseInt(heraJobVo.getId()));
         return heraJob;
     }
+
+    public static HeraGroup convert(HeraGroupVo groupVo) {
+        HeraGroup heraGroup = new HeraGroup();
+        BeanUtils.copyProperties(groupVo, heraGroup);
+        Map<String, String> configs = new HashMap<>();
+        Optional<String> config = Optional.ofNullable(groupVo.getConfigs());
+        config.ifPresent(s -> {
+            stringToMap(s, configs);
+            heraGroup.setConfigs(StringUtil.convertMapToString(configs));
+        });
+
+        return heraGroup;
+    }
+
+    public static void stringToMap (String str, Map<String, String> configs){
+        str = str.trim();
+        String[] split = str.split("\\s");
+        Arrays.stream(split).forEach(x -> {
+            String[] pair = x.split("=");
+            if (pair.length == 2) {
+                configs.put(pair[0], pair[1]);
+            }
+        });
+    }
+
 }

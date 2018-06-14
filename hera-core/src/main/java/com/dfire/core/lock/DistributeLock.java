@@ -76,7 +76,6 @@ public class DistributeLock {
             heraLockService.insert(heraLock);
         }
 
-
         if (host.equals(heraLock.getHost().trim())) {
             heraLock.setServerUpdate(new Date());
             heraLockService.update(heraLock);
@@ -98,7 +97,6 @@ public class DistributeLock {
                 heraSchedule.shutdown();//非主节点，调度器不执行
             }
         }
-
         try {
             workClient.connect(heraLock.getHost());
         } catch (Exception e) {
