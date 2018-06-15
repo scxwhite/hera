@@ -226,10 +226,10 @@ public class Master {
                     }
 
                 }
-                masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
+                masterContext.masterTimer.newTimeout(this, 4, TimeUnit.SECONDS);
             }
         };
-        masterContext.masterTimer.newTimeout(checkHeartBeatTask, 2, TimeUnit.SECONDS);
+        masterContext.masterTimer.newTimeout(checkHeartBeatTask, 4, TimeUnit.SECONDS);
 
     }
 
