@@ -1,7 +1,7 @@
 package com.dfire.common.entity.vo;
 
-import com.dfire.common.enums.JobRunType;
-import com.dfire.common.enums.Status;
+import com.dfire.common.enums.JobRunTypeEnum;
+import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.vo.LogContent;
 import lombok.Builder;
 import lombok.Data;
@@ -27,7 +27,7 @@ public class HeraDebugHistoryVo {
 
     private String executeHost;
 
-    private Status status;
+    private StatusEnum statusEnum;
 
     private String owner;
 
@@ -37,7 +37,7 @@ public class HeraDebugHistoryVo {
 
     private String script;
 
-    private JobRunType runType;
+    private JobRunTypeEnum runType;
 
     private LogContent log ;
 

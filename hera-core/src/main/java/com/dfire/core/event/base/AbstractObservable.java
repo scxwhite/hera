@@ -13,7 +13,7 @@ import java.util.Map;
  * @time: Created in 下午2:44 2018/4/23
  * @desc
  */
-public  class AbstractObservable implements Observable {
+public class AbstractObservable implements Observable {
 
     private boolean fireEvents = true;
 
@@ -24,17 +24,19 @@ public  class AbstractObservable implements Observable {
 
     @Override
     public void addListener(EventType eventType, Listener<? extends AbstractEvent> listener) {
-        if(listener == null) return;
-        if(listMap == null ) {
-            listMap = new HashMap<String, List<Listener<AbstractEvent>>>();
+        if (listener == null) {
+            return;
+        }
+        if (listMap == null) {
+            listMap = new HashMap<>(1024);
         }
         List<Listener<AbstractEvent>> listeners = listMap.get(eventType.getId());
-        if(listeners == null) {
-            listeners = new ArrayList<Listener<AbstractEvent>>();
-            listeners.add((Listener)listener);
+        if (listeners == null) {
+            listeners = new ArrayList<>();
+            listeners.add((Listener) listener);
             listMap.put(eventType.getId(), listeners);
         } else {
-            if(listeners.contains(listener)) {
+            if (listeners.contains(listener)) {
                 listeners.add((Listener) listener);
             }
         }
@@ -43,12 +45,12 @@ public  class AbstractObservable implements Observable {
 
     @Override
     public List<Listener<? extends AbstractEvent>> getListeners(EventType eventType) {
-        if(listMap == null) {
-            return new ArrayList<Listener<? extends  AbstractEvent>>();
+        if (listMap == null) {
+            return new ArrayList<>();
         }
         List<Listener<AbstractEvent>> list = listMap.get(eventType.getId());
-        if(list == null) {
-            return new ArrayList<Listener<? extends  AbstractEvent>>();
+        if (list == null) {
+            return new ArrayList<>();
         }
         return (List) list;
     }
@@ -60,9 +62,9 @@ public  class AbstractObservable implements Observable {
 
     @Override
     public boolean hasListeners(EventType eventType) {
-        if(listMap != null) {
+        if (listMap != null) {
             List<Listener<AbstractEvent>> listeners = listMap.get(eventType.getId());
-            if(listeners != null && !listeners.isEmpty()) {
+            if (listeners != null && !listeners.isEmpty()) {
                 return true;
             }
         }
@@ -71,7 +73,7 @@ public  class AbstractObservable implements Observable {
 
     @Override
     public void removeAllListeners() {
-        if(listMap != null) {
+        if (listMap != null) {
             listMap.clear();
         }
 
@@ -79,14 +81,14 @@ public  class AbstractObservable implements Observable {
 
     @Override
     public void removeAllListeners(EventType eventType, Listener<? extends AbstractEvent> listener) {
-        if(listMap == null) {
+        if (listMap == null) {
             return;
         }
         String id = eventType.getId();
         List<Listener<AbstractEvent>> listeners = listMap.get(id);
-        if(listeners != null) {
+        if (listeners != null) {
             listeners.remove(listener);
-            if(listeners.isEmpty()) {
+            if (listeners.isEmpty()) {
                 listMap.remove(id);
             }
         }
@@ -94,13 +96,13 @@ public  class AbstractObservable implements Observable {
 
     @Override
     public boolean fireEvent(EventType eventType, AbstractEvent abstractEvent) {
-        if(fireEvents && listMap != null) {
+        if (fireEvents && listMap != null) {
             activeEvent = true;
             abstractEvent.setType(eventType);
             List<Listener<AbstractEvent>> listeners = listMap.get(eventType.getId());
-            if(listeners != null) {
+            if (listeners != null) {
                 List<Listener<AbstractEvent>> listenersCopy = Lists.newArrayList(listeners);
-                for(Listener<AbstractEvent> listener : listenersCopy) {
+                for (Listener<AbstractEvent> listener : listenersCopy) {
                     callListener(listener, abstractEvent);
                 }
             }
@@ -110,11 +112,7 @@ public  class AbstractObservable implements Observable {
         return true;
     }
 
-    public boolean fireEvent(EventType eventType) {
-        return  fireEvent(eventType, new AbstractEvent(this));
-    }
-
-    public  void callListener(Listener<AbstractEvent> listener, AbstractEvent event) {
+    public void callListener(Listener<AbstractEvent> listener, AbstractEvent event) {
         listener.handleEvent(event);
     }
 

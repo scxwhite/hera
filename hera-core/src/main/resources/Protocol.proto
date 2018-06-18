@@ -50,7 +50,7 @@ message WebRequest{
 }
 
 message WebResponse{
-	required Status status=1;
+	required Status statusEnum=1;
 	required sint32 rid=2;
 	required WebOperate operate=3;
 	optional string errorText=4;
@@ -74,7 +74,7 @@ message Request {
 
 //response
 message Response {
-	required Status status = 1; //状态码
+	required Status statusEnum = 1; //状态码
 	required sint32 rid = 2; // request id,响应时原封不动返回,提供给client配对.
 	required Operate operate=3;
 	optional string errorText = 4; //如果出错,会有出错信息.纯文本形式.client自行包装

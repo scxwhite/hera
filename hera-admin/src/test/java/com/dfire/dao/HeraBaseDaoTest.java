@@ -3,11 +3,10 @@ package com.dfire.dao;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
-import com.dfire.common.enums.Status;
+import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.HeraHostGroupVo;
-import com.dfire.common.vo.LogContent;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
@@ -140,14 +139,14 @@ public class HeraBaseDaoTest {
     @Test
     public void heraDebugHistoryDaoTest() {
         HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById("271");
-        debugHistory.setStatus(Status.FAILED);
+        debugHistory.setStatusEnum(StatusEnum.FAILED);
         heraDebugHistoryService.update(BeanConvertUtils.convert(debugHistory));
         HeraDebugHistory history = BeanConvertUtils.convert(debugHistory);
         history.setLog("test11ssss1");
         history.setGmtCreate(new Date());
         history.setGmtModified(new Date());
         heraDebugHistoryService.update(history);
-        System.out.println(debugHistory.getStatus().toString());
+        System.out.println(debugHistory.getStatusEnum().toString());
         System.out.println(history.getLog());
 
     }

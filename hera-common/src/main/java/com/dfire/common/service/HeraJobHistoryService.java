@@ -2,11 +2,7 @@ package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
-import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectLangDriver;
-import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import com.dfire.common.vo.JobStatus;
-import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -17,13 +13,10 @@ import java.util.List;
  */
 public interface HeraJobHistoryService {
 
-    public HeraJobHistoryVo findJobHistory(String id);
 
-    public void addHeraJobHistory(HeraJobHistory heraJobHistory);
+    int updateHeraJobHistoryStatus(HeraJobHistory jobStatus);
 
-    public void updateHeraJobHistory(HeraJobHistory heraJobHistory);
-
-    public void updateJobStatus(JobStatus jobStatus);
+    int updateHeraJobHistoryLog(HeraJobHistory heraJobHistory);
 
 
     int insert(HeraJobHistory heraJobHistory);
@@ -34,7 +27,7 @@ public interface HeraJobHistoryService {
 
     List<HeraJobHistory> getAll();
 
-    public HeraJobHistory findById(String id);
+    HeraJobHistory findById(String id);
 
 
 }

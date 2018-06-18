@@ -322,7 +322,7 @@ programs whose distribution conditions are different, write to the author
 to ask for permission.  For software which is copyrighted by the Free
 Software Foundation, write to the Free Software Foundation; we sometimes
 make exceptions for this.  Our decision will be guided by the two goals
-of preserving the free status of all derivatives of our free software and
+of preserving the free statusEnum of all derivatives of our free software and
 of promoting the sharing and reuse of software generally.
 
 NO WARRANTY
@@ -784,7 +784,7 @@ programs whose distribution conditions are incompatible with these,
 write to the author to ask for permission.  For software which is
 copyrighted by the Free Software Foundation, write to the Free
 Software Foundation; we sometimes make exceptions for this.  Our
-decision will be guided by the two goals of preserving the free status
+decision will be guided by the two goals of preserving the free statusEnum
 of all derivatives of our free software and of promoting the sharing
 and reuse of software generally.
 

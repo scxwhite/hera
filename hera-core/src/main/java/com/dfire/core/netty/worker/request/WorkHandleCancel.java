@@ -1,7 +1,9 @@
 package com.dfire.core.netty.worker.request;
 
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.WorkContext;
@@ -39,7 +41,8 @@ public class WorkHandleCancel {
     }
 
     private Future<Response> cancelManual(WorkContext workContext, Request request, String historyId) {
-        HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(historyId);
+        HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(historyId);
+        HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         final String jobId = history.getJobId();
         log.info("worker receive cancel manual job, jobId =" + jobId);
         if (!workContext.getManualRunning().containsKey(history.getId())) {
@@ -69,7 +72,8 @@ public class WorkHandleCancel {
     }
 
     private Future<Response> cancelSchedule(WorkContext workContext, Request request, String historyId) {
-        HeraJobHistoryVo history = workContext.getJobHistoryService().findJobHistory(historyId);
+        HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(historyId);
+        HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         final String jobId = history.getJobId();
         log.info("worker receive cancel schedule job, jobId =" + jobId);
         if (!workContext.getRunning().containsKey(history.getId())) {
@@ -113,7 +117,7 @@ public class WorkHandleCancel {
                 }
             });
             HeraDebugHistoryVo debugHistory = workContext.getDebugHistoryService().findById(debugId);
-            debugHistory.setStatus(com.dfire.common.enums.Status.FAILED);
+            debugHistory.setStatusEnum(StatusEnum.FAILED);
             debugHistory.setEndTime(new Date());
             workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         } else {

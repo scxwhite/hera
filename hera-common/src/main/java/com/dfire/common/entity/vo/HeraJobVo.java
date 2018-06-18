@@ -1,8 +1,6 @@
 package com.dfire.common.entity.vo;
 
-import com.dfire.common.enums.JobRunType;
-import com.dfire.common.enums.JobScheduleType;
-import com.dfire.common.enums.Status;
+import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.processor.Processor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -64,7 +62,7 @@ public class HeraJobVo {
 
     private List<Map<String, String>> resources;
 
-    private JobRunType runType;
+    private JobRunTypeEnum runType;
 
     private String scheduleType;
 

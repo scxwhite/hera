@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.Date;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

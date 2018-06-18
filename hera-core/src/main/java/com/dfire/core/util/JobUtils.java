@@ -1,6 +1,6 @@
 package com.dfire.core.util;
 
-import com.dfire.common.enums.JobRunType;
+import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.constants.RunningJobKeys;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
@@ -68,11 +68,11 @@ public class JobUtils {
         List<Job> pres = new ArrayList<>(1);
         pres.add(new DownLoadJob(jobContext));
         Job core = null;
-        if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunType.Shell.toString())) {
-            jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunType.Shell.toString());
+        if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Shell.toString())) {
+            jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunTypeEnum.Shell.toString());
             core = new HadoopShellJob(jobContext);
-        } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunType.Hive.toString())) {
-            jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunType.Hive.toString());
+        } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Hive.toString())) {
+            jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunTypeEnum.Hive.toString());
             core = new HiveJob(jobContext, applicationContext);
         }
         Job job = new ProcessJobContainer(jobContext, pres, new ArrayList<>(), core, applicationContext);
@@ -100,8 +100,8 @@ public class JobUtils {
         if (StringUtils.isNotBlank(actionDate) && actionDate.length() == 14) {
             script = RenderHierarchyProperties.render(script, actionDate);
         }
-        if (jobBean.getHeraJobVo().getRunType().equals(JobRunType.Shell)
-                || jobBean.getHeraJobVo().getRunType().equals(JobRunType.Hive)) {
+        if (jobBean.getHeraJobVo().getRunType().equals(JobRunTypeEnum.Shell)
+                || jobBean.getHeraJobVo().getRunType().equals(JobRunTypeEnum.Hive)) {
             script = resolveScriptResource(resource, script, applicationContext);
         }
         jobContext.setResources(resource);
@@ -121,9 +121,9 @@ public class JobUtils {
                 jobBean.getHeraJobVo().getPostProcessors(), history, workDir);
 
         Job core = null;
-        if (jobBean.getHeraJobVo().getRunType() == JobRunType.Shell) {
+        if (jobBean.getHeraJobVo().getRunType() == JobRunTypeEnum.Shell) {
             core = new HadoopShellJob(jobContext);
-        } else if (jobBean.getHeraJobVo().getRunType() == JobRunType.Hive) {
+        } else if (jobBean.getHeraJobVo().getRunType() == JobRunTypeEnum.Hive) {
             core = new HiveJob(jobContext, applicationContext);
         }
         Job job = new ProcessJobContainer(jobContext, pres, posts, core, applicationContext);

@@ -1,13 +1,13 @@
 package com.dfire.common.entity.vo;
 
-import com.dfire.common.enums.Status;
-import com.dfire.common.enums.TriggerType;
+import com.dfire.common.enums.StatusEnum;
+import com.dfire.common.enums.TriggerTypeEnum;
+import com.dfire.common.vo.JobStatus;
 import com.dfire.common.vo.LogContent;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,9 +33,9 @@ public class HeraJobHistoryVo {
 
     private String operator;
 
-    private Status status;
+    private StatusEnum statusEnum;
 
-    private TriggerType triggerType;
+    private TriggerTypeEnum triggerType;
 
     private String illustrate;
 
@@ -49,6 +49,9 @@ public class HeraJobHistoryVo {
 
     private int hostGroupId;
 
-    Map<String, String> properties;
+    private Map<String, String> properties;
+
+    private StatusEnum status;
+
 
 }

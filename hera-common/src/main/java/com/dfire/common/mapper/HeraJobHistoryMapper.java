@@ -33,7 +33,22 @@ public interface HeraJobHistoryMapper {
     List<HeraJobHistory> getAll();
 
     @Select("select * from hera_action_history where id = #{id}")
-    @Lang(HeraSelectLangDriver.class)
-    public HeraJobHistory findById(HeraJobHistory heraJobHistory);
+    HeraJobHistory findById(@Param("id") String id);
+
+    /**
+     * 更新日志
+     * @param heraJobHistory
+     * @return
+     */
+    @Update("update hera_action_history set log = #{log} where id = #{id}")
+    int updateHeraJobHistoryLog(HeraJobHistory heraJobHistory);
+
+    /**
+     * 更新状态
+     * @param jobStatus
+     * @return
+     */
+    @Update("update hera_action_history set status = #{status}, end_time = #{endTime} where id = #{id}")
+    int updateHeraJobHistoryStatus(HeraJobHistory HeraJobHistory);
 
 }
