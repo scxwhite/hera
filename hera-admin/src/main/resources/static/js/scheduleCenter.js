@@ -24,7 +24,7 @@ $(function () {
     };
 
     function setCurrentId(id) {
-        localStorage.setItem("defaultId", focusId);
+        localStorage.setItem("defaultId", id);
 
     }
     function setDefaultSelectNode(id) {
@@ -61,7 +61,7 @@ $(function () {
         formDataLoad("jobMsgEditForm", focusItem);
         initVal(focusItem.configs, "jobMsgEditForm");
         changeEditStyle(0);
-        setJobMessageEdit(focusItem.scheduleType === 0)
+        setJobMessageEdit(focusItem.scheduleType === "0")
     });
     $('#jobOperate [name="switch"]').on('click', function () {
         //回显
