@@ -50,7 +50,7 @@ message WebRequest{
 }
 
 message WebResponse{
-	required Status statusEnum=1;
+	required Status status=1;
 	required sint32 rid=2;
 	required WebOperate operate=3;
 	optional string errorText=4;

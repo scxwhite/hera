@@ -41,6 +41,7 @@ import java.util.Map;
  * @time: Created in 下午5:24 2018/4/19
  * @desc job执行生命周期事件处理器, 每种任务执行状态都对应相应事件
  */
+
 @Builder
 @Slf4j
 @AllArgsConstructor
@@ -191,12 +192,12 @@ public class JobHandler extends AbstractHandler {
                         String date = simpleDateFormat.format(new Date(Long.valueOf(dependencies.get(key))));
                         if (!now.equals(date)) {
                             jobStatus.getReadyDependency().remove(key);
-                            log.info("remove overdue dependency");
+                            log.info("remove overwrite dependency");
                         }
                     }
                 }
             }
-            log.info("received a success dependency job with jobId:" + jobId);
+            log.info("received a success dependency job with jobId = " + jobId);
             jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
             heraJobActionService.updateStatus(jobStatus);
         }

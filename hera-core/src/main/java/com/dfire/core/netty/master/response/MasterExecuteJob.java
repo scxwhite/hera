@@ -34,9 +34,12 @@ public class MasterExecuteJob {
     }
 
     /**
-     * @param [context, holder, id]
-     * @return java.util.concurrent.Future<com.dfire.core.message.Protocol.Response>
-     * @desc 向channel发送执行job命令，等待worker响应，响应ok,则添加监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     * 执行手动任务，向channel发送执行job命令，等待worker响应，响应ok,则添加监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     *
+     * @param context
+     * @param holder
+     * @param jobId
+     * @return
      */
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder holder, String jobId) {
         holder.getManningRunning().put(jobId, false);
@@ -82,9 +85,12 @@ public class MasterExecuteJob {
     }
 
     /**
-     * @param [context, holder, id]
-     * @return void
-     * @desc 向channel发送执行job命令，等待worker响应，响应ok,则添加监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     * 执行自动调度任务，向master端channel发送执行job命令，添加请求监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     *
+     * @param context
+     * @param holder
+     * @param id
+     * @return
      */
     private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String id) {
 
@@ -134,7 +140,14 @@ public class MasterExecuteJob {
 
     }
 
-
+    /**
+     * 执行开发中心脚本，向master端channel发送执行job命令，添加请求监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     *
+     * @param context
+     * @param holder
+     * @param id
+     * @return
+     */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder holder, String id) {
         holder.getDebugRunning().put(id, false);
         DebugMessage message = DebugMessage
