@@ -64,5 +64,9 @@ public class LombokTest {
     public void ip() throws UnknownHostException {
         String host = InetAddress.getLocalHost().getHostAddress();
         System.out.println(host);
+
+        int p1 = 3;
+        int p2 = 3;
+        System.out.println( p1 == p2 ? 0 : (p1 > p2 ? 1 : -1));
     }
 }

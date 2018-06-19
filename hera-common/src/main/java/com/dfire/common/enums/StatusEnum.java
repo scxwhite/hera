@@ -6,19 +6,19 @@ package com.dfire.common.enums;
  * @time: Created in 22:41 2018/1/12
  * @desc 任务状态
  */
-public enum Status {
+public enum StatusEnum {
 
     WAIT("wait"), RUNNING("running"), SUCCESS("success"), FAILED("failed");
 
     private String status;
 
-    private Status(String status) {
+    StatusEnum(String status) {
         this.status = status;
     }
 
-    public static Status parse(String v) {
-        for(Status s:Status.values()){
-            if(s.status.equalsIgnoreCase(v)){
+    public static StatusEnum parse(String v) {
+        for (StatusEnum s : StatusEnum.values()) {
+            if (s.status.equalsIgnoreCase(v)) {
                 return s;
             }
         }

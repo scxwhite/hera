@@ -1,6 +1,7 @@
 package com.dfire.core.event.listenter;
 
-import com.dfire.common.enums.TriggerType;
+import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobHistoryService;
@@ -27,10 +28,10 @@ public class HeraJobSuccessListener extends AbstractListener {
     public void beforeDispatch(MvcEvent mvcEvent) {
         if(mvcEvent.getApplicationEvent() instanceof HeraJobSuccessEvent) {
             HeraJobSuccessEvent jobSuccessEvent = (HeraJobSuccessEvent) mvcEvent.getApplicationEvent();
-            if(jobSuccessEvent.getTriggerType() == TriggerType.SCHEDULE) {
+            if(jobSuccessEvent.getTriggerType() == TriggerTypeEnum.SCHEDULE) {
                 return;
             }
-            HeraJobHistoryVo heraJobHistory = heraJobHistoryService.findJobHistory(jobSuccessEvent.getHistoryId());
+            HeraJobHistory heraJobHistory = heraJobHistoryService.findById(jobSuccessEvent.getHistoryId());
         }
     }
 }

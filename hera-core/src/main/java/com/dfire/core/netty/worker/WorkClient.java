@@ -3,6 +3,7 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
@@ -88,8 +89,7 @@ public class WorkClient {
                                 .addLast(new WorkHandler(workContext));
                     }
                 });
-        log.info("start work client success ");
-
+        log.info("init work client success ");
 
         TimerTask heartBeatTask = new TimerTask() {
 
@@ -251,7 +251,7 @@ public class WorkClient {
 
         HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
         history.setEndTime(new Date());
-        history.setStatus(com.dfire.common.enums.Status.FAILED);
+        history.setStatusEnum(StatusEnum.FAILED);
         workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
         workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
@@ -272,10 +272,10 @@ public class WorkClient {
         } else {
             history.setIllustrate("手动取消该任务");
         }
-        history.setStatus(com.dfire.common.enums.Status.FAILED);
-        workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
+        history.setStatusEnum(StatusEnum.FAILED);
+        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
+        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
 
     }
 
@@ -292,10 +292,10 @@ public class WorkClient {
         } else {
             history.setIllustrate("手动取消该任务");
         }
-        history.setStatus(com.dfire.common.enums.Status.FAILED);
-        workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
+        history.setStatusEnum(StatusEnum.FAILED);
+        workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistory(BeanConvertUtils.convert(history));
+        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
 
     }
 

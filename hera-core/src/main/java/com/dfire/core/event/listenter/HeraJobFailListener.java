@@ -1,6 +1,7 @@
 package com.dfire.core.event.listenter;
 
 import com.dfire.common.entity.HeraJob;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.HeraUser;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.service.HeraGroupService;
@@ -43,7 +44,8 @@ public class HeraJobFailListener extends AbstractListener {
         if (mvcEvent.getApplicationEvent() instanceof HeraJobFailedEvent) {
             HeraJobFailedEvent failedEvent = (HeraJobFailedEvent) mvcEvent.getApplicationEvent();
             String jobId = failedEvent.getJobId();
-            HeraJobHistoryVo heraJobHistory = heraJobHistoryService.findJobHistory(jobId);
+            HeraJobHistory heraJobHistory = heraJobHistoryService.findById(jobId);
+
             HeraJob heraJob = heraJobService.findById(Integer.parseInt(jobId));
             Executor executor = Executors.newScheduledThreadPool(2);
 

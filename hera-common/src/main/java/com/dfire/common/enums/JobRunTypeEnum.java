@@ -5,12 +5,12 @@ package com.dfire.common.enums;
  * @time: Created in 14:31 2018/3/22
  * @desc
  */
-public enum JobRunType {
+public enum JobRunTypeEnum {
 
     Shell("shell"), Hive("hive");
     private final String id;
 
-    JobRunType(String s) {
+    JobRunTypeEnum(String s) {
         this.id = s;
     }
 
@@ -19,8 +19,8 @@ public enum JobRunType {
         return id;
     }
 
-    public static JobRunType parser(String v) {
-        for (JobRunType type : JobRunType.values()) {
+    public static JobRunTypeEnum parser(String v) {
+        for (JobRunTypeEnum type : JobRunTypeEnum.values()) {
             if (type.toString().equals(v)) {
                 return type;
             }
@@ -29,6 +29,6 @@ public enum JobRunType {
     }
 
     public static void main(String[] args) {
-        System.out.println(JobRunType.Shell.toString());
+        System.out.println(JobRunTypeEnum.Shell.toString());
     }
 }

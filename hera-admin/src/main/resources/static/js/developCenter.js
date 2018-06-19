@@ -352,8 +352,8 @@ $(function () {
     $("#execute").click(function () {
         var id = $("#id").text();
         var script = $("#script").val();
-        var id = '64';
-        script = 'ls /';
+        var id = '39';
+        script = 'show databases';
         var parameter = "id=" + id + "&script=" + script;
         var result = null;
 

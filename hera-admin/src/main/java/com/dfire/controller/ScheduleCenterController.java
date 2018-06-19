@@ -1,10 +1,7 @@
 package com.dfire.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dfire.common.entity.HeraAction;
-import com.dfire.common.entity.HeraGroup;
-import com.dfire.common.entity.HeraJob;
-import com.dfire.common.entity.HeraUser;
+import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
@@ -13,12 +10,14 @@ import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.config.WebSecurityConfig;
+import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.WorkClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.WebAsyncTask;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -41,7 +40,6 @@ public class ScheduleCenterController {
 
     @Autowired
     WorkClient workClient;
-
 
 
     @RequestMapping()
@@ -77,11 +75,25 @@ public class ScheduleCenterController {
         return heraGroupVo;
     }
 
+    /**
+     * 手动执行任务
+     *
+     * @param actionId
+     * @return
+     */
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
-    public String manual(String actionId) {
-        HeraAction heraAction = heraJobActionService.findById(actionId);
-        return "";
+    public WebAsyncTask<String> manual(String actionId) {
+
+        return new WebAsyncTask<>(3000, () -> {
+            HeraAction heraAction = heraJobActionService.findById(actionId);
+            try {
+                workClient.executeJobFromWeb(ExecuteKind.ManualKind, actionId);
+            } catch (Exception e) {
+
+            }
+            return "";
+        });
     }
 
     @RequestMapping(value = "/getJobVersion", method = RequestMethod.GET)

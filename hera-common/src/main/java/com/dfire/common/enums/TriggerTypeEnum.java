@@ -5,12 +5,12 @@ package com.dfire.common.enums;
  * @time: Created in 23:21 2018/1/12
  * @desc 任务触发类型
  */
-public enum TriggerType {
+public enum TriggerTypeEnum {
 
     SCHEDULE(1), MANUAL(2), MANUAL_RECOVER(3);
     private Integer id;
 
-    private TriggerType(Integer id) {
+    private TriggerTypeEnum(Integer id) {
         this.id = id;
     }
 
@@ -30,8 +30,8 @@ public enum TriggerType {
         return "未知";
     }
 
-    public static TriggerType parser(Integer v) {
-        for (TriggerType type : TriggerType.values()) {
+    public static TriggerTypeEnum parser(Integer v) {
+        for (TriggerTypeEnum type : TriggerTypeEnum.values()) {
             if (type.getId().equals(v)) {
                 return type;
             }

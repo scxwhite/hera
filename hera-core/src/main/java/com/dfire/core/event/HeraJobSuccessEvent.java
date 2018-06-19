@@ -1,6 +1,6 @@
 package com.dfire.core.event;
 
-import com.dfire.common.enums.TriggerType;
+import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import lombok.Data;
@@ -16,9 +16,9 @@ public class HeraJobSuccessEvent extends ApplicationEvent {
     private String historyId;
     private String jobId;
     private String statisticEndTime;
-    private TriggerType triggerType;
+    private TriggerTypeEnum triggerType;
 
-    public HeraJobSuccessEvent(String jobId, TriggerType triggerType, String historyId) {
+    public HeraJobSuccessEvent(String jobId, TriggerTypeEnum triggerType, String historyId) {
         super(Events.JobSucceed);
         this.jobId = jobId;
         this.triggerType = triggerType;

@@ -1,7 +1,6 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraUser;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -26,4 +25,6 @@ public interface HeraUserService {
     HeraUser findByName(String name);
 
     List<HeraUser> findByIds(List<Integer> list);
+
+    int updateEffective(String id, String effective);
 }

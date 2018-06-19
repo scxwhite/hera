@@ -1,6 +1,6 @@
 package com.dfire.core.event;
 
-import com.dfire.common.enums.TriggerType;
+import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -16,11 +16,11 @@ public class HeraJobFailedEvent extends ApplicationEvent {
 
     private final HeraJobHistoryVo heraJobHistory;
     private final String jobId;
-    private final TriggerType triggerType;
+    private final TriggerTypeEnum triggerType;
     private int runCount = 0;
     private int rollBackTime = 0;
 
-    public HeraJobFailedEvent(String jobId, TriggerType triggerType, HeraJobHistoryVo heraJobHistory) {
+    public HeraJobFailedEvent(String jobId, TriggerTypeEnum triggerType, HeraJobHistoryVo heraJobHistory) {
         super(Events.JobFailed);
         this.jobId = jobId;
         this.triggerType = triggerType;

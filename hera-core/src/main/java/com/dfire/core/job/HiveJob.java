@@ -119,17 +119,17 @@ public class HiveJob extends ProcessJob {
                     tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write("source " + tmpFile + "; hive" + sb.toString());
+                    tmpWriter.write("hive " + sb.toString());
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
                     IOUtils.closeQuietly(tmpWriter);
                 }
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + " sh " + tmpFilePath);
+                list.add("sh " + tmpFilePath);
             } else {
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + " hive " + sb.toString());
+                list.add("hive " + sb.toString());
             }
 
         } else {

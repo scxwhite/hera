@@ -2,10 +2,10 @@ package com.dfire.common.util;
 
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.*;
-import com.dfire.common.enums.JobRunType;
-import com.dfire.common.enums.JobScheduleType;
-import com.dfire.common.enums.Status;
-import com.dfire.common.enums.TriggerType;
+import com.dfire.common.enums.JobRunTypeEnum;
+import com.dfire.common.enums.JobScheduleTypeEnum;
+import com.dfire.common.enums.StatusEnum;
+import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.common.vo.LogContent;
@@ -54,8 +54,8 @@ public class BeanConvertUtils {
             heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
         }
         heraJobHistoryVo.setProperties(StringUtil.convertStringToMap(heraJobHistory.getProperties()));
-        heraJobHistoryVo.setStatus(Status.parse(heraJobHistory.getStatus()));
-        heraJobHistoryVo.setTriggerType(TriggerType.parser(heraJobHistory.getTriggerType()));
+        heraJobHistoryVo.setStatusEnum(StatusEnum.parse(heraJobHistory.getStatus()));
+        heraJobHistoryVo.setTriggerType(TriggerTypeEnum.parser(heraJobHistory.getTriggerType()));
         return heraJobHistoryVo;
 
     }
@@ -64,7 +64,7 @@ public class BeanConvertUtils {
         HeraJobHistory jobHistory = HeraJobHistory.builder().build();
         BeanUtils.copyProperties(jobHistoryVo, jobHistory);
         jobHistory.setLog(jobHistoryVo.getLog().getContent());
-        jobHistory.setStatus(jobHistoryVo.getStatus().toString());
+        jobHistory.setStatus(jobHistoryVo.getStatusEnum().toString());
         jobHistory.setProperties(StringUtil.convertMapToString(jobHistoryVo.getProperties()));
         jobHistory.setTriggerType(jobHistoryVo.getTriggerType().getId());
         return jobHistory;
@@ -73,8 +73,8 @@ public class BeanConvertUtils {
     public static HeraDebugHistoryVo convert(HeraDebugHistory heraDebugHistory) {
         HeraDebugHistoryVo heraJobHistoryVo = HeraDebugHistoryVo.builder().build();
         BeanUtils.copyProperties(heraDebugHistory, heraJobHistoryVo);
-        heraJobHistoryVo.setStatus(Status.parse(heraDebugHistory.getStatus()));
-        heraJobHistoryVo.setRunType(JobRunType.parser(heraDebugHistory.getRunType()));
+        heraJobHistoryVo.setStatusEnum(StatusEnum.parse(heraDebugHistory.getStatus()));
+        heraJobHistoryVo.setRunType(JobRunTypeEnum.parser(heraDebugHistory.getRunType()));
         if (StringUtils.isBlank(heraDebugHistory.getLog())) {
             heraJobHistoryVo.setLog(LogContent.builder().build());
         } else {
@@ -87,7 +87,7 @@ public class BeanConvertUtils {
     public static HeraDebugHistory convert(HeraDebugHistoryVo jobHistoryVo) {
         HeraDebugHistory jobHistory = HeraDebugHistory.builder().build();
         BeanUtils.copyProperties(jobHistoryVo, jobHistory);
-        jobHistory.setStatus(jobHistoryVo.getStatus().toString());
+        jobHistory.setStatus(jobHistoryVo.getStatusEnum().toString());
         jobHistory.setLog(jobHistoryVo.getLog().getContent());
         jobHistory.setRunType(jobHistoryVo.getRunType().toString());
         return jobHistory;
@@ -160,6 +160,7 @@ public class BeanConvertUtils {
      * @return
      */
     public static HeraActionVo transform(HeraAction action) {
+        String auto = "1";
         HeraActionVo heraActionVo = HeraActionVo.builder().build();
         BeanUtils.copyProperties(action, heraActionVo);
 
@@ -167,8 +168,13 @@ public class BeanConvertUtils {
         heraActionVo.setPreProcessors(StringUtil.convertProcessorToList(action.getPreProcessors()));
         heraActionVo.setResources(StringUtil.convertResources(action.getResources()));
         heraActionVo.setConfigs(StringUtil.convertStringToMap(action.getConfigs()));
-        heraActionVo.setRunType(JobRunType.parser(action.getRunType()));
-        heraActionVo.setScheduleType(JobScheduleType.parser(action.getScheduleType()));
+        heraActionVo.setRunType(JobRunTypeEnum.parser(action.getRunType()));
+        heraActionVo.setScheduleType(JobScheduleTypeEnum.parser(action.getScheduleType()));
+        if(action.getAuto().equals(auto)) {
+            heraActionVo.setAuto(true);
+        } else {
+            heraActionVo.setAuto(false);
+        }
         return heraActionVo;
     }
 
@@ -188,7 +194,7 @@ public class BeanConvertUtils {
     public static HeraJob convertToHeraJob(HeraJobVo heraJobVo) {
         HeraJob heraJob = new HeraJob();
         BeanUtils.copyProperties(heraJobVo, heraJob);
-        Map<String, String> configs = new HashMap<>();
+        Map<String, String> configs = new HashMap<>(64);
         configs.put("roll.back.times", heraJobVo.getRollBackTimes());
         configs.put("roll.back.wait.time", heraJobVo.getRollBackWaitTime());
         configs.put("run.priority.level", heraJobVo.getRunPriorityLevel());

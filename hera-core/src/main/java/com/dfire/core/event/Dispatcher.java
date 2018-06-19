@@ -7,6 +7,7 @@ import com.dfire.core.event.base.MvcEvent;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.AbstractListener;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,7 +33,7 @@ public class Dispatcher extends AbstractObservable {
     List<AbstractHandler> jobHandlers;
 
     public Dispatcher() {
-        jobHandlers = new ArrayList<AbstractHandler>();
+        jobHandlers = new ArrayList<>();
     }
 
     public void addJobHandler(JobHandler jobHandler) {
@@ -70,12 +71,16 @@ public class Dispatcher extends AbstractObservable {
         dispatch(new ApplicationEvent(type, data));
     }
 
-
+    /**
+     * 事件广播，每次任务状态变化，触发响应事件，全局广播，自动调度successEvent,触发依赖调度一些依赖更新
+     *
+     * @param applicationEvent
+     */
     public void dispatch(ApplicationEvent applicationEvent) {
         MvcEvent mvcEvent = new MvcEvent(this, applicationEvent);
         mvcEvent.setApplicationEvent(applicationEvent);
         if (fireEvent(beforeDispatch, mvcEvent)) {
-            List<AbstractHandler> jobHandlersCopy = new ArrayList<>(jobHandlers);
+            List<AbstractHandler> jobHandlersCopy = Lists.newArrayList(jobHandlers);
             for (AbstractHandler jobHandler : jobHandlersCopy) {
                 if (jobHandler.canHandle(applicationEvent)) {
                     if (!jobHandler.isInitialized()) {
@@ -87,6 +92,5 @@ public class Dispatcher extends AbstractObservable {
             fireEvent(afterDispatch, mvcEvent);
         }
     }
-
 
 }

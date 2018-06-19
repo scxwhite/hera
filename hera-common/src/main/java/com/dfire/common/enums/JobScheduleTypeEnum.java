@@ -5,11 +5,11 @@ package com.dfire.common.enums;
  * @time: Created in 下午11:43 2018/4/23
  * @desc
  */
-public enum JobScheduleType {
+public enum JobScheduleTypeEnum {
     Independent(0), Dependent(1);
     private Integer type;
 
-    private JobScheduleType(Integer type) {
+    JobScheduleTypeEnum(Integer type) {
         this.type = type;
     }
 
@@ -18,7 +18,7 @@ public enum JobScheduleType {
         return type.toString();
     }
 
-    public static JobScheduleType parser(String value) {
+    public static JobScheduleTypeEnum parser(String value) {
         if ("0".equals(value)) {
             return Independent;
         }
@@ -28,8 +28,8 @@ public enum JobScheduleType {
         return null;
     }
 
-    public static JobScheduleType parser(Integer v) {
-        for (JobScheduleType t : JobScheduleType.values()) {
+    public static JobScheduleTypeEnum parser(Integer v) {
+        for (JobScheduleTypeEnum t : JobScheduleTypeEnum.values()) {
             if (t.getType().equals(v)) {
                 return t;
             }

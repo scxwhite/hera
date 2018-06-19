@@ -13,26 +13,31 @@ import lombok.Data;
 @Builder
 public class JobElement {
 
-    //版本号id
+    /**
+     * 版本号id
+     */
     private String jobId;
 
     private int hostGroupId;
 
     private Integer priorityLevel;
-
-    // 内存中的创建时间
+    /**
+     * 内存中的创建时间
+     */
     private Long gmtCreated;
-    // 内存中的修改时间
+    /**
+     * 内存中的修改时间
+     */
     private Long gmtModified;
 
     private Long triggerTime;
 
 
     public boolean equals(JobElement jobElement) {
-       if(!jobElement.getJobId().equals(jobId)) {
-           return false;
-       }
-       return true;
+        if (!jobElement.getJobId().equals(jobId)) {
+            return false;
+        }
+        return true;
     }
 
 

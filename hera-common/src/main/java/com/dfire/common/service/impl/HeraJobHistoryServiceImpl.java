@@ -20,25 +20,15 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     @Autowired
     HeraJobHistoryMapper heraJobHistoryMapper;
 
+
     @Override
-    public HeraJobHistoryVo findJobHistory(String id) {
-        return null;
+    public int updateHeraJobHistoryLog(HeraJobHistory heraJobHistory) {
+        return heraJobHistoryMapper.updateHeraJobHistoryLog(heraJobHistory);
     }
 
     @Override
-    public void addHeraJobHistory(HeraJobHistory heraJobHistory) {
-
-    }
-
-    @Override
-    public void updateHeraJobHistory(HeraJobHistory heraJobHistory) {
-
-    }
-
-    //任务链路的任务状态也需要更新
-    @Override
-    public void updateJobStatus(JobStatus jobStatus) {
-
+    public int updateHeraJobHistoryStatus(HeraJobHistory HeraJobHistory) {
+        return heraJobHistoryMapper.updateHeraJobHistoryStatus(HeraJobHistory);
     }
 
     @Override
@@ -63,7 +53,6 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
 
     @Override
     public HeraJobHistory findById(String id) {
-        HeraJobHistory history = HeraJobHistory.builder().id(id).build();
-        return heraJobHistoryMapper.findById(history);
+        return heraJobHistoryMapper.findById(id);
     }
 }

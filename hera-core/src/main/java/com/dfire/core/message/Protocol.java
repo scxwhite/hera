@@ -74,7 +74,7 @@ public final class Protocol {
       this.value = value;
     }
     
-    // @@protoc_insertion_point(enum_scope:com.dfire.protocol.Status)
+    // @@protoc_insertion_point(enum_scope:com.dfire.protocol.StatusEnum)
   }
   
   public enum ExecuteKind
@@ -1610,7 +1610,7 @@ public final class Protocol {
   public interface WebResponseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required .com.dfire.protocol.Status status = 1;
+    // required .com.dfire.protocol.StatusEnum statusEnum = 1;
     boolean hasStatus();
     Protocol.Status getStatus();
     
@@ -1659,7 +1659,7 @@ public final class Protocol {
     }
     
     private int bitField0_;
-    // required .com.dfire.protocol.Status status = 1;
+    // required .com.dfire.protocol.StatusEnum statusEnum = 1;
     public static final int STATUS_FIELD_NUMBER = 1;
     private Protocol.Status status_;
     public boolean hasStatus() {
@@ -2113,7 +2113,7 @@ public final class Protocol {
       
       private int bitField0_;
       
-      // required .com.dfire.protocol.Status status = 1;
+      // required .com.dfire.protocol.StatusEnum statusEnum = 1;
       private Protocol.Status status_ = Protocol.Status.OK;
       public boolean hasStatus() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
@@ -2734,7 +2734,7 @@ public final class Protocol {
   public interface ResponseOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
     
-    // required .com.dfire.protocol.Status status = 1;
+    // required .com.dfire.protocol.StatusEnum statusEnum = 1;
     boolean hasStatus();
     Protocol.Status getStatus();
     
@@ -2783,7 +2783,7 @@ public final class Protocol {
     }
     
     private int bitField0_;
-    // required .com.dfire.protocol.Status status = 1;
+    // required .com.dfire.protocol.StatusEnum statusEnum = 1;
     public static final int STATUS_FIELD_NUMBER = 1;
     private Protocol.Status status_;
     public boolean hasStatus() {
@@ -3237,7 +3237,7 @@ public final class Protocol {
       
       private int bitField0_;
       
-      // required .com.dfire.protocol.Status status = 1;
+      // required .com.dfire.protocol.StatusEnum statusEnum = 1;
       private Protocol.Status status_ = Protocol.Status.OK;
       public boolean hasStatus() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
@@ -6150,13 +6150,13 @@ public final class Protocol {
       "\030\004 \002(\t\022\020\n\010executor\030\005 \001(\t\022\014\n\004body\030\006 \001(\014\")" +
       "\n\007Trigger\022\n\n\006MANUAL\020\000\022\022\n\016MANUAL_RECOVER\020",
       "\001\"\230\001\n\013WebResponse\022*\n\006status\030\001 \002(\0162\032.com." +
-      "dfire.protocol.Status\022\013\n\003rid\030\002 \002(\021\022/\n\007op" +
+      "dfire.protocol.StatusEnum\022\013\n\003rid\030\002 \002(\021\022/\n\007op" +
       "erate\030\003 \002(\0162\036.com.dfire.protocol.WebOper" +
       "ate\022\021\n\terrorText\030\004 \001(\t\022\014\n\004body\030\005 \001(\014\"R\n\007" +
       "Request\022\013\n\003rid\030\001 \002(\021\022,\n\007operate\030\002 \002(\0162\033." +
       "com.dfire.protocol.Operate\022\014\n\004body\030\003 \001(\014" +
       "\"\222\001\n\010Response\022*\n\006status\030\001 \002(\0162\032.com.dfir" +
-      "e.protocol.Status\022\013\n\003rid\030\002 \002(\021\022,\n\007operat" +
+      "e.protocol.StatusEnum\022\013\n\003rid\030\002 \002(\021\022,\n\007operat" +
       "e\030\003 \002(\0162\033.com.dfire.protocol.Operate\022\021\n\t" +
       "errorText\030\004 \001(\t\022\014\n\004body\030\005 \001(\014\"\265\001\n\020HeartB",
       "eatMessage\022\020\n\010runnings\030\001 \003(\t\022\025\n\rdebugRun" +
@@ -6204,7 +6204,7 @@ public final class Protocol {
           internal_static_com_dfire_protocol_WebResponse_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_dfire_protocol_WebResponse_descriptor,
-              new java.lang.String[] { "Status", "Rid", "Operate", "ErrorText", "Body", },
+              new java.lang.String[] { "StatusEnum", "Rid", "Operate", "ErrorText", "Body", },
               Protocol.WebResponse.class,
               Protocol.WebResponse.Builder.class);
           internal_static_com_dfire_protocol_Request_descriptor =
@@ -6220,7 +6220,7 @@ public final class Protocol {
           internal_static_com_dfire_protocol_Response_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_com_dfire_protocol_Response_descriptor,
-              new java.lang.String[] { "Status", "Rid", "Operate", "ErrorText", "Body", },
+              new java.lang.String[] { "StatusEnum", "Rid", "Operate", "ErrorText", "Body", },
               Protocol.Response.class,
               Protocol.Response.Builder.class);
           internal_static_com_dfire_protocol_HeartBeatMessage_descriptor =

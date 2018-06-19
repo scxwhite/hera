@@ -55,7 +55,7 @@ public class DevelopCenterController {
         System.out.println(heraFile.getId());
         heraFile.setOwner("biadmin");
         heraFileService.insert(heraFile);
-        return "sucess";
+        return "success";
     }
 
     @RequestMapping(value = "/find", method = RequestMethod.GET)

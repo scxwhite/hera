@@ -14893,7 +14893,7 @@
 	 *  @example
 	 *     // Use a custom property returned from the server in another DOM element
 	 *     $('#table').dataTable().on('xhr.dt', function (e, settings, json) {
-	 *       $('#status').html( json.status );
+	 *       $('#statusEnum').html( json.statusEnum );
 	 *     } );
 	 *
 	 *  @example
