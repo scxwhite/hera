@@ -147,8 +147,8 @@ public class BeanConvertUtils {
         HeraActionVo heraActionVo = transform(action);
         JobStatus jobStatus = JobStatus.builder().build();
         jobStatus.setJobId(action.getJobId());
-        jobStatus.setHistoryId(action.getHistoryId());
-        jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()));
+        jobStatus.setHistoryId(action.getHistoryId() == null ? null : action.getHistoryId());
+        jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()== null ? null : action.getReadyDependency()));
         return new Tuple<>(heraActionVo, jobStatus);
 
     }
@@ -170,7 +170,7 @@ public class BeanConvertUtils {
         heraActionVo.setConfigs(StringUtil.convertStringToMap(action.getConfigs()));
         heraActionVo.setRunType(JobRunTypeEnum.parser(action.getRunType()));
         heraActionVo.setScheduleType(JobScheduleTypeEnum.parser(action.getScheduleType()));
-        if(action.getAuto().equals(auto)) {
+        if (action.getAuto().equals(auto)) {
             heraActionVo.setAuto(true);
         } else {
             heraActionVo.setAuto(false);
@@ -220,7 +220,7 @@ public class BeanConvertUtils {
         return heraGroup;
     }
 
-    public static void stringToMap (String str, Map<String, String> configs){
+    public static void stringToMap(String str, Map<String, String> configs) {
         str = str.trim();
         String[] split = str.split("\\s");
         Arrays.stream(split).forEach(x -> {

@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 11:00 2018/1/4
- * @desc hera中的任务事件总线，注册在spring中
+ * @desc hera中的任务事件observer,接受事件，全局广播dispatch
  */
 @Slf4j
 @Component
@@ -77,20 +77,25 @@ public class Dispatcher extends AbstractObservable {
      * @param applicationEvent
      */
     public void dispatch(ApplicationEvent applicationEvent) {
-        MvcEvent mvcEvent = new MvcEvent(this, applicationEvent);
-        mvcEvent.setApplicationEvent(applicationEvent);
-        if (fireEvent(beforeDispatch, mvcEvent)) {
-            List<AbstractHandler> jobHandlersCopy = Lists.newArrayList(jobHandlers);
-            for (AbstractHandler jobHandler : jobHandlersCopy) {
-                if (jobHandler.canHandle(applicationEvent)) {
-                    if (!jobHandler.isInitialized()) {
-                        jobHandler.setInitialized(true);
+        try {
+            MvcEvent mvcEvent = new MvcEvent(this, applicationEvent);
+            mvcEvent.setApplicationEvent(applicationEvent);
+            if (fireEvent(beforeDispatch, mvcEvent)) {
+                List<AbstractHandler> jobHandlersCopy = Lists.newArrayList(jobHandlers);
+                for (AbstractHandler jobHandler : jobHandlersCopy) {
+                    if (jobHandler.canHandle(applicationEvent)) {
+                        if (!jobHandler.isInitialized()) {
+                            jobHandler.setInitialized(true);
+                        }
+                        jobHandler.handleEvent(applicationEvent);
                     }
-                    jobHandler.handleEvent(applicationEvent);
                 }
+                fireEvent(afterDispatch, mvcEvent);
             }
-            fireEvent(afterDispatch, mvcEvent);
+        } catch (Exception e) {
+            log.error("global dispatch job event error");
         }
+
     }
 
 }

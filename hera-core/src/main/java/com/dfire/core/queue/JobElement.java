@@ -40,5 +40,4 @@ public class JobElement {
         return true;
     }
 
-
 }

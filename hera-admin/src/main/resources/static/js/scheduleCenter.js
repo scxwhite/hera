@@ -286,7 +286,7 @@ $(function () {
 
     $(".add-btn").click(function () {
         var actionId = $("#selectJobVersion").val();
-        var parameter = "actionId=" + actionId;
+        var parameter = "actionId=" + actionId+ "&triggerType=" + "1";
         $.ajax({
             url: "/scheduleCenter/manual.do",
             type: "get",

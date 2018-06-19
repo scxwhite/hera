@@ -1,7 +1,7 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.common.service.*;
-import com.dfire.common.vo.HeraHostGroupVo;
+import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;

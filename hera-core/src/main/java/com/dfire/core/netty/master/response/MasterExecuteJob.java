@@ -195,7 +195,7 @@ public class MasterExecuteJob {
          * writeAndFlush 和 write有和区别，为何使用write workerHandler无法接收数据
          */
         holder.getChannel().writeAndFlush(socketMessage);
-        log.info("master send debug command to worker,rid=" + request.getRid() + ",debugId=" + id);
+        log.info("master send debug command to worker,rid = " + request.getRid() + ",debugId = " + id);
         return future;
     }
 }

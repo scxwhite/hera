@@ -38,7 +38,7 @@ public class HeraJobHistory {
 
     private String illustrate;
 
-    private String statisticsEndTime;
+    private Date statisticEndTime;
 
     private String log ;
 

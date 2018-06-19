@@ -1,6 +1,6 @@
 package com.dfire.core.job;
 
-import com.dfire.common.constants.RunningJobKeys;
+import com.dfire.common.constants.RunningJobKeyConstant;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -11,7 +11,7 @@ public class HadoopShellJob extends ShellJob {
 
     public HadoopShellJob(JobContext jobContext) {
         super(jobContext);
-        jobContext.getProperties().setProperty(RunningJobKeys.JOB_RUN_TYPE, "HadoopShellJob");
+        jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "HadoopShellJob");
     }
 
     @Override

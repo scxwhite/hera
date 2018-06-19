@@ -56,9 +56,6 @@ import java.util.concurrent.*;
 @Component
 public class WorkClient {
 
-    /**
-     * 客户端引导，发起连接
-     */
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext = new WorkContext();
@@ -66,9 +63,9 @@ public class WorkClient {
     public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 5, TimeUnit.SECONDS);
 
     /**
-     * ProtobufVarint32LengthFieldPrepender:对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
-     * <p>
-     * ProtobufVarint32FrameDecoder:针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
+     * ProtobufVarint32LengthFieldPrepender: 对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
+     * ProtobufVarint32FrameDecoder:  针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
+     *
      */
     @Autowired
     public void WorkClient(ApplicationContext applicationContext) {

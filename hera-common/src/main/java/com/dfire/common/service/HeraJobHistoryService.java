@@ -3,6 +3,7 @@ package com.dfire.common.service;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.vo.JobStatus;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,7 +19,6 @@ public interface HeraJobHistoryService {
 
     int updateHeraJobHistoryLog(HeraJobHistory heraJobHistory);
 
-
     int insert(HeraJobHistory heraJobHistory);
 
     int delete(String id);
@@ -28,6 +28,9 @@ public interface HeraJobHistoryService {
     List<HeraJobHistory> getAll();
 
     HeraJobHistory findById(String id);
+
+    HeraJobHistory findByActionId(String actionId);
+
 
 
 }

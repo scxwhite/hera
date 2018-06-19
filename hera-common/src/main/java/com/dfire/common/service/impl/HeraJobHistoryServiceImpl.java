@@ -55,4 +55,9 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     public HeraJobHistory findById(String id) {
         return heraJobHistoryMapper.findById(id);
     }
+
+    @Override
+    public HeraJobHistory findByActionId(String actionId) {
+        return heraJobHistoryMapper.findByActionId(actionId);
+    }
 }

@@ -1,7 +1,7 @@
 package com.dfire.core.util;
 
 import com.dfire.common.enums.JobRunTypeEnum;
-import com.dfire.common.constants.RunningJobKeys;
+import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.model.HeraJobBean;
@@ -51,7 +51,7 @@ public class JobUtils {
         List<Map<String, String>> resources = new ArrayList<>();
         script = resolveScriptResource(resources, script, applicationContext);
         jobContext.setResources(resources);
-        hierarchyProperties.setProperty(RunningJobKeys.JOB_SCRIPT, script);
+        hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
         //权限控制判断，暂时不做
         HeraFileService heraFileService = (HeraFileService) applicationContext.getBean("heraFileService");
         String owner = heraFileService.findById(heraDebugHistory.getFileId()).getOwner();
@@ -69,10 +69,10 @@ public class JobUtils {
         pres.add(new DownLoadJob(jobContext));
         Job core = null;
         if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Shell.toString())) {
-            jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunTypeEnum.Shell.toString());
+            jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Shell.toString());
             core = new HadoopShellJob(jobContext);
         } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Hive.toString())) {
-            jobContext.putData(RunningJobKeys.JOB_RUN_TYPE, JobRunTypeEnum.Hive.toString());
+            jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Hive.toString());
             core = new HiveJob(jobContext, applicationContext);
         }
         Job job = new ProcessJobContainer(jobContext, pres, new ArrayList<>(), core, applicationContext);
@@ -112,7 +112,7 @@ public class JobUtils {
         }
 
         script = replaceScript(history, script);
-        hierarchyProperties.setProperty(RunningJobKeys.JOB_SCRIPT, script);
+        hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
 
         List<Job> pres = parseJobs(jobContext, applicationContext, jobBean,
                 jobBean.getHeraJobVo().getPreProcessors(), history, workDir);

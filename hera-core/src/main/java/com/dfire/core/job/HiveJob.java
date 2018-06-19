@@ -1,6 +1,6 @@
 package com.dfire.core.job;
 
-import com.dfire.common.constants.RunningJobKeys;
+import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class HiveJob extends ProcessJob {
         super(jobContext);
         this.applicationContext = applicationContext;
         this.heraFileService = (HeraFileService) this.applicationContext.getBean("heraFileService");
-        jobContext.getProperties().setProperty(RunningJobKeys.JOB_RUN_TYPE, "HiveJob");
+        jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "HiveJob");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class HiveJob extends ProcessJob {
     }
 
     private Integer runInner() throws Exception {
-        String script = getProperties().getLocalProperty(RunningJobKeys.JOB_SCRIPT);
+        String script = getProperties().getLocalProperty(RunningJobKeyConstant.JOB_SCRIPT);
         File file = new File(jobContext.getWorkDir() + File.separator + new Date().getTime() + ".hive");
         if (!file.exists()) {
             try {
@@ -66,13 +66,13 @@ public class HiveJob extends ProcessJob {
             IOUtils.closeQuietly(writer);
         }
 
-        getProperties().setProperty(RunningJobKeys.RUN_HIVE_PATH, file.getAbsolutePath());
+        getProperties().setProperty(RunningJobKeyConstant.RUN_HIVE_PATH, file.getAbsolutePath());
         return super.run();
     }
 
     @Override
     public List<String> getCommandList() {
-        String hiveFilePath = getProperty(RunningJobKeys.RUN_HIVE_PATH, "");
+        String hiveFilePath = getProperty(RunningJobKeyConstant.RUN_HIVE_PATH, "");
         List<String> list = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 

@@ -10,7 +10,7 @@ public enum TriggerTypeEnum {
     SCHEDULE(1), MANUAL(2), MANUAL_RECOVER(3);
     private Integer id;
 
-    private TriggerTypeEnum(Integer id) {
+    TriggerTypeEnum(Integer id) {
         this.id = id;
     }
 

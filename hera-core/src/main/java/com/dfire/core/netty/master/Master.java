@@ -1,6 +1,8 @@
 package com.dfire.core.netty.master;
 
 
+import com.dfire.common.constants.LogConstant;
+import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
@@ -14,7 +16,7 @@ import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.HeraDateTool;
-import com.dfire.common.vo.HeraHostGroupVo;
+import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.HeraException;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -60,15 +62,11 @@ public class Master {
         this.masterContext = masterContext;
         ThreadFactory executeJobThreadFactory = new ThreadFactoryBuilder().setNameFormat("exe-job-pool-%d").build();
         executeJobPool = new ThreadPoolExecutor(2, 2, 0L, TimeUnit.MICROSECONDS,
-                new LinkedBlockingQueue<Runnable>(1024), executeJobThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+                new LinkedBlockingQueue<>(1024), executeJobThreadFactory, new ThreadPoolExecutor.AbortPolicy());
 
         HeraGroupBean globalGroup = masterContext.getHeraGroupService().getGlobalGroup();
-
-        /**
-         * 预发环境不执行调度
-         *
-         */
-        if (HeraGlobalEnvironment.env.equalsIgnoreCase("pre")) {
+        String exeEnvironment = "pre";
+        if (HeraGlobalEnvironment.env.equalsIgnoreCase(exeEnvironment)) {
             masterContext.getDispatcher().addDispatcherListener(new HeraStopScheduleJobListener());
         }
 
@@ -86,7 +84,6 @@ public class Master {
         masterContext.setMaster(this);
         masterContext.refreshHostGroupCache();
         log.info("refresh hostGroup cache");
-
 
         /**
          * 漏泡检测，清理schedule线程，1小时调度一次,超过15分钟，job开始检测漏泡
@@ -135,10 +132,11 @@ public class Master {
                                 });
                             }
                         }
+                        log.info("clear job scheduler ok");
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("roll back lost job failed or clear job schedule failed !", e);
                 }
                 masterContext.masterTimer.newTimeout(this, 30, TimeUnit.MINUTES);
             }
@@ -760,7 +758,7 @@ public class Master {
             priorityLevel = Integer.parseInt(priorityLevelValue);
         }
         JobElement element = JobElement.builder()
-                .jobId(heraJobHistory.getJobId())
+                .jobId(heraJobHistory.getActionId()  )
                 .hostGroupId(heraJobHistory.getHostGroupId())
                 .priorityLevel(priorityLevel)
                 .build();
@@ -768,7 +766,7 @@ public class Master {
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER) {
             for (JobElement jobElement : new ArrayList<>(masterContext.getScheduleQueue())) {
                 if (jobElement.getJobId().equals(actionId)) {
-                    heraJobHistory.getLog().append("已经在队列中，无法再次运行");
+                    heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
@@ -778,7 +776,7 @@ public class Master {
             for (Channel key : masterContext.getWorkMap().keySet()) {
                 MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
                 if (workHolder.getRunning().containsKey(actionId)) {
-                    heraJobHistory.getLog().append("已经在队列中，无法再次运行");
+                    heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
@@ -791,7 +789,7 @@ public class Master {
             heraJobHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "进入任务队列");
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(heraJobHistory));
             if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
-                element.setJobId(heraJobHistory.getId());
+                element.setJobId(heraJobHistory.getActionId());
                 masterContext.getManualQueue().offer(element);
             } else {
                 JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(heraJobHistory.getId());

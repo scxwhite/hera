@@ -35,6 +35,9 @@ public interface HeraJobHistoryMapper {
     @Select("select * from hera_action_history where id = #{id}")
     HeraJobHistory findById(@Param("id") String id);
 
+    @Select("select * from hera_action_history where action_id = #{id} limit 1")
+    HeraJobHistory findByActionId(@Param("id") String id);
+
     /**
      * 更新日志
      * @param heraJobHistory

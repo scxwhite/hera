@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MasterHandleWebExecute {
 
     public WebResponse handleWebExecute(MasterContext context, WebRequest request) {
-        if(request.getEk() == ExecuteKind.ManualKind || request.getEk() == ExecuteKind.ScheduleKind) {
+        if (request.getEk() == ExecuteKind.ManualKind || request.getEk() == ExecuteKind.ScheduleKind) {
             String historyId = request.getId();
 
             HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
@@ -29,9 +29,9 @@ public class MasterHandleWebExecute {
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            log.info("send web execute response, jobId = " + jobId);
+            log.info("send web execute response, jobId = {} ", jobId);
             return webResponse;
-        } else if(request.getEk() == ExecuteKind.DebugKind) {
+        } else if (request.getEk() == ExecuteKind.DebugKind) {
             String debugId = request.getId();
             HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
             log.info("receive web debug response, debugId = " + debugId);
@@ -42,7 +42,7 @@ public class MasterHandleWebExecute {
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            log.info("send web debug response, debugId = " + debugId);
+            log.info("send web debug response, debugId = {}", debugId);
             return webResponse;
         }
         return null;

@@ -53,6 +53,9 @@ public class StringUtil {
 
     public static Map<String, String> convertStringToMap(String config) {
         Map<String, String> map = new HashMap();
+        if(config == null) {
+            return map;
+        }
         JSONObject jsonObject = JSONObject.parseObject(config);
         for (Object key : jsonObject.keySet()) {
             map.put(key.toString(), jsonObject.getString(key.toString()));

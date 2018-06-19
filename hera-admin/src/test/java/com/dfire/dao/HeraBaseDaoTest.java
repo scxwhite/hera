@@ -6,7 +6,7 @@ import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.vo.HeraHostGroupVo;
+import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
@@ -115,6 +115,9 @@ public class HeraBaseDaoTest {
         System.out.println(list.get(5).getJobDependencies());
         heraJobActionService.insert(heraAction);
         heraJobActionService.delete("1111111111111111111");
+
+        HeraAction heraAction = heraJobActionService.findById("201806190000000002");
+        System.out.println(heraAction.getJobDependencies());
 
     }
 

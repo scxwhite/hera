@@ -1,7 +1,7 @@
 package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dfire.common.constants.RunningJobKeys;
+import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.util.CommandUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class ShellJob extends ProcessJob {
         if (shell != null) {
             script = shell;
         } else {
-            script = getProperties().getLocalProperty(RunningJobKeys.JOB_SCRIPT);
+            script = getProperties().getLocalProperty(RunningJobKeyConstant.JOB_SCRIPT);
         }
         OutputStreamWriter outputStreamWriter = null;
         try {
@@ -54,14 +54,14 @@ public class ShellJob extends ProcessJob {
                     new FileOutputStream(f),
                     Charset.forName(jobContext.getProperties().getProperty("hera.encode", "utf-8")));
             outputStreamWriter.write(script);
-            getProperties().setProperty(RunningJobKeys.RUN_SHELLPATH, f.getAbsolutePath());
+            getProperties().setProperty(RunningJobKeyConstant.RUN_SHELL_PATH, f.getAbsolutePath());
 
         } catch (IOException e) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         } finally {
             IOUtils.closeQuietly(outputStreamWriter);
         }
-        String shellFilePath = getProperty(RunningJobKeys.RUN_SHELLPATH, "");
+        String shellFilePath = getProperty(RunningJobKeyConstant.RUN_SHELL_PATH, "");
         List<String> list = new ArrayList<>();
         //修改权限
         String shellPrefix = "";

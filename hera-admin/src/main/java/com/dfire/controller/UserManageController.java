@@ -39,7 +39,7 @@ public class UserManageController {
     @ResponseBody
     public RestfulResponse editUser(@RequestBody HeraUser user) {
         int result = heraUserService.update(user);
-        RestfulResponse restfulResponse =  RestfulResponse
+        RestfulResponse restfulResponse = RestfulResponse
                 .builder()
                 .build();
         if (result > 0) {
@@ -68,23 +68,23 @@ public class UserManageController {
         int result;
 
         OperateTypeEnum operateTypeEnum = OperateTypeEnum.parse(operateType);
-        if(operateTypeEnum == OperateTypeEnum.Delete) {
+        if (operateTypeEnum == OperateTypeEnum.Delete) {
             result = heraUserService.delete(id);
-            if(result > 0) {
+            if (result > 0) {
                 response.setMsg("删除成功");
                 response.setCode(String.valueOf(result));
                 response.setSuccess(true);
             }
-        } else if(operateTypeEnum == OperateTypeEnum.Approve) {
+        } else if (operateTypeEnum == OperateTypeEnum.Approve) {
             result = heraUserService.updateEffective(id, "1");
-            if(result > 0) {
+            if (result > 0) {
                 response.setMsg("审核通过");
                 response.setCode(String.valueOf(result));
                 response.setSuccess(true);
             }
-        } else if(operateTypeEnum == OperateTypeEnum.Refuse) {
+        } else if (operateTypeEnum == OperateTypeEnum.Refuse) {
             result = heraUserService.updateEffective(id, "0");
-            if(result > 0) {
+            if (result > 0) {
                 response.setMsg("审核拒绝");
                 response.setCode(String.valueOf(result));
                 response.setSuccess(false);
@@ -96,11 +96,13 @@ public class UserManageController {
     public enum OperateTypeEnum {
         Delete("1"), Approve("2"), Refuse("3");
         private String operateType;
+
         @Override
         public String toString() {
             return operateType;
         }
-         OperateTypeEnum(String type) {
+
+        OperateTypeEnum(String type) {
             this.operateType = type;
         }
 
@@ -109,7 +111,7 @@ public class UserManageController {
                     .stream()
                     .filter(operate -> operate.toString().equals(operateType))
                     .findAny();
-            return  option.get();
+            return option.get();
         }
     }
 }

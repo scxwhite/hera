@@ -1,4 +1,4 @@
-package com.dfire.common.vo;
+package com.dfire.common.entity.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

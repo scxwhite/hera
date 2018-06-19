@@ -1,6 +1,7 @@
 package com.dfire.core.event.handler;
 
-import com.dfire.common.constants.RunningJobKeys;
+import com.dfire.common.constants.LogConstant;
+import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.model.JobGroupCache;
@@ -46,7 +47,6 @@ import java.util.Map;
 @Slf4j
 @AllArgsConstructor
 public class JobHandler extends AbstractHandler {
-
 
     @Getter
     private final String actionId;
@@ -102,7 +102,7 @@ public class JobHandler extends AbstractHandler {
                     if (heraJobHistory != null && heraJobHistory.getStatusEnum().equals(StatusEnum.RUNNING)) {
                         try {
                             JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
-                            heraJobHistory.setIllustrate("启动服务器发现正在running状态，判断状态已经丢失，进行重试操作");
+                            heraJobHistory.setIllustrate(LogConstant.SERVER_START_JOB_LOG);
                             tmp.setHeraJobHistory(heraJobHistory);
                             new CancelHadoopJob(tmp).run();
                             master.run(heraJobHistory);
@@ -110,10 +110,10 @@ public class JobHandler extends AbstractHandler {
                         }
 
                     } else if (heraJobHistory != null && heraJobHistory.getStatusEnum().equals(StatusEnum.FAILED) &&
-                            heraJobHistory.getIllustrate().equals("work断开连接，主动取消该任务")) {
+                            heraJobHistory.getIllustrate().equals(LogConstant.WORK_DISCONNECT_LOG)) {
                         try {
                             JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
-                            heraJobHistory.setIllustrate("启动服务器发现worker与master断开连接，worker主动取消任务，进行重试操作");
+                            heraJobHistory.setIllustrate(LogConstant.WORK_DISCONNECT_LOG);
                             tmp.setHeraJobHistory(heraJobHistory);
                             new CancelHadoopJob(tmp).run();
                             master.run(heraJobHistory);
@@ -126,7 +126,7 @@ public class JobHandler extends AbstractHandler {
                             .id(actionId)
                             .jobId(heraJobVo.getId())
                             .triggerType(TriggerTypeEnum.MANUAL_RECOVER)
-                            .illustrate("启动服务器发现正在running状态，判断状态已经丢失，进行重试操作")
+                            .illustrate(LogConstant.SERVER_START_JOB_LOG)
                             .operator(heraJobVo.getOwner())
                             .hostGroupId(heraJobVo.getHostGroupId())
                             .build();
@@ -136,17 +136,20 @@ public class JobHandler extends AbstractHandler {
             }
         }
 
-        // 如果是定时任务，启动定时程序,独立调度任务，创建quartz调度
+        /**
+         * 如果是定时任务，启动定时程序,独立调度任务，创建quartz调度
+         *
+         */
         HeraActionVo heraActionVo = cache.getHeraActionVo();
-        if (heraActionVo.getAuto().equals("1")
+        if (heraActionVo.getAuto()
                 && (heraActionVo.getScheduleType().getType().equals(JobScheduleTypeEnum.Independent.getType()))) {
             try {
                 createScheduleJob(masterContext.getDispatcher(), heraActionVo);
-                log.info("启动服务器，创建任务的quartz定时调度");
+                log.info("start server, create job quartz schedule");
             } catch (Exception e) {
                 if (e instanceof SchedulerException) {
                     heraActionVo.setAuto(false);
-                    log.error("创建任务的quartz定时调度失败");
+                    log.error("create job quartz schedule error");
                     heraJobActionService.updateStatus(jobStatus);
                 }
             }
@@ -182,10 +185,10 @@ public class JobHandler extends AbstractHandler {
         synchronized (this) {
             jobStatus = heraJobActionService.findJobStatus(jobId);
             HeraJobBean heraJobBean = heraGroupService.getUpstreamJobBean(jobId);
-            String cycle = heraJobBean.getHierarchyProperties().getProperty(RunningJobKeys.DEPENDENCY_CYCLE);
+            String cycle = heraJobBean.getHierarchyProperties().getProperty(RunningJobKeyConstant.DEPENDENCY_CYCLE);
             if (StringUtils.isNotBlank(cycle)) {
                 Map<String, String> dependencies = jobStatus.getReadyDependency();
-                if (cycle.equals("sameday")) {
+                if (cycle.equals(RunningJobKeyConstant.DEPENDENCY_CYCLE_VALUE)) {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     String now = simpleDateFormat.format(new Date());
                     for (String key : new HashSet<>(dependencies.keySet())) {
@@ -219,7 +222,7 @@ public class JobHandler extends AbstractHandler {
     private void startNewJob(TriggerTypeEnum triggerType, HeraActionVo heraActionVo) {
         HeraJobHistoryVo history = HeraJobHistoryVo.builder()
                 .actionId(heraActionVo.getId())
-                .illustrate("依赖任务全部到位，开始执行")
+                .illustrate(LogConstant.DEPENDENT_READY_LOG)
                 .jobId(heraActionVo.getJobId() == null ? null : heraActionVo.getJobId())
                 .triggerType(TriggerTypeEnum.SCHEDULE)
                 .statisticsEndTime(heraActionVo.getStatisticStartTime())
@@ -231,7 +234,7 @@ public class JobHandler extends AbstractHandler {
         if (history.getStatusEnum() == StatusEnum.FAILED) {
             HeraJobFailedEvent jobFailedEvent = new HeraJobFailedEvent(heraActionVo.getId(), triggerType, history);
             masterContext.getDispatcher().forwardEvent(jobFailedEvent);
-            log.info("任务失败，广播消息");
+            log.info("job execute error, dispatch job failed event");
         }
     }
 
@@ -248,10 +251,14 @@ public class JobHandler extends AbstractHandler {
 
     }
 
+    /**
+     * 自动调度执行逻辑，如果没有版本，说明job被删除了，异常情况
+     *
+     * @param event
+     */
     public void handleTriggerEvent(HeraScheduleTriggerEvent event) {
         String jobId = event.getJobId();
         HeraActionVo heraActionVo = cache.getHeraActionVo();
-        //说明job被删除了，异常情况
         if (heraActionVo == null) {
             autoRecovery();
             return;
@@ -313,7 +320,7 @@ public class JobHandler extends AbstractHandler {
             if (jobDetail != null) {
                 try {
                     masterContext.getQuartzSchedulerService().getScheduler().deleteJob(jobKey);
-                    log.info("clear dependent job quartz schedule, actionId = ",actionId);
+                    log.info("clear dependent job quartz schedule, actionId = ", actionId);
                 } catch (SchedulerException e) {
                     log.error(e.toString());
                 }
@@ -352,7 +359,7 @@ public class JobHandler extends AbstractHandler {
                     String currentDate = DateUtil.getTodayStringForAction();
                     if (Long.parseLong(actionId) < Long.parseLong(currentDate)) {
                         HeraJobHistoryVo history = HeraJobHistoryVo.builder()
-                                .illustrate("漏跑任务,自动恢复执行")
+                                .illustrate(LogConstant.LOST_JOB_LOG)
                                 .jobId(heraActionVo.getId())
                                 .triggerType(TriggerTypeEnum.SCHEDULE)
                                 .statisticsEndTime(heraActionVo.getStatisticStartTime())
@@ -361,7 +368,7 @@ public class JobHandler extends AbstractHandler {
                                 .build();
                         masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(history));
                         master.run(history);
-                        log.info("漏跑任务,自动恢复执行");
+                        log.info("lost job, start schedule");
                     }
                 }
             }

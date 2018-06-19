@@ -5,12 +5,15 @@ import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.enums.StatusEnum;
+import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobActionService;
+import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.config.WebSecurityConfig;
-import com.dfire.core.message.Protocol.*;
+import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,6 +40,8 @@ public class ScheduleCenterController {
     HeraJobActionService heraJobActionService;
     @Autowired
     HeraGroupService heraGroupService;
+    @Autowired
+    HeraJobHistoryService heraJobHistoryService;
 
     @Autowired
     WorkClient workClient;
@@ -52,7 +57,7 @@ public class ScheduleCenterController {
     public List<HeraJobTreeNodeVo> initJobTree(HttpSession session) {
         List<HeraJobTreeNodeVo> list = heraJobService.buildJobTree();
         HeraUser user = (HeraUser) session.getAttribute(WebSecurityConfig.SESSION_KEY);
-        if(user != null) {
+        if (user != null) {
             String name = user.getName();
 
         }
@@ -83,12 +88,37 @@ public class ScheduleCenterController {
      */
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask<String> manual(String actionId) {
+    public WebAsyncTask<String> manual(String actionId, Integer triggerType) {
+        ExecuteKind kind = null;
+        TriggerTypeEnum triggerTypeEnum = null;
+        if (triggerType == 1) {
+            kind = ExecuteKind.ManualKind;
+            triggerTypeEnum = TriggerTypeEnum.MANUAL;
+        } else if (triggerType == 2) {
+            kind = ExecuteKind.ScheduleKind;
+            triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
+        }
+        //todo 权限判定
+
+        HeraAction heraAction = heraJobActionService.findById(actionId);
+
+        HeraJobHistory actionHistory = HeraJobHistory.builder().build();
+        actionHistory.setJobId(heraAction.getJobId());
+        actionHistory.setActionId(heraAction.getId());
+        actionHistory.setTriggerType(triggerTypeEnum.getId());
+        actionHistory.setOperator(heraAction.getOwner());
+        actionHistory.setIllustrate("触发人pjx");
+        actionHistory.setStatus(StatusEnum.RUNNING.toString());
+        actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
+        actionHistory.setHostGroupId(heraAction.getHistoryId());
+        actionHistory.setProperties("{}");
+        heraJobHistoryService.insert(actionHistory);
+
 
         return new WebAsyncTask<>(3000, () -> {
-            HeraAction heraAction = heraJobActionService.findById(actionId);
             try {
-                workClient.executeJobFromWeb(ExecuteKind.ManualKind, actionId);
+
+                workClient.executeJobFromWeb(ExecuteKind.ManualKind, actionHistory.getId());
             } catch (Exception e) {
 
             }
@@ -103,6 +133,7 @@ public class ScheduleCenterController {
         return list;
 
     }
+
     @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)
     @ResponseBody
     public boolean updateJobMessage(HeraJobVo heraJobVo) {
@@ -115,7 +146,7 @@ public class ScheduleCenterController {
     public boolean updateGroupMessage(HeraGroupVo groupVo) {
         HeraGroup heraGroup = BeanConvertUtils.convert(groupVo);
         System.out.println(JSONObject.toJSONString(heraGroup));
-        return heraGroupService.update(heraGroup) > 0 ;
+        return heraGroupService.update(heraGroup) > 0;
     }
 
 }

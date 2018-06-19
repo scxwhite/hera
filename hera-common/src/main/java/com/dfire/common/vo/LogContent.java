@@ -22,7 +22,7 @@ public class LogContent {
     private static final String ERROR = "error";
 
     public void appendConsole(String log) {
-        if (lines < 20000) {
+        if (lines < COUNT) {
             lines++;
             if (log.toLowerCase().contains(ERROR)
                     || log.toLowerCase().contains("failed")

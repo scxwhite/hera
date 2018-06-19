@@ -4,7 +4,7 @@ import com.dfire.common.entity.HeraHostGroup;
 import com.dfire.common.entity.HeraHostRelation;
 import com.dfire.common.mapper.HeraHostGroupMapper;
 import com.dfire.common.service.HeraHostRelationService;
-import com.dfire.common.vo.HeraHostGroupVo;
+import com.dfire.common.entity.vo.HeraHostGroupVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
