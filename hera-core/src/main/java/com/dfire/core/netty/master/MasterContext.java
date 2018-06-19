@@ -41,19 +41,7 @@ public class MasterContext {
 
     private Dispatcher dispatcher;
     private Map<Integer, HeraHostGroupVo> hostGroupCache;
-    /**
-     * @desc 1. quartz发生任务调度的时候，任务会先进入到exceptionQueue队列，等待被扫描调度，随后进入调度队列
-     * 2. 手动执行任务，manualQueue，等待被扫描调度，随后进入调度队列
-     * 3. debugQueue，任务会先进入到exceptionQueue队列，等待被扫描调度，随后进入调度队列
-     */
-    private Queue<JobElement> scheduleQueue = new PriorityBlockingQueue(10000, new Comparator<JobElement>() {
-        @Override
-        public int compare(JobElement element1, JobElement element2) {
-            int p1 = element1.getPriorityLevel();
-            int p2 = element1.getPriorityLevel();
-            return p1 == p2 ? 0 : (p1 > p2 ? 1 : -1);
-        }
-    });
+    private Queue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, Comparator.comparing(JobElement::getPriorityLevel));
     private Queue<JobElement> exceptionQueue = new LinkedBlockingQueue<>();
     private Queue<JobElement> debugQueue = new ArrayBlockingQueue<>(1000);
     private Queue<JobElement> manualQueue = new ArrayBlockingQueue<>(1000);
@@ -92,7 +80,7 @@ public class MasterContext {
                 log.info("quartz schedule shutdown success");
             } catch (Exception e) {
                 e.printStackTrace();
-                log.info("quartz schedule shutdown error");
+                log.error("quartz schedule shutdown error");
             }
         }
         log.info("destroy master context success");
