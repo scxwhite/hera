@@ -23,9 +23,16 @@ $(function () {
         }
     };
 
+    function setCurrentId(id) {
+        localStorage.setItem("defaultId", focusId);
+
+    }
     function setDefaultSelectNode(id) {
-        treeObj.selectNode(treeObj.getNodeByParam("id", id));
-        leftClick();
+        if (id != undefined && id != null) {
+            treeObj.selectNode(treeObj.getNodeByParam("id", id));
+            leftClick();
+        }
+
     }
     //切换任务编辑状态
     function changeEditStyle(status) {
@@ -54,8 +61,80 @@ $(function () {
         formDataLoad("jobMsgEditForm", focusItem);
         initVal(focusItem.configs, "jobMsgEditForm");
         changeEditStyle(0);
+        setJobMessageEdit(focusItem.scheduleType === 0)
+    });
+    $('#jobOperate [name="switch"]').on('click', function () {
+        //回显
+        $.ajax({
+            url: "scheduleCenter/changeSwitch",
+            data:{
+                id:focusId
+            },
+            type: "post",
+            success: function (data) {
+                if (data.code === 200) {
+                    leftClick();
+                } else {
+                    dealCode(data);
+                }
+            }
+        })
+    });
+    $('#groupOperate [name="addJob"]').on('click', function () {
+        $('#addJobModal .modal-title').text(focusItem.name + "下新建任务");
+        $('#addJobModal [name="jobName"]').val("");
+        $('#addJobModal [name="jobType"]').val("MapReduce");
+        $('#addJobModal').modal('show');
     });
 
+    $('#addJobModal [name="addBtn"]').on('click', function () {
+        var name = $('#addJobModal [name="jobName"]').val();
+        var type = $('#addJobModal [name="jobType"]').val();
+        if (name == undefined || name == null || name.trim() == "") {
+            alert("任务名不能为空");
+            return;
+        }
+        $.ajax({
+            url: "scheduleCenter/addJob.do",
+            type: "post",
+            data: {
+                name: name,
+                runType: type,
+                groupId: focusId
+            },
+            success: function (data) {
+
+                if (data.code == 200) {
+                    location.reload(false);
+                } else {
+                    dealCode(data);
+                }
+
+            }
+        })
+
+    });
+
+    $('#jobMessageEdit [name="scheduleType"]').change(function () {
+        var status = $(this).val();
+        //定时调度
+        if (status == 0) {
+           setJobMessageEdit(true);
+        } else if (status == 1) {//依赖调度
+            setJobMessageEdit(false);
+        }
+    });
+
+    function setJobMessageEdit(val) {
+        var status1 = "block", status2 = "none";
+        if (!val) {
+            status1 = "none";
+            status2 = "block";
+        }
+        $("#jobMessageEdit [name='cronExpression']").parent().parent().css("display", status1);
+        $("#jobMessageEdit [name='dependencies']").parent().parent().css("display", status2);
+        $("#jobMessageEdit [name='heraDependencyCycle']").parent().parent().css("display", status2);
+    }
     //任务返回
     $('#editOperator [name="back"]').on('click', function () {
         if (!isGroup) {
@@ -113,10 +192,10 @@ $(function () {
                 type: "post",
                 success: function (data) {
                     if (data == true) {
-                        alert("删除成功");
                         treeObj.removeNode(selected);
                         setDefaultSelectNode(focusItem.groupId);
                         leftClick();
+                        alert("删除成功");
                     } else {
                         alert("删除失败");
                     }
@@ -190,6 +269,7 @@ $(function () {
         var dir = selected.directory;
         focusId = id;
         var parameter = "jobId=" + id;
+        setCurrentId(focusId);
         //如果点击的是任务节点
         if (!selected.isParent) {
             isGroup = false;
@@ -209,6 +289,8 @@ $(function () {
                     formDataLoad("jobMessage", data);
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
                     $('#config textarea:first').val(initVal(data.configs, "jobMessage"));
+
+                    $('#jobMessage [name="auto"]').removeClass("label-success").removeClass("label-default").addClass( data.auto === "开启" ? "label-success" : "label-default");
                 }
             });
             //获得版本
@@ -250,6 +332,7 @@ $(function () {
             $('#config textarea:first').val(parseJson(focusItem.configs));
 
         }
+
         changeEditStyle(1);
         //组管理
         if (dir != undefined && dir != null) {
@@ -258,8 +341,8 @@ $(function () {
             $("#jobOperate").attr("style", "display:none");
             var jobDisabled;
             //设置按钮不可用
-            $("#addJob").attr("disabled", jobDisabled = dir == 0);
-            $("#addGroup").attr("disabled", !jobDisabled);
+            $("#groupOperate [name='addJob']").attr("disabled", jobDisabled = dir == 0);
+            $("#groupOperate [name='addGroup']").attr("disabled", !jobDisabled);
             //设置任务相关信息不显示
             $("#script").css("display", "none");
             $("#jobMessage").css("display", "none");
@@ -290,7 +373,7 @@ $(function () {
     });
 
 
-    $(".add-btn").click(function () {
+    $("#myModal .add-btn").click(function () {
         var actionId = $("#selectJobVersion").val();
         var parameter = "actionId=" + actionId;
         $.ajax({
@@ -342,7 +425,7 @@ $(function () {
         zTree = $.fn.zTree.getZTreeObj("jobTree");
         rMenu = $("#rMenu");
         fixIcon();//调用修复图标的方法。方法如下：
-
+        setDefaultSelectNode(localStorage.getItem("defaultId"))
     });
 
 

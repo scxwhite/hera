@@ -1,16 +1,21 @@
 package com.dfire.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dfire.common.entity.*;
+import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraGroup;
+import com.dfire.common.entity.HeraJob;
+import com.dfire.common.entity.HeraUser;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.enums.HttpCode;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.WebSecurityConfig;
-import com.dfire.core.message.Protocol.*;
+import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -126,5 +133,23 @@ public class ScheduleCenterController {
         }
         return  heraJobService.delete(id) > 0;
     }
+    @RequestMapping(value = "/addJob", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse addJob(HeraJob heraJob, HttpSession session) {
+        Object attribute = session.getAttribute(WebSecurityConfig.SESSION_KEY);
+        if (attribute == null) {
+            return new RestfulResponse(HttpCode.USER_NOT_LOGIN);
+        }
+        HeraUser user = (HeraUser) attribute;
+        heraJob.setOwner(user.getName());
+        return new RestfulResponse(heraJobService.insert(heraJob) > 0 ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+    }
+
+    @RequestMapping(value = "/changeSwitch", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse changeSwitch(Integer id) {
+        return new RestfulResponse(heraJobService.changeSwitch(id) ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+    }
+
 
 }

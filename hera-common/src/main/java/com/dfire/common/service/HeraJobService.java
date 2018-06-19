@@ -34,4 +34,5 @@ public interface HeraJobService {
      */
     List<HeraJobTreeNodeVo> buildJobTree();
 
+    boolean changeSwitch(Integer id);
 }

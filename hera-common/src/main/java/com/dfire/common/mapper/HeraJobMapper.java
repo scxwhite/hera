@@ -6,6 +6,7 @@ import com.dfire.common.mybatis.HeraSelectInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
+import org.omg.CORBA.INTERNAL;
 
 import java.util.List;
 
@@ -46,4 +47,6 @@ public interface HeraJobMapper {
     List<HeraJob> findByPid(HeraJob heraJob);
 
 
+    @Update("update hera_job set auto = !auto where id = #{id}")
+    Integer updateSwitch(Integer id);
 }

@@ -48,7 +48,13 @@ function failure(msg) {
         $('#alertFailure').css("display","none");
     });
 }
-
+function dealCode(data) {
+    if (data.code == 401) {
+        location.href = "/";
+    } else {
+        alert("错误代码：" + data.code);
+    }
+}
 function formDataLoad(domId, obj) {
     for (var property in obj) {
         if (obj.hasOwnProperty(property) == true) {
@@ -62,7 +68,11 @@ function formDataLoad(domId, obj) {
                         obj[property] == true ? $(dom).attr("checked", "checked") : $(dom).attr("checked", "checked").removeAttr("checked");
                     }
                     else if ($(dom).attr("type") == "text" || $(dom).prop("tagName") == "SELECT" || $(dom).attr("type") == "hidden" || $(dom).attr("type") == "textarea") {
-                        $(dom).val(obj[property]);
+                        if (obj[property] == null || obj[property] == undefined) {
+                            $("dom option:first").attr("selected", true)
+                        } else {
+                            $(dom).val(obj[property]);
+                        }
                     }
                     else if ($(dom).prop("tagName") == "TEXTAREA") {
                         $(dom).val(obj[property]);

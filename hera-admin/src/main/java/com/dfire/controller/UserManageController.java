@@ -44,7 +44,7 @@ public class UserManageController {
                 .build();
         if (result > 0) {
             restfulResponse.setMsg("更新成功");
-            restfulResponse.setCode(String.valueOf(result));
+            restfulResponse.setCode(result);
             restfulResponse.setSuccess(true);
         }
         return restfulResponse;
@@ -72,21 +72,21 @@ public class UserManageController {
             result = heraUserService.delete(id);
             if(result > 0) {
                 response.setMsg("删除成功");
-                response.setCode(String.valueOf(result));
+                response.setCode(result);
                 response.setSuccess(true);
             }
         } else if(operateTypeEnum == OperateTypeEnum.Approve) {
             result = heraUserService.updateEffective(id, "1");
             if(result > 0) {
                 response.setMsg("审核通过");
-                response.setCode(String.valueOf(result));
+                response.setCode(result);
                 response.setSuccess(true);
             }
         } else if(operateTypeEnum == OperateTypeEnum.Refuse) {
             result = heraUserService.updateEffective(id, "0");
             if(result > 0) {
                 response.setMsg("审核拒绝");
-                response.setCode(String.valueOf(result));
+                response.setCode(result);
                 response.setSuccess(false);
             }
         }
