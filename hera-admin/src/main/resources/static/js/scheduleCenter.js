@@ -3,6 +3,7 @@ $(function () {
     var focusItem = null;
     var isGroup;
     var treeObj;
+    var selected;
     var setting = {
         view: {
             showLine: false
@@ -101,18 +102,23 @@ $(function () {
         changeGroupStyle(0);
     });
     //删除
-    $('#jobOperate [name="delete"]').on('click', function () {
+    $('[name="delete"]').on('click', function () {
         if (confirm("确认删除 :" + focusItem.name + "?")) {
-            setDefaultSelectNode(focusItem.groupId);
             $.ajax({
                 url: "scheduleCenter/deleteJob.do",
                 data: {
-                    id: focusId
+                    id: focusId,
+                    isGroup: isGroup
                 },
                 type: "post",
                 success: function (data) {
                     if (data == true) {
+                        alert("删除成功");
+                        treeObj.removeNode(selected);
                         setDefaultSelectNode(focusItem.groupId);
+                        leftClick();
+                    } else {
+                        alert("删除失败");
                     }
                 }
             });
@@ -179,7 +185,7 @@ $(function () {
     }
 
     function leftClick() {
-        var selected = zTree.getSelectedNodes()[0];
+        selected = zTree.getSelectedNodes()[0];
         var id = selected.id;
         var dir = selected.directory;
         focusId = id;

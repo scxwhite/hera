@@ -106,4 +106,13 @@ public class ScheduleCenterController {
         return heraGroupService.update(heraGroup) > 0 ;
     }
 
+    @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean deleteJob(Integer id, Boolean isGroup) {
+        if (isGroup) {
+            return heraGroupService.delete(id) > 0;
+        }
+        return  heraJobService.delete(id) > 0;
+    }
+
 }
