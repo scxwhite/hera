@@ -1,6 +1,7 @@
 package com.dfire.controller;
 
 import com.dfire.common.entity.HeraUser;
+import com.dfire.common.enums.HttpCode;
 import com.dfire.common.service.HeraHostGroupService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.service.HeraUserService;
@@ -45,7 +46,7 @@ public class LoginController {
         HeraUser user = heraUserService.findByName(userName);
 
         if (user == null) {
-            return RestfulResponse.builder().code("400").build();
+            return RestfulResponse.builder().code(400).build();
         } else {
             session.setAttribute(WebSecurityConfig.SESSION_KEY, user);
         }
@@ -55,10 +56,9 @@ public class LoginController {
         if (!StringUtils.isEmpty(password)) {
             password = StringUtil.EncoderByMd5(password);
             if (pwd.equals(password)) {
-                response.setCode("200");
-                response.setSuccess(true);
+               response.setHttpCode(HttpCode.REQUEST_SUCCESS);
             } else {
-                response.setCode("400");
+                response.setHttpCode(HttpCode.USER_NOT_LOGIN);
             }
         }
         return response;

@@ -9,6 +9,7 @@ import com.dfire.common.service.HeraJobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,6 +29,9 @@ public class HeraJobServiceImpl implements HeraJobService {
 
     @Override
     public int insert(HeraJob heraJob) {
+        Date date = new Date();
+        heraJob.setGmtCreate(date);
+        heraJob.setGmtModified(date);
         return heraJobMapper.insert(heraJob);
     }
 
@@ -75,5 +79,11 @@ public class HeraJobServiceImpl implements HeraJobService {
                 .map(job -> HeraJobTreeNodeVo.builder().id(job.getId() + "").parent(job.getGroupId() + "").isParent(false).name(job.getName() + "(" + job.getId() + ")").build()).collect(Collectors.toList());
         list.addAll(jobList);
         return list;
+    }
+
+    @Override
+    public boolean changeSwitch(Integer id) {
+        Integer res = heraJobMapper.updateSwitch(id);
+        return res != null && res > 0;
     }
 }

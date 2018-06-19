@@ -5,6 +5,7 @@ import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.enums.HttpCode;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.service.HeraGroupService;
@@ -12,6 +13,7 @@ import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.WebSecurityConfig;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
@@ -148,5 +150,32 @@ public class ScheduleCenterController {
         System.out.println(JSONObject.toJSONString(heraGroup));
         return heraGroupService.update(heraGroup) > 0;
     }
+
+    @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
+    @ResponseBody
+    public boolean deleteJob(Integer id, Boolean isGroup) {
+        if (isGroup) {
+            return heraGroupService.delete(id) > 0;
+        }
+        return  heraJobService.delete(id) > 0;
+    }
+    @RequestMapping(value = "/addJob", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse addJob(HeraJob heraJob, HttpSession session) {
+        Object attribute = session.getAttribute(WebSecurityConfig.SESSION_KEY);
+        if (attribute == null) {
+            return new RestfulResponse(HttpCode.USER_NOT_LOGIN);
+        }
+        HeraUser user = (HeraUser) attribute;
+        heraJob.setOwner(user.getName());
+        return new RestfulResponse(heraJobService.insert(heraJob) > 0 ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+    }
+
+    @RequestMapping(value = "/changeSwitch", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse changeSwitch(Integer id) {
+        return new RestfulResponse(heraJobService.changeSwitch(id) ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+    }
+
 
 }

@@ -305,7 +305,7 @@
                                                     <label class="control-label col-sm-4 col-lg-4 col-md-4">重试次数:</label>
                                                     <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                         <select class="form-control" name="rollBackTimes">
-                                                            <option value="0">0</option>
+                                                            <option value="0" selected="selected">0</option>
                                                             <option value="1">1</option>
                                                             <option value="2">2</option>
                                                             <option value="3">3</option>
@@ -318,7 +318,7 @@
                                                     <label class="control-label col-sm-4 col-lg-4 col-md-4">重试间隔(分):</label>
                                                     <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                         <select class="form-control" name="rollBackWaitTime">
-                                                            <option value="1">1</option>
+                                                            <option value="1" selected="selected">1</option>
                                                             <option value="10">10</option>
                                                             <option value="30">30</option>
                                                             <option value="60">60</option>
@@ -332,7 +332,7 @@
                                                         <select class="form-control" name="runPriorityLevel">
                                                             <option value="3">high</option>
                                                             <option value="2">medium</option>
-                                                            <option value="1">low</option>
+                                                            <option value="1" selected="selected">low</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -359,6 +359,20 @@
                                                     <label class="control-label col-sm-4 col-lg-4 col-md-4">定时表达式:</label>
                                                     <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                         <input class="form-control" type="text" name="cronExpression">
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-4 col-lg-4 col-md-4">依赖任务:</label>
+                                                    <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                        <input class="form-control" type="text" name="dependencies">
+
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-sm-4 col-lg-4 col-md-4">依赖周期:</label>
+                                                    <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                        <input class="form-control" type="text" name="heraDependencyCycle">
 
                                                     </div>
                                                 </div>
@@ -453,7 +467,7 @@
                                             </li>
                                             <br>
                                             <li>
-                                                <button class="btn btn-primary btn-block" type="button" id="addGroup">
+                                                <button class="btn btn-primary btn-block" type="button" name="addGroup">
                                                     添加组
                                                 </button>
                                             </li>
@@ -464,13 +478,15 @@
                                             </li>
                                             <br>
                                             <li>
-                                                <button class="btn btn-primary btn-block" type="button" id="addJob">
+                                                <button class="btn btn-primary btn-block" type="button" name="addJob">
                                                     添加任务
                                                 </button>
                                             </li>
                                             <br>
                                             <li>
-                                                <button class="btn btn-primary btn-block" type="button" name="delete">删除</button>
+                                                <button class="btn btn-primary btn-block" type="button" name="delete">
+                                                    删除
+                                                </button>
                                             </li>
                                             <br>
                                             <li>
@@ -513,11 +529,12 @@
                                         </li>
                                         <br>
                                         <li>
-                                            <button class="btn btn-primary btn-block" type="button">开启/关闭</button>
+                                            <button class="btn btn-primary btn-block" type="button" name="switch">开启/关闭</button>
                                         </li>
                                         <br>
                                         <li>
-                                            <button class="btn btn-primary btn-block" type="button" name="delete">删除</button>
+                                            <button class="btn btn-primary btn-block" type="button" name="delete">删除
+                                            </button>
 
                                         </li>
                                         <br>
@@ -587,6 +604,49 @@
     </div>
 </div>
 
+<div class="modal fade" id="addJobModal" tabindex="-1" role="dialog" aria-labelledby="addJob"
+     aria-hidden="true">
+    <div class="modal-dialog" style="height:100px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">添加任务</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-8 col-md-8 col-lg-8">
+                            <div class="form-group">
+                                <label class="control-label col-sm-4 col-lg-4 col-md-4">任务名称</label>
+                                <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                    <input class="form-control" type="text" name="jobName">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4 col-lg-4 col-md-4">任务类型</label>
+                                <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                    <select class="form-control" name="jobType">
+                                        <option value="MapReduce" selected>MapReduce程序</option>
+                                        <option value="shell">shell脚本</option>
+                                        <option value="hive">hive脚本</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-info add-btn" name="addBtn">添加</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </div>
 
