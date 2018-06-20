@@ -17,4 +17,8 @@ public class LogConstant {
 
     public static final String CHECK_QUEUE_LOG = "已经在队列中，无法再次运行";
 
+    public static final String CANCEL_JOB_LOG = "已经在队列中，无法再次运行";
+
+
+
 }

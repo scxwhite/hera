@@ -58,24 +58,10 @@ public class WorkExecuteJob {
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
-        final String jobId = message.getJobId();
-        log.info("worker received master request to run manual job, jobId :" + jobId);
-        if (workContext.getRunning().containsKey(jobId)) {
-            log.info("job is running, can not run again, jobId :" + jobId);
-            return workContext.getWorkThreadPool().submit(new Callable<Response>() {
-                @Override
-                public Response call() throws Exception {
-                    return Response.newBuilder()
-                            .setRid(request.getRid())
-                            .setOperate(Operate.Schedule)
-                            .setStatus(Status.ERROR)
-                            .build();
-                }
-            });
-        }
+        final String historyId = message.getJobId();
+        log.info("worker received master request to run manual job, historyId = {}", historyId);
+        final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(historyId));
 
-        final JobStatus jobStatus = workContext.getHeraJobActionService().findJobStatus(jobId);
-        final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(jobStatus.getHistoryId()));
         Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
             @Override
             public Response call() throws Exception {
@@ -83,39 +69,39 @@ public class WorkExecuteJob {
                 history.setStartTime(new Date());
                 workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
 
-                HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                         + File.separator + date + File.separator + "manual-" + history.getId());
                 if (!directory.exists()) {
                     directory.mkdir();
                 }
-
-                final Job job = JobUtils.createJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
-                workContext.getManualRunning().put(jobId, job);
+                HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
+                final Job job = JobUtils.createJob(new JobContext(JobContext.SCHEDULE_RUN),
+                        jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
+                workContext.getManualRunning().put(historyId, job);
 
                 Integer exitCode = -1;
                 Exception exception = null;
                 try {
                     exitCode = job.run();
-                    workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
                 } catch (Exception e) {
                     exception = e;
                     history.getLog().appendHeraException(e);
                 } finally {
-                    HeraJobHistoryVo heraJobHistory = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(history.getId()));
-                    heraJobHistory.setEndTime(new Date());
+                    HeraJobHistoryVo heraJobHistoryVO = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(history.getId()));
+                    heraJobHistoryVO.setEndTime(new Date());
                     if (exitCode == 0) {
-                        heraJobHistory.setStatusEnum(StatusEnum.SUCCESS);
+                        heraJobHistoryVO.setStatusEnum(StatusEnum.SUCCESS);
                     } else {
-                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                        heraJobHistoryVO.setStatusEnum(StatusEnum.FAILED);
                     }
-                    workContext.getJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistory));
-                    heraJobHistory.getLog().appendHera("exitCode=" + exitCode);
+                    workContext.getJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVO));
 
-                    workContext.getJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
 
-                    workContext.getManualRunning().remove(jobId);
+                    HeraJobHistoryVo jobHistory = workContext.getManualRunning().get(historyId).getJobContext().getHeraJobHistory();
+                    workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(jobHistory));
+
+                    workContext.getManualRunning().remove(historyId);
                 }
 
                 Status status = Status.OK;
@@ -133,7 +119,7 @@ public class WorkExecuteJob {
                         .setStatus(status)
                         .setErrorText(errorText)
                         .build();
-                log.info("send execute message, jobId = " + jobId);
+                log.info("send execute message, historyId = {}", historyId);
                 return response;
             }
         });
