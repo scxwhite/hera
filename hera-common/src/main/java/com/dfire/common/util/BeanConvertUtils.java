@@ -101,7 +101,7 @@ public class BeanConvertUtils {
         heraJobVo.setPreProcessors(StringUtil.convertProcessorToList(heraJob.getPreProcessors()));
         heraJobVo.setResources(StringUtil.convertResources(heraJob.getResources()));
         heraJobVo.setId(String.valueOf(heraJob.getId()));
-        heraJobVo.setAuto(Objects.equals("1", heraJob.getAuto()) ? "开启" : "关闭");
+        heraJobVo.setAuto(heraJob.getAuto() == 1 ? "开启" : "关闭");
         heraJobVo.setDependencies(heraJob.getDependencies());
 
         return heraJobVo;

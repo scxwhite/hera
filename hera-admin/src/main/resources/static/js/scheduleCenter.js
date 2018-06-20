@@ -4,6 +4,7 @@ $(function () {
     var isGroup;
     var treeObj;
     var selected;
+    var triggerType;
     var setting = {
         view: {
             showLine: false
@@ -259,7 +260,13 @@ $(function () {
             } else {
                 userConfigs = userConfigs + key + "=" + val + "\n";
             }
+
+
         }
+        if (focusItem.cronExpression == null || focusItem.cronExpression || focusItem.cronExpression == "") {
+            $('#jobMessageEdit [name="cronExpression"]').val("0 0 3 * * ?");
+        }
+
         return userConfigs;
     }
 
@@ -271,7 +278,7 @@ $(function () {
         var parameter = "jobId=" + id;
         setCurrentId(focusId);
         //如果点击的是任务节点
-        if (!selected.isParent) {
+        if (dir == null || dir == undefined) {
             isGroup = false;
 
             $.ajax({
@@ -289,8 +296,9 @@ $(function () {
                     formDataLoad("jobMessage", data);
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
                     $('#config textarea:first').val(initVal(data.configs, "jobMessage"));
-
                     $('#jobMessage [name="auto"]').removeClass("label-success").removeClass("label-default").addClass( data.auto === "开启" ? "label-success" : "label-default");
+
+
                 }
             });
             //获得版本
@@ -372,15 +380,22 @@ $(function () {
         $('#myModal').modal('show');
     });
 
+    $("#manualRecovery").click(function () {
+        triggerType = 2;
+    });
 
+    $("#manual").click(function () {
+        triggerType = 1;
+    });
     $("#myModal .add-btn").click(function () {
-        var actionId = $("#selectJobVersion").val();
-        var parameter = "actionId=" + actionId+ "&triggerType=" + "1";
         $.ajax({
             url: "/scheduleCenter/manual.do",
             type: "get",
             async: false,
-            data: parameter,
+            data: {
+                actionId: $("#selectJobVersion").val(),
+                triggerType: triggerType
+            },
             success: function (data) {
             }
         });
