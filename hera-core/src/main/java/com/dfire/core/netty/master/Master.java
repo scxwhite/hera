@@ -2,7 +2,6 @@ package com.dfire.core.netty.master;
 
 
 import com.dfire.common.constants.LogConstant;
-import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
@@ -10,13 +9,13 @@ import com.dfire.common.entity.model.HeraGroupBean;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
+import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.HeraDateTool;
-import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.HeraException;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -411,7 +410,6 @@ public class Master {
 
     /**
      * 扫描任务等待队列，取出任务去执行
-     *
      */
     public void scan() {
 
@@ -454,7 +452,7 @@ public class Master {
         this.executeJobPool.execute(new Runnable() {
             @Override
             public void run() {
-                HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(actionId);
+                HeraJobHistory history = masterContext.getHeraJobHistoryService().findByActionId(actionId);
                 HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
                 historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
                 masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(historyVo));
@@ -758,7 +756,7 @@ public class Master {
             priorityLevel = Integer.parseInt(priorityLevelValue);
         }
         JobElement element = JobElement.builder()
-                .jobId(heraJobHistory.getActionId()  )
+                .jobId(heraJobHistory.getActionId())
                 .hostGroupId(heraJobHistory.getHostGroupId())
                 .priorityLevel(priorityLevel)
                 .build();

@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class JobElement {
+public class  JobElement {
 
     /**
      * 版本号id
