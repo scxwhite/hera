@@ -73,7 +73,7 @@ public class HeraActionVo {
 
     private Date startTime;
 
-    private long startTimestamp;
+    private Long startTimestamp;
 
     private Date statisticStartTime;
 
