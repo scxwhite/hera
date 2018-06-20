@@ -42,17 +42,22 @@ public class StringUtil {
         byte b[] = md.digest();
         for (int offset = 0; offset < b.length; offset++) {
             i = b[offset];
-            if (i < 0)
+            if (i < 0) {
                 i += 256;
-            if (i < 16)
+            }
+            if (i < 16) {
                 buf.append("0");
+            }
             buf.append(Integer.toHexString(i));
         }
         return buf.toString();
     }
 
     public static Map<String, String> convertStringToMap(String config) {
-        Map<String, String> map = new HashMap();
+        Map<String, String> map = new HashMap(8);
+        if (config == null) {
+            return map;
+        }
         JSONObject jsonObject = JSONObject.parseObject(config);
         for (Object key : jsonObject.keySet()) {
             map.put(key.toString(), jsonObject.getString(key.toString()));
@@ -71,7 +76,7 @@ public class StringUtil {
     public static List<Processor> convertProcessorToList(String processor) {
         List<Processor> list = new ArrayList<>();
         Processor result = null;
-        if(processor.equals("[]")) {
+        if (processor.equals("[]")) {
             return list;
         }
         JSONObject jsonObject = JSONObject.parseObject(processor);
