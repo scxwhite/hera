@@ -43,7 +43,7 @@ public class JobContext {
 
     private String workDir;
 
-    private HierarchyProperties properties = new HierarchyProperties(new HashMap<String, String>());
+    private HierarchyProperties properties = new HierarchyProperties(new HashMap<>());
 
     private List<Map<String, String>> resources;
 

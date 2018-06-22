@@ -52,7 +52,7 @@ public class HeraAddJobListener extends AbstractListener {
                     masterContext.getDispatcher().addJobHandler(handler);
                     handler.handleEvent(new ApplicationEvent(Events.Initialize));
                     mvcEvent.setCancelled(true);
-                    log.info("schedule add job with jobId:" + jobId);
+                    log.info("schedule add job with actionId:" + jobId);
                 }
             }
 

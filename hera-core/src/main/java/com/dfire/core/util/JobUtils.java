@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 上午12:13 2018/4/26
- * @desc  任务执行体job的创建工具，创建任务依据任务配置创建任务前置处理，核心执行体，后置处理，以及脚本中的变量替换
+ * @desc 任务执行体job的创建工具，创建任务依据任务配置创建任务前置处理，核心执行体，后置处理，以及脚本中的变量替换
  */
 @Slf4j
 public class JobUtils {
@@ -93,10 +93,10 @@ public class JobUtils {
         }
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
         List<Map<String, String>> resource = jobBean.getHierarchyResources();
-        HeraJobActionService heraJobActionService = (HeraJobActionService) applicationContext.getBean("heraGroupService");
+        HeraJobActionService heraJobActionService = (HeraJobActionService) applicationContext.getBean("heraJobActionService");
         String jobId = jobBean.getHeraJobVo().getId();
         String script = heraJobActionService.findHeraActionVo(jobId).getSource().getScript();
-        String actionDate = history.getId().substring(0, 12) + "00";
+        String actionDate = history.getActionId().substring(0, 12) + "00";
         if (StringUtils.isNotBlank(actionDate) && actionDate.length() == 14) {
             script = RenderHierarchyProperties.render(script, actionDate);
         }
@@ -151,54 +151,56 @@ public class JobUtils {
         } catch (ParseException e) {
             log.error("parse end time error");
         }
-        for(Processor processor : processors) {
-            String config = processor.getConfig();
-            if(StringUtils.isNotBlank(config)) {
-                for(String key : map.keySet()) {
-                    String old = "";
-                    do {
-                        old = config;
-                        String value = varMap.get(key).replace("\"", "\\\"");
-                        config = config.replace(key, value);
+        if (processors != null) {
 
-                    } while (!old.equals(config));
+            for (Processor processor : processors) {
+                String config = processor.getConfig();
+                if (StringUtils.isNotBlank(config)) {
+                    for (String key : map.keySet()) {
+                        String old = "";
+                        do {
+                            old = config;
+                            String value = varMap.get(key).replace("\"", "\\\"");
+                            config = config.replace(key, value);
+
+                        } while (!old.equals(config));
+                    }
+                    processor.parse(config);
                 }
-                processor.parse(config);
-            }
-            if(processor instanceof DownProcessor) {
-                jobs.add(new DownLoadJob(jobContext));
-            } else if(processor instanceof JobProcessor) {
-                Integer depth = (Integer) jobContext.getData("depth");
-                if(depth == null) {
-                    depth = 0;
-                }
-                if(depth < 2) {
-                    JobProcessor jobProcessor = (JobProcessor) processor;
-                    Map<String, String> configs = jobProcessor.getKvConfig();
-                    for(String key : configs.keySet()) {
-                        if(configs.get(key) != null) {
-                            jobBean.getHeraJobVo().getConfigs().put(key, map.get(key));
+                if (processor instanceof DownProcessor) {
+                    jobs.add(new DownLoadJob(jobContext));
+                } else if (processor instanceof JobProcessor) {
+                    Integer depth = (Integer) jobContext.getData("depth");
+                    if (depth == null) {
+                        depth = 0;
+                    }
+                    if (depth < 2) {
+                        JobProcessor jobProcessor = (JobProcessor) processor;
+                        Map<String, String> configs = jobProcessor.getKvConfig();
+                        for (String key : configs.keySet()) {
+                            if (configs.get(key) != null) {
+                                jobBean.getHeraJobVo().getConfigs().put(key, map.get(key));
+                            }
                         }
+                        File directory = new File(workDir + File.separator + "job-processor-" + jobProcessor.getJobId());
+                        if (!directory.exists()) {
+                            directory.mkdir();
+                        }
+                        JobContext subJobContext = new JobContext(jobContext.getRunType());
+                        subJobContext.putData("depth", ++depth);
+                        Job job = createJob(subJobContext, jobBean, history, directory.getAbsolutePath(), applicationContext);
+                        jobs.add(job);
+                    } else {
+                        jobContext.getHeraJobHistory().getLog().appendHera("递归的JobProcessor处理单元深度过大，停止递归");
                     }
-                    File directory = new File(workDir + File.separator + "job-processor-" + jobProcessor.getJobId());
-                    if(!directory.exists()) {
-                        directory.mkdir();
-                    }
-                    JobContext subJobContext = new JobContext(jobContext.getRunType());
-                    subJobContext.putData("depth", ++ depth);
-                    Job job = createJob(subJobContext, jobBean, history, directory.getAbsolutePath(), applicationContext);
-                    jobs.add(job);
-                } else {
-                    jobContext.getHeraJobHistory().getLog().appendHera("递归的JobProcessor处理单元深度过大，停止递归");
                 }
             }
-
         }
         return jobs;
     }
 
     private static String replaceScript(HeraJobHistoryVo history, String script) {
-        if (StringUtils.isBlank(history.getStatisticsEndTime().toString()) || StringUtils.isBlank(history.getTimezone())) {
+        if (history.getStatisticsEndTime() == null || StringUtils.isBlank(history.getTimezone())) {
             return script;
         }
         script = script.replace("${j_set}", history.getStatisticsEndTime().toString());

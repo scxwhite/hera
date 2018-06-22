@@ -258,7 +258,7 @@ public class Master {
     }
 
     /**
-     * hera自动调度任务版本生成，版本id 18位当前时间 + jobId,
+     * hera自动调度任务版本生成，版本id 18位当前时间 + actionId,
      *
      * @param jobList
      * @param now
@@ -401,7 +401,7 @@ public class Master {
                     if (!actionIdList.contains(actionId)) {
                         masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId.toString()));
                         actionIdList.add(actionId);
-                        log.info("roll back lost jobId :" + actionId);
+                        log.info("roll back lost actionId :" + actionId);
                     }
                 }
             }
@@ -444,7 +444,7 @@ public class Master {
      * 手动执行任务调度器执行逻辑，向master的channel写manual任务执行请求
      *
      * @param selectWork
-     * @param actionId
+     * @param historyId
      */
     private void runManualJob(MasterWorkHolder selectWork, String historyId) {
         final MasterWorkHolder workHolder = selectWork;
@@ -477,7 +477,7 @@ public class Master {
                     masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
 
                 }
-                boolean success = response.getStatus() == Protocol.Status.OK ? true : false;
+                boolean success = response.getStatus() != null && response.getStatus() == Protocol.Status.OK;
                 log.info("historyId 执行结果" + historyId + "---->" + response.getStatus());
 
                 if (!success) {
@@ -568,7 +568,9 @@ public class Master {
         HeraJobHistoryVo heraJobHistoryVo = null;
         TriggerTypeEnum triggerType = null;
         if (runCount == 1) {
-            HeraJobHistory heraJobHistory = masterContext.getHeraJobHistoryService().findById(jobId);
+            //TODO  根据actionId查找zeus_action_history
+            HeraJobHistory heraJobHistory = masterContext.getHeraJobHistoryService().
+                    findById(masterContext.getHeraJobActionService().findById(jobId).getHistoryId());
             heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
             triggerType = heraJobHistoryVo.getTriggerType();
             heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
@@ -796,7 +798,7 @@ public class Master {
                 element.setJobId(heraJobHistory.getId());
                 masterContext.getManualQueue().offer(element);
             } else {
-                JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(heraJobHistory.getId());
+                JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
                 jobStatus.setStatus(StatusEnum.RUNNING);
                 jobStatus.setHistoryId(heraJobHistory.getId());
                 masterContext.getHeraJobActionService().updateStatus(jobStatus);

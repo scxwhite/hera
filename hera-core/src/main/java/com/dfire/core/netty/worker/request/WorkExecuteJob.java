@@ -64,7 +64,7 @@ public class WorkExecuteJob {
 
         Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
             @Override
-            public Response call() throws Exception {
+            public Response call() {
                 history.setExecuteHost(WorkContext.host);
                 history.setStartTime(new Date());
                 workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
@@ -109,7 +109,7 @@ public class WorkExecuteJob {
                 if (exitCode != 0) {
                     status = Status.ERROR;
                 }
-                if (exception != null) {
+                if (exception != null && exception.getMessage() != null) {
                     errorText = exception.getMessage();
                 }
 
@@ -143,10 +143,11 @@ public class WorkExecuteJob {
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
+        //TODO 查看master分发 jobId 是否为actionId
         final String jobId = message.getJobId();
-        log.info("worker received master request to run schedule, jobId :" + jobId);
+        log.info("worker received master request to run schedule, actionId :" + jobId);
         if (workContext.getRunning().containsKey(jobId)) {
-            log.info("job is running, can not run again, jobId :" + jobId);
+            log.info("job is running, can not run again, actionId :" + jobId);
             return workContext.getWorkThreadPool().submit(new Callable<Response>() {
                 @Override
                 public Response call() throws Exception {
@@ -218,7 +219,7 @@ public class WorkExecuteJob {
                         .setStatus(status)
                         .setErrorText(errorText)
                         .build();
-                log.info("send execute message, jobId = " + jobId);
+                log.info("send execute message, actionId = " + jobId);
                 return response;
             }
         });

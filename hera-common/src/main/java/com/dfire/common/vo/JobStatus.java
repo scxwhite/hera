@@ -22,7 +22,7 @@ public class JobStatus {
     /**
      * 版本号id
      */
-    private String jobId;
+    private String actionId;
 
     private StatusEnum status;
 

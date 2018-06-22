@@ -44,7 +44,7 @@ message WebRequest{
 	required sint32 rid=1;
 	required WebOperate operate=2;
 	required ExecuteKind ek=3;
-	required string id=4;             // update 时 id=jobId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
+	required string id=4;             // update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
 	optional string executor=5;
 	optional bytes body=6;
 }
@@ -93,7 +93,7 @@ message HeartBeatMessage{
 }
 
 message ExecuteMessage{
-	required string jobId=1;
+	required string actionId=1;
 	optional sint32 exitCode=2;
 }
 message CancelMessage{

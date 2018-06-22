@@ -3,6 +3,7 @@ package com.dfire.common.mapper;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
+import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -21,7 +22,8 @@ public interface HeraJobActionMapper {
     @Delete("delete from hera_action where id = #{id}")
     int delete(@Param("id") String id);
 
-    @Update("update heraAction where id = #{id}")
+    @Update("update hera_action (#{heraJobHistory}) where id = #{id}")
+    @Lang(HeraUpdateLangDriver.class)
     int update(HeraAction heraJobHistory);
 
     @Select("select * from hera_action")

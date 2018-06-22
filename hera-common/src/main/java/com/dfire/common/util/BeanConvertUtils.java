@@ -146,9 +146,9 @@ public class BeanConvertUtils {
     public static Tuple<HeraActionVo, JobStatus> convert(HeraAction action) {
         HeraActionVo heraActionVo = transform(action);
         JobStatus jobStatus = JobStatus.builder().build();
-        jobStatus.setJobId(action.getJobId());
-        jobStatus.setHistoryId(action.getHistoryId() == null ? null : action.getHistoryId());
-        jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()== null ? null : action.getReadyDependency()));
+        jobStatus.setActionId(action.getId());
+        jobStatus.setHistoryId(action.getHistoryId());
+        jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()));
         return new Tuple<>(heraActionVo, jobStatus);
 
     }
@@ -160,7 +160,7 @@ public class BeanConvertUtils {
      * @return
      */
     public static HeraActionVo transform(HeraAction action) {
-        String auto = "1";
+        Integer auto = 1;
         HeraActionVo heraActionVo = HeraActionVo.builder().build();
         BeanUtils.copyProperties(action, heraActionVo);
 
@@ -183,7 +183,7 @@ public class BeanConvertUtils {
             return null;
         }
         HeraAction heraAction = HeraAction.builder().build();
-        heraAction.setId(jobStatus.getJobId());
+        heraAction.setId(jobStatus.getActionId());
         heraAction.setStatus(jobStatus.getStatus().toString());
         heraAction.setHistoryId(jobStatus.getHistoryId());
         heraAction.setReadyDependency(StringUtil.convertMapToString(jobStatus.getReadyDependency()));

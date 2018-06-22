@@ -135,7 +135,7 @@ public class WorkClient {
                         logContent = "";
                     }
                     log.error(new StringBuilder("log output error!\n")
-                            .append("[jobId:").append(his.getJobId())
+                            .append("[actionId:").append(his.getJobId())
                             .append(", hisId:").append(his.getId())
                             .append(", logLength:")
                             .append(logContent.length()).append("]")

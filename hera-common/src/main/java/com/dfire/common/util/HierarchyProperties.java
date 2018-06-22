@@ -123,7 +123,7 @@ public class HierarchyProperties {
 
     public Map<String, String> getAllProperties(String dateString) {
         if(parent != null){
-            Map<String, String> parentMap=new HashMap<String, String>(parent.getAllProperties());
+            Map<String, String> parentMap=new HashMap<>(parent.getAllProperties());
             parentMap.putAll(getLocalProperties());
             return parentMap;
         }

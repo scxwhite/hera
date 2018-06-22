@@ -9,7 +9,7 @@ import com.dfire.core.message.Protocol.*;
  */
 public interface ResponseListener {
 
-     abstract void onResponse(Response response);
+     void onResponse(Response response);
 
-     abstract void onWebResponse(WebResponse webResponse);
+     void onWebResponse(WebResponse webResponse);
 }

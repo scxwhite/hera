@@ -4,12 +4,15 @@ import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.model.HeraGroupBean;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.mapper.HeraGroupMapper;
 import com.dfire.common.service.HeraGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -30,7 +33,16 @@ public class HeraGroupServiceImpl implements HeraGroupService {
 
     @Override
     public HeraJobBean getUpstreamJobBean(String jobId) {
-        return null;
+        HeraJobBean heraJobBean = new HeraJobBean();
+        HeraJobVo heraJobVo = new HeraJobVo();
+        heraJobVo.setScript("ls /");
+        heraJobVo.setId("201806200300001569");
+        heraJobVo.setRunType(JobRunTypeEnum.Shell);
+        Map<String, String> configs = new HashMap<>(0);
+        configs.put("name", "xiaosuda");
+        heraJobVo.setConfigs(configs);
+        heraJobBean.setHeraJobVo(heraJobVo);
+        return heraJobBean;
     }
 
 

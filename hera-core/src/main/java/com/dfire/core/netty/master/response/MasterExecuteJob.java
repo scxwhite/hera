@@ -26,9 +26,9 @@ public class MasterExecuteJob {
         if (kind == ExecuteKind.DebugKind) {
             return executeDebugJob(context, holder, id);
         } else if (kind == ExecuteKind.ScheduleKind) {
-            executeScheduleJob(context, holder, id);
+            return executeScheduleJob(context, holder, id);
         } else if (kind == ExecuteKind.ManualKind) {
-            executeManualJob(context, holder, id);
+            return executeManualJob(context, holder, id);
         }
         return null;
     }
@@ -123,9 +123,7 @@ public class MasterExecuteJob {
                             result = response;
                             latch.countDown();
                         }
-
                     }
-
                     @Override
                     public void onWebResponse(WebResponse webResponse) {
                     }

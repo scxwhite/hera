@@ -4,7 +4,6 @@ import com.dfire.core.netty.master.MasterContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
-import javax.annotation.PostConstruct;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**

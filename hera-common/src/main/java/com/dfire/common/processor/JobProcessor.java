@@ -27,7 +27,7 @@ public class JobProcessor implements Processor {
 
     public String getConfig() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("jobId", jobId);
+        jsonObject.put("actionId", jobId);
         JSONObject kv = new JSONObject();
         if (kvConfig != null) {
             kvConfig.keySet().stream().filter(key -> key.startsWith("instance.")).forEach(value -> kv.put(value, kvConfig.get(value)));
@@ -38,7 +38,7 @@ public class JobProcessor implements Processor {
 
     public void parse(String config) {
         JSONObject jsonObject = JSONObject.parseObject(config);
-        jobId = jsonObject.getString("jobId");
+        jobId = jsonObject.getString("actionId");
         kvConfig = jsonObject.getJSONObject("kvConfig").entrySet().stream()
                              .filter(ks -> jsonObject.getString(ks.toString()) != null)
                              .collect(Collectors.toMap(k -> k.toString(), v -> jsonObject.getString(v.toString()), (s, t) -> t));

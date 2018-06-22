@@ -311,7 +311,6 @@ $(function () {
         var id = selected.id;
         var dir = selected.directory;
         focusId = id;
-        var parameter = "jobId=" + id;
         setCurrentId(focusId);
         //如果点击的是任务节点
         if (dir == null || dir == undefined) {
@@ -321,7 +320,9 @@ $(function () {
                 url: "/scheduleCenter/getJobMessage.do",
                 type: "get",
                 async: false,
-                data: parameter,
+                data: {
+                    jobId: id
+                },
                 success: function (data) {
                     focusItem = data;
                     $("#script textarea").val(data.script);
@@ -341,7 +342,9 @@ $(function () {
             jQuery.ajax({
                 url: "/scheduleCenter/getJobVersion.do",
                 type: "get",
-                data: parameter,
+                data: {
+                    jobId: id
+                },
                 success: function (data) {
                     if (data.success == false) {
                         alert(data.message);

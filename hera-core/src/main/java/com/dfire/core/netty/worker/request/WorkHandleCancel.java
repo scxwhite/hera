@@ -44,7 +44,7 @@ public class WorkHandleCancel {
         HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(historyId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         final String jobId = history.getJobId();
-        log.info("worker receive cancel manual job, jobId =" + jobId);
+        log.info("worker receive cancel manual job, actionId =" + jobId);
         if (!workContext.getManualRunning().containsKey(history.getId())) {
             return workContext.getWorkThreadPool().submit(new Callable<Response>() {
                 @Override
@@ -75,7 +75,7 @@ public class WorkHandleCancel {
         HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(historyId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         final String jobId = history.getJobId();
-        log.info("worker receive cancel schedule job, jobId =" + jobId);
+        log.info("worker receive cancel schedule job, actionId =" + jobId);
         if (!workContext.getRunning().containsKey(history.getId())) {
             return workContext.getWorkThreadPool().submit(new Callable<Response>() {
                 @Override
