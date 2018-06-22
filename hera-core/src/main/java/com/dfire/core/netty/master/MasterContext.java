@@ -1,7 +1,7 @@
 package com.dfire.core.netty.master;
 
-import com.dfire.common.service.*;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
+import com.dfire.common.service.*;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
@@ -49,10 +49,11 @@ public class MasterContext {
     private MasterHandler handler;
     private MasterServer masterServer;
     private ExecutorService threadPool = Executors.newCachedThreadPool();
-    /**
-     * 后面成可配置的
-     */
 
+    /**
+     * todo 参数可配置
+     *
+     */
     final Timer masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 5, TimeUnit.SECONDS);
 
     public MasterContext(ApplicationContext applicationContext) {

@@ -35,7 +35,7 @@ public class JobContext {
 
     private final int runType;
 
-    private Map<String, Object> data = new HashMap<String, Object>();
+    private Map<String, Object> data = new HashMap<>();
 
     private Integer preExitCode;
 
@@ -43,7 +43,7 @@ public class JobContext {
 
     private String workDir;
 
-    private HierarchyProperties properties = new HierarchyProperties(new HashMap<String, String>());
+    private HierarchyProperties properties = new HierarchyProperties(new HashMap<>());
 
     private List<Map<String, String>> resources;
 
@@ -74,7 +74,7 @@ public class JobContext {
             }
         }
         jobContext.setWorkDir(file.getAbsolutePath());
-        jobContext.setProperties(new HierarchyProperties((new HashMap<String, String>())));
+        jobContext.setProperties(new HierarchyProperties((new HashMap<>(16))));
         return jobContext;
 
     }

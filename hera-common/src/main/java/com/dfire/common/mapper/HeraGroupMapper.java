@@ -32,7 +32,7 @@ public interface HeraGroupMapper {
     @Lang(HeraSelectLangDriver.class)
     List<HeraGroup> getAll();
 
-    @Select("select * from hera_group where id = #{id} and existed = 1")
+    @Select("select * from hera_group where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
     HeraGroup findById(HeraGroup heraGroup);
 

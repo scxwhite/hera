@@ -3,9 +3,11 @@ package com.dfire.common.service.impl;
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.model.HeraGroupBean;
 import com.dfire.common.entity.model.HeraJobBean;
-import com.dfire.common.entity.vo.HeraJobVo;
 import com.dfire.common.mapper.HeraGroupMapper;
+import com.dfire.common.mapper.HeraJobMapper;
 import com.dfire.common.service.HeraGroupService;
+import com.dfire.common.util.BeanConvertUtils;
+import graph.JobGroupGraphTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,16 +23,20 @@ public class HeraGroupServiceImpl implements HeraGroupService {
 
     @Autowired
     private HeraGroupMapper heraGroupMapper;
+    @Autowired
+    private HeraJobMapper heraJobMapper;
 
     @Override
-    public HeraGroupBean getGlobalGroup() {
-        return HeraGroupBean.builder().build();
+    public HeraGroup getRootGroup() {
+        HeraGroup rootGroup = findById(3578);
+        return rootGroup;
     }
 
 
     @Override
     public HeraJobBean getUpstreamJobBean(String jobId) {
-        return null;
+        //todo 完成层级属性封装
+        return JobGroupGraphTool.getUpstreamJobBean(jobId);
     }
 
 

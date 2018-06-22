@@ -53,7 +53,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public List<HeraAction> findByJobId(String jobId) {
+    public HeraAction findByJobId(String jobId) {
         HeraAction heraAction = HeraAction.builder().jobId(jobId).build();
         return heraJobActionMapper.findByJobId(heraAction);
     }
@@ -72,7 +72,8 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     @Override
     public Tuple<HeraActionVo, JobStatus> findHeraActionVo(String actionId) {
-        HeraAction heraAction = findById(actionId);
+        HeraAction heraActionTmp = findById(actionId);
+        HeraAction heraAction = findByJobId(heraActionTmp.getJobId());
         if(heraAction == null) {
             return null;
         }

@@ -304,6 +304,7 @@ $(function () {
                         return;
                     }
                     var jobVersion = "";
+                    debugger
                     data.forEach(function (action, index) {
                         jobVersion += '<option value="' + action.id + '" >' + action.id + '</option>';
                     });

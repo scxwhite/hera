@@ -1,6 +1,7 @@
 package com.dfire.dao;
 
 import com.dfire.common.entity.*;
+import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.enums.StatusEnum;
@@ -203,6 +204,12 @@ public class HeraBaseDaoTest {
 
         heraGroupService.delete(3580);
 
+    }
+
+    @Test
+    public void JobGraphTest() {
+        HeraJobBean jobBean = heraGroupService.getUpstreamJobBean("90");
+        System.out.println(jobBean.getUpStream().size());
     }
 
     @Test

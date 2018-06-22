@@ -50,9 +50,7 @@ public class ShellJob extends ProcessJob {
             if (!f.exists()) {
                 f.createNewFile();
             }
-            outputStreamWriter = new OutputStreamWriter(
-                    new FileOutputStream(f),
-                    Charset.forName(jobContext.getProperties().getProperty("hera.encode", "utf-8")));
+            outputStreamWriter = new OutputStreamWriter(new FileOutputStream(f), Charset.forName("utf-8"));
             outputStreamWriter.write(script);
             getProperties().setProperty(RunningJobKeyConstant.RUN_SHELL_PATH, f.getAbsolutePath());
 
@@ -109,7 +107,7 @@ public class ShellJob extends ProcessJob {
 
                     tmpWriter.write("source " + shellFilePath);
                 } catch (Exception e) {
-                    jobContext.getDebugHistory().getLog().appendHeraException(e);
+                    jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
                     IOUtils.closeQuietly(tmpWriter);
                 }

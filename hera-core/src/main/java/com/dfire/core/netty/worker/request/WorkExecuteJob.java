@@ -53,6 +53,8 @@ public class WorkExecuteJob {
 
     private Future<Response> manual(WorkContext workContext, Request request) {
         ExecuteMessage message = null;
+        StringBuilder filePath = new StringBuilder();
+
         try {
             message = ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
         } catch (InvalidProtocolBufferException e) {
@@ -62,70 +64,71 @@ public class WorkExecuteJob {
         log.info("worker received master request to run manual job, historyId = {}", historyId);
         final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(historyId));
 
-        Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
-            @Override
-            public Response call() throws Exception {
-                history.setExecuteHost(WorkContext.host);
-                history.setStartTime(new Date());
-                workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
+        Future<Response> future = workContext.getWorkThreadPool().submit(() -> {
+            history.setExecuteHost(WorkContext.host);
+            history.setStartTime(new Date());
+            workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
 
-                String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                File directory = new File(HeraGlobalEnvironment.getDownloadDir()
-                        + File.separator + date + File.separator + "manual-" + history.getId());
-                if (!directory.exists()) {
-                    directory.mkdir();
-                }
-                HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
-                final Job job = JobUtils.createJob(new JobContext(JobContext.SCHEDULE_RUN),
-                        jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
-                workContext.getManualRunning().put(historyId, job);
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
-                Integer exitCode = -1;
-                Exception exception = null;
-                try {
-                    exitCode = job.run();
-                } catch (Exception e) {
-                    exception = e;
-                    history.getLog().appendHeraException(e);
-                } finally {
-                    HeraJobHistoryVo heraJobHistoryVO = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(history.getId()));
-                    heraJobHistoryVO.setEndTime(new Date());
-                    if (exitCode == 0) {
-                        heraJobHistoryVO.setStatusEnum(StatusEnum.SUCCESS);
-                    } else {
-                        heraJobHistoryVO.setStatusEnum(StatusEnum.FAILED);
-                    }
-                    workContext.getJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVO));
-
-
-                    HeraJobHistoryVo jobHistory = workContext.getManualRunning().get(historyId).getJobContext().getHeraJobHistory();
-                    workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(jobHistory));
-
-                    workContext.getManualRunning().remove(historyId);
-                }
-
-                Status status = Status.OK;
-                String errorText = "";
-                if (exitCode != 0) {
-                    status = Status.ERROR;
-                }
-                if (exception != null) {
-                    errorText = exception.getMessage();
-                }
-
-                Response response = Response.newBuilder()
-                        .setRid(request.getRid())
-                        .setOperate(Operate.Schedule)
-                        .setStatus(status)
-                        .setErrorText(errorText)
-                        .build();
-                log.info("send execute message, historyId = {}", historyId);
-                return response;
+            filePath.append(HeraGlobalEnvironment.getDownloadDir())
+                    .append(File.separator)
+                    .append(date)
+                    .append(File.separator)
+                    .append("manual-")
+                    .append(historyId);
+            File directory = new File(filePath.toString());
+            if (!directory.exists()) {
+                directory.mkdir();
             }
+            HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getActionId());
+            final Job job = JobUtils.createJob(new JobContext(JobContext.MANUAL_RUN),
+                    jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
+            workContext.getManualRunning().put(historyId, job);
+
+            Integer exitCode = -1;
+            Exception exception = null;
+            try {
+                exitCode = job.run();
+            } catch (Exception e) {
+                exception = e;
+                history.getLog().appendHeraException(e);
+            } finally {
+                HeraJobHistoryVo heraJobHistoryVO = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(history.getId()));
+                heraJobHistoryVO.setEndTime(new Date());
+                if (exitCode == 0) {
+                    heraJobHistoryVO.setStatusEnum(StatusEnum.SUCCESS);
+                } else {
+                    heraJobHistoryVO.setStatusEnum(StatusEnum.FAILED);
+                }
+                workContext.getJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVO));
+
+                HeraJobHistoryVo jobHistory = workContext.getManualRunning().get(historyId).getJobContext().getHeraJobHistory();
+                workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(jobHistory));
+
+                workContext.getManualRunning().remove(historyId);
+            }
+
+            Status status = Status.OK;
+            String errorText = "";
+            if (exitCode != 0) {
+                status = Status.ERROR;
+            }
+            if (exception != null) {
+                errorText = exception.getMessage();
+            }
+
+            Response response = Response.newBuilder()
+                    .setRid(request.getRid())
+                    .setOperate(Operate.Manual)
+                    .setStatus(status)
+                    .setErrorText(errorText)
+                    .build();
+            log.info("send execute message, historyId = {}", historyId);
+            return response;
         });
 
         return future;
-
     }
 
     /**
@@ -243,60 +246,56 @@ public class WorkExecuteJob {
         }
         String debugId = debugMessage.getDebugId();
         HeraDebugHistoryVo history = workContext.getDebugHistoryService().findById(debugId);
-        Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
-            @Override
-            public Response call() throws Exception {
-                history.setExecuteHost(WorkContext.host);
-                history.setStartTime(new Date());
-                workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
+        Future<Response> future = workContext.getWorkThreadPool().submit(() -> {
+            history.setExecuteHost(WorkContext.host);
+            history.setStartTime(new Date());
+            workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
 
-                String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator + "debug-" + debugId);
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-                Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
-                        directory.getAbsolutePath(), workContext.getApplicationContext());
-                workContext.getDebugRunning().putIfAbsent(debugId, job);
-
-                int exitCode = -1;
-                Exception exception = null;
-                try {
-                    exitCode = job.run();
-                    System.out.println("debug-thread: " + Thread.currentThread().getName());
-                } catch (Exception e) {
-                    exception = e;
-                    history.getLog().appendHeraException(e);
-                } finally {
-                    HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
-                    heraDebugHistoryVo.setEndTime(new Date());
-                    if (exitCode == 0) {
-                        heraDebugHistoryVo.setStatusEnum(StatusEnum.SUCCESS);
-                    } else {
-                        heraDebugHistoryVo.setStatusEnum(StatusEnum.FAILED);
-                    }
-                    workContext.getDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
-                    HeraDebugHistoryVo debugHistory = workContext.getDebugRunning().get(debugId).getJobContext().getDebugHistory();
-                    workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(debugHistory));
-                    workContext.getDebugRunning().remove(debugId);
-
-                }
-                Status status = Status.OK;
-                String errorText = "";
-                if (exitCode != 0) {
-                    status = Status.ERROR;
-                }
-                if (exception != null && exception.getMessage() != null) {
-                    errorText = exception.getMessage();
-                }
-                Response response = Response.newBuilder()
-                        .setRid(request.getRid())
-                        .setOperate(Operate.Debug)
-                        .setStatus(status)
-                        .setErrorText(errorText)
-                        .build();
-                return response;
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator + "debug-" + debugId);
+            if (!directory.exists()) {
+                directory.mkdirs();
             }
+            Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
+                    directory.getAbsolutePath(), workContext.getApplicationContext());
+            workContext.getDebugRunning().putIfAbsent(debugId, job);
+
+            int exitCode = -1;
+            Exception exception = null;
+            try {
+                exitCode = job.run();
+            } catch (Exception e) {
+                exception = e;
+                history.getLog().appendHeraException(e);
+            } finally {
+                HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
+                heraDebugHistoryVo.setEndTime(new Date());
+                if (exitCode == 0) {
+                    heraDebugHistoryVo.setStatusEnum(StatusEnum.SUCCESS);
+                } else {
+                    heraDebugHistoryVo.setStatusEnum(StatusEnum.FAILED);
+                }
+                workContext.getDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
+                HeraDebugHistoryVo debugHistory = workContext.getDebugRunning().get(debugId).getJobContext().getDebugHistory();
+                workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(debugHistory));
+                workContext.getDebugRunning().remove(debugId);
+
+            }
+            Status status = Status.OK;
+            String errorText = "";
+            if (exitCode != 0) {
+                status = Status.ERROR;
+            }
+            if (exception != null && exception.getMessage() != null) {
+                errorText = exception.getMessage();
+            }
+            Response response = Response.newBuilder()
+                    .setRid(request.getRid())
+                    .setOperate(Operate.Debug)
+                    .setStatus(status)
+                    .setErrorText(errorText)
+                    .build();
+            return response;
         });
         return future;
     }

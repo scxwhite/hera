@@ -7,7 +7,6 @@ import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.model.JobGroupCache;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
-import com.dfire.common.entity.vo.HeraJobVo;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
@@ -121,7 +120,7 @@ public class JobHandler extends AbstractHandler {
                         }
                     }
                 } else {
-                    HeraJobVo heraJobVo = heraGroupService.getUpstreamJobBean(actionId).getHeraJobVo();
+                    HeraActionVo heraJobVo = heraGroupService.getUpstreamJobBean(actionId).getHeraActionVo();
                     HeraJobHistoryVo history = HeraJobHistoryVo.builder()
                             .id(actionId)
                             .jobId(heraJobVo.getId())

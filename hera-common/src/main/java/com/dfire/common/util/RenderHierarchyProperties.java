@@ -108,8 +108,6 @@ public class RenderHierarchyProperties extends HierarchyProperties {
     @Override
     public Map<String, String> getLocalProperties() {
         Map<String, String> map = properties.getLocalProperties();
-//        Map<String, String> result = new HashMap<>();
-//        map.keySet().forEach(key -> result.put(key, render(key)));
         Map<String, String> result = properties.getLocalProperties().keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s)), (t, k) -> k));
         return result;
     }
@@ -153,11 +151,6 @@ public class RenderHierarchyProperties extends HierarchyProperties {
 
     @Override
     public List<String> getHierarchyProperty(String key) {
-//        List<String> list = properties.getHierarchyProperty(key);
-//        List<String> result = new ArrayList<String>();
-//        for (String s : list) {
-//            result.add(render(s));
-//        }
         List<String> result = properties.getHierarchyProperty(key).stream().map(s -> render(s)).collect(Collectors.toList());
         return result;
     }
@@ -165,10 +158,6 @@ public class RenderHierarchyProperties extends HierarchyProperties {
     @Override
     public Map<String, String> getAllProperties() {
         Map<String, String> map = properties.getAllProperties();
-//        Map<String, String> result = new HashMap<String, String>();
-//        for (String key : map.keySet()) {
-//            result.put(key, render(map.get(key)));
-//        }
         Map<String, String> result = properties.getAllProperties().keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s)), (t, k) -> k));
         return result;
     }

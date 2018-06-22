@@ -39,12 +39,6 @@ public class BeanConvertUtils {
         return heraProfile;
     }
 
-    public static HeraGroupVo convert(HeraGroup heraGroup) {
-        HeraGroupVo heraGroupVo = HeraGroupVo.builder().build();
-        BeanUtils.copyProperties(heraGroup, heraGroupVo);
-        return heraGroupVo;
-    }
-
     public static HeraJobHistoryVo convert(HeraJobHistory heraJobHistory) {
         HeraJobHistoryVo heraJobHistoryVo = HeraJobHistoryVo.builder().build();
         BeanUtils.copyProperties(heraJobHistory, heraJobHistoryVo);
@@ -118,7 +112,7 @@ public class BeanConvertUtils {
         BeanUtils.copyProperties(heraJobVo, heraAction);
         heraAction.setPostProcessors(StringUtil.convertProcessorToList(heraJobVo.getPostProcessors()));
         heraAction.setPreProcessors(StringUtil.convertProcessorToList(heraJobVo.getPreProcessors()));
-        heraAction.setResources(StringUtil.convertResoureToString(heraJobVo.getResources()));
+        heraAction.setResources(StringUtil.convertResourceToString(heraJobVo.getResources()));
         heraAction.setConfigs(StringUtil.convertMapToString(heraJobVo.getConfigs()));
         heraAction.setJobId(heraJobVo.getId());
         return heraAction;
@@ -148,7 +142,8 @@ public class BeanConvertUtils {
         JobStatus jobStatus = JobStatus.builder().build();
         jobStatus.setJobId(action.getJobId());
         jobStatus.setHistoryId(action.getHistoryId() == null ? null : action.getHistoryId());
-        jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()== null ? null : action.getReadyDependency()));
+        jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency() == null ? null : action.getReadyDependency()));
+
         return new Tuple<>(heraActionVo, jobStatus);
 
     }
@@ -179,10 +174,11 @@ public class BeanConvertUtils {
     }
 
     public static HeraAction convert(JobStatus jobStatus) {
-        if (jobStatus == null) {
-            return null;
-        }
         HeraAction heraAction = HeraAction.builder().build();
+
+        if (jobStatus == null) {
+            return heraAction;
+        }
         heraAction.setId(jobStatus.getJobId());
         heraAction.setStatus(jobStatus.getStatus().toString());
         heraAction.setHistoryId(jobStatus.getHistoryId());
@@ -207,15 +203,28 @@ public class BeanConvertUtils {
         return heraJob;
     }
 
+    public static HeraGroupVo convert(HeraGroup heraGroup) {
+        HeraGroupVo heraGroupVo = HeraGroupVo.builder().build();
+        if (heraGroup == null) {
+            return heraGroupVo;
+        }
+        BeanUtils.copyProperties(heraGroup, heraGroupVo);
+        heraGroupVo.setConfigs(new HashMap<>(1));
+        heraGroupVo.setConfigs(StringUtil.convertStringToMap(heraGroup.getConfigs()));
+        heraGroupVo.setResources(new ArrayList<>());
+        if(heraGroup.getResources() != null) {
+            heraGroupVo.setResources(StringUtil.convertResources(heraGroup.getResources()));
+        }
+        heraGroupVo.setExisted(heraGroup.getExisted() == 1 ? true : false);
+        return heraGroupVo;
+    }
+
     public static HeraGroup convert(HeraGroupVo groupVo) {
         HeraGroup heraGroup = new HeraGroup();
         BeanUtils.copyProperties(groupVo, heraGroup);
-        Map<String, String> configs = new HashMap<>();
-        Optional<String> config = Optional.ofNullable(groupVo.getConfigs());
-        config.ifPresent(s -> {
-            stringToMap(s, configs);
-            heraGroup.setConfigs(StringUtil.convertMapToString(configs));
-        });
+        heraGroup.setExisted(groupVo.isExisted() == true ? 1 : 0);
+        heraGroup.setConfigs(StringUtil.convertMapToString(groupVo.getConfigs()));
+        heraGroup.setResources(StringUtil.convertResourceToString(groupVo.getResources()));
 
         return heraGroup;
     }

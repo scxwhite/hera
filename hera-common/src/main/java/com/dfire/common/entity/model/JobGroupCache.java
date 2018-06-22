@@ -1,9 +1,7 @@
 package com.dfire.common.entity.model;
 
 import com.dfire.common.entity.vo.HeraActionVo;
-import com.dfire.common.entity.vo.HeraJobVo;
 import com.dfire.common.kv.Tuple;
-import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.vo.JobStatus;
 import lombok.Builder;
@@ -16,7 +14,7 @@ import lombok.Builder;
 @Builder
 public class JobGroupCache {
 
-    //版本号id
+
     private final String actionId;
     private HeraActionVo heraActionVo;
 

@@ -45,7 +45,7 @@ public class HierarchyProperties {
         if (parent != null) {
             set.addAll(parent.getPropertyKeys());
         }
-        properties.keySet().stream().forEach(key -> set.add(key.toString()));
+        properties.keySet().stream().forEach(key -> set.add(key));
         return set;
     }
 
@@ -97,7 +97,7 @@ public class HierarchyProperties {
      * @desc 向上获取所有的数据, 一般用于获取带继承性质的属性, 比如classpath，需要父级的classpath
      */
     public List<String> getHierarchyProperty(String key) {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         if (properties.get(key) != null) {
             list.add(properties.get(key));
         }
@@ -114,7 +114,11 @@ public class HierarchyProperties {
      */
     public Map<String, String> getAllProperties() {
         if(parent != null) {
-            Map<String, String> parentMap = new HashMap<>(parent.getAllProperties());
+
+            Map<String, String> parentMap = new HashMap<>(16);
+            if(parent.getAllProperties() != null) {
+                parentMap = new HashMap<>(parent.getAllProperties());
+            }
             parentMap.putAll(getLocalProperties());
             return parentMap;
         }
@@ -123,7 +127,7 @@ public class HierarchyProperties {
 
     public Map<String, String> getAllProperties(String dateString) {
         if(parent != null){
-            Map<String, String> parentMap=new HashMap<String, String>(parent.getAllProperties());
+            Map<String, String> parentMap=new HashMap<>(parent.getAllProperties());
             parentMap.putAll(getLocalProperties());
             return parentMap;
         }

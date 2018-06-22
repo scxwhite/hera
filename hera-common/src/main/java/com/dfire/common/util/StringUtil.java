@@ -3,6 +3,7 @@ package com.dfire.common.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPathException;
 import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.Processor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,11 @@ public class StringUtil {
         if (config == null) {
             return map;
         }
-        JSONObject jsonObject = JSONObject.parseObject(config);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject = JSONObject.parseObject(config);
+        } catch (JSONPathException e) {
+        }
         for (Object key : jsonObject.keySet()) {
             map.put(key.toString(), jsonObject.getString(key.toString()));
         }
@@ -111,10 +116,15 @@ public class StringUtil {
 
     public static List<Map<String, String>> convertResources(String resource) {
         List<Map<String, String>> tempRes = new ArrayList<>();
+        JSONArray resArray = new JSONArray();
 
         if (StringUtils.isNotBlank(resource)) {
 
-            JSONArray resArray = JSONArray.parseArray(resource);
+            try {
+                resArray = JSONArray.parseArray(resource);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             for (int i = 0; i < resArray.size(); i++) {
                 JSONObject o = resArray.getJSONObject(i);
                 Map<String, String> map = new HashMap<>();
@@ -127,7 +137,7 @@ public class StringUtil {
         return tempRes;
     }
 
-    public static String convertResoureToString(List<Map<String, String>> list) {
+    public static String convertResourceToString(List<Map<String, String>> list) {
         String resource = "[]";
         if (list != null && list.size() > 0) {
             JSONArray resArray = new JSONArray();

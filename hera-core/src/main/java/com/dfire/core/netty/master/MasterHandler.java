@@ -22,16 +22,33 @@ import java.util.concurrent.*;
 @ChannelHandler.Sharable
 public class MasterHandler extends ChannelInboundHandlerAdapter {
 
-    private CompletionService<ChannelResponse> completionService = new ExecutorCompletionService<ChannelResponse>(Executors.newCachedThreadPool());
+    private CompletionService<ChannelResponse> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
 
+    /**
+     * 调度器执行上下文信息
+     *
+     */
     private MasterContext masterContext;
 
+    /**
+     * 开发中心执行任务时候，masterHandler在read到SocketMessage处理逻辑
+     *
+     */
     private MasterHandleWebDebug masterHandleWebDebug = new MasterHandleWebDebug();
 
+    /**
+     * 主节点接收到心跳，masterHandler在read到HeartBeat处理逻辑
+     *
+     */
     private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
+
 
     private MasterHandleWebCancel masterHandleCancelJob = new MasterHandleWebCancel();
 
+    /**
+     * 调度中心执行任务时候，masterHandler在read到SocketMessage的任务处理消息的时候的处理逻辑
+     *
+     */
     private MasterHandleWebExecute masterHandleWebExecute = new MasterHandleWebExecute();
 
     private MasterHandleWebUpdate masterHandleWebUpdate = new MasterHandleWebUpdate();
@@ -40,20 +57,17 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     public MasterHandler(MasterContext masterContext) {
         this.masterContext = masterContext;
         Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Future<ChannelResponse> future = completionService.take();
-                        ChannelResponse response = future.get();
-                        response.channel.write(wrapper(response.webResponse));
-                        log.info("master get response thread success");
-                    } catch (Exception e) {
-                        log.error("master handler future take error");
-                    }
-
+        executor.execute(() -> {
+            while (true) {
+                try {
+                    Future<ChannelResponse> future = completionService.take();
+                    ChannelResponse response = future.get();
+                    response.channel.write(wrapper(response.webResponse));
+                    log.info("master get response thread success");
+                } catch (Exception e) {
+                    log.error("master handler future take error");
                 }
+
             }
         });
     }
@@ -74,36 +88,16 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
-                        completionService.submit(new Callable<ChannelResponse>() {
-                            @Override
-                            public ChannelResponse call() throws Exception {
-                                return new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest));
-                            }
-                        });
+                        completionService.submit(() -> new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest)));
                         break;
                     case CancelJob:
-                        completionService.submit(new Callable<ChannelResponse>() {
-                            @Override
-                            public ChannelResponse call() throws Exception {
-                                return new ChannelResponse(channel, masterHandleCancelJob.handleWebCancel(masterContext, webRequest));
-                            }
-                        });
+                        completionService.submit(() -> new ChannelResponse(channel, masterHandleCancelJob.handleWebCancel(masterContext, webRequest)));
                         break;
                     case UpdateJob:
-                        completionService.submit(new Callable<ChannelResponse>() {
-                            @Override
-                            public ChannelResponse call() throws Exception {
-                                return new ChannelResponse(channel, masterHandleWebUpdate.handleWebUpdate(masterContext, webRequest));
-                            }
-                        });
+                        completionService.submit(() -> new ChannelResponse(channel, masterHandleWebUpdate.handleWebUpdate(masterContext, webRequest)));
                         break;
                     case ExecuteDebug:
-                        completionService.submit(new Callable<ChannelResponse>() {
-                            @Override
-                            public ChannelResponse call() throws Exception {
-                                return new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest));
-                            }
-                        });
+                        completionService.submit(() -> new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest)));
                         break;
                     default:
                         log.error("unknown operate error");
@@ -129,7 +123,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+    public void channelRegistered(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         masterContext.getWorkMap().put(channel, new MasterWorkHolder(ctx.channel()));
         SocketAddress remoteAddress = channel.remoteAddress();
@@ -142,7 +136,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         SocketAddress remoteAddress = channel.remoteAddress();
         log.info("worker client channel active success : {}", remoteAddress.toString());
@@ -154,10 +148,10 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     }
 
     private SocketMessage wrapper(WebResponse response) {
-        return SocketMessage.newBuilder().setKind(SocketMessage.Kind.WEB_REUQEST).setBody(response.toByteString()).build();
+        return SocketMessage.newBuilder().setKind(SocketMessage.Kind.WEB_RESPONSE).setBody(response.toByteString()).build();
     }
 
-    private List<ResponseListener> listeners = new CopyOnWriteArrayList<ResponseListener>();
+    private List<ResponseListener> listeners = new CopyOnWriteArrayList<>();
 
     public void addListener(ResponseListener listener) {
         listeners.add(listener);

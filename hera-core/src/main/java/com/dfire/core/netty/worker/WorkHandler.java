@@ -34,7 +34,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                         Future<Response> future = completionService.take();
                         Response response = future.get();
                         if (workContext.getServerChannel() != null) {
-                            workContext.getServerChannel().write(wrapper(response));
+                            workContext.getServerChannel().writeAndFlush(wrapper(response));
                         }
                         log.info("worker get response thread success");
                     } catch (Exception e) {

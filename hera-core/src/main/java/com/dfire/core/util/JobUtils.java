@@ -1,12 +1,12 @@
 package com.dfire.core.util;
 
-import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.entity.vo.HeraProfileVo;
+import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.JobProcessor;
 import com.dfire.common.processor.Processor;
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 上午12:13 2018/4/26
- * @desc  任务执行体job的创建工具，创建任务依据任务配置创建任务前置处理，核心执行体，后置处理，以及脚本中的变量替换
+ * @desc 任务执行体job的创建工具，创建任务依据任务配置创建任务前置处理，核心执行体，后置处理，以及脚本中的变量替换
  */
 @Slf4j
 public class JobUtils {
@@ -45,21 +45,22 @@ public class JobUtils {
                                      String workDir, ApplicationContext applicationContext) {
         jobContext.setDebugHistory(BeanConvertUtils.convert(heraDebugHistory));
         jobContext.setWorkDir(workDir);
-        //脚本中的变量替换，暂时不做
+        //todo 脚本中的变量替换
         HierarchyProperties hierarchyProperties = new HierarchyProperties(new HashMap<>());
         String script = heraDebugHistory.getScript();
         List<Map<String, String>> resources = new ArrayList<>();
         script = resolveScriptResource(resources, script, applicationContext);
         jobContext.setResources(resources);
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
-        //权限控制判断，暂时不做
+        //todo 权限控制判断，暂时不做
         HeraFileService heraFileService = (HeraFileService) applicationContext.getBean("heraFileService");
         String owner = heraFileService.findById(heraDebugHistory.getFileId()).getOwner();
         HeraProfileService heraProfileService = (HeraProfileService) applicationContext.getBean("heraProfileService");
         HeraProfileVo heraProfile = heraProfileService.findByOwner(owner);
         if (heraProfile != null && heraProfile.getHadoopConf() != null) {
-            for (String key : heraProfile.getHadoopConf().keySet())
+            for (String key : heraProfile.getHadoopConf().keySet()) {
                 hierarchyProperties.setProperty(key, heraProfile.getHadoopConf().get(key));
+            }
         }
 
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
@@ -79,9 +80,11 @@ public class JobUtils {
         return job;
     }
 
-    public static Job createJob(JobContext jobContext, HeraJobBean jobBean, HeraJobHistoryVo history, String workDir, ApplicationContext applicationContext) {
+    public static Job createJob(JobContext jobContext, HeraJobBean jobBean,
+                                HeraJobHistoryVo history, String workDir, ApplicationContext applicationContext) {
         jobContext.setHeraJobHistory(history);
         jobContext.setWorkDir(workDir);
+        jobContext.getProperties().setProperty("hera.encode","utf-8");
         HierarchyProperties hierarchyProperties = jobBean.getHierarchyProperties();
         Map<String, String> configs = history.getProperties();
         if (configs != null && !configs.isEmpty()) {
@@ -93,37 +96,37 @@ public class JobUtils {
         }
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
         List<Map<String, String>> resource = jobBean.getHierarchyResources();
-        HeraJobActionService heraJobActionService = (HeraJobActionService) applicationContext.getBean("heraGroupService");
-        String jobId = jobBean.getHeraJobVo().getId();
-        String script = heraJobActionService.findHeraActionVo(jobId).getSource().getScript();
-        String actionDate = history.getId().substring(0, 12) + "00";
+        HeraJobActionService heraJobActionService = (HeraJobActionService) applicationContext.getBean("heraJobActionService");
+        String jobId = jobBean.getHeraActionVo().getJobId();
+        String script = "ls";
+        String actionDate = history.getActionId().substring(0, 12) + "00";
         if (StringUtils.isNotBlank(actionDate) && actionDate.length() == 14) {
             script = RenderHierarchyProperties.render(script, actionDate);
         }
-        if (jobBean.getHeraJobVo().getRunType().equals(JobRunTypeEnum.Shell)
-                || jobBean.getHeraJobVo().getRunType().equals(JobRunTypeEnum.Hive)) {
+        if (jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Shell)
+                || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Hive)) {
             script = resolveScriptResource(resource, script, applicationContext);
         }
         jobContext.setResources(resource);
-        if (StringUtils.isNotBlank(actionDate) && actionDate.length() == 14) {
+        if(actionDate != null && actionDate.length() == 14) {
             script = replace(jobContext.getProperties().getAllProperties(actionDate), script);
         } else {
             script = replace(jobContext.getProperties().getAllProperties(), script);
         }
 
-        script = replaceScript(history, script);
+//        script = replaceScript(history, script);
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
 
         List<Job> pres = parseJobs(jobContext, applicationContext, jobBean,
-                jobBean.getHeraJobVo().getPreProcessors(), history, workDir);
+                jobBean.getHeraActionVo().getPreProcessors(), history, workDir);
 
         List<Job> posts = parseJobs(jobContext, applicationContext, jobBean,
-                jobBean.getHeraJobVo().getPostProcessors(), history, workDir);
+                jobBean.getHeraActionVo().getPostProcessors(), history, workDir);
 
         Job core = null;
-        if (jobBean.getHeraJobVo().getRunType() == JobRunTypeEnum.Shell) {
+        if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Shell) {
             core = new HadoopShellJob(jobContext);
-        } else if (jobBean.getHeraJobVo().getRunType() == JobRunTypeEnum.Hive) {
+        } else if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Hive) {
             core = new HiveJob(jobContext, applicationContext);
         }
         Job job = new ProcessJobContainer(jobContext, pres, posts, core, applicationContext);
@@ -135,7 +138,7 @@ public class JobUtils {
                                        List<Processor> processors, HeraJobHistoryVo history, String workDir) {
         List<Job> jobs = new ArrayList<>();
         Map<String, String> map = jobContext.getProperties().getAllProperties();
-        Map<String, String> varMap = new HashMap<>();
+        Map<String, String> varMap = new HashMap<>(1);
         try {
             for (String key : map.keySet()) {
                 String value = map.get(key);
@@ -151,10 +154,10 @@ public class JobUtils {
         } catch (ParseException e) {
             log.error("parse end time error");
         }
-        for(Processor processor : processors) {
+        for (Processor processor : processors) {
             String config = processor.getConfig();
-            if(StringUtils.isNotBlank(config)) {
-                for(String key : map.keySet()) {
+            if (StringUtils.isNotBlank(config)) {
+                for (String key : map.keySet()) {
                     String old = "";
                     do {
                         old = config;
@@ -165,27 +168,27 @@ public class JobUtils {
                 }
                 processor.parse(config);
             }
-            if(processor instanceof DownProcessor) {
+            if (processor instanceof DownProcessor) {
                 jobs.add(new DownLoadJob(jobContext));
-            } else if(processor instanceof JobProcessor) {
+            } else if (processor instanceof JobProcessor) {
                 Integer depth = (Integer) jobContext.getData("depth");
-                if(depth == null) {
+                if (depth == null) {
                     depth = 0;
                 }
-                if(depth < 2) {
+                if (depth < 2) {
                     JobProcessor jobProcessor = (JobProcessor) processor;
                     Map<String, String> configs = jobProcessor.getKvConfig();
-                    for(String key : configs.keySet()) {
-                        if(configs.get(key) != null) {
-                            jobBean.getHeraJobVo().getConfigs().put(key, map.get(key));
+                    for (String key : configs.keySet()) {
+                        if (configs.get(key) != null) {
+                            jobBean.getHeraActionVo().getConfigs().put(key, map.get(key));
                         }
                     }
                     File directory = new File(workDir + File.separator + "job-processor-" + jobProcessor.getJobId());
-                    if(!directory.exists()) {
+                    if (!directory.exists()) {
                         directory.mkdir();
                     }
                     JobContext subJobContext = new JobContext(jobContext.getRunType());
-                    subJobContext.putData("depth", ++ depth);
+                    subJobContext.putData("depth", ++depth);
                     Job job = createJob(subJobContext, jobBean, history, directory.getAbsolutePath(), applicationContext);
                     jobs.add(job);
                 } else {
@@ -197,10 +200,7 @@ public class JobUtils {
         return jobs;
     }
 
-    private static String replaceScript(HeraJobHistoryVo history, String script) {
-        if (StringUtils.isBlank(history.getStatisticsEndTime().toString()) || StringUtils.isBlank(history.getTimezone())) {
-            return script;
-        }
+    public static String replaceScript(HeraJobHistoryVo history, String script) {
         script = script.replace("${j_set}", history.getStatisticsEndTime().toString());
         try {
             script = script.replace("${j_est}", DateUtil.string2Timestamp(history.getStatisticsEndTime().toString(),
@@ -211,14 +211,14 @@ public class JobUtils {
         return script;
     }
 
-    private static String replace(Map<String, String> allProperties, String script) {
+    public static String replace(Map<String, String> allProperties, String script) {
         if (script == null) {
             return null;
         }
-        Map<String, String> varMap = new HashMap<String, String>();
-        for (String key : varMap.keySet()) {
-            if (varMap.get(key) != null) {
-                varMap.put("${" + key + "}", varMap.get(key));
+        Map<String, String> varMap = new HashMap<>(16);
+        for (String key : allProperties.keySet()) {
+            if (allProperties.get(key) != null) {
+                varMap.put("${" + key + "}", allProperties.get(key));
             }
         }
         for (String key : varMap.keySet()) {
@@ -231,7 +231,7 @@ public class JobUtils {
         return script;
     }
 
-    private static String resolveScriptResource(List<Map<String, String>> resources, String script, ApplicationContext applicationContext) {
+    public static String resolveScriptResource(List<Map<String, String>> resources, String script, ApplicationContext applicationContext) {
         Matcher matcher = pattern.matcher(script);
         while (matcher.find()) {
             String group = matcher.group();

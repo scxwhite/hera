@@ -47,6 +47,8 @@
         <hyperic.sigar.veriosn>1.6.3</hyperic.sigar.veriosn>
         <jdk.version>1.8</jdk.version>
         <quartz.version>2.2.1</quartz.version>
+        <jgrapht-core.version>1.1.0</jgrapht-core.version>
+
     </properties>
 
     <dependencyManagement>
@@ -210,6 +212,12 @@
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
                 <version>${quartz.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jgrapht</groupId>
+                <artifactId>jgrapht-core</artifactId>
+                <version>${jgrapht-core.version}</version>
             </dependency>
 
             <dependency>

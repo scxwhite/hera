@@ -17,8 +17,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.http.HttpSession;
-
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

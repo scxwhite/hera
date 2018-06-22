@@ -180,7 +180,9 @@ public class MasterExecuteJob {
                         }
                     }
                     @Override
-                    public void onWebResponse(WebResponse resp) { }
+                    public void onWebResponse(WebResponse resp) {
+                        System.out.println(response.getRid());
+                    }
                 });
                 try {
                     latch.await();

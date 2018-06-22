@@ -19,36 +19,50 @@ import java.util.Map;
 @Data
 public class HeraGroupBean {
 
-
     private HeraGroupBean parentGroupBean;
     private HeraGroupVo groupVo;
-    private Map<String, HeraJobBean> jobBeanMap = new HashMap<>();
-    private List<HeraGroupBean> child = new ArrayList<>();
+    private Map<String, HeraJobBean> jobBeanMap;
+    private List<HeraGroupBean> child;
 
-    public HierarchyProperties getHierarchyProperties(){
-        if(parentGroupBean!=null){
-            return new HierarchyProperties(parentGroupBean.getHierarchyProperties(), groupVo.getProperties());
+    public HierarchyProperties getHierarchyProperties() {
+        if (parentGroupBean != null) {
+            return new HierarchyProperties(parentGroupBean.getHierarchyProperties(), groupVo.getConfigs());
         }
-        return new HierarchyProperties(groupVo.getProperties());
+        return new HierarchyProperties(groupVo.getConfigs());
     }
 
-    public Map<String, String> getProperties(){
-        return groupVo.getProperties();
+    public Map<String, String> getProperties() {
+        return groupVo.getConfigs();
     }
 
-    public List<Map<String, String>> getHierarchyResources(){
-        List<Map<String, String>> local=new ArrayList<Map<String,String>>(groupVo.getResources());
-        if(local==null){
-            local=new ArrayList<Map<String,String>>();
+    public List<Map<String, String>> getHierarchyResources() {
+        List<Map<String, String>> local = new ArrayList<>();
+        if (groupVo.getResources() != null && groupVo.getResources().size() > 0) {
+            local = groupVo.getResources();
         }
-        if(parentGroupBean!=null){
+        if (parentGroupBean != null) {
             local.addAll(parentGroupBean.getHierarchyResources());
         }
         return local;
     }
 
-    public Map<String,HeraJobBean> getAllSubJobBeans() {
-        Map<String, HeraJobBean> map = new HashMap<>();
+    public Map<String, HeraGroupBean> getAllSubGroupBeans() {
+        Map<String, HeraGroupBean> map = new HashMap<>(1024);
+        for (HeraGroupBean gb : getChild()) {
+            for (HeraGroupBean child : getChild()) {
+                map.put(String.valueOf(child.getGroupVo().getId()), child);
+            }
+            map.putAll(gb.getAllSubGroupBeans());
+        }
+        return map;
+    }
+
+    public Map<String, HeraJobBean> getAllSubJobBeans() {
+        Map<String, HeraJobBean> map = new HashMap<>(1024);
+        for (HeraGroupBean groupBean : getChild()) {
+            map.putAll(groupBean.getAllSubJobBeans());
+        }
+        map.putAll(jobBeanMap);
         return map;
     }
 }

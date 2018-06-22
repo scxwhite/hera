@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class MasterServer {
 
-    //服务引导，监听传入连接
     private ServerBootstrap serverBootstrap;
     private EventLoopGroup bossGroup;
     private EventLoopGroup workGroup;

@@ -18,11 +18,11 @@ public class MasterWorkHolder {
 
     private Channel channel;
 
-    private Map<String, Boolean> running = new ConcurrentHashMap<String, Boolean>();
+    private Map<String, Boolean> running = new ConcurrentHashMap<>();
 
-    private Map<String, Boolean> manningRunning = new ConcurrentHashMap<String, Boolean>();
+    private Map<String, Boolean> manningRunning = new ConcurrentHashMap<>();
 
-    private Map<String, Boolean> debugRunning = new ConcurrentHashMap<String, Boolean>();
+    private Map<String, Boolean> debugRunning = new ConcurrentHashMap<>();
 
     public HeartBeatInfo heartBeatInfo;
 

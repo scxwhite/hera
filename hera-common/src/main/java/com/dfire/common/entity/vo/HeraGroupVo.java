@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,12 +21,25 @@ import java.util.Map;
 public class HeraGroupVo {
 
     private Integer id;
-    private String name;
-    private String owner;
+
+
     private String description;
-    private String configs;
+
+    private Integer directory;
+
+    private Date gmtCreate;
+
+    private Date gmtModified;
+
+    private String name;
+
+    private String owner;
+
+    private Integer parent;
 
 
-    private Map<String, String> properties;
+    private boolean existed;
+
+    private Map<String, String> configs;
     private List<Map<String,String>> resources;
 }

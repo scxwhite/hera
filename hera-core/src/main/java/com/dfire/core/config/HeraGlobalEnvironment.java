@@ -37,43 +37,43 @@ public class HeraGlobalEnvironment {
 
     @Value("${hera.dos2unix-exclude-file}")
     public void setExcludeFile(String excludeFile) {
-        this.excludeFile = excludeFile;
+        HeraGlobalEnvironment.excludeFile = excludeFile;
     }
     @Value("${hera.default-worker-group-id}")
     public void setDefaultWorkerGroup(int defaultWorkerGroup) {
-        this.defaultWorkerGroup = defaultWorkerGroup;
+        HeraGlobalEnvironment.defaultWorkerGroup = defaultWorkerGroup;
     }
     @Value("${hera.preemption-master-group-id}")
     public void setPreemptionMasterGroup(String preemptionMasterGroup) {
-        this.preemptionMasterGroup = preemptionMasterGroup;
+        HeraGlobalEnvironment.preemptionMasterGroup = preemptionMasterGroup;
     }
     @Value("${hera.env}")
     public void setEnv(String env) {
-        this.env = env;
+        HeraGlobalEnvironment.env = env;
     }
     @Value("${hera.scanExceptionRate}")
     public void setScanExceptionRate(Integer scanExceptionRate) {
-        this.scanExceptionRate = scanExceptionRate;
+        HeraGlobalEnvironment.scanExceptionRate = scanExceptionRate;
     }
     @Value("${hera.maxMemRate}")
     public void setMaxMemRate(Float maxMemRate) {
-        this.maxMemRate = maxMemRate;
+        HeraGlobalEnvironment.maxMemRate = maxMemRate;
     }
     @Value("${hera.cpuLoadPerCore}")
     public void setCpuLoadPerCore(Float cpuLoadPerCore) {
-        this.maxCpuLoadPerCore = cpuLoadPerCore;
+        HeraGlobalEnvironment.maxCpuLoadPerCore = cpuLoadPerCore;
     }
     @Value("${hera.scanRate}")
     public void setScanRate(Integer scanRate) {
-        this.scanExceptionRate = scanRate;
+        HeraGlobalEnvironment.scanExceptionRate = scanRate;
     }
     @Value("${hera.connect.port}")
     public void setConnectPort(Integer port) {
-        this.connectPort = port;
+        HeraGlobalEnvironment.connectPort = port;
     }
     @Value("${hera.download-dir}")
     public void setDownloadDir(String dir) {
-        this.downloadDir = dir;
+        HeraGlobalEnvironment.downloadDir = dir;
     }
 
     /**

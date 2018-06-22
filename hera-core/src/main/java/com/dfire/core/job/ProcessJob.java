@@ -46,7 +46,6 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         log.info("获取命令");
 
         List<String> commands = getCommandList();
-        ExecutorService threadPool = Executors.newCachedThreadPool(new HeraHandlerThreadFactory());
 
         for (String command : commands) {
 

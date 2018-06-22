@@ -31,8 +31,8 @@ public interface HeraJobActionMapper {
     @Lang(HeraSelectLangDriver.class)
     HeraAction findById(HeraAction heraAction);
 
-    @Select("select * from hera_action where job_id = #{jobId} order by id desc")
-    List<HeraAction> findByJobId(HeraAction heraAction);
+    @Select("select * from hera_action where job_id = #{jobId} order by id desc limit 1")
+    HeraAction findByJobId(HeraAction heraAction);
 
 
 }

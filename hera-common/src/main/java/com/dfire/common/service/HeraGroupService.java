@@ -1,7 +1,6 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraGroup;
-import com.dfire.common.entity.model.HeraGroupBean;
 import com.dfire.common.entity.model.HeraJobBean;
 
 import java.util.List;
@@ -13,8 +12,14 @@ import java.util.List;
  */
 public interface HeraGroupService {
 
-    HeraGroupBean getGlobalGroup();
+    HeraGroup getRootGroup();
 
+    /**
+     * 获取上游任务以及组
+     *
+     * @param jobId
+     * @return
+     */
     HeraJobBean getUpstreamJobBean(String jobId);
 
     int insert(HeraGroup heraGroup);
