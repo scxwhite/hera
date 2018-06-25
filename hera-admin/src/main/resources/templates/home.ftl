@@ -29,8 +29,8 @@
             <ul style="font-size: 20px;">
                 <li>hive脚本调度</li>
                 <li>shell脚本调度</li>
-                <li>任务直接层级依赖调度</li>
-                <li>我是梅西 现在慌得一比</li>
+                <li>任务之间层级依赖调度</li>
+                <li>我是梅西 现在慌得一比！！！</li>
             </ul>
 
 
