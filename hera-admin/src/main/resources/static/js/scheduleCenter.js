@@ -433,7 +433,8 @@ $(function () {
             async: false,
             data: {
                 actionId: $("#selectJobVersion").val(),
-                triggerType: triggerType
+                triggerType: triggerType,
+                script: $('#script textarea').val()
             },
             success: function (data) {
             }
