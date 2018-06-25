@@ -328,7 +328,7 @@ public class Master {
                         if (retryCount > 20) {
                             if (!heraJob.getConfigs().contains("sameday")) {
                                 if (dependenciesMap.get(dependentId).size() == 0) {
-                                    HeraAction lostJobAction = masterContext.getHeraJobActionService().findByJobId(dependentId);
+                                    HeraAction lostJobAction = masterContext.getHeraJobActionService().findLatestByJobId(dependentId);
                                     actionMap.put(Long.parseLong(lostJobAction.getId()), lostJobAction);
                                     dependActionList.add(lostJobAction);
                                     dependenciesMap.put(dependentId, dependActionList);

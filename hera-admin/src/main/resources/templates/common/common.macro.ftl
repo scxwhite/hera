@@ -102,7 +102,7 @@
             <ul class="sidebar-menu">
 
                 <li class="active treeview menu-open">
-                    <a href="#">
+                    <a href="${request.contextPath}/home">
                         <i class="fa fa-dashboard"></i> <span>首页</span>
                         <span class="pull-right-container">
                               <i class="fa fa-angle-left pull-right"></i>
@@ -125,7 +125,7 @@
 
 
                 <li class="nav-click <#if pageName == "developCenter">active</#if>" ><a href="${request.contextPath}/developCenter"><i class="fa fa-book"></i> <span>开发中心</span></a></li>
-                <li class="nav-click <#if pageName == "scheduleCenter">active</#if>" ><a href="${request.contextPath}/scheduleCenter"><i class="fa fa-book"></i> <span>调度中心</span></a></li>
+                <li class="nav-click <#if pageName == "scheduleCenter">active</#if>" ><a href="${request.contextPath}/scheduleCenter"><i class="fa fa-edit"></i> <span>调度中心</span></a></li>
 
 
 

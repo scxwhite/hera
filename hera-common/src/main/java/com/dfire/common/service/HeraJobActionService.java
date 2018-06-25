@@ -25,7 +25,9 @@ public interface HeraJobActionService {
 
     HeraAction findById(String actionId);
 
-    HeraAction findByJobId(String jobId);
+    HeraAction findLatestByJobId(String jobId);
+
+    List<HeraAction> findByJobId(String jobId);
 
     int updateStatus(JobStatus jobStatus);
 
