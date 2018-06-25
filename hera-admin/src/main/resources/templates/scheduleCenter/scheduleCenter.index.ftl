@@ -37,6 +37,17 @@
         background-color: #DFDFDF;
     }
 
+    .colStyle
+    {
+        margin-right: 0px;
+        margin-left: 0px;
+        margin-top: 0px;
+        padding: 0px;
+        background-color:#eee;
+        border: 1px solid #ddd;
+    }
+
+
 </style>
 
 <body class="hold-transition skin-green sidebar-mini">
@@ -55,11 +66,8 @@
     <div class="content-wrapper">
 
         <section class="content">
-        <#--<div class="container-fluid">-->
-
-        <#--<div class="row-fluid col-wrap">-->
             <div class="row">
-                <div class="col-md-3 col-sm-3 col-lg-3">
+                <div class="col-md-3 col-sm-3 col-lg-3 colStyle" >
 
 
                     <div class="box box-success">
@@ -72,7 +80,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-7 col-sm-7 col-lg-7" style="white-space:nowrap;">
+                <div class="col-md-7 col-sm-7 col-lg-7 colStyle" style="white-space:nowrap;">
 
                     <div class="box box-primary">
 
@@ -449,7 +457,7 @@
 
                 </div>
 
-                <div class="col-md-2 col-lg-2 col-sm-2">
+                <div class="col-md-2 col-lg-2 col-sm-2 colStyle">
                     <div id="groupOperate" class="box" style="display: none">
                         <div class="box-body">
                             <div>
@@ -571,12 +579,9 @@
 
                 </div>
             </div>
+        </section>
     </div>
-<#--</div>-->
-<#--</div>-->
-    </section>
-</div>
-</div>
+
 </div>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="addConfig"
      aria-hidden="true">
@@ -648,7 +653,7 @@
     </div>
 </div>
 
-</div>
+
 
 <@netCommon.commonScript />
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
