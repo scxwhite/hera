@@ -88,7 +88,7 @@ public class MasterHandleWebCancel {
         }
         debugHistory = context.getHeraDebugHistoryService().findById(debugId);
         debugHistory.setEndTime(new Date());
-        debugHistory.setStatusEnum(StatusEnum.FAILED);
+        debugHistory.setStatus(StatusEnum.FAILED);
         context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         return webResponse;
 

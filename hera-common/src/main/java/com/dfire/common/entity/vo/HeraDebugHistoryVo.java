@@ -27,7 +27,7 @@ public class HeraDebugHistoryVo {
 
     private String executeHost;
 
-    private StatusEnum statusEnum;
+    private StatusEnum status;
 
     private String owner;
 

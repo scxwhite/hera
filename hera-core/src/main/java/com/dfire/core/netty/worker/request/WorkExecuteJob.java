@@ -262,9 +262,9 @@ public class WorkExecuteJob {
                     HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
                     heraDebugHistoryVo.setEndTime(new Date());
                     if (exitCode == 0) {
-                        heraDebugHistoryVo.setStatusEnum(StatusEnum.SUCCESS);
+                        heraDebugHistoryVo.setStatus(StatusEnum.SUCCESS);
                     } else {
-                        heraDebugHistoryVo.setStatusEnum(StatusEnum.FAILED);
+                        heraDebugHistoryVo.setStatus(StatusEnum.FAILED);
                     }
                     workContext.getDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
                     HeraDebugHistoryVo debugHistory = workContext.getDebugRunning().get(debugId).getJobContext().getDebugHistory();
