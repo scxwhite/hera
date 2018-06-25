@@ -145,7 +145,7 @@ public class JobUtils {
                 String value = map.get(key);
 
                 if (StringUtils.isBlank(value)) {
-                    if (StringUtils.isBlank(history.getStatisticsEndTime().toString()) || StringUtils.isBlank(history.getTimezone())) {
+                    if (history.getStatisticsEndTime() != null && history.getTimezone() != null) {
                         value = value.replace("${j_set}", history.getStatisticsEndTime().toString());
                         value = value.replace("${j_est}", DateUtil.string2Timestamp(history.getStatisticsEndTime().toString(), history.getTimezone()) / 1000 + "");
                         varMap.put(key, value);
