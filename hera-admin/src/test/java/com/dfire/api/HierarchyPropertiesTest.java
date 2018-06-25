@@ -30,7 +30,7 @@ public class HierarchyPropertiesTest {
 
     @Test
     public void groupBeanTest() {
-        HeraJobBean jobBean = JobGroupGraphTool.getUpstreamJobBean("201806120300000093");
+        HeraJobBean jobBean = JobGroupGraphTool.getUpstreamJobBean("201806250000001414");
 
         HierarchyProperties properties = jobBean.getHierarchyProperties();
         List<Map<String, String>> list = jobBean.getHierarchyResources();

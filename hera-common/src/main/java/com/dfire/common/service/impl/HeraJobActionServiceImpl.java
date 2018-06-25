@@ -76,11 +76,10 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     @Override
     public Tuple<HeraActionVo, JobStatus> findHeraActionVo(String actionId) {
         HeraAction heraActionTmp = findById(actionId);
-        HeraAction heraAction = findLatestByJobId(heraActionTmp.getJobId());
-        if(heraAction == null) {
+        if(heraActionTmp == null) {
             return null;
         }
-        Tuple<HeraActionVo, JobStatus> tuple = BeanConvertUtils.convert(heraAction);
+        Tuple<HeraActionVo, JobStatus> tuple = BeanConvertUtils.convert(heraActionTmp);
         return tuple;
     }
 

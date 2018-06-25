@@ -32,9 +32,9 @@ public class HeraGroupServiceImpl implements HeraGroupService {
 
 
     @Override
-    public HeraJobBean getUpstreamJobBean(String jobId) {
+    public HeraJobBean getUpstreamJobBean(String actionId) {
         //todo 完成层级属性封装
-        return JobGroupGraphTool.getUpstreamJobBean(jobId);
+        return JobGroupGraphTool.getUpstreamJobBean(actionId);
     }
 
 

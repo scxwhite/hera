@@ -55,10 +55,11 @@ public class StringUtil {
     }
 
     public static Map<String, String> convertStringToMap(String config) {
-        if (config == null) {
+        if (config == null || "{}".equals(config)) {
             return new HashMap<>(0);
         }
         JSONObject jsonObject = new JSONObject();
+        System.out.println(config);
         try {
             jsonObject = JSONObject.parseObject(config);
         } catch (JSONPathException e) {

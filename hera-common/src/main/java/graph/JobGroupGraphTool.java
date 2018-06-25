@@ -28,12 +28,12 @@ public class JobGroupGraphTool {
     /**
      * 获取任务以及所在的上级组
      *
-     * @param jobId
+     * @param actionId
      * @return
      */
-    public static HeraJobBean getUpstreamJobBean(String jobId) {
+    public static HeraJobBean getUpstreamJobBean(String actionId) {
         HeraJobActionService jobActionService = (HeraJobActionService) SpringContextHolder.getBean("heraJobActionService");
-        Tuple<HeraActionVo, JobStatus> tuple = jobActionService.findHeraActionVo(jobId);
+        Tuple<HeraActionVo, JobStatus> tuple = jobActionService.findHeraActionVo(actionId);
         if (tuple != null) {
             HeraJobBean jobBean = HeraJobBean.builder()
                     .heraActionVo(tuple.getSource())
