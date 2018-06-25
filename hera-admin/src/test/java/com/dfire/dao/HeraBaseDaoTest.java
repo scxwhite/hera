@@ -143,14 +143,14 @@ public class HeraBaseDaoTest {
     @Test
     public void heraDebugHistoryDaoTest() {
         HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById("271");
-        debugHistory.setStatusEnum(StatusEnum.FAILED);
+        debugHistory.setStatus(StatusEnum.FAILED);
         heraDebugHistoryService.update(BeanConvertUtils.convert(debugHistory));
         HeraDebugHistory history = BeanConvertUtils.convert(debugHistory);
         history.setLog("test11ssss1");
         history.setGmtCreate(new Date());
         history.setGmtModified(new Date());
         heraDebugHistoryService.update(history);
-        System.out.println(debugHistory.getStatusEnum().toString());
+        System.out.println(debugHistory.getStatus().toString());
         System.out.println(history.getLog());
 
     }

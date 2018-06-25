@@ -732,7 +732,7 @@ public class Master {
                 .jobId(debugHistory.getId())
                 .hostGroupId(debugHistory.getHostGroupId())
                 .build();
-        debugHistory.setStatusEnum(StatusEnum.RUNNING);
+        debugHistory.setStatus(StatusEnum.RUNNING);
         debugHistory.setStartTime(new Date());
         debugHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 进入任务队列");
         masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));

@@ -249,7 +249,7 @@ public class WorkClient {
 
         HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
         history.setEndTime(new Date());
-        history.setStatusEnum(StatusEnum.FAILED);
+        history.setStatus(StatusEnum.FAILED);
         workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
         workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
