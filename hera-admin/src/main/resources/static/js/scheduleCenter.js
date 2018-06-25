@@ -408,10 +408,9 @@ $(function () {
     }
 
     function parseJson(obj) {
-        var objMap = JSON.parse(obj);
         var res = "";
-        for (var x in objMap) {
-            res = res + x + "=" + objMap[x] + "\n";
+        for (var x in obj) {
+            res = res + x + "=" + obj[x] + "\n";
         }
         return res;
     }

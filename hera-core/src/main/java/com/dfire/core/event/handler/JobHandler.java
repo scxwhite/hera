@@ -20,6 +20,7 @@ import com.dfire.common.vo.JobStatus;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
+import com.dfire.core.event.listenter.HeraAddJobListener;
 import com.dfire.core.job.CancelHadoopJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
@@ -69,6 +70,18 @@ public class JobHandler extends AbstractHandler {
         registerEventType(Events.Initialize);
     }
 
+    @Override
+    public boolean canHandle(ApplicationEvent event) {
+        if (super.canHandle(event)) {
+            return true;
+        }
+        if (event instanceof HeraJobFailedEvent || event instanceof HeraJobSuccessEvent ||
+                event instanceof HeraJobLostEvent || event instanceof HeraScheduleTriggerEvent ||
+                event instanceof HeraJobMaintenanceEvent) {
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public void handleEvent(ApplicationEvent event) {
