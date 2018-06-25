@@ -7,7 +7,7 @@
 </head>
 
 
-<body class="hold-transition skin-green-light sidebar-mini">
+<body class="hold-transition skin-green sidebar-mini">
 <div class="wrapper">
 
     <!-- header -->
@@ -25,6 +25,16 @@
             <!--------------------------
               | Your Page Content Here |
               -------------------------->
+            <p class="text-center" style="font-size: 30px;color: red">二维火赫拉任务调度系统</p>
+            <ul style="font-size: 20px;">
+                <li>hive脚本调度</li>
+                <li>shell脚本调度</li>
+                <li>任务直接层级依赖调度</li>
+                <li>我是梅西 现在慌得一比</li>
+            </ul>
+
+
+
 
         </section>
         <!-- /.content -->

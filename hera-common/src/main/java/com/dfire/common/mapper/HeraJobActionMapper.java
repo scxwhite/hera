@@ -34,7 +34,10 @@ public interface HeraJobActionMapper {
     HeraAction findById(HeraAction heraAction);
 
     @Select("select * from hera_action where job_id = #{jobId} order by id desc limit 1")
-    HeraAction findByJobId(HeraAction heraAction);
+    HeraAction findLatestByJobId(HeraAction heraAction);
+
+    @Select("select * from hera_action where job_id = #{jobId} order by id")
+    List<HeraAction> findByJobId(HeraAction heraAction);
 
 
 }

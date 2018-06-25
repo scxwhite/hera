@@ -132,8 +132,8 @@ public class ScheduleCenterController {
 
     @RequestMapping(value = "/getJobVersion", method = RequestMethod.GET)
     @ResponseBody
-    public HeraAction getJobVersion(String jobId) {
-        HeraAction list = heraJobActionService.findByJobId(jobId);
+    public List<HeraAction> getJobVersion(String jobId) {
+        List<HeraAction> list = heraJobActionService.findByJobId(jobId);
         return list;
 
     }
