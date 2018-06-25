@@ -17,7 +17,7 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">
     <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
-    <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/skin-blue.css">
+    <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/_all-skins.css">
 
 	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
 
@@ -64,7 +64,7 @@
 
 <#macro commonHeader>
 	<header class="main-header">
-        <a href="/" class="logo">
+        <a href="${request.contextPath}/home" class="logo">
             <span class="logo-mini"><b>赫拉</b></span>
             <span class="logo-lg"><b>赫拉任务调度系统</b></span>
         </a>

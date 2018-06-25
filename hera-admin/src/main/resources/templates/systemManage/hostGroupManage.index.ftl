@@ -23,7 +23,7 @@
 </head>
 
 
-<body class="hold-transition skin-green-light sidebar-mini">
+<body class="hold-transition skin-green sidebar-mini">
 
 <div class="wrapper">
     <!-- header -->
