@@ -86,4 +86,15 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         Tuple<HeraActionVo, JobStatus> tuple = findHeraActionVo(actionId);
         return tuple.getTarget();
     }
+
+    /**
+     * 根据jobId查询版本运行信息，只能是取最新版本信息
+     * @param jobId
+     * @return
+     */
+    @Override
+    public JobStatus findJobStatusByJobId(String jobId) {
+        HeraAction heraAction = findByJobId(jobId);
+        return findJobStatus(heraAction.getId());
+    }
 }

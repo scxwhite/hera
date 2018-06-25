@@ -1,5 +1,6 @@
 package com.dfire.api;
 
+import com.dfire.common.entity.model.HeraGroupBean;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.RenderHierarchyProperties;
@@ -50,6 +51,12 @@ public class HierarchyPropertiesTest {
         System.out.println(list);
 
 
+    }
+
+    @Test
+    public void buildGlobalGraphTest() {
+        HeraGroupBean heraGroupBean = JobGroupGraphTool.buildGlobalGroupBean();
+        System.out.println(heraGroupBean.getAllSubJobBeans().size());
     }
 
 

@@ -89,7 +89,7 @@ public class JobHandler extends AbstractHandler {
     }
 
     public void handleInitialEvent() {
-        JobStatus jobStatus = heraJobActionService.findJobStatus(actionId);
+        JobStatus jobStatus = heraJobActionService.findJobStatusByJobId(actionId);
 
         if (jobStatus != null) {
             if (jobStatus.getStatus() == StatusEnum.RUNNING) {

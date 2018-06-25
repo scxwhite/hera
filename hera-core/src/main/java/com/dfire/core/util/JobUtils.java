@@ -80,7 +80,7 @@ public class JobUtils {
         return job;
     }
 
-    public static Job createJob(JobContext jobContext, HeraJobBean jobBean,
+    public static Job createScheduleJob(JobContext jobContext, HeraJobBean jobBean,
                                 HeraJobHistoryVo history, String workDir, ApplicationContext applicationContext) {
         jobContext.setHeraJobHistory(history);
         jobContext.setWorkDir(workDir);
@@ -189,7 +189,7 @@ public class JobUtils {
                     }
                     JobContext subJobContext = new JobContext(jobContext.getRunType());
                     subJobContext.putData("depth", ++depth);
-                    Job job = createJob(subJobContext, jobBean, history, directory.getAbsolutePath(), applicationContext);
+                    Job job = createScheduleJob(subJobContext, jobBean, history, directory.getAbsolutePath(), applicationContext);
                     jobs.add(job);
                 } else {
                     jobContext.getHeraJobHistory().getLog().appendHera("递归的JobProcessor处理单元深度过大，停止递归");
@@ -231,6 +231,13 @@ public class JobUtils {
         return script;
     }
 
+    /**
+     * 解析脚本中download开头的脚本，解析后存储在jobContext的resources中，在生成ProcessJobContainer时，根据属性生成preProcess,postProcess
+     * @param resources
+     * @param script
+     * @param applicationContext
+     * @return
+     */
     public static String resolveScriptResource(List<Map<String, String>> resources, String script, ApplicationContext applicationContext) {
         Matcher matcher = pattern.matcher(script);
         while (matcher.find()) {

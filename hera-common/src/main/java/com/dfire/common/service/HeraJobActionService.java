@@ -40,4 +40,7 @@ public interface HeraJobActionService {
     JobStatus findJobStatus(String actionId);
 
 
+    JobStatus findJobStatusByJobId(String jobId);
+
+
 }

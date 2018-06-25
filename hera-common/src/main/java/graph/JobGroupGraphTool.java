@@ -93,7 +93,7 @@ public class JobGroupGraphTool {
      *
      * @return
      */
-    public static HeraGroupBean buildGloablaGroupBean() {
+    public static HeraGroupBean buildGlobalGroupBean() {
         HeraGroupService heraGroupService = (HeraGroupService) SpringContextHolder.getBean("heraGroupService");
         HeraGroup rootGroup = heraGroupService.getRootGroup();
         return getUpstreamGroupBean(rootGroup.getId());

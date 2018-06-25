@@ -82,7 +82,7 @@ public class WorkExecuteJob {
                 directory.mkdir();
             }
             HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getActionId());
-            final Job job = JobUtils.createJob(new JobContext(JobContext.MANUAL_RUN),
+            final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.MANUAL_RUN),
                     jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
             workContext.getManualRunning().put(historyId, job);
 
@@ -180,7 +180,7 @@ public class WorkExecuteJob {
                     directory.mkdir();
                 }
 
-                final Job job = JobUtils.createJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
+                final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
                 workContext.getRunning().put(jobId, job);
 
                 Integer exitCode = -1;

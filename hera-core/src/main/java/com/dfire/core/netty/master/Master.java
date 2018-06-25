@@ -71,11 +71,9 @@ public class Master {
         masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
         masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
 
-//        HeraGroupBean globalGroup = JobGroupGraphTool.buildGlobalJobGroupBean();
-//        Map<String, HeraJobBean> allJobBeans = globalGroup.getAllSubJobBeans();
-//        for (String id : allJobBeans.keySet()) {
-//            masterContext.getDispatcher().addJobHandler(new JobHandler(id, this, masterContext));
-//        }
+        List<HeraJob> allJobList = masterContext.getHeraJobService().getAll();
+        allJobList.stream().forEach(heraJob -> masterContext.getDispatcher().
+                addJobHandler(new JobHandler(String.valueOf(heraJob.getId()), this, masterContext)));
 
         masterContext.getDispatcher().forwardEvent(Events.Initialize);
         masterContext.setMaster(this);
