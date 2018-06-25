@@ -91,8 +91,6 @@ public class ScheduleCenterController {
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
     public WebAsyncTask<String> manual(String actionId, Integer triggerType) {
-        actionId = "201806080000000027";
-        triggerType = 1;
         ExecuteKind kind = null;
         TriggerTypeEnum triggerTypeEnum = null;
         if (triggerType == 1) {
