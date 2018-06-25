@@ -5,6 +5,7 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.mapper.HeraJobHistoryMapper;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.vo.JobStatus;
+import com.dfire.common.vo.LogContent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,5 +60,10 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     @Override
     public HeraJobHistory findByActionId(String actionId) {
         return heraJobHistoryMapper.findByActionId(actionId);
+    }
+
+    @Override
+    public Integer updateHeraJobHistoryLogAndStatus(HeraJobHistory heraJobHistory) {
+        return heraJobHistoryMapper.updateHeraJobHistoryLogAndStatus(heraJobHistory);
     }
 }

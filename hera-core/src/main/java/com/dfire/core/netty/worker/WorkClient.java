@@ -271,9 +271,8 @@ public class WorkClient {
             history.setIllustrate("手动取消该任务");
         }
         history.setStatusEnum(StatusEnum.FAILED);
-        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+        workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(history));
 
     }
 

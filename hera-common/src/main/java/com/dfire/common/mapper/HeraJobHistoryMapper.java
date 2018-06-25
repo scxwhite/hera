@@ -48,10 +48,17 @@ public interface HeraJobHistoryMapper {
 
     /**
      * 更新状态
-     * @param jobStatus
+     * @param heraJobHistory
      * @return
      */
     @Update("update hera_action_history set status = #{status}, end_time = #{endTime} where id = #{id}")
-    int updateHeraJobHistoryStatus(HeraJobHistory HeraJobHistory);
+    int updateHeraJobHistoryStatus(HeraJobHistory heraJobHistory);
 
+    /**
+     * 更新日志和状态
+     * @param heraJobHistory
+     * @return
+     */
+    @Update("update hera_action_history set log = #{log},status = #{status},end_time = #{endTime} where id = #{id}")
+    Integer updateHeraJobHistoryLogAndStatus(HeraJobHistory heraJobHistory);
 }

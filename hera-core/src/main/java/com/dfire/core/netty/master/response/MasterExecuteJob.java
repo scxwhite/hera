@@ -89,17 +89,17 @@ public class MasterExecuteJob {
      *
      * @param context
      * @param holder
-     * @param id
+     * @param actionHistoryId
      * @return
      */
-    private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String id) {
+    private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String actionHistoryId) {
 
-        HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(id);
+        HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(actionHistoryId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-        final String jobId = history.getJobId();
-        holder.getRunning().put(jobId, false);
+        final String actionId = history.getActionId();
+        holder.getRunning().put(actionId, false);
 
-        ExecuteMessage message = ExecuteMessage.newBuilder().setJobId(jobId).build();
+        ExecuteMessage message = ExecuteMessage.newBuilder().setJobId(actionId).build();
         final Request request = Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Schedule)
@@ -129,7 +129,7 @@ public class MasterExecuteJob {
                     }
                 });
                 latch.await();
-                holder.getRunning().remove(jobId);
+                holder.getRunning().remove(actionId);
                 return result;
             }
         });

@@ -88,19 +88,13 @@ public class WorkExecuteJob {
                     exception = e;
                     history.getLog().appendHeraException(e);
                 } finally {
-                    HeraJobHistoryVo heraJobHistoryVO = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(history.getId()));
-                    heraJobHistoryVO.setEndTime(new Date());
-                    if (exitCode == 0) {
-                        heraJobHistoryVO.setStatusEnum(StatusEnum.SUCCESS);
-                    } else {
-                        heraJobHistoryVO.setStatusEnum(StatusEnum.FAILED);
-                    }
-                    workContext.getJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVO));
-
-
-                    HeraJobHistoryVo jobHistory = workContext.getManualRunning().get(historyId).getJobContext().getHeraJobHistory();
-                    workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(jobHistory));
-
+                    //更新状态和日志
+                    workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
+                            HeraJobHistory.builder().
+                                    id(history.getId()).
+                                    log(history.getLog().getContent()).status(exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString()).
+                                    endTime(new Date())
+                                    .build());
                     workContext.getManualRunning().remove(historyId);
                 }
 
@@ -143,7 +137,7 @@ public class WorkExecuteJob {
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
-        //TODO 查看master分发 jobId 是否为actionId
+        // 查看master分发 actionHistoryId
         final String jobId = message.getJobId();
         log.info("worker received master request to run schedule, actionId :" + jobId);
         if (workContext.getRunning().containsKey(jobId)) {
@@ -166,6 +160,7 @@ public class WorkExecuteJob {
         Future<Response> future = workContext.getWorkThreadPool().submit(new Callable<Response>() {
             @Override
             public Response call() throws Exception {
+                //开始执行
                 history.setExecuteHost(WorkContext.host);
                 history.setStartTime(new Date());
                 workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
@@ -189,18 +184,13 @@ public class WorkExecuteJob {
                     exception = e;
                     history.getLog().appendHeraException(e);
                 } finally {
-                    HeraJobHistoryVo heraJobHistory = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(history.getId()));
-                    heraJobHistory.setEndTime(new Date());
-                    if (exitCode == 0) {
-                        heraJobHistory.setStatusEnum(StatusEnum.SUCCESS);
-                    } else {
-                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    }
-                    workContext.getJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistory));
-                    heraJobHistory.getLog().appendHera("exitCode=" + exitCode);
-
-                    workContext.getJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
-
+                    //更新状态和日志
+                    workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
+                            HeraJobHistory.builder().
+                                    id(history.getId()).
+                                    log(history.getLog().getContent()).status(exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString()).
+                                    endTime(new Date())
+                                    .build());
                     workContext.getRunning().remove(jobId);
                 }
 
@@ -300,6 +290,10 @@ public class WorkExecuteJob {
             }
         });
         return future;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("002518806416a7b701642524e4fa1b8a".length());
     }
 
 }

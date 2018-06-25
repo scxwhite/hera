@@ -455,13 +455,12 @@ public class Master {
                 HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(historyId);
                 HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
                 historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
-                masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(historyVo));
                 JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(history.getActionId());
 
                 jobStatus.setStatus(StatusEnum.RUNNING);
                 jobStatus.setHistoryId(historyId);
                 historyVo.setStatusEnum(jobStatus.getStatus());
-                masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(historyVo));
+                masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(historyVo));
 
                 Exception exception = null;
                 Response response = null;
@@ -498,10 +497,8 @@ public class Master {
                 } else {
                     jobStatus.setStatus(StatusEnum.SUCCESS);
                     HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(history.getActionId(), historyVo.getTriggerType(), history.getId());
-                    historyVo.setStatusEnum(StatusEnum.SUCCESS);
                     masterContext.getDispatcher().forwardEvent(successEvent);
                 }
-                masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(historyVo));
             }
         });
     }
@@ -525,9 +522,9 @@ public class Master {
      * 调度任务执行前，先获取任务的执行重试时间间隔和重试次数
      *
      * @param workHolder
-     * @param jobId
+     * @param actionId
      */
-    private void runScheduleJob(MasterWorkHolder workHolder, String jobId) {
+    private void runScheduleJob(MasterWorkHolder workHolder, String actionId) {
         final MasterWorkHolder work = workHolder;
         this.executeJobPool.execute(new Runnable() {
             @Override
@@ -535,13 +532,13 @@ public class Master {
                 int runCount = 0;
                 int retryCount = 0;
                 int retryWaitTime = 1;
-                HeraActionVo heraActionVo = masterContext.getHeraJobActionService().findHeraActionVo(jobId).getSource();
+                HeraActionVo heraActionVo = masterContext.getHeraJobActionService().findHeraActionVo(actionId).getSource();
                 Map<String, String> properties = heraActionVo.getConfigs();
                 if (properties != null && properties.size() > 0) {
                     retryCount = Integer.parseInt(properties.get("roll.back.times") == null ? "0" : properties.get("roll.back.times"));
                     retryWaitTime = Integer.parseInt(properties.get("roll.back.wait.time") == null ? "0" : properties.get("roll.back.wait.time"));
                 }
-                runScheduleJobContext(work, jobId, runCount, retryCount, retryWaitTime);
+                runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
             }
         });
     }
@@ -550,12 +547,12 @@ public class Master {
      * 自动调度任务开始执行入口，向master端的channel写请求任务执行请求
      *
      * @param work
-     * @param jobId
+     * @param actionId
      * @param runCount
      * @param retryCount
      * @param retryWaitTime
      */
-    private void runScheduleJobContext(MasterWorkHolder work, String jobId, int runCount, int retryCount, int retryWaitTime) {
+    private void runScheduleJobContext(MasterWorkHolder work, String actionId, int runCount, int retryCount, int retryWaitTime) {
         runCount++;
         boolean isCancelJob = false;
         if (runCount > 1) {
@@ -565,33 +562,32 @@ public class Master {
                 e.printStackTrace();
             }
         }
-        HeraJobHistoryVo heraJobHistoryVo = null;
+        HeraJobHistoryVo heraJobHistoryVo;
         TriggerTypeEnum triggerType = null;
         if (runCount == 1) {
-            //TODO  根据actionId查找zeus_action_history
             HeraJobHistory heraJobHistory = masterContext.getHeraJobHistoryService().
-                    findById(masterContext.getHeraJobActionService().findById(jobId).getHistoryId());
+                    findById(masterContext.getHeraJobActionService().findById(actionId).getHistoryId());
             heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
             triggerType = heraJobHistoryVo.getTriggerType();
             heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
 
         } else {
-            HeraActionVo heraJobVo = masterContext.getHeraJobActionService().findHeraActionVo(jobId).getSource();
-            HeraJobHistoryVo historyVo = HeraJobHistoryVo.builder()
+            HeraActionVo heraJobVo = masterContext.getHeraJobActionService().findHeraActionVo(actionId).getSource();
+            heraJobHistoryVo = HeraJobHistoryVo.builder()
                     .illustrate("失败任务重试，开始执行")
                     .triggerType(TriggerTypeEnum.SCHEDULE)
-                    .jobId(jobId)
+                    .jobId(actionId)
                     .operator(heraJobVo.getOwner())
                     .status(StatusEnum.RUNNING)
                     .hostGroupId(heraJobVo.getHostGroupId())
                     .build();
-            masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(historyVo));
-            historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行");
+            masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(heraJobHistoryVo));
+            heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行");
         }
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(heraJobHistoryVo));
         heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);
-        JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(jobId);
-        jobStatus.setHistoryId(jobId);
+        JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
+        jobStatus.setHistoryId(actionId);
         jobStatus.setStatus(StatusEnum.RUNNING);
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
 
@@ -603,14 +599,14 @@ public class Master {
             response = future.get();
         } catch (Exception e) {
             exception = e;
-            log.error("schedule job run error" + jobId, e);
+            log.error("schedule job run error :" + actionId, e);
             jobStatus.setStatus(StatusEnum.FAILED);
             heraJobHistoryVo.setStatusEnum(jobStatus.getStatus());
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
 
         }
         boolean success = response.getStatus() == Protocol.Status.OK ? true : false;
-        log.info("job_id 执行结果" + jobId + "---->" + response.getStatus());
+        log.info("job_id 执行结果" + actionId + "---->" + response.getStatus());
 
         if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
                 || heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER)) {
@@ -620,7 +616,7 @@ public class Master {
             jobStatus.setStatus(StatusEnum.FAILED);
             HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(heraJobHistoryVo.getId());
             HeraJobHistoryVo jobHistory = BeanConvertUtils.convert(history);
-            HeraJobFailedEvent event = new HeraJobFailedEvent(jobId, triggerType, jobHistory);
+            HeraJobFailedEvent event = new HeraJobFailedEvent(actionId, triggerType, jobHistory);
             event.setRollBackTime(retryWaitTime);
             event.setRunCount(runCount);
             if (jobHistory != null && jobHistory.getIllustrate() != null
@@ -631,13 +627,12 @@ public class Master {
             }
         } else {
             jobStatus.setStatus(StatusEnum.SUCCESS);
-            HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(jobId, triggerType, heraJobHistoryVo.getId());
+            HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, triggerType, heraJobHistoryVo.getId());
             heraJobHistoryVo.setStatus(StatusEnum.SUCCESS);
             masterContext.getDispatcher().forwardEvent(successEvent);
         }
-        masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(heraJobHistoryVo));
         if (runCount < (retryCount + 1) && !success && !isCancelJob) {
-            runScheduleJobContext(work, jobId, runCount, retryCount, retryWaitTime);
+            runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
         }
     }
 
