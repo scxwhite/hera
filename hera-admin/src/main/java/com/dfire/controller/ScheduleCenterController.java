@@ -103,7 +103,6 @@ public class ScheduleCenterController {
         //todo 权限判定
 
         HeraAction heraAction = heraJobActionService.findById(actionId);
-
         HeraJobHistory actionHistory = HeraJobHistory.builder().build();
         actionHistory.setJobId(heraAction.getJobId());
         actionHistory.setActionId(heraAction.getId());
@@ -115,7 +114,8 @@ public class ScheduleCenterController {
         actionHistory.setHostGroupId(heraAction.getHistoryId());
         actionHistory.setProperties("{}");
         heraJobHistoryService.insert(actionHistory);
-
+        heraAction.setScript("ls /");
+        heraJobActionService.update(heraAction);
 
         return new WebAsyncTask<>(3000, () -> {
             try {

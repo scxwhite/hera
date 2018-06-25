@@ -55,8 +55,7 @@ public class HierarchyProperties {
      * @desc 获取属性值, 如果自身属性中没有，则向父属性查询
      */
     public String getProperty(String key) {
-        System.out.println(key + ":" + parent+ "  " + parent.getProperty(key));
-        if (properties.containsKey(key)) {
+        if (properties != null && properties.containsKey(key)) {
             return properties.get(key);
         }
         if (parent != null) {
