@@ -598,14 +598,13 @@ public class Master {
                     ExecuteKind.ScheduleKind, heraJobHistoryVo.getId());
             response = future.get();
         } catch (Exception e) {
-            exception = e;
             log.error("schedule job run error :" + actionId, e);
             jobStatus.setStatus(StatusEnum.FAILED);
             heraJobHistoryVo.setStatusEnum(jobStatus.getStatus());
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
 
         }
-        boolean success = response.getStatus() == Protocol.Status.OK ? true : false;
+        boolean success = response.getStatus() == Protocol.Status.OK;
         log.info("job_id 执行结果" + actionId + "---->" + response.getStatus());
 
         if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
