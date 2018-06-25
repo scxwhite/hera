@@ -428,4 +428,18 @@ public class JobHandler extends AbstractHandler {
         }
 
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof JobHandler)) {
+            return false;
+        }
+        JobHandler jobHandler = (JobHandler) obj;
+        return actionId.equals(jobHandler.getActionId());
+    }
+
+    @Override
+    public int hashCode() {
+        return actionId.hashCode();
+    }
 }
