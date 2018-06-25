@@ -97,8 +97,9 @@ public class JobUtils {
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
         List<Map<String, String>> resource = jobBean.getHierarchyResources();
         HeraJobActionService heraJobActionService = (HeraJobActionService) applicationContext.getBean("heraJobActionService");
-        String jobId = jobBean.getHeraActionVo().getJobId();
-        String script = "ls";
+
+        String jobId = jobBean.getHeraActionVo().getId();
+        String script = heraJobActionService.findHeraActionVo(jobId).getSource().getScript();
         String actionDate = history.getActionId().substring(0, 12) + "00";
         if (StringUtils.isNotBlank(actionDate) && actionDate.length() == 14) {
             script = RenderHierarchyProperties.render(script, actionDate);
@@ -195,12 +196,12 @@ public class JobUtils {
                     jobContext.getHeraJobHistory().getLog().appendHera("递归的JobProcessor处理单元深度过大，停止递归");
                 }
             }
-
         }
         return jobs;
     }
 
     public static String replaceScript(HeraJobHistoryVo history, String script) {
+
         script = script.replace("${j_set}", history.getStatisticsEndTime().toString());
         try {
             script = script.replace("${j_est}", DateUtil.string2Timestamp(history.getStatisticsEndTime().toString(),

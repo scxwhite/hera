@@ -60,7 +60,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             }
             String threadName;
             if (jobContext.getHeraJobHistory() != null && jobContext.getHeraJobHistory().getJobId() != null) {
-                threadName = "jobId=" + jobContext.getHeraJobHistory().getJobId();
+                threadName = "actionId=" + jobContext.getHeraJobHistory().getJobId();
             } else if (jobContext.getDebugHistory() != null && jobContext.getDebugHistory().getId() != null) {
                 threadName = "debugId=" + jobContext.getDebugHistory().getId();
             } else {

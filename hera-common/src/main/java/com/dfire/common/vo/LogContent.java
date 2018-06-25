@@ -22,6 +22,7 @@ public class LogContent {
     private static final String ERROR = "error";
 
     public void appendConsole(String log) {
+        System.out.println("日志信息：" + log);
         if (lines < COUNT) {
             lines++;
             if (log.toLowerCase().contains(ERROR)
@@ -66,6 +67,7 @@ public class LogContent {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         appendHera(sw.toString());
+        System.out.println(sw.toString());
     }
 
     public void setContent(StringBuffer content) {

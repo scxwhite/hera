@@ -4,6 +4,7 @@ $(function () {
     var isGroup;
     var treeObj;
     var selected;
+    var triggerType;
     var setting = {
         view: {
             showLine: false
@@ -14,7 +15,6 @@ $(function () {
                 idKey: "id",
                 pIdKey: "parent",
                 rootPId: 0
-
             }
         },
         callback: {
@@ -23,10 +23,21 @@ $(function () {
         }
     };
 
+    /**
+     * 把当前选中的节点存入localStorage
+     * 页面刷新后，会根据"defaultId"设置当前选中的节点
+     * 避免页面刷新丢失
+     * @param id    节点ID
+     */
     function setCurrentId(id) {
         localStorage.setItem("defaultId", id);
 
     }
+
+    /**
+     * 设置当前默认选中的节点
+     * @param id    节点ID
+     */
     function setDefaultSelectNode(id) {
         if (id != undefined && id != null) {
             treeObj.selectNode(treeObj.getNodeByParam("id", id));
@@ -34,7 +45,11 @@ $(function () {
         }
 
     }
-    //切换任务编辑状态
+
+    /**
+     * 切换任务编辑状态
+     * @param status
+     */
     function changeEditStyle(status) {
         //默认 展示状态
         var val1 = "block", val2 = "none", val3 = true;
@@ -55,7 +70,9 @@ $(function () {
         $('#groupMessageEdit').css("display", "none");
     }
 
-    //任务编辑
+    /**
+     * 任务编辑事件
+     */
     $('#jobOperate [name="edit"]').on('click', function () {
         //回显
         formDataLoad("jobMsgEditForm", focusItem);
@@ -63,6 +80,9 @@ $(function () {
         changeEditStyle(0);
         setJobMessageEdit(focusItem.scheduleType === "0")
     });
+    /**
+     * 任务开启关闭按钮
+     */
     $('#jobOperate [name="switch"]').on('click', function () {
         //回显
         $.ajax({
@@ -80,13 +100,18 @@ $(function () {
             }
         })
     });
+    /**
+     * 添加任务按钮的初始化操作
+     */
     $('#groupOperate [name="addJob"]').on('click', function () {
         $('#addJobModal .modal-title').text(focusItem.name + "下新建任务");
         $('#addJobModal [name="jobName"]').val("");
         $('#addJobModal [name="jobType"]').val("MapReduce");
         $('#addJobModal').modal('show');
     });
-
+    /**
+     * 确认添加任务
+     */
     $('#addJobModal [name="addBtn"]').on('click', function () {
         var name = $('#addJobModal [name="jobName"]').val();
         var type = $('#addJobModal [name="jobType"]').val();
@@ -114,7 +139,9 @@ $(function () {
         })
 
     });
-
+    /**
+     * 选择框事件 动态设置编辑区
+     */
     $('#jobMessageEdit [name="scheduleType"]').change(function () {
         var status = $(this).val();
         //定时调度
@@ -125,6 +152,10 @@ $(function () {
         }
     });
 
+    /**
+     * 动态变化任务编辑界面
+     * @param val
+     */
     function setJobMessageEdit(val) {
         var status1 = "block", status2 = "none";
         if (!val) {
@@ -135,7 +166,10 @@ $(function () {
         $("#jobMessageEdit [name='dependencies']").parent().parent().css("display", status2);
         $("#jobMessageEdit [name='heraDependencyCycle']").parent().parent().css("display", status2);
     }
-    //任务返回
+
+    /**
+     * 编辑返回
+     */
     $('#editOperator [name="back"]').on('click', function () {
         if (!isGroup) {
             changeEditStyle(1);
@@ -144,6 +178,9 @@ $(function () {
 
         }
     });
+    /**
+     * 保存按钮
+     */
     $('#editOperator [name="save"]').on('click', function () {
         if (!isGroup) {
             $.ajax({
@@ -259,7 +296,13 @@ $(function () {
             } else {
                 userConfigs = userConfigs + key + "=" + val + "\n";
             }
+
+
         }
+        if (focusItem.cronExpression == null || focusItem.cronExpression || focusItem.cronExpression == "") {
+            $('#jobMessageEdit [name="cronExpression"]').val("0 0 3 * * ?");
+        }
+
         return userConfigs;
     }
 
@@ -268,17 +311,18 @@ $(function () {
         var id = selected.id;
         var dir = selected.directory;
         focusId = id;
-        var parameter = "jobId=" + id;
         setCurrentId(focusId);
         //如果点击的是任务节点
-        if (!selected.isParent) {
+        if (dir == null || dir == undefined) {
             isGroup = false;
 
             $.ajax({
                 url: "/scheduleCenter/getJobMessage.do",
                 type: "get",
                 async: false,
-                data: parameter,
+                data: {
+                    jobId: id
+                },
                 success: function (data) {
                     focusItem = data;
                     $("#script textarea").val(data.script);
@@ -289,15 +333,18 @@ $(function () {
                     formDataLoad("jobMessage", data);
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
                     $('#config textarea:first').val(initVal(data.configs, "jobMessage"));
-
                     $('#jobMessage [name="auto"]').removeClass("label-success").removeClass("label-default").addClass( data.auto === "开启" ? "label-success" : "label-default");
+
+
                 }
             });
             //获得版本
             jQuery.ajax({
                 url: "/scheduleCenter/getJobVersion.do",
                 type: "get",
-                data: parameter,
+                data: {
+                    jobId: id
+                },
                 success: function (data) {
                     if (data.success == false) {
                         alert(data.message);
@@ -370,18 +417,24 @@ $(function () {
     }
 
     $("#manual").click(function () {
+        triggerType = 1;
         $('#myModal').modal('show');
     });
 
+    $("#manualRecovery").click(function () {
+        triggerType = 2;
+        $('#myModal').modal('show');
+    });
 
     $("#myModal .add-btn").click(function () {
-        var actionId = $("#selectJobVersion").val();
-        var parameter = "actionId=" + actionId+ "&triggerType=" + "1";
         $.ajax({
             url: "/scheduleCenter/manual.do",
             type: "get",
             async: false,
-            data: parameter,
+            data: {
+                actionId: $("#selectJobVersion").val(),
+                triggerType: triggerType
+            },
             success: function (data) {
             }
         });

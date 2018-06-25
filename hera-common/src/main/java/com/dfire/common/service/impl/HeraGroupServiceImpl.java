@@ -1,12 +1,10 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraGroup;
-import com.dfire.common.entity.model.HeraGroupBean;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.mapper.HeraGroupMapper;
 import com.dfire.common.mapper.HeraJobMapper;
 import com.dfire.common.service.HeraGroupService;
-import com.dfire.common.util.BeanConvertUtils;
 import graph.JobGroupGraphTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

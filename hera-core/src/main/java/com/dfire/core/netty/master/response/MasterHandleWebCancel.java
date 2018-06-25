@@ -74,7 +74,7 @@ public class MasterHandleWebCancel {
                         .setStatus(Status.OK)
                         .build();
 
-                log.info("send web cancel response, jobId = " + debugId);
+                log.info("send web cancel response, actionId = " + debugId);
             }
         }
 
@@ -133,7 +133,7 @@ public class MasterHandleWebCancel {
                             .setStatus(Status.OK)
                             .build();
 
-                    log.info("send web cancel response, jobId = " + jobId);
+                    log.info("send web cancel response, actionId = " + jobId);
                 }
             }
         }
@@ -192,7 +192,7 @@ public class MasterHandleWebCancel {
                         .setStatus(Status.OK)
                         .build();
 
-                log.info("send web cancel response, jobId = " + jobId);
+                log.info("send web cancel response, actionId = " + jobId);
             }
         }
 

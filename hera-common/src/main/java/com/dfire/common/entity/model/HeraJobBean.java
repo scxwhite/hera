@@ -3,8 +3,10 @@ package com.dfire.common.entity.model;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.vo.JobStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,8 @@ import java.util.Set;
  */
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class HeraJobBean {
 
     private HeraActionVo heraActionVo;
@@ -38,6 +42,7 @@ public class HeraJobBean {
     public List<Map<String, String>> getHierarchyResources() {
         List<String> existList = new ArrayList<>();
         List<Map<String, String>> local = new ArrayList<>(heraActionVo.getResources());
+
 
         for (Map<String, String> map : local) {
             if (map.get("name") != null && !existList.contains(map.get("name"))) {

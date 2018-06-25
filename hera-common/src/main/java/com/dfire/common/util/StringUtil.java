@@ -55,15 +55,15 @@ public class StringUtil {
     }
 
     public static Map<String, String> convertStringToMap(String config) {
-        Map<String, String> map = new HashMap(8);
         if (config == null) {
-            return map;
+            return new HashMap<>(0);
         }
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject = JSONObject.parseObject(config);
         } catch (JSONPathException e) {
         }
+        Map<String, String> map = new HashMap<>(jsonObject.size());
         for (Object key : jsonObject.keySet()) {
             map.put(key.toString(), jsonObject.getString(key.toString()));
         }
@@ -81,7 +81,7 @@ public class StringUtil {
     public static List<Processor> convertProcessorToList(String processor) {
         List<Processor> list = new ArrayList<>();
         Processor result = null;
-        if (processor.equals("[]")) {
+        if( processor == null || processor.equals("") || processor.equals("[]")) {
             return list;
         }
         JSONObject jsonObject = JSONObject.parseObject(processor);

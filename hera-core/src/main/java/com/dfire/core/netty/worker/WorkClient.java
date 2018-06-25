@@ -41,6 +41,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
+import java.sql.Time;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.concurrent.*;
@@ -134,7 +135,7 @@ public class WorkClient {
                         logContent = "";
                     }
                     log.error(new StringBuilder("log output error!\n")
-                            .append("[jobId:").append(his.getJobId())
+                            .append("[actionId:").append(his.getJobId())
                             .append(", hisId:").append(his.getId())
                             .append(", logLength:")
                             .append(logContent.length()).append("]")
@@ -270,9 +271,8 @@ public class WorkClient {
             history.setIllustrate("手动取消该任务");
         }
         history.setStatusEnum(StatusEnum.FAILED);
-        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+        workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(history));
 
     }
 

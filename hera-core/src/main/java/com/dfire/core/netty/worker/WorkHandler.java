@@ -26,20 +26,19 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
         this.workContext = workContext;
         workContext.setHandler(this);
         Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Future<Response> future = completionService.take();
-                        Response response = future.get();
-                        if (workContext.getServerChannel() != null) {
-                            workContext.getServerChannel().writeAndFlush(wrapper(response));
-                        }
-                        log.info("worker get response thread success");
-                    } catch (Exception e) {
-                        log.error("worker handler take future exception");
+
+        executor.execute(() -> {
+            while (true) {
+                try {
+                    Future<Response> future = completionService.take();
+                    Response response = future.get();
+                    if (workContext.getServerChannel() != null) {
+                        workContext.getServerChannel().writeAndFlush(wrapper(response));
                     }
+                    log.info("worker get response thread success");
+                } catch (Exception e) {
+                    log.error("worker handler take future exception");
+                    throw new RuntimeException(e);
                 }
             }
         });
@@ -71,22 +70,11 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                 final Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 Operate operate = request.getOperate();
                 if (operate == Operate.Schedule || operate == Operate.Manual || operate == Operate.Debug) {
-                    completionService.submit(new Callable<Response>() {
-                        private WorkExecuteJob workExecuteJob = new WorkExecuteJob();
-
-                        @Override
-                        public Response call() throws Exception { return workExecuteJob.execute(workContext, request).get();
-                        }
-                    });
+                    completionService.submit(() ->
+                            new WorkExecuteJob().execute(workContext, request).get());
                 } else if (operate == Operate.Cancel) {
-                    completionService.submit(new Callable<Response>() {
-                        private WorkHandleCancel workHandleCancel = new WorkHandleCancel();
-
-                        @Override
-                        public Response call() throws Exception {
-                            return workHandleCancel.handleCancel(workContext, request).get();
-                        }
-                    });
+                    completionService.submit(() ->
+                            new WorkHandleCancel().handleCancel(workContext, request).get());
                 }
                 break;
             case RESPONSE:

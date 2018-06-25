@@ -85,7 +85,6 @@ public class JobHandler extends AbstractHandler {
         } else if (event.getType() == Events.Initialize) {
             handleInitialEvent();
         }
-
     }
 
     public void handleInitialEvent() {
@@ -199,7 +198,7 @@ public class JobHandler extends AbstractHandler {
                     }
                 }
             }
-            log.info("received a success dependency job with jobId = " + jobId);
+            log.info("received a success dependency job with actionId = " + jobId);
             jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
             heraJobActionService.updateStatus(jobStatus);
         }
@@ -384,7 +383,7 @@ public class JobHandler extends AbstractHandler {
     public void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
 
         JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity("hera").build();
-        jobDetail.getJobDataMap().put("jobId", heraActionVo.getId());
+        jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
         jobDetail.getJobDataMap().put("dispatcher", dispatcher);
         CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression());
         CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("hera").withSchedule(scheduleBuilder).build();
@@ -396,7 +395,7 @@ public class JobHandler extends AbstractHandler {
 
         @Override
         public void execute(JobExecutionContext context) {
-            String jobId = context.getJobDetail().getJobDataMap().getString("jobId");
+            String jobId = context.getJobDetail().getJobDataMap().getString("actionId");
             Dispatcher dispatcher = (Dispatcher) context.getJobDetail().getJobDataMap().get("dispatcher");
             HeraScheduleTriggerEvent scheduledEvent = HeraScheduleTriggerEvent.builder().jobId(jobId).build();
             dispatcher.forwardEvent(scheduledEvent);

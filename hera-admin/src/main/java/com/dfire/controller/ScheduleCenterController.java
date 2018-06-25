@@ -124,7 +124,7 @@ public class ScheduleCenterController {
 
                 workClient.executeJobFromWeb(ExecuteKind.ManualKind, actionHistory.getId());
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
             return "";
         });

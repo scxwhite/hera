@@ -58,18 +58,20 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         this.masterContext = masterContext;
         Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            while (true) {
-                try {
-                    Future<ChannelResponse> future = completionService.take();
-                    ChannelResponse response = future.get();
-                    response.channel.write(wrapper(response.webResponse));
-                    log.info("master get response thread success");
-                } catch (Exception e) {
-                    log.error("master handler future take error");
-                }
 
-            }
-        });
+                    while (true) {
+                        try {
+                            Future<ChannelResponse> future = completionService.take();
+                            ChannelResponse response = future.get();
+                            response.channel.writeAndFlush(wrapper(response.webResponse));
+                            log.info("master send response success");
+                        } catch (Exception e) {
+                            log.error("master handler future take error");
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        );
     }
 
     @Override
@@ -88,16 +90,21 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
-                        completionService.submit(() -> new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest)));
+
+                        completionService.submit(() ->
+                                new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest)));
                         break;
                     case CancelJob:
-                        completionService.submit(() -> new ChannelResponse(channel, masterHandleCancelJob.handleWebCancel(masterContext, webRequest)));
+                        completionService.submit(() ->
+                                new ChannelResponse(channel, masterHandleCancelJob.handleWebCancel(masterContext, webRequest)));
                         break;
                     case UpdateJob:
-                        completionService.submit(() -> new ChannelResponse(channel, masterHandleWebUpdate.handleWebUpdate(masterContext, webRequest)));
+                        completionService.submit(() ->
+                                new ChannelResponse(channel, masterHandleWebUpdate.handleWebUpdate(masterContext, webRequest)));
                         break;
                     case ExecuteDebug:
-                        completionService.submit(() -> new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest)));
+                        completionService.submit(() ->
+                                new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest)));
                         break;
                     default:
                         log.error("unknown operate error");

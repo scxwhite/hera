@@ -32,6 +32,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         Date date = new Date();
         heraJob.setGmtCreate(date);
         heraJob.setGmtModified(date);
+        heraJob.setAuto(0);
         return heraJobMapper.insert(heraJob);
     }
 

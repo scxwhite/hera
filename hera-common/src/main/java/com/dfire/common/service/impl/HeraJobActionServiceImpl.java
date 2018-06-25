@@ -2,12 +2,10 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.vo.HeraActionVo;
-import com.dfire.common.entity.vo.HeraJobVo;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,9 +58,8 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     @Override
     public int updateStatus(JobStatus jobStatus) {
-        HeraAction heraAction = findById(jobStatus.getJobId());
+        HeraAction heraAction = findById(jobStatus.getActionId());
         heraAction.setGmtModified(new Date());
-
         HeraAction tmp  = BeanConvertUtils.convert(jobStatus);
         heraAction.setStatus(tmp.getStatus());
         heraAction.setReadyDependency(jobStatus.getReadyDependency().toString());

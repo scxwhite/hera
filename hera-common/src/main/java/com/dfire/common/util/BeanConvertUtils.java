@@ -95,7 +95,7 @@ public class BeanConvertUtils {
         heraJobVo.setPreProcessors(StringUtil.convertProcessorToList(heraJob.getPreProcessors()));
         heraJobVo.setResources(StringUtil.convertResources(heraJob.getResources()));
         heraJobVo.setId(String.valueOf(heraJob.getId()));
-        heraJobVo.setAuto(Objects.equals("1", heraJob.getAuto()) ? "开启" : "关闭");
+        heraJobVo.setAuto(heraJob.getAuto() == 1 ? "开启" : "关闭");
         heraJobVo.setDependencies(heraJob.getDependencies());
 
         return heraJobVo;
@@ -140,10 +140,10 @@ public class BeanConvertUtils {
     public static Tuple<HeraActionVo, JobStatus> convert(HeraAction action) {
         HeraActionVo heraActionVo = transform(action);
         JobStatus jobStatus = JobStatus.builder().build();
-        jobStatus.setJobId(action.getJobId());
-        jobStatus.setHistoryId(action.getHistoryId() == null ? null : action.getHistoryId());
-        jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency() == null ? null : action.getReadyDependency()));
 
+        jobStatus.setActionId(action.getId());
+        jobStatus.setHistoryId(action.getHistoryId());
+        jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()));
         return new Tuple<>(heraActionVo, jobStatus);
 
     }
@@ -155,7 +155,7 @@ public class BeanConvertUtils {
      * @return
      */
     public static HeraActionVo transform(HeraAction action) {
-        String auto = "1";
+        Integer auto = 1;
         HeraActionVo heraActionVo = HeraActionVo.builder().build();
         BeanUtils.copyProperties(action, heraActionVo);
 
@@ -179,7 +179,8 @@ public class BeanConvertUtils {
         if (jobStatus == null) {
             return heraAction;
         }
-        heraAction.setId(jobStatus.getJobId());
+
+        heraAction.setId(jobStatus.getActionId());
         heraAction.setStatus(jobStatus.getStatus().toString());
         heraAction.setHistoryId(jobStatus.getHistoryId());
         heraAction.setReadyDependency(StringUtil.convertMapToString(jobStatus.getReadyDependency()));

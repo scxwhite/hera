@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.omg.CORBA.INTERNAL;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -21,7 +22,7 @@ public class HeraJob {
 
     private int id;
 
-    private String auto;
+    private Integer auto;
 
     private String configs;
 

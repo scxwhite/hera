@@ -29,7 +29,7 @@ public class MasterHandleWebExecute {
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            log.info("send web execute response, jobId = {} ", jobId);
+            log.info("send web execute response, actionId = {} ", jobId);
             return webResponse;
         } else if (request.getEk() == ExecuteKind.DebugKind) {
             String debugId = request.getId();
