@@ -1,1039 +1,27 @@
-2018-06-22 14:34:07,119 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 14:34:07,120 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 14:34:07,120 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 14:34:07,121 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 14:34:07,129 - Created '20' parsers.
-2018-06-22 14:34:07,131 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 14:34:07,132 - Velocimacro : Default library not found.
-2018-06-22 14:34:07,132 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 14:34:07,132 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 14:34:07,133 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 14:34:07,133 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 14:37:49,290 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 14:37:49,292 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 14:37:49,293 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 14:37:49,293 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 14:37:49,295 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 14:37:49,298 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 14:37:49,298 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 14:37:49,300 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 14:37:49,301 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 14:37:49,302 - Do unicode file recognition:  false
-2018-06-22 14:37:49,302 - FileResourceLoader : adding path '.'
-2018-06-22 14:37:49,306 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 14:37:49,308 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 14:37:49,308 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 14:37:49,310 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 14:37:49,311 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 14:37:49,311 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 14:37:49,323 - Created '20' parsers.
-2018-06-22 14:37:49,328 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 14:37:49,330 - Velocimacro : Default library not found.
-2018-06-22 14:37:49,331 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 14:37:49,331 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 14:37:49,331 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 14:37:49,331 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 14:40:29,399 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 14:40:29,400 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 14:40:29,400 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 14:40:29,400 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 14:40:29,400 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 14:40:29,403 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 14:40:29,403 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 14:40:29,408 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 14:40:29,412 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 14:40:29,412 - Do unicode file recognition:  false
-2018-06-22 14:40:29,413 - FileResourceLoader : adding path '.'
-2018-06-22 14:40:29,421 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 14:40:29,425 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 14:40:29,425 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 14:40:29,426 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 14:40:29,427 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 14:40:29,428 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 14:40:29,440 - Created '20' parsers.
-2018-06-22 14:40:29,442 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 14:40:29,445 - Velocimacro : Default library not found.
-2018-06-22 14:40:29,445 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 14:40:29,445 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 14:40:29,445 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 14:40:29,446 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 14:49:15,628 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 14:49:15,628 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 14:49:15,629 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 14:49:15,629 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 14:49:15,629 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 14:49:15,630 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 14:49:15,630 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 14:49:15,631 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 14:49:15,633 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 14:49:15,634 - Do unicode file recognition:  false
-2018-06-22 14:49:15,634 - FileResourceLoader : adding path '.'
-2018-06-22 14:49:15,639 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 14:49:15,640 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 14:49:15,641 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 14:49:15,642 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 14:49:15,643 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 14:49:15,643 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 14:49:15,655 - Created '20' parsers.
-2018-06-22 14:49:15,659 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 14:49:15,660 - Velocimacro : Default library not found.
-2018-06-22 14:49:15,660 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 14:49:15,660 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 14:49:15,660 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 14:49:15,660 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 15:05:09,888 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 15:05:09,889 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 15:05:09,889 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 15:05:09,889 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 15:05:09,889 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 15:05:09,891 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:05:09,891 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:05:09,892 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 15:05:09,894 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 15:05:09,894 - Do unicode file recognition:  false
-2018-06-22 15:05:09,895 - FileResourceLoader : adding path '.'
-2018-06-22 15:05:09,899 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 15:05:09,900 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 15:05:09,901 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 15:05:09,904 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 15:05:09,905 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 15:05:09,906 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 15:05:09,915 - Created '20' parsers.
-2018-06-22 15:05:09,917 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 15:05:09,917 - Velocimacro : Default library not found.
-2018-06-22 15:05:09,917 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 15:05:09,917 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 15:05:09,917 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 15:05:09,918 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 15:08:27,192 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 15:08:27,194 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 15:08:27,194 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 15:08:27,194 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 15:08:27,194 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 15:08:27,195 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:08:27,196 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:08:27,197 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 15:08:27,200 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 15:08:27,202 - Do unicode file recognition:  false
-2018-06-22 15:08:27,202 - FileResourceLoader : adding path '.'
-2018-06-22 15:08:27,205 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 15:08:27,206 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 15:08:27,207 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 15:08:27,208 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 15:08:27,208 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 15:08:27,209 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 15:08:27,215 - Created '20' parsers.
-2018-06-22 15:08:27,216 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 15:08:27,217 - Velocimacro : Default library not found.
-2018-06-22 15:08:27,217 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 15:08:27,217 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 15:08:27,217 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 15:08:27,217 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 15:11:17,892 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 15:11:17,893 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 15:11:17,893 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 15:11:17,893 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 15:11:17,893 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createDebugJob(JobUtils.java:65)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$4.call(WorkExecuteJob.java:258)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$4.call(WorkExecuteJob.java:246)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 15:11:17,895 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:11:17,895 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:11:17,897 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 15:11:17,902 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 15:11:17,904 - Do unicode file recognition:  false
-2018-06-22 15:11:17,904 - FileResourceLoader : adding path '.'
-2018-06-22 15:11:17,911 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 15:11:17,912 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 15:11:17,913 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 15:11:17,914 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 15:11:17,915 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 15:11:17,916 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 15:11:17,927 - Created '20' parsers.
-2018-06-22 15:11:17,928 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 15:11:17,929 - Velocimacro : Default library not found.
-2018-06-22 15:11:17,929 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 15:11:17,929 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 15:11:17,929 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 15:11:17,929 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 15:13:27,548 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 15:13:27,549 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 15:13:27,549 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 15:13:27,549 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 15:13:27,550 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 15:13:27,552 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:13:27,552 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:13:27,554 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 15:13:27,556 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 15:13:27,557 - Do unicode file recognition:  false
-2018-06-22 15:13:27,557 - FileResourceLoader : adding path '.'
-2018-06-22 15:13:27,562 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 15:13:27,565 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 15:13:27,567 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 15:13:27,568 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 15:13:27,568 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 15:13:27,569 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 15:13:27,578 - Created '20' parsers.
-2018-06-22 15:13:27,579 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 15:13:27,581 - Velocimacro : Default library not found.
-2018-06-22 15:13:27,581 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 15:13:27,581 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 15:13:27,581 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 15:13:27,581 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 15:18:03,917 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 15:18:03,918 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 15:18:03,918 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 15:18:03,918 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 15:18:03,919 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 15:18:03,921 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:18:03,921 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:18:03,922 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 15:18:03,936 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 15:18:03,937 - Do unicode file recognition:  false
-2018-06-22 15:18:03,938 - FileResourceLoader : adding path '.'
-2018-06-22 15:18:03,950 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 15:18:03,952 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 15:18:03,952 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 15:18:03,953 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 15:18:03,954 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 15:18:03,954 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 15:18:03,962 - Created '20' parsers.
-2018-06-22 15:18:03,964 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 15:18:03,965 - Velocimacro : Default library not found.
-2018-06-22 15:18:03,965 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 15:18:03,965 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 15:18:03,965 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 15:18:03,965 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 15:29:09,080 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 15:29:09,081 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 15:29:09,081 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 15:29:09,081 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 15:29:09,082 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 15:29:09,086 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:29:09,086 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:29:09,088 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 15:29:09,090 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 15:29:09,091 - Do unicode file recognition:  false
-2018-06-22 15:29:09,091 - FileResourceLoader : adding path '.'
-2018-06-22 15:29:09,096 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 15:29:09,097 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 15:29:09,098 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 15:29:09,099 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 15:29:09,099 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 15:29:09,100 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 15:29:09,114 - Created '20' parsers.
-2018-06-22 15:29:09,115 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 15:29:09,116 - Velocimacro : Default library not found.
-2018-06-22 15:29:09,117 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 15:29:09,117 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 15:29:09,117 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 15:29:09,117 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-22 15:34:15,159 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-22 15:34:15,160 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-22 15:34:15,160 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-22 15:34:15,160 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-22 15:34:15,161 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-22 15:34:15,163 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:34:15,163 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-22 15:34:15,165 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-22 15:34:15,166 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-22 15:34:15,167 - Do unicode file recognition:  false
-2018-06-22 15:34:15,167 - FileResourceLoader : adding path '.'
-2018-06-22 15:34:15,179 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-22 15:34:15,180 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-22 15:34:15,181 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-22 15:34:15,182 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-22 15:34:15,183 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-22 15:34:15,188 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-22 15:34:15,202 - Created '20' parsers.
-2018-06-22 15:34:15,207 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-22 15:34:15,209 - Velocimacro : Default library not found.
-2018-06-22 15:34:15,209 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-22 15:34:15,209 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-22 15:34:15,209 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-22 15:34:15,209 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 10:19:31,474 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 10:19:31,475 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 10:19:31,475 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 10:19:31,475 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 10:19:31,476 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 10:19:31,477 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 10:19:31,477 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 10:19:31,480 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 10:19:31,483 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 10:19:31,484 - Do unicode file recognition:  false
-2018-06-25 10:19:31,484 - FileResourceLoader : adding path '.'
-2018-06-25 10:19:31,493 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 10:19:31,495 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 10:19:31,495 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 10:19:31,496 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 10:19:31,497 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 10:19:31,498 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 10:19:31,507 - Created '20' parsers.
-2018-06-25 10:19:31,509 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 10:19:31,510 - Velocimacro : Default library not found.
-2018-06-25 10:19:31,510 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 10:19:31,510 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 10:19:31,510 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 10:19:31,510 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 11:03:08,900 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 11:03:08,900 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 11:03:08,900 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 11:03:08,900 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 11:03:08,901 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:181)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:166)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 11:03:08,902 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:03:08,902 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:03:08,904 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 11:03:08,906 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 11:03:08,907 - Do unicode file recognition:  false
-2018-06-25 11:03:08,907 - FileResourceLoader : adding path '.'
-2018-06-25 11:03:08,913 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 11:03:08,915 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 11:03:08,915 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 11:03:08,916 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 11:03:08,917 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 11:03:08,917 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 11:03:08,927 - Created '20' parsers.
-2018-06-25 11:03:08,928 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 11:03:08,929 - Velocimacro : Default library not found.
-2018-06-25 11:03:08,930 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 11:03:08,930 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 11:03:08,930 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 11:03:08,930 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 11:07:51,916 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 11:07:51,917 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 11:07:51,917 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 11:07:51,917 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 11:07:51,918 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:181)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:166)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 11:07:51,923 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:07:51,923 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:07:51,929 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 11:07:51,931 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 11:07:51,932 - Do unicode file recognition:  false
-2018-06-25 11:07:51,933 - FileResourceLoader : adding path '.'
-2018-06-25 11:07:51,944 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 11:07:51,946 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 11:07:51,948 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 11:07:51,952 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 11:07:51,953 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 11:07:51,955 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 11:07:51,968 - Created '20' parsers.
-2018-06-25 11:07:51,971 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 11:07:51,973 - Velocimacro : Default library not found.
-2018-06-25 11:07:51,973 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 11:07:51,973 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 11:07:51,973 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 11:07:51,973 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 11:16:30,761 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 11:16:30,762 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 11:16:30,762 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 11:16:30,762 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 11:16:30,762 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:181)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:166)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 11:16:30,764 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:16:30,764 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:16:30,765 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 11:16:30,767 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 11:16:30,768 - Do unicode file recognition:  false
-2018-06-25 11:16:30,769 - FileResourceLoader : adding path '.'
-2018-06-25 11:16:30,778 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 11:16:30,779 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 11:16:30,780 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 11:16:30,781 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 11:16:30,781 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 11:16:30,782 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 11:16:30,794 - Created '20' parsers.
-2018-06-25 11:16:30,796 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 11:16:30,798 - Velocimacro : Default library not found.
-2018-06-25 11:16:30,798 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 11:16:30,798 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 11:16:30,798 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 11:16:30,798 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 11:25:42,183 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 11:25:42,184 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 11:25:42,184 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 11:25:42,184 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 11:25:42,185 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:181)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:166)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 11:25:42,188 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:25:42,188 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:25:42,189 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 11:25:42,192 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 11:25:42,193 - Do unicode file recognition:  false
-2018-06-25 11:25:42,193 - FileResourceLoader : adding path '.'
-2018-06-25 11:25:42,197 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 11:25:42,200 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 11:25:42,201 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 11:25:42,202 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 11:25:42,204 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 11:25:42,204 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 11:25:42,215 - Created '20' parsers.
-2018-06-25 11:25:42,220 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 11:25:42,220 - Velocimacro : Default library not found.
-2018-06-25 11:25:42,220 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 11:25:42,220 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 11:25:42,220 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 11:25:42,220 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 11:30:07,951 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 11:30:07,952 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 11:30:07,952 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 11:30:07,952 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 11:30:07,953 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:181)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:166)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 11:30:07,955 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:30:07,955 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 11:30:07,957 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 11:30:07,959 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 11:30:07,961 - Do unicode file recognition:  false
-2018-06-25 11:30:07,961 - FileResourceLoader : adding path '.'
-2018-06-25 11:30:07,965 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 11:30:07,966 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 11:30:07,967 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 11:30:07,968 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 11:30:07,968 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 11:30:07,970 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 11:30:07,980 - Created '20' parsers.
-2018-06-25 11:30:07,982 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 11:30:07,984 - Velocimacro : Default library not found.
-2018-06-25 11:30:07,984 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 11:30:07,984 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 11:30:07,984 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 11:30:07,984 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 12:24:43,209 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 12:24:43,210 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 12:24:43,210 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 12:24:43,210 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 12:24:43,212 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 12:24:43,216 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 12:24:43,216 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 12:24:43,221 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 12:24:43,223 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 12:24:43,224 - Do unicode file recognition:  false
-2018-06-25 12:24:43,224 - FileResourceLoader : adding path '.'
-2018-06-25 12:24:43,237 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 12:24:43,239 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 12:24:43,240 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 12:24:43,241 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 12:24:43,241 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 12:24:43,243 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 12:24:43,254 - Created '20' parsers.
-2018-06-25 12:24:43,257 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 12:24:43,258 - Velocimacro : Default library not found.
-2018-06-25 12:24:43,258 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 12:24:43,258 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 12:24:43,258 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 12:24:43,258 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 12:31:50,798 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 12:31:50,799 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 12:31:50,799 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 12:31:50,799 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 12:31:50,799 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 12:31:50,800 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 12:31:50,801 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 12:31:50,806 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 12:31:50,809 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 12:31:50,810 - Do unicode file recognition:  false
-2018-06-25 12:31:50,810 - FileResourceLoader : adding path '.'
-2018-06-25 12:31:50,814 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 12:31:50,815 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 12:31:50,816 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 12:31:50,816 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 12:31:50,817 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 12:31:50,818 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 12:31:50,825 - Created '20' parsers.
-2018-06-25 12:31:50,827 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 12:31:50,827 - Velocimacro : Default library not found.
-2018-06-25 12:31:50,827 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 12:31:50,827 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 12:31:50,827 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 12:31:50,827 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 13:43:24,661 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 13:43:24,662 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 13:43:24,662 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 13:43:24,662 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 13:43:24,663 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 13:43:24,664 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 13:43:24,664 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 13:43:24,666 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 13:43:24,672 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 13:43:24,675 - Do unicode file recognition:  false
-2018-06-25 13:43:24,675 - FileResourceLoader : adding path '.'
-2018-06-25 13:43:24,682 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 13:43:24,689 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 13:43:24,691 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 13:43:24,692 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 13:43:24,693 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 13:43:24,694 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 13:43:24,710 - Created '20' parsers.
-2018-06-25 13:43:24,712 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 13:43:24,713 - Velocimacro : Default library not found.
-2018-06-25 13:43:24,713 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 13:43:24,713 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 13:43:24,714 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 13:43:24,714 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 14:39:03,777 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 14:39:03,780 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 14:39:03,780 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 14:39:03,780 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 14:39:03,782 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
-java.lang.NoClassDefFoundError: org/apache/log/Priority
-	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
-	at java.lang.Class.forName0(Native Method)
-	at java.lang.Class.forName(Class.java:348)
-	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
-	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
-	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
-	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
-	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
-	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
-	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
-	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
-	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
-	at com.dfire.core.util.JobUtils.createJob(JobUtils.java:94)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
-	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
-	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
-	at java.util.concurrent.FutureTask.run(FutureTask.java)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
-	at java.lang.Thread.run(Thread.java:748)
-Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
-	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
-	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
-	... 20 more
-2018-06-25 14:39:03,785 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 14:39:03,785 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 14:39:03,787 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 14:39:03,791 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 14:39:03,794 - Do unicode file recognition:  false
-2018-06-25 14:39:03,795 - FileResourceLoader : adding path '.'
-2018-06-25 14:39:03,805 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 14:39:03,807 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 14:39:03,809 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 14:39:03,811 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 14:39:03,813 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 14:39:03,815 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 14:39:03,830 - Created '20' parsers.
-2018-06-25 14:39:03,832 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 14:39:03,833 - Velocimacro : Default library not found.
-2018-06-25 14:39:03,833 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 14:39:03,833 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 14:39:03,833 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 14:39:03,833 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 15:31:56,275 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 15:31:56,276 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 15:31:56,276 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 15:31:56,276 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 15:31:56,277 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+2018-06-25 15:39:43,394 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:39:43,394 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:39:43,396 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 15:39:43,398 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 15:39:43,399 - Do unicode file recognition:  false
+2018-06-25 15:39:43,399 - FileResourceLoader : adding path '.'
+2018-06-25 15:39:43,402 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 15:39:43,404 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 15:39:43,405 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 15:39:43,405 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 15:39:43,406 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 15:39:43,407 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 15:39:43,415 - Created '20' parsers.
+2018-06-25 15:39:43,416 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 15:39:43,417 - Velocimacro : Default library not found.
+2018-06-25 15:39:43,417 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 15:39:43,417 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 15:39:43,417 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 15:39:43,417 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 15:42:04,845 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 15:42:04,846 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 15:42:04,846 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 15:42:04,846 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 15:42:04,847 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
 java.lang.NoClassDefFoundError: org/apache/log/Priority
 	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
 	at java.lang.Class.forName0(Native Method)
@@ -1061,30 +49,30 @@ Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
 	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
 	... 20 more
-2018-06-25 15:31:56,278 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 15:31:56,278 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 15:31:56,281 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 15:31:56,284 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 15:31:56,286 - Do unicode file recognition:  false
-2018-06-25 15:31:56,286 - FileResourceLoader : adding path '.'
-2018-06-25 15:31:56,295 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 15:31:56,297 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 15:31:56,297 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 15:31:56,298 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 15:31:56,299 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 15:31:56,300 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 15:31:56,310 - Created '20' parsers.
-2018-06-25 15:31:56,312 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 15:31:56,314 - Velocimacro : Default library not found.
-2018-06-25 15:31:56,314 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 15:31:56,314 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 15:31:56,314 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 15:31:56,314 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 15:32:54,424 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 15:32:54,425 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 15:32:54,425 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 15:32:54,425 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 15:32:54,425 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+2018-06-25 15:42:04,848 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:42:04,848 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:42:04,850 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 15:42:04,851 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 15:42:04,852 - Do unicode file recognition:  false
+2018-06-25 15:42:04,852 - FileResourceLoader : adding path '.'
+2018-06-25 15:42:04,856 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 15:42:04,857 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 15:42:04,858 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 15:42:04,859 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 15:42:04,859 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 15:42:04,860 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 15:42:04,867 - Created '20' parsers.
+2018-06-25 15:42:04,869 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 15:42:04,869 - Velocimacro : Default library not found.
+2018-06-25 15:42:04,869 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 15:42:04,869 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 15:42:04,869 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 15:42:04,869 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 15:47:24,359 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 15:47:24,360 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 15:47:24,360 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 15:47:24,360 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 15:47:24,361 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
 java.lang.NoClassDefFoundError: org/apache/log/Priority
 	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
 	at java.lang.Class.forName0(Native Method)
@@ -1112,30 +100,183 @@ Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
 	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
 	... 20 more
-2018-06-25 15:32:54,427 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 15:32:54,427 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 15:32:54,428 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 15:32:54,429 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 15:32:54,430 - Do unicode file recognition:  false
-2018-06-25 15:32:54,430 - FileResourceLoader : adding path '.'
-2018-06-25 15:32:54,435 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 15:32:54,436 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 15:32:54,437 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 15:32:54,438 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 15:32:54,439 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 15:32:54,440 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 15:32:54,449 - Created '20' parsers.
-2018-06-25 15:32:54,450 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 15:32:54,451 - Velocimacro : Default library not found.
-2018-06-25 15:32:54,451 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 15:32:54,451 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 15:32:54,451 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 15:32:54,451 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 15:38:14,517 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 15:38:14,520 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 15:38:14,520 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 15:38:14,520 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 15:38:14,522 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+2018-06-25 15:47:24,362 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:47:24,363 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:47:24,364 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 15:47:24,366 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 15:47:24,437 - Do unicode file recognition:  false
+2018-06-25 15:47:24,437 - FileResourceLoader : adding path '.'
+2018-06-25 15:47:24,442 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 15:47:24,443 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 15:47:24,444 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 15:47:24,445 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 15:47:24,447 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 15:47:24,448 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 15:47:24,459 - Created '20' parsers.
+2018-06-25 15:47:24,460 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 15:47:24,461 - Velocimacro : Default library not found.
+2018-06-25 15:47:24,461 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 15:47:24,461 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 15:47:24,461 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 15:47:24,461 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 15:48:58,950 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 15:48:58,950 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 15:48:58,950 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 15:48:58,951 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 15:48:58,951 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 15:48:58,952 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:48:58,952 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:48:58,954 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 15:48:58,955 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 15:48:58,956 - Do unicode file recognition:  false
+2018-06-25 15:48:58,956 - FileResourceLoader : adding path '.'
+2018-06-25 15:48:58,960 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 15:48:58,961 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 15:48:58,962 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 15:48:58,962 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 15:48:58,963 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 15:48:58,963 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 15:48:58,971 - Created '20' parsers.
+2018-06-25 15:48:58,972 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 15:48:58,973 - Velocimacro : Default library not found.
+2018-06-25 15:48:58,973 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 15:48:58,973 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 15:48:58,973 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 15:48:58,973 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 15:50:09,577 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 15:50:09,577 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 15:50:09,577 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 15:50:09,577 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 15:50:09,578 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 15:50:09,579 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:50:09,579 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:50:09,581 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 15:50:09,582 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 15:50:09,583 - Do unicode file recognition:  false
+2018-06-25 15:50:09,583 - FileResourceLoader : adding path '.'
+2018-06-25 15:50:09,587 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 15:50:09,588 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 15:50:09,589 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 15:50:09,589 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 15:50:09,590 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 15:50:09,590 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 15:50:09,598 - Created '20' parsers.
+2018-06-25 15:50:09,599 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 15:50:09,599 - Velocimacro : Default library not found.
+2018-06-25 15:50:09,600 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 15:50:09,600 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 15:50:09,600 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 15:50:09,600 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 15:51:20,556 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 15:51:20,557 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 15:51:20,557 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 15:51:20,557 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 15:51:20,558 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 15:51:20,559 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:51:20,559 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:51:20,561 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 15:51:20,562 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 15:51:20,563 - Do unicode file recognition:  false
+2018-06-25 15:51:20,563 - FileResourceLoader : adding path '.'
+2018-06-25 15:51:20,567 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 15:51:20,568 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 15:51:20,569 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 15:51:20,570 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 15:51:20,570 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 15:51:20,571 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 15:51:20,607 - Created '20' parsers.
+2018-06-25 15:51:20,609 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 15:51:20,609 - Velocimacro : Default library not found.
+2018-06-25 15:51:20,609 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 15:51:20,610 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 15:51:20,610 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 15:51:20,610 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 15:55:20,446 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 15:55:20,447 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 15:55:20,447 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 15:55:20,447 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 15:55:20,448 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
 java.lang.NoClassDefFoundError: org/apache/log/Priority
 	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
 	at java.lang.Class.forName0(Native Method)
@@ -1163,30 +304,285 @@ Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
 	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
 	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
 	... 20 more
-2018-06-25 15:38:14,526 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 15:38:14,527 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
-2018-06-25 15:38:14,528 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
-2018-06-25 15:38:14,534 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
-2018-06-25 15:38:14,538 - Do unicode file recognition:  false
-2018-06-25 15:38:14,538 - FileResourceLoader : adding path '.'
-2018-06-25 15:38:14,547 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
-2018-06-25 15:38:14,552 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
-2018-06-25 15:38:14,554 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
-2018-06-25 15:38:14,555 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
-2018-06-25 15:38:14,556 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
-2018-06-25 15:38:14,557 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
-2018-06-25 15:38:14,567 - Created '20' parsers.
-2018-06-25 15:38:14,570 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
-2018-06-25 15:38:14,571 - Velocimacro : Default library not found.
-2018-06-25 15:38:14,571 - Velocimacro : allowInline = true : VMs can be defined inline in templates
-2018-06-25 15:38:14,571 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
-2018-06-25 15:38:14,571 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
-2018-06-25 15:38:14,571 - Velocimacro : autoload off : VM system will not automatically reload global library macros
-2018-06-25 15:39:43,389 - Log4JLogChute initialized using file 'velocity.log'
-2018-06-25 15:39:43,390 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
-2018-06-25 15:39:43,390 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
-2018-06-25 15:39:43,390 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
-2018-06-25 15:39:43,391 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+2018-06-25 15:55:20,449 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:55:20,449 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:55:20,451 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 15:55:20,452 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 15:55:20,453 - Do unicode file recognition:  false
+2018-06-25 15:55:20,453 - FileResourceLoader : adding path '.'
+2018-06-25 15:55:20,457 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 15:55:20,458 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 15:55:20,459 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 15:55:20,460 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 15:55:20,460 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 15:55:20,461 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 15:55:20,469 - Created '20' parsers.
+2018-06-25 15:55:20,470 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 15:55:20,471 - Velocimacro : Default library not found.
+2018-06-25 15:55:20,471 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 15:55:20,471 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 15:55:20,471 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 15:55:20,471 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 15:59:07,674 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 15:59:07,676 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 15:59:07,676 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 15:59:07,676 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 15:59:07,676 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 15:59:07,678 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:59:07,678 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 15:59:07,679 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 15:59:07,680 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 15:59:07,681 - Do unicode file recognition:  false
+2018-06-25 15:59:07,681 - FileResourceLoader : adding path '.'
+2018-06-25 15:59:07,685 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 15:59:07,686 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 15:59:07,686 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 15:59:07,687 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 15:59:07,688 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 15:59:07,688 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 15:59:07,695 - Created '20' parsers.
+2018-06-25 15:59:07,696 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 15:59:07,697 - Velocimacro : Default library not found.
+2018-06-25 15:59:07,697 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 15:59:07,697 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 15:59:07,697 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 15:59:07,697 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 16:00:04,079 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 16:00:04,080 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 16:00:04,080 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 16:00:04,080 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 16:00:04,080 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 16:00:04,081 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:00:04,081 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:00:04,082 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 16:00:04,084 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 16:00:04,085 - Do unicode file recognition:  false
+2018-06-25 16:00:04,085 - FileResourceLoader : adding path '.'
+2018-06-25 16:00:04,089 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 16:00:04,090 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 16:00:04,090 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 16:00:04,091 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 16:00:04,092 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 16:00:04,092 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 16:00:04,100 - Created '20' parsers.
+2018-06-25 16:00:04,101 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 16:00:04,102 - Velocimacro : Default library not found.
+2018-06-25 16:00:04,102 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 16:00:04,102 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 16:00:04,102 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 16:00:04,102 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 16:00:56,262 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 16:00:56,263 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 16:00:56,263 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 16:00:56,263 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 16:00:56,263 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 16:00:56,264 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:00:56,264 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:00:56,265 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 16:00:56,268 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 16:00:56,269 - Do unicode file recognition:  false
+2018-06-25 16:00:56,269 - FileResourceLoader : adding path '.'
+2018-06-25 16:00:56,273 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 16:00:56,274 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 16:00:56,274 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 16:00:56,275 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 16:00:56,276 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 16:00:56,276 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 16:00:56,283 - Created '20' parsers.
+2018-06-25 16:00:56,285 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 16:00:56,285 - Velocimacro : Default library not found.
+2018-06-25 16:00:56,285 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 16:00:56,285 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 16:00:56,285 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 16:00:56,285 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 16:02:33,901 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 16:02:33,902 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 16:02:33,902 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 16:02:33,902 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 16:02:33,903 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 16:02:33,904 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:02:33,904 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:02:33,905 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 16:02:33,907 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 16:02:33,908 - Do unicode file recognition:  false
+2018-06-25 16:02:33,908 - FileResourceLoader : adding path '.'
+2018-06-25 16:02:33,912 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 16:02:33,913 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 16:02:33,913 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 16:02:33,914 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 16:02:33,915 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 16:02:33,915 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 16:02:33,923 - Created '20' parsers.
+2018-06-25 16:02:33,924 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 16:02:33,924 - Velocimacro : Default library not found.
+2018-06-25 16:02:33,924 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 16:02:33,924 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 16:02:33,925 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 16:02:33,925 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 16:07:05,478 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 16:07:05,479 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 16:07:05,479 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 16:07:05,479 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 16:07:05,480 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 16:07:05,481 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:07:05,481 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:07:05,483 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 16:07:05,485 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 16:07:05,486 - Do unicode file recognition:  false
+2018-06-25 16:07:05,486 - FileResourceLoader : adding path '.'
+2018-06-25 16:07:05,491 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 16:07:05,493 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 16:07:05,493 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 16:07:05,494 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 16:07:05,495 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 16:07:05,496 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 16:07:05,506 - Created '20' parsers.
+2018-06-25 16:07:05,508 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 16:07:05,509 - Velocimacro : Default library not found.
+2018-06-25 16:07:05,510 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 16:07:05,510 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 16:07:05,510 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 16:07:05,510 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 16:11:05,388 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 16:11:05,389 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 16:11:05,389 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 16:11:05,389 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 16:11:05,389 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
 java.lang.NoClassDefFoundError: org/apache/log/Priority
 	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
 	at java.lang.Class.forName0(Native Method)
@@ -1203,6 +599,618 @@ java.lang.NoClassDefFoundError: org/apache/log/Priority
 	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
 	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
 	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 16:11:05,391 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:11:05,391 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:11:05,392 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 16:11:05,394 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 16:11:05,395 - Do unicode file recognition:  false
+2018-06-25 16:11:05,395 - FileResourceLoader : adding path '.'
+2018-06-25 16:11:05,399 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 16:11:05,400 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 16:11:05,401 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 16:11:05,401 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 16:11:05,402 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 16:11:05,403 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 16:11:05,410 - Created '20' parsers.
+2018-06-25 16:11:05,411 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 16:11:05,412 - Velocimacro : Default library not found.
+2018-06-25 16:11:05,412 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 16:11:05,412 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 16:11:05,412 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 16:11:05,412 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 16:15:16,473 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 16:15:16,474 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 16:15:16,474 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 16:15:16,474 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 16:15:16,474 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 16:15:16,475 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:15:16,475 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:15:16,476 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 16:15:16,478 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 16:15:16,479 - Do unicode file recognition:  false
+2018-06-25 16:15:16,479 - FileResourceLoader : adding path '.'
+2018-06-25 16:15:16,483 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 16:15:16,484 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 16:15:16,484 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 16:15:16,485 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 16:15:16,486 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 16:15:16,486 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 16:15:16,494 - Created '20' parsers.
+2018-06-25 16:15:16,495 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 16:15:16,496 - Velocimacro : Default library not found.
+2018-06-25 16:15:16,496 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 16:15:16,496 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 16:15:16,496 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 16:15:16,496 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 16:16:35,509 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 16:16:35,509 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 16:16:35,509 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 16:16:35,509 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 16:16:35,510 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 16:16:35,511 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:16:35,511 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:16:35,512 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 16:16:35,514 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 16:16:35,515 - Do unicode file recognition:  false
+2018-06-25 16:16:35,515 - FileResourceLoader : adding path '.'
+2018-06-25 16:16:35,518 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 16:16:35,520 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 16:16:35,521 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 16:16:35,521 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 16:16:35,522 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 16:16:35,522 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 16:16:35,530 - Created '20' parsers.
+2018-06-25 16:16:35,531 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 16:16:35,532 - Velocimacro : Default library not found.
+2018-06-25 16:16:35,532 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 16:16:35,532 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 16:16:35,532 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 16:16:35,532 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 16:25:39,237 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 16:25:39,238 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 16:25:39,238 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 16:25:39,238 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 16:25:39,239 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 16:25:39,240 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:25:39,240 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:25:39,241 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 16:25:39,243 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 16:25:39,244 - Do unicode file recognition:  false
+2018-06-25 16:25:39,244 - FileResourceLoader : adding path '.'
+2018-06-25 16:25:39,248 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 16:25:39,249 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 16:25:39,250 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 16:25:39,251 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 16:25:39,251 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 16:25:39,252 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 16:25:39,259 - Created '20' parsers.
+2018-06-25 16:25:39,261 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 16:25:39,262 - Velocimacro : Default library not found.
+2018-06-25 16:25:39,262 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 16:25:39,262 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 16:25:39,262 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 16:25:39,262 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 16:30:52,702 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 16:30:52,704 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 16:30:52,704 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 16:30:52,705 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 16:30:52,706 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:79)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$1.call(WorkExecuteJob.java:65)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 16:30:52,708 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:30:52,709 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 16:30:52,711 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 16:30:52,713 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 16:30:52,714 - Do unicode file recognition:  false
+2018-06-25 16:30:52,714 - FileResourceLoader : adding path '.'
+2018-06-25 16:30:52,719 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 16:30:52,720 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 16:30:52,721 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 16:30:52,722 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 16:30:52,722 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 16:30:52,723 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 16:30:52,730 - Created '20' parsers.
+2018-06-25 16:30:52,732 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 16:30:52,733 - Velocimacro : Default library not found.
+2018-06-25 16:30:52,733 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 16:30:52,733 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 16:30:52,733 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 16:30:52,733 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 17:00:41,450 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 17:00:41,451 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 17:00:41,452 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 17:00:41,452 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 17:00:41,452 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 17:00:41,453 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 17:00:41,453 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 17:00:41,455 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 17:00:41,457 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 17:00:41,459 - Do unicode file recognition:  false
+2018-06-25 17:00:41,459 - FileResourceLoader : adding path '.'
+2018-06-25 17:00:41,467 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 17:00:41,468 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 17:00:41,469 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 17:00:41,470 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 17:00:41,471 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 17:00:41,472 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 17:00:41,488 - Created '20' parsers.
+2018-06-25 17:00:41,490 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 17:00:41,491 - Velocimacro : Default library not found.
+2018-06-25 17:00:41,491 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 17:00:41,491 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 17:00:41,491 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 17:00:41,491 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 17:35:27,460 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 17:35:27,461 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 17:35:27,461 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 17:35:27,461 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 17:35:27,461 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 17:35:27,463 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 17:35:27,463 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 17:35:27,465 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 17:35:27,467 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 17:35:27,468 - Do unicode file recognition:  false
+2018-06-25 17:35:27,468 - FileResourceLoader : adding path '.'
+2018-06-25 17:35:27,476 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 17:35:27,478 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 17:35:27,478 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 17:35:27,479 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 17:35:27,480 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 17:35:27,480 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 17:35:27,490 - Created '20' parsers.
+2018-06-25 17:35:27,492 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 17:35:27,493 - Velocimacro : Default library not found.
+2018-06-25 17:35:27,493 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 17:35:27,493 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 17:35:27,493 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 17:35:27,493 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 17:37:07,462 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 17:37:07,463 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 17:37:07,463 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 17:37:07,463 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 17:37:07,464 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 17:37:07,465 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 17:37:07,465 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 17:37:07,466 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 17:37:07,468 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 17:37:07,469 - Do unicode file recognition:  false
+2018-06-25 17:37:07,469 - FileResourceLoader : adding path '.'
+2018-06-25 17:37:07,473 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 17:37:07,474 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 17:37:07,474 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 17:37:07,475 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 17:37:07,476 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 17:37:07,476 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 17:37:07,484 - Created '20' parsers.
+2018-06-25 17:37:07,485 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 17:37:07,486 - Velocimacro : Default library not found.
+2018-06-25 17:37:07,486 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 17:37:07,486 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 17:37:07,486 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 17:37:07,486 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 17:38:33,937 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 17:38:33,938 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 17:38:33,938 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 17:38:33,938 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 17:38:33,940 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 17:38:33,943 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 17:38:33,943 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 17:38:33,944 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 17:38:33,946 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 17:38:33,948 - Do unicode file recognition:  false
+2018-06-25 17:38:33,948 - FileResourceLoader : adding path '.'
+2018-06-25 17:38:33,953 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 17:38:33,954 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 17:38:33,954 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 17:38:33,955 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 17:38:33,956 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 17:38:33,956 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 17:38:33,964 - Created '20' parsers.
+2018-06-25 17:38:33,965 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 17:38:33,966 - Velocimacro : Default library not found.
+2018-06-25 17:38:33,966 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 17:38:33,966 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 17:38:33,966 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 17:38:33,966 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 18:58:47,675 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 18:58:47,676 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 18:58:47,676 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 18:58:47,676 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 18:58:47,677 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 18:58:47,678 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 18:58:47,678 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 18:58:47,680 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 18:58:47,684 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 18:58:47,686 - Do unicode file recognition:  false
+2018-06-25 18:58:47,686 - FileResourceLoader : adding path '.'
+2018-06-25 18:58:47,695 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 18:58:47,697 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 18:58:47,697 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 18:58:47,699 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 18:58:47,700 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 18:58:47,700 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 18:58:47,711 - Created '20' parsers.
+2018-06-25 18:58:47,713 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 18:58:47,714 - Velocimacro : Default library not found.
+2018-06-25 18:58:47,715 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 18:58:47,715 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 18:58:47,715 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 18:58:47,715 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 19:10:40,745 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 19:10:40,746 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 19:10:40,746 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 19:10:40,747 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 19:10:40,747 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 19:10:40,748 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 19:10:40,748 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 19:10:40,750 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 19:10:40,752 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 19:10:40,753 - Do unicode file recognition:  false
+2018-06-25 19:10:40,753 - FileResourceLoader : adding path '.'
+2018-06-25 19:10:40,758 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 19:10:40,759 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 19:10:40,760 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 19:10:40,761 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 19:10:40,761 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 19:10:40,762 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 19:10:40,771 - Created '20' parsers.
+2018-06-25 19:10:40,773 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 19:10:40,773 - Velocimacro : Default library not found.
+2018-06-25 19:10:40,774 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 19:10:40,774 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 19:10:40,774 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 19:10:40,774 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 19:40:33,979 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 19:40:33,980 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 19:40:33,980 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 19:40:33,980 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 19:40:33,981 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
+	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
+	at java.util.concurrent.FutureTask.run(FutureTask.java)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.lang.ClassNotFoundException: org.apache.log.Priority
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:338)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	... 20 more
+2018-06-25 19:40:33,982 - Trying to use logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 19:40:33,982 - Using logger class org.apache.velocity.runtime.log.Log4JLogChute
+2018-06-25 19:40:33,984 - Default ResourceManager initializing. (class org.apache.velocity.runtime.resource.ResourceManagerImpl)
+2018-06-25 19:40:33,987 - ResourceLoader instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+2018-06-25 19:40:33,988 - Do unicode file recognition:  false
+2018-06-25 19:40:33,988 - FileResourceLoader : adding path '.'
+2018-06-25 19:40:33,997 - ResourceCache: initialized (class org.apache.velocity.runtime.resource.ResourceCacheImpl)
+2018-06-25 19:40:33,998 - Loaded System Directive: org.apache.velocity.runtime.directive.Literal
+2018-06-25 19:40:33,999 - Loaded System Directive: org.apache.velocity.runtime.directive.Macro
+2018-06-25 19:40:34,000 - Loaded System Directive: org.apache.velocity.runtime.directive.Parse
+2018-06-25 19:40:34,001 - Loaded System Directive: org.apache.velocity.runtime.directive.Include
+2018-06-25 19:40:34,001 - Loaded System Directive: org.apache.velocity.runtime.directive.Foreach
+2018-06-25 19:40:34,018 - Created '20' parsers.
+2018-06-25 19:40:34,020 - Velocimacro : "velocimacro.library" is not set.  Trying default library: VM_global_library.vm
+2018-06-25 19:40:34,021 - Velocimacro : Default library not found.
+2018-06-25 19:40:34,021 - Velocimacro : allowInline = true : VMs can be defined inline in templates
+2018-06-25 19:40:34,021 - Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+2018-06-25 19:40:34,021 - Velocimacro : allowInlineLocal = false : VMs defined inline will be global in scope if allowed.
+2018-06-25 19:40:34,021 - Velocimacro : autoload off : VM system will not automatically reload global library macros
+2018-06-25 19:44:30,413 - Log4JLogChute initialized using file 'velocity.log'
+2018-06-25 19:44:30,414 - Starting Apache Velocity v1.5 (compiled: 2007-02-22 08:52:29)
+2018-06-25 19:44:30,414 - Default Properties File: org/apache/velocity/runtime/defaults/velocity.properties
+2018-06-25 19:44:30,414 - Trying to use logger class org.apache.velocity.runtime.log.AvalonLogChute
+2018-06-25 19:44:30,415 - Couldn't find class org.apache.velocity.runtime.log.AvalonLogChute or necessary supporting classes in classpath.
+java.lang.NoClassDefFoundError: org/apache/log/Priority
+	at org.apache.velocity.runtime.log.AvalonLogChute.<clinit>(AvalonLogChute.java:59)
+	at java.lang.Class.forName0(Native Method)
+	at java.lang.Class.forName(Class.java:348)
+	at org.apache.velocity.util.ClassUtils.getClass(ClassUtils.java:63)
+	at org.apache.velocity.util.ClassUtils.getNewInstance(ClassUtils.java:95)
+	at org.apache.velocity.runtime.log.LogManager.createLogChute(LogManager.java:147)
+	at org.apache.velocity.runtime.log.LogManager.updateLog(LogManager.java:208)
+	at org.apache.velocity.runtime.RuntimeInstance.initializeLog(RuntimeInstance.java:728)
+	at org.apache.velocity.runtime.RuntimeInstance.init(RuntimeInstance.java:240)
+	at org.apache.velocity.runtime.RuntimeSingleton.init(RuntimeSingleton.java:113)
+	at org.apache.velocity.app.Velocity.init(Velocity.java:83)
+	at com.dfire.common.util.RenderHierarchyProperties.<clinit>(RenderHierarchyProperties.java:26)
+	at com.dfire.core.util.JobUtils.createScheduleJob(JobUtils.java:97)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:176)
+	at com.dfire.core.netty.worker.request.WorkExecuteJob$3.call(WorkExecuteJob.java:160)
 	at java.util.concurrent.FutureTask.run$$$capture(FutureTask.java:266)
 	at java.util.concurrent.FutureTask.run(FutureTask.java)
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
