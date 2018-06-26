@@ -31,9 +31,8 @@
     <!-- left -->
 	<@netCommon.commonLeft "hostgroup"/>
     <div class="content-wrapper">
-        <h3>机器组管理</h3>
         <div id="toolbar">
-            <button class="btn btn-default" id="addHostGroup">添加</button>
+            <button class="btn btn-success" id="addHostGroup">添加</button>
         </div>
         <table id="selectTable"
                data-url="${request.contextPath}/hostGroup/list" class="table" data-pagination="true" data-toggle="table"
@@ -101,8 +100,8 @@
 
     function operator(val, row) {
         groupCache[row.id] = row;
-        return '<a href="javascript:edit(' + row.id + ')"><i class="glyphicon glyphicon-edit" ></i></a>&nbsp;&nbsp;' +
-                '<a href="javascript:del(' + row.id + ')"><i class="glyphicon glyphicon-remove" ></i></a>';
+        return '<a href="javascript:edit(' + row.id + ')"><button type="button" class="btn btn-primary">编辑</button></a>&nbsp;&nbsp;' +
+                '<a href="javascript:del(' + row.id + ')"><button type="button" class="btn btn-danger">删除</button></a>';
     }
 
     function edit(id) {

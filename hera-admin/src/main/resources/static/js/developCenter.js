@@ -153,7 +153,7 @@ $(function () {
         y += document.body.scrollTop;
         x += document.body.scrollLeft;
 
-        rMenu.css({"top": y + "px", "left": x + "px", "visibility": "visible", position: "absolute"});
+        rMenu.css({"top": y/2 + "px", "left": x/2 + "px", "visibility": "visible", position: "absolute"});
 
         $("body").bind("mousedown", onBodyMouseDown);
     }

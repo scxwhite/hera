@@ -12,7 +12,7 @@
         position: absolute;
         visibility: hidden;
         top: 0;
-        background-color: #555;
+        background-color: #3c763d;
         text-align: left;
         padding: 2px;
     }
@@ -34,7 +34,7 @@
         padding: 0 5px;
         cursor: pointer;
         list-style: none outside none;
-        background-color: #DFDFDF;
+        background-color: #5d9c0a;
     }
 
 
@@ -57,7 +57,7 @@
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
                     <div id="rMenu">
-                        <ul>
+                        <ul style="font-size: 15px;color: black">
                             <li id="addFolder">增加文件夹</li>
                             <li id="addHiveFile">新建Hive</li>
                             <li id="addShellFile">新建Shell</li>

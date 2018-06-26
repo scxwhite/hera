@@ -57,12 +57,6 @@
     <!-- left -->
 	<@netCommon.commonLeft "developCenter" />
 
-    <style type="text/css">
-        .modal.fade.in {
-            top: 190px;
-        }
-    </style>
-
     <div class="content-wrapper">
 
         <section class="content">
