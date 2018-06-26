@@ -45,4 +45,7 @@ public interface HeraJobActionService {
     JobStatus findJobStatusByJobId(String jobId);
 
 
+    Integer updateStatus(HeraAction heraAction);
+
+
 }

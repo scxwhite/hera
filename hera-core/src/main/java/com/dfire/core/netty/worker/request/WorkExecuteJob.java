@@ -1,5 +1,6 @@
 package com.dfire.core.netty.worker.request;
 
+import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
@@ -88,13 +89,17 @@ public class WorkExecuteJob {
                     exception = e;
                     history.getLog().appendHeraException(e);
                 } finally {
+                    String res = exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString();
                     //更新状态和日志
                     workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
                             HeraJobHistory.builder().
                                     id(history.getId()).
-                                    log(history.getLog().getContent()).status(exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString()).
+                                    log(history.getLog().getContent()).status(res).
                                     endTime(new Date())
                                     .build());
+
+                    workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
+
                     workContext.getManualRunning().remove(historyId);
                 }
 
@@ -184,13 +189,16 @@ public class WorkExecuteJob {
                     exception = e;
                     history.getLog().appendHeraException(e);
                 } finally {
+                    String res = exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString();
                     //更新状态和日志
                     workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
                             HeraJobHistory.builder().
                                     id(history.getId()).
-                                    log(history.getLog().getContent()).status(exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString()).
+                                    log(history.getLog().getContent()).status(res).
                                     endTime(new Date())
                                     .build());
+
+                    workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
                     workContext.getRunning().remove(jobId);
                 }
 
@@ -291,9 +299,4 @@ public class WorkExecuteJob {
         });
         return future;
     }
-
-    public static void main(String[] args) {
-        System.out.println("002518806416a7b701642524e4fa1b8a".length());
-    }
-
 }

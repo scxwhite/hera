@@ -115,4 +115,9 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         HeraAction heraAction = findLatestByJobId(jobId);
         return findJobStatus(heraAction.getId());
     }
+
+    @Override
+    public Integer updateStatus(HeraAction heraAction) {
+        return heraJobActionMapper.updateStatus(heraAction);
+    }
 }

@@ -39,5 +39,6 @@ public interface HeraJobActionMapper {
     @Select("select * from hera_action where job_id = #{jobId} order by id")
     List<HeraAction> findByJobId(HeraAction heraAction);
 
-
+    @Update("update hera_action set status = #{status} where id = #{id}")
+    Integer updateStatus(HeraAction heraAction);
 }
