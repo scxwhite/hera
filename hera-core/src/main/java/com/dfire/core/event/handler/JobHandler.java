@@ -405,7 +405,6 @@ public class JobHandler extends AbstractHandler {
         jobDetail.getJobDataMap().put("dispatcher", dispatcher);
         CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression());
         CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, "heraGroup").withSchedule(scheduleBuilder).build();
-        System.out.println(masterContext.getQuartzSchedulerService() == null);
         masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
 
     }
