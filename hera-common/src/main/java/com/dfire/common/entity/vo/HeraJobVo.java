@@ -64,7 +64,7 @@ public class HeraJobVo {
 
     private JobRunTypeEnum runType;
 
-    private String scheduleType;
+    private Integer scheduleType;
 
     private String script;
 

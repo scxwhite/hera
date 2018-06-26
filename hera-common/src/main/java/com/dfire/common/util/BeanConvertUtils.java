@@ -58,7 +58,7 @@ public class BeanConvertUtils {
         HeraJobHistory jobHistory = HeraJobHistory.builder().build();
         BeanUtils.copyProperties(jobHistoryVo, jobHistory);
         jobHistory.setLog(jobHistoryVo.getLog().getContent());
-        jobHistory.setStatus(jobHistoryVo.getStatusEnum().toString());
+        jobHistory.setStatus(jobHistoryVo.getStatusEnum() == null ? null : jobHistoryVo.getStatusEnum().toString());
         jobHistory.setProperties(StringUtil.convertMapToString(jobHistoryVo.getProperties()));
         jobHistory.setTriggerType(jobHistoryVo.getTriggerType().getId());
         return jobHistory;
@@ -139,10 +139,11 @@ public class BeanConvertUtils {
 
     public static Tuple<HeraActionVo, JobStatus> convert(HeraAction action) {
         HeraActionVo heraActionVo = transform(action);
-        JobStatus jobStatus = JobStatus.builder().build();
 
+        JobStatus jobStatus = JobStatus.builder().build();
         jobStatus.setActionId(action.getId());
         jobStatus.setHistoryId(action.getHistoryId());
+        jobStatus.setStatus(StatusEnum.parse(action.getStatus()));
         jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()));
         return new Tuple<>(heraActionVo, jobStatus);
 
@@ -158,7 +159,12 @@ public class BeanConvertUtils {
         Integer auto = 1;
         HeraActionVo heraActionVo = HeraActionVo.builder().build();
         BeanUtils.copyProperties(action, heraActionVo);
-
+        if (action.getDependencies() != null && !StringUtils.isBlank(action.getDependencies())) {
+            heraActionVo.setDependencies(Arrays.asList(action.getDependencies().split(",")));
+        }
+        if (action.getJobDependencies() != null && !StringUtils.isBlank(action.getJobDependencies())) {
+            heraActionVo.setJobDependencies(Arrays.asList(action.getJobDependencies().split(",")));
+        }
         heraActionVo.setPostProcessors(StringUtil.convertProcessorToList(action.getPostProcessors()));
         heraActionVo.setPreProcessors(StringUtil.convertProcessorToList(action.getPreProcessors()));
         heraActionVo.setResources(StringUtil.convertResources(action.getResources()));
@@ -181,7 +187,7 @@ public class BeanConvertUtils {
         }
 
         heraAction.setId(jobStatus.getActionId());
-        heraAction.setStatus(jobStatus.getStatus().toString());
+        heraAction.setStatus(jobStatus.getStatus() == null ? null :jobStatus.getStatus().toString());
         heraAction.setHistoryId(jobStatus.getHistoryId());
         heraAction.setReadyDependency(StringUtil.convertMapToString(jobStatus.getReadyDependency()));
         return heraAction;

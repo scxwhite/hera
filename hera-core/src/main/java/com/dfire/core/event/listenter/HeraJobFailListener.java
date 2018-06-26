@@ -58,7 +58,7 @@ public class HeraJobFailListener extends AbstractListener {
                         sb.append("Job任务(").append(jobId).append(")").append(heraJob.getName()).append("运行失败");
                         sb.append("<br/>");
                         String config = heraJob.getConfigs();
-                        System.out.println("任务失败逻辑，执行告警，短信告警，待开发");
+                       //TODO 任务失败逻辑，执行告警，短信告警，待开发
 
                     } catch (Exception e) {
                     }

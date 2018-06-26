@@ -200,7 +200,7 @@ public class WorkExecuteJob {
                     status = Status.ERROR;
                 }
                 if (exception != null) {
-                    errorText = exception.getMessage();
+                    errorText = exception.toString();
                 }
 
                 Response response = Response.newBuilder()

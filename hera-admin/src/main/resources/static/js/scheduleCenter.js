@@ -78,7 +78,7 @@ $(function () {
         formDataLoad("jobMsgEditForm", focusItem);
         initVal(focusItem.configs, "jobMsgEditForm");
         changeEditStyle(0);
-        setJobMessageEdit(focusItem.scheduleType === "0")
+        setJobMessageEdit(focusItem.scheduleType === 0)
     });
     /**
      * 任务开启关闭按钮
@@ -296,10 +296,8 @@ $(function () {
             } else {
                 userConfigs = userConfigs + key + "=" + val + "\n";
             }
-
-
         }
-        if (focusItem.cronExpression == null || focusItem.cronExpression || focusItem.cronExpression == "") {
+        if (focusItem.cronExpression == null || focusItem.cronExpression == undefined || focusItem.cronExpression == "") {
             $('#jobMessageEdit [name="cronExpression"]').val("0 0 3 * * ?");
         }
 
@@ -326,11 +324,11 @@ $(function () {
                 success: function (data) {
                     focusItem = data;
                     $("#script textarea").val(data.script);
-                    var isShow = data.scheduleType === "0";
+                    var isShow = data.scheduleType === 0;
                     $('#dependencies').css("display", isShow ? "none" : "");
                     $('#heraDependencyCycle').css("display", isShow ? "none" : "");
                     $('#cronExpression').css("display", isShow ? "" : "none");
-                    formDataLoad("jobMessage", data);
+                    formDataLoad("jobMessage form", data);
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
                     $('#config textarea:first').val(initVal(data.configs, "jobMessage"));
                     $('#jobMessage [name="auto"]').removeClass("label-success").removeClass("label-default").addClass( data.auto === "开启" ? "label-success" : "label-default");
@@ -351,7 +349,7 @@ $(function () {
                         return;
                     }
                     var jobVersion = "";
-                    debugger
+                    
                     data.forEach(function (action, index) {
                         jobVersion += '<option value="' + action.id + '" >' + action.id + '</option>';
                     });
@@ -373,7 +371,7 @@ $(function () {
                 },
                 success: function (data) {
                     focusItem = data;
-                    formDataLoad("groupMessage", data);
+                    formDataLoad("groupMessage form", data);
                 }
 
             });

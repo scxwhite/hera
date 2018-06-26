@@ -52,7 +52,6 @@ public class DevelopCenterController {
     @RequestMapping(value = "/addFile", method = RequestMethod.GET)
     @ResponseBody
     public String addFileAndFolder(HeraFile heraFile) {
-        System.out.println(heraFile.getId());
         heraFile.setOwner("biadmin");
         heraFileService.insert(heraFile);
         return "success";
@@ -61,7 +60,6 @@ public class DevelopCenterController {
     @RequestMapping(value = "/find", method = RequestMethod.GET)
     @ResponseBody
     public HeraFile getHeraFile(HeraFile heraFile) {
-        System.out.println(heraFile.getId());
         heraFile.setOwner("biadmin");
         HeraFile file = heraFileService.findById(heraFile.getId());
         return file;
@@ -97,7 +95,6 @@ public class DevelopCenterController {
                     history.setRunType("hive");
                 }
                 String newId = debugHistoryService.insert(history);
-                System.out.println(history.getId());
                 workClient.executeJobFromWeb(ExecuteKind.DebugKind, newId);
                 return file.getId();
         });

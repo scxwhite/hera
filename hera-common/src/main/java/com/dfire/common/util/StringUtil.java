@@ -59,7 +59,6 @@ public class StringUtil {
             return new HashMap<>(0);
         }
         JSONObject jsonObject = new JSONObject();
-        System.out.println(config);
         try {
             jsonObject = JSONObject.parseObject(config);
         } catch (JSONPathException e) {
@@ -72,6 +71,9 @@ public class StringUtil {
     }
 
     public static String convertMapToString(Map<String, String> config) {
+        if (config == null) {
+            return null;
+        }
         JSONObject jsonObject = new JSONObject();
         for (Map.Entry<String, String> entry : config.entrySet()) {
             jsonObject.put(entry.getKey().toLowerCase(), entry.getValue().toLowerCase());

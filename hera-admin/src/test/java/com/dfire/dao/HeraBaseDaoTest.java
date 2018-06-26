@@ -266,7 +266,7 @@ public class HeraBaseDaoTest {
                     List<HeraJob> heraJobList = heraJobService.getAll();
 
                     master.generateScheduleJobAction(heraJobList, now, dfDate, actionMap);
-                    master.generateDependJobAction(heraJobList, now,dfDate, actionMap, 0);
+                    master.generateDependJobAction(heraJobList, actionMap, 0);
 
 
                 }

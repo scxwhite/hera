@@ -17,6 +17,7 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
+import com.dfire.common.vo.LogContent;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -101,13 +102,16 @@ public class JobHandler extends AbstractHandler {
     }
 
     public void handleInitialEvent() {
-        JobStatus jobStatus = heraJobActionService.findJobStatusByJobId(actionId);
+        JobStatus jobStatus = heraJobActionService.findJobStatus(actionId);
 
         if (jobStatus != null) {
             if (jobStatus.getStatus() == StatusEnum.RUNNING) {
                 log.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
                 if (jobStatus.getHistoryId() != null) {
                     HeraJobHistory jobHistory = jobHistoryService.findById(actionId);
+                    if (jobHistory == null) {
+                        return ;
+                    }
                     HeraJobHistoryVo heraJobHistory = BeanConvertUtils.convert(jobHistory);
 
                     if (heraJobHistory != null && heraJobHistory.getStatusEnum().equals(StatusEnum.RUNNING)) {
@@ -189,13 +193,14 @@ public class JobHandler extends AbstractHandler {
         if (heraActionVo.getScheduleType() == JobScheduleTypeEnum.Independent) {
             return;
         }
-        if (!heraActionVo.getDependencies().contains(jobId)) {
+        if (heraActionVo.getDependencies() == null || !heraActionVo.getDependencies().contains(jobId)) {
             return;
         }
+        System.out.println(heraActionVo.getId() + ":" + heraActionVo.getDependencies());
         JobStatus jobStatus;
         synchronized (this) {
-            jobStatus = heraJobActionService.findJobStatus(jobId);
-            HeraJobBean heraJobBean = heraGroupService.getUpstreamJobBean(jobId);
+            jobStatus = heraJobActionService.findJobStatus(actionId);
+            HeraJobBean heraJobBean = heraGroupService.getUpstreamJobBean(actionId);
             String cycle = heraJobBean.getHierarchyProperties().getProperty(RunningJobKeyConstant.DEPENDENCY_CYCLE);
             if (StringUtils.isNotBlank(cycle)) {
                 Map<String, String> dependencies = jobStatus.getReadyDependency();
@@ -231,19 +236,18 @@ public class JobHandler extends AbstractHandler {
     }
 
     private void startNewJob(TriggerTypeEnum triggerType, HeraActionVo heraActionVo) {
-        HeraJobHistoryVo history = HeraJobHistoryVo.builder()
-                .actionId(heraActionVo.getId())
-                .illustrate(LogConstant.DEPENDENT_READY_LOG)
-                .jobId(heraActionVo.getJobId() == null ? null : heraActionVo.getJobId())
-                .triggerType(TriggerTypeEnum.SCHEDULE)
-                .statisticsEndTime(heraActionVo.getStatisticStartTime())
-                .hostGroupId(heraActionVo.getHostGroupId())
-                .operator(heraActionVo.getOwner() == null ? null : heraActionVo.getOwner())
-                .build();
-        masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(history));
-        master.run(history);
-        if (history.getStatusEnum() == StatusEnum.FAILED) {
-            HeraJobFailedEvent jobFailedEvent = new HeraJobFailedEvent(heraActionVo.getId(), triggerType, history);
+        HeraJobHistory history = HeraJobHistory.builder().
+                actionId(heraActionVo.getId()).
+                illustrate(LogConstant.DEPENDENT_READY_LOG).
+                jobId(heraActionVo.getJobId()).
+                triggerType(TriggerTypeEnum.SCHEDULE.getId()).
+                operator(heraActionVo.getOwner()).
+                log(LogConstant.DEPENDENT_READY_LOG).build();
+        masterContext.getHeraJobHistoryService().insert(history);
+        HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
+        master.run(historyVo);
+        if (historyVo.getStatusEnum() == StatusEnum.FAILED) {
+            HeraJobFailedEvent jobFailedEvent = new HeraJobFailedEvent(heraActionVo.getId(), triggerType, historyVo);
             masterContext.getDispatcher().forwardEvent(jobFailedEvent);
             log.info("job execute error, dispatch job failed event");
         }

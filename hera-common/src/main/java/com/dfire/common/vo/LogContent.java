@@ -67,7 +67,6 @@ public class LogContent {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         appendHera(sw.toString());
-        System.out.println(sw.toString());
     }
 
     public void setContent(StringBuffer content) {

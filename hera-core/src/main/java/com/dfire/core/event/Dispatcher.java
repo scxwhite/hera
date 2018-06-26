@@ -94,6 +94,7 @@ public class Dispatcher extends AbstractObservable {
             }
         } catch (Exception e) {
             log.error("global dispatch job event error");
+            throw new RuntimeException(e);
         }
 
     }

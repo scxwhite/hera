@@ -94,10 +94,8 @@ public class ScheduleCenterController {
         ExecuteKind kind = null;
         TriggerTypeEnum triggerTypeEnum = null;
         if (triggerType == 1) {
-            kind = ExecuteKind.ManualKind;
             triggerTypeEnum = TriggerTypeEnum.MANUAL;
         } else if (triggerType == 2) {
-            kind = ExecuteKind.ScheduleKind;
             triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
         }
         //todo 权限判定
@@ -132,6 +130,7 @@ public class ScheduleCenterController {
     @ResponseBody
     public List<HeraAction> getJobVersion(String jobId) {
         List<HeraAction> list = heraJobActionService.findByJobId(jobId);
+        list.sort((x1, x2) -> -Long.compare(Long.parseLong(x1.getId()), Long.parseLong(x2.getId())));
         return list;
 
     }
@@ -147,7 +146,6 @@ public class ScheduleCenterController {
     @ResponseBody
     public boolean updateGroupMessage(HeraGroupVo groupVo) {
         HeraGroup heraGroup = BeanConvertUtils.convert(groupVo);
-        System.out.println(JSONObject.toJSONString(heraGroup));
         return heraGroupService.update(heraGroup) > 0;
     }
 

@@ -6,6 +6,7 @@ import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.util.DateUtil;
 import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,22 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     @Override
     public int insert(HeraAction heraAction) {
-        return heraJobActionMapper.insert(heraAction);
+        HeraAction action = heraJobActionMapper.findById(heraAction);
+        if (action != null) {
+            if (action.getStatus() != null && !"running".equals(action.getStatus())) {
+                heraAction.setStatus(action.getStatus());
+                heraAction.setHistoryId(action.getHistoryId());
+                heraAction.setReadyDependency(action.getReadyDependency());
+            } else {
+                heraAction = action;
+            }
+            return heraJobActionMapper.update(heraAction);
+        } else {
+            if (Long.parseLong(heraAction.getId()) < Long.parseLong(DateUtil.getTodayStringForAction())) {
+                heraAction.setStatus("failed");
+            }
+            return heraJobActionMapper.insert(heraAction);
+        }
     }
 
     @Override
@@ -68,7 +84,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         heraAction.setGmtModified(new Date());
         HeraAction tmp  = BeanConvertUtils.convert(jobStatus);
         heraAction.setStatus(tmp.getStatus());
-        heraAction.setReadyDependency(jobStatus.getReadyDependency().toString());
+        heraAction.setReadyDependency(tmp.getReadyDependency());
         heraAction.setHistoryId(jobStatus.getHistoryId());
         return update(heraAction);
     }

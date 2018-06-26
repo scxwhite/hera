@@ -11,6 +11,7 @@ import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
+import com.dfire.common.kv.Tuple;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.HeraDateTool;
@@ -71,9 +72,9 @@ public class Master {
         masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
         masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
 
-        List<HeraJob> allJobList = masterContext.getHeraJobService().getAll();
-        allJobList.stream().forEach(heraJob -> masterContext.getDispatcher().
-                addJobHandler(new JobHandler(String.valueOf(heraJob.getId()), this, masterContext)));
+        List<HeraAction> allJobList = masterContext.getHeraJobActionService().getAll();
+        allJobList.stream().forEach(heraAction -> masterContext.getDispatcher().
+                addJobHandler(new JobHandler(String.valueOf(heraAction.getId()), this, masterContext)));
 
         masterContext.getDispatcher().forwardEvent(Events.Initialize);
         masterContext.setMaster(this);
@@ -154,15 +155,16 @@ public class Master {
                 if (execute) {
                     String currString = DateUtil.getTodayStringForAction();
                     if (executeHour == 23) {
-                        currString = DateUtil.getNextDayString().getSource();
-                        now = DateUtil.getNextDayString().getTarget();
+                        Tuple<String, Date> nextDayString = DateUtil.getNextDayString();
+                        currString = nextDayString.getSource();
+                        now = nextDayString.getTarget();
                     }
                     log.info("generate depend action date: " + currString);
                     List<HeraJob> jobList = masterContext.getHeraJobService().getAll();
                     Map<Long, HeraAction> actionMap = new HashMap<>();
                     SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
                     generateScheduleJobAction(jobList, now, dfDate, actionMap);
-                    generateDependJobAction(jobList, now, dfDate, actionMap, 0);
+                    generateDependJobAction(jobList,actionMap, 0);
                     if (executeHour < 23) {
                         heraActionMap = actionMap;
                     }
@@ -263,7 +265,7 @@ public class Master {
      */
     public void generateScheduleJobAction(List<HeraJob> jobList, Date now, SimpleDateFormat format, Map<Long, HeraAction> actionMap) {
         for (HeraJob heraJob : jobList) {
-            if (heraJob.getScheduleType() != null && heraJob.getScheduleType().equals("0")) {
+            if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 0) {
                 String cron = heraJob.getCronExpression();
                 String cronDate = format.format(now);
                 List<String> list = new ArrayList<>();
@@ -273,7 +275,7 @@ public class Master {
                     if (!isCronExp) {
                         log.error("cron parse error,cron = " + cron);
                     }
-                    list.stream().forEach(str -> {
+                    list.forEach(str -> {
                         String actionDate = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "yyyyMMddHHmm");
                         String actionCron = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "0 m H d M") + " ?";
                         HeraAction heraAction = new HeraAction();
@@ -283,7 +285,7 @@ public class Master {
                         heraAction.setCronExpression(actionCron);
                         heraAction.setGmtCreate(new Date());
                         heraAction.setJobId(String.valueOf(heraJob.getId()));
-
+                        heraAction.setHistoryId(heraJob.getHistoryId());
                         masterContext.getHeraJobActionService().insert(heraAction);
                         log.info("generate actions success :" + actionDate);
                         actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
@@ -301,15 +303,12 @@ public class Master {
      * @param actionMap
      * @param retryCount
      */
-    public void generateDependJobAction(List<HeraJob> jobList, Date now, SimpleDateFormat simpleDateFormat, Map<Long, HeraAction> actionMap, int retryCount) {
+    public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount) {
         retryCount++;
-        String currDate = simpleDateFormat.format(now);
-        String scheduleType = "1";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd0000000000");
-        String actionDate = dateFormat.format(now);
+        int noCompleteCount = 0;
         for (HeraJob heraJob : jobList) {
             //依赖任务生成版本
-            if (heraJob.getScheduleType() != null && heraJob.getScheduleType().equals(scheduleType)) {
+            if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 1) {
 
                 String jobDependencies = heraJob.getDependencies();
                 if (StringUtils.isNotBlank(jobDependencies)) {
@@ -339,28 +338,74 @@ public class Master {
                         }
                     }
 
-                    Long actionId = Long.parseLong(actionDate);
-                    List<String> dependentList = Arrays.asList(dependencies)
-                            .stream()
-                            .map(dependentId -> {
-                                Long tmp = actionId + Long.parseLong(dependentId);
-                                return String.valueOf(tmp);
-                            }).collect(Collectors.toList());
+                    boolean isComplete = true;
 
-                    String dependenciesId = dependentList.stream().collect(Collectors.joining(","));
-                    HeraAction actionNew = new HeraAction();
-                    BeanUtils.copyProperties(heraJob, actionNew);
-                    actionNew.setId(String.valueOf(actionId + Long.parseLong(String.valueOf(heraJob.getId()))));
-                    actionNew.setGmtCreate(new Date());
-                    actionNew.setDependencies(dependenciesId);
-                    actionNew.setJobDependencies(heraJob.getDependencies());
-                    actionNew.setJobId(String.valueOf(heraJob.getId()));
-                    if (!actionMap.containsKey(actionNew.getId())) {
-                        masterContext.getHeraJobActionService().insert(actionNew);
-                        actionMap.put(Long.parseLong(actionNew.getId()), actionNew);
+                    String actionMostDeps = "";
+
+                    for (String dependency : dependencies) {
+                        if (dependenciesMap.get(dependency).size() == 0) {
+                            isComplete = false;
+                            break;
+                        }
+
+                        if (StringUtils.isBlank(actionMostDeps)) {
+                            actionMostDeps = dependency;
+                        }
+
+                        if (dependenciesMap.get(actionMostDeps).size() < dependenciesMap.get(dependency).size()) {
+                            actionMostDeps = dependency;
+                        } else if (dependenciesMap.get(actionMostDeps).size() == dependenciesMap.get(dependency).size() &&
+                                Long.parseLong(dependenciesMap.get(actionMostDeps).get(0).getId()) > Long.parseLong(dependenciesMap.get(dependency).get(0).getId())) {
+                            actionMostDeps = dependency;
+                        }
                     }
+                    //新加任务 可能无版本
+                    if (!isComplete) {
+                        noCompleteCount++;
+                        continue;
+                    } else {
+                        List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
+
+                        if (actionMostList != null && actionMostList.size() > 0) {
+                            for (HeraAction action : actionMostList) {
+                                StringBuilder actionDependencies = new StringBuilder(action.getId());
+                                Long longActionId = Long.parseLong(actionDependencies.toString());
+                                for (String dependency : dependencies) {
+                                    if (!dependency.equals(actionMostDeps)) {
+                                        List<HeraAction> otherAction = dependenciesMap.get(dependency);
+                                        String otherActionId = otherAction.get(0).getId();
+                                        for (HeraAction o : otherAction) {
+                                            if (Math.abs(Long.parseLong(o.getId()) - longActionId) < Math.abs(Long.parseLong(otherActionId) - longActionId)) {
+                                                otherActionId = o.getId();
+                                            }
+                                        }
+                                        actionDependencies.append(",");
+                                        actionDependencies.append(Long.parseLong(otherActionId) / 1000000 * 1000000 + Long.parseLong(dependency));
+
+                                    }
+                                }
+                                HeraAction actionNew = new HeraAction();
+                                BeanUtils.copyProperties(heraJob, actionNew);
+                                actionNew.setId(String.valueOf(longActionId / 1000000 * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()))));
+                                actionNew.setGmtCreate(new Date());
+                                actionNew.setDependencies(actionDependencies.toString());
+                                actionNew.setJobDependencies(heraJob.getDependencies());
+                                actionNew.setJobId(String.valueOf(heraJob.getId()));
+                                if (!actionMap.containsKey(actionNew.getId())) {
+                                    masterContext.getHeraJobActionService().insert(actionNew);
+                                    actionMap.put(Long.parseLong(actionNew.getId()), actionNew);
+                                }
+                            }
+                        }
+
+
+                    }
+
                 }
             }
+        }
+        if (noCompleteCount > 0 && retryCount < 40) {
+            generateDependJobAction(jobList, actionMap, retryCount);
         }
     }
 
@@ -656,7 +701,7 @@ public class Master {
                     exception = e;
                     log.error(String.format("debugId:%s run failed", jobId), e);
                 }
-                boolean success = response.getStatus() == Protocol.Status.OK ? true : false;
+                boolean success = response.getStatus() == Protocol.Status.OK;
                 if (!success) {
                     exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
                     log.info("debug job error");
