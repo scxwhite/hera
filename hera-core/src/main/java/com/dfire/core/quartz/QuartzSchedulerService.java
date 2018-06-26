@@ -6,6 +6,7 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -17,8 +18,8 @@ import java.util.Properties;
  * @desc quartz调度器初始化
  */
 @Slf4j
-@Component
 @Configuration
+@Service("quartzSchedulerService")
 public class QuartzSchedulerService {
 
     private Scheduler scheduler;

@@ -13,7 +13,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.quartz.SchedulerException;
+import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -30,9 +34,9 @@ import java.util.concurrent.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class MasterContext {
 
-    private QuartzSchedulerService quartzSchedulerService;
     private Master master;
 
     private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<>();
@@ -75,9 +79,9 @@ public class MasterContext {
         if (masterServer != null) {
             masterServer.shutdown();
         }
-        if (quartzSchedulerService != null) {
+        if (this.getQuartzSchedulerService() != null) {
             try {
-                quartzSchedulerService.shutdown();
+                this.getQuartzSchedulerService().shutdown();
                 log.info("quartz schedule shutdown success");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -108,7 +112,7 @@ public class MasterContext {
     }
 
     public QuartzSchedulerService getQuartzSchedulerService() {
-        return quartzSchedulerService;
+        return (QuartzSchedulerService) applicationContext.getBean("quartzSchedulerService");
     }
 
     public HeraGroupService getHeraGroupService() {

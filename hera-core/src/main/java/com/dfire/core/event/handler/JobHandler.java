@@ -17,12 +17,11 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
-import com.dfire.common.vo.LogContent;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
-import com.dfire.core.event.listenter.HeraAddJobListener;
 import com.dfire.core.job.CancelHadoopJob;
+import com.dfire.core.job.HeraQuartzJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
@@ -110,7 +109,7 @@ public class JobHandler extends AbstractHandler {
                 if (jobStatus.getHistoryId() != null) {
                     HeraJobHistory jobHistory = jobHistoryService.findById(actionId);
                     if (jobHistory == null) {
-                        return ;
+                        return;
                     }
                     HeraJobHistoryVo heraJobHistory = BeanConvertUtils.convert(jobHistory);
 
@@ -160,13 +159,14 @@ public class JobHandler extends AbstractHandler {
                 && (heraActionVo.getScheduleType().getType().equals(JobScheduleTypeEnum.Independent.getType()))) {
             try {
                 createScheduleJob(masterContext.getDispatcher(), heraActionVo);
-                log.info("start server, create job quartz schedule");
+                log.info("-----------------start server, create job quartz schedule-----------------");
             } catch (Exception e) {
                 if (e instanceof SchedulerException) {
                     heraActionVo.setAuto(false);
                     log.error("create job quartz schedule error");
                     heraJobActionService.updateStatus(jobStatus);
                 }
+                throw new RuntimeException(e);
             }
         }
     }
@@ -285,15 +285,16 @@ public class JobHandler extends AbstractHandler {
     }
 
     private void runJob(HeraActionVo heraActionVo) {
-        HeraJobHistoryVo history = HeraJobHistoryVo.builder()
-                .jobId(heraActionVo.getId())
-                .triggerType(TriggerTypeEnum.SCHEDULE)
-                .statisticsEndTime(heraActionVo.getStatisticStartTime())
-                .hostGroupId(heraActionVo.getHostGroupId())
-                .operator(heraActionVo.getOwner() == null ? null : heraActionVo.getOwner())
-                .build();
-        masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(history));
-        master.run(history);
+
+
+        HeraJobHistory history = HeraJobHistory.builder().
+                jobId(heraActionVo.getJobId()).
+                triggerType(TriggerTypeEnum.SCHEDULE.getId()).
+                actionId(heraActionVo.getId()).
+                operator(heraActionVo.getOwner()).
+                build();
+        masterContext.getHeraJobHistoryService().insert(history);
+        master.run(BeanConvertUtils.convert(history));
     }
 
     private void autoRecovery() {
@@ -399,25 +400,16 @@ public class JobHandler extends AbstractHandler {
 
     public void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
 
-        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity("hera").build();
+        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(actionId, "heraGroup").build();
         jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
         jobDetail.getJobDataMap().put("dispatcher", dispatcher);
         CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression());
-        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("hera").withSchedule(scheduleBuilder).build();
+        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, "heraGroup").withSchedule(scheduleBuilder).build();
+        System.out.println(masterContext.getQuartzSchedulerService() == null);
         masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
 
     }
 
-    public class HeraQuartzJob implements Job {
-
-        @Override
-        public void execute(JobExecutionContext context) {
-            String jobId = context.getJobDetail().getJobDataMap().getString("actionId");
-            Dispatcher dispatcher = (Dispatcher) context.getJobDetail().getJobDataMap().get("dispatcher");
-            HeraScheduleTriggerEvent scheduledEvent = HeraScheduleTriggerEvent.builder().jobId(jobId).build();
-            dispatcher.forwardEvent(scheduledEvent);
-        }
-    }
 
     @Override
     public void destroy() {
