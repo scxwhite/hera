@@ -73,9 +73,12 @@ public class WorkExecuteJob {
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                         + File.separator + date + File.separator + "manual-" + history.getId());
-                if (!directory.exists()) {
-                    directory.mkdir();
-                }
+                    if(!directory.getParentFile().exists()) {
+                        directory.getParentFile().mkdirs();
+                    }
+                    if(!directory.exists()) {
+                        directory.mkdir();
+                    }
                 HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getActionId());
                 final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN),
                         jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
@@ -174,10 +177,12 @@ public class WorkExecuteJob {
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                         + File.separator + date + File.separator + history.getId());
-                if (!directory.exists()) {
+                if(!directory.getParentFile().exists()) {
+                    directory.getParentFile().mkdirs();
+                }
+                if(!directory.exists()) {
                     directory.mkdir();
                 }
-
                 final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
                 workContext.getRunning().put(jobId, job);
 
