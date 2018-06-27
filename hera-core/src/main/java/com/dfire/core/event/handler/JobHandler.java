@@ -130,7 +130,7 @@ public class JobHandler extends AbstractHandler {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
+                    //TODO  未测试
                     } else if (heraJobHistory != null && heraJobHistory.getStatusEnum().equals(StatusEnum.FAILED) &&
                             heraJobHistory.getIllustrate().equals(LogConstant.WORK_DISCONNECT_LOG)) {
                         try {
