@@ -186,7 +186,7 @@ public class JobUtils {
                     }
                     File directory = new File(workDir + File.separator + "job-processor-" + jobProcessor.getJobId());
                     if (!directory.exists()) {
-                        directory.mkdir();
+                        directory.mkdirs();
                     }
                     JobContext subJobContext = new JobContext(jobContext.getRunType());
                     subJobContext.putData("depth", ++depth);

@@ -13,7 +13,7 @@ javadoc:
  stage: javadoc
  script:
    - "mvn javadoc:aggregate --fail-never"
-   - "mkdir -p /usr/share/nginx/javadoc/${PWD##*/}"
+   - "mkdirs -p /usr/share/nginx/javadoc/${PWD##*/}"
    - "cp -r ./target/site/apidocs /usr/share/nginx/javadoc/${PWD##*/}"
  tags:
   - java

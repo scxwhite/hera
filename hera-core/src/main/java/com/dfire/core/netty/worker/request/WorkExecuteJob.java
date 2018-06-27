@@ -74,7 +74,7 @@ public class WorkExecuteJob {
                 File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                         + File.separator + date + File.separator + "manual-" + history.getId());
                 if (!directory.exists()) {
-                    directory.mkdir();
+                    directory.mkdirs();
                 }
                 HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getActionId());
                 final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN),
