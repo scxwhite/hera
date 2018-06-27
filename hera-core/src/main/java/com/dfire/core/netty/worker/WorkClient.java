@@ -1,9 +1,11 @@
 package com.dfire.core.netty.worker;
 
 
+import com.dfire.common.entity.HeraLock;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
+import com.dfire.common.service.HeraLockService;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
@@ -18,10 +20,7 @@ import com.dfire.core.netty.worker.request.WorkerHandleWebExecute;
 import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
 import com.dfire.core.schedule.ScheduleInfoLog;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -54,7 +53,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 @Data
-@Component
+@Component("workClient")
 public class WorkClient {
 
     private Bootstrap bootstrap;
@@ -62,6 +61,8 @@ public class WorkClient {
     private WorkContext workContext = new WorkContext();
     private ScheduledExecutorService service;
     public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 5, TimeUnit.SECONDS);
+
+    private final ConnectorIdleStateTrigger idleStateTrigger = new ConnectorIdleStateTrigger();
 
     /**
      * ProtobufVarint32LengthFieldPrepender: 对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
@@ -74,17 +75,28 @@ public class WorkClient {
         workContext.setApplicationContext(applicationContext);
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
+        HeraLockService heraLockService = (HeraLockService) applicationContext.getBean("heraLockService");
+        HeraLock heraLock = heraLockService.findById("online");
+        final ConnectionWatchdog watchdog = new ConnectionWatchdog(bootstrap, workClientTimer, heraLock.getHost(), true, 12) {
+            @Override
+            public ChannelHandler[] handlers() {
+                return new ChannelHandler[] {
+                        this,
+                        new IdleStateHandler(0, 0, 5, TimeUnit.SECONDS),
+                        new ProtobufVarint32FrameDecoder(),
+                        new ProtobufDecoder(SocketMessage.getDefaultInstance()),
+                        new ProtobufVarint32LengthFieldPrepender(),
+                        new ProtobufEncoder(),
+                        new WorkHandler(workContext)
+                };
+            }
+        };
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new IdleStateHandler(0, 0, 5, TimeUnit.SECONDS))
-                                .addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
-                                .addLast("decoder", new ProtobufDecoder(SocketMessage.getDefaultInstance()))
-                                .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
-                                .addLast("encoder", new ProtobufEncoder())
-                                .addLast(new WorkHandler(workContext));
+                        ch.pipeline().addLast(watchdog.handlers());
                     }
                 });
         log.info("init work client success ");

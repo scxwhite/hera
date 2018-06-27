@@ -30,6 +30,8 @@ public class MasterServer {
     private EventLoopGroup bossGroup;
     private EventLoopGroup workGroup;
 
+    private final AcceptorIdleStateTrigger idleStateTrigger = new AcceptorIdleStateTrigger();
+
     /**
      * ProtobufVarint32LengthFieldPrepender:对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
      * ProtobufVarint32FrameDecoder:针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
@@ -52,6 +54,7 @@ public class MasterServer {
                                 .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
                                 .addLast("encoder", new ProtobufEncoder())
                                 .addLast(new IdleStateHandler(0, 0, 10, TimeUnit.SECONDS))
+                                .addLast(idleStateTrigger)
                                 .addLast("handler", handler);
                     }
                 });

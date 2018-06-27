@@ -104,7 +104,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         log.info("客户端与服务端连接关闭");
-        ctx.fireChannelInactive();
+//        ctx.fireChannelInactive();
     }
 
     @Override
