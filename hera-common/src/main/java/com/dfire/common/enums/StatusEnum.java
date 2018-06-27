@@ -1,6 +1,8 @@
 package com.dfire.common.enums;
 
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 22:41 2018/1/12

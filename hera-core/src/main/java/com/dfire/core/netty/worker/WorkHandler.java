@@ -63,8 +63,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, SocketMessage msg) throws Exception {
-        SocketMessage socketMessage = msg;
+    protected void channelRead0(ChannelHandlerContext ctx, SocketMessage socketMessage) throws Exception {
         switch (socketMessage.getKind()) {
             case REQUEST:
                 final Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();

@@ -2,6 +2,7 @@ package com.dfire.core.event.handler;
 
 import com.dfire.common.constants.LogConstant;
 import com.dfire.common.constants.RunningJobKeyConstant;
+import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.model.JobGroupCache;
@@ -17,6 +18,7 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
+import com.dfire.common.vo.LogContent;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -100,20 +102,22 @@ public class JobHandler extends AbstractHandler {
         }
     }
 
+    /**
+     * 1.running 任务重试
+     * 2.调度任务加入调度池
+     */
     public void handleInitialEvent() {
-        JobStatus jobStatus = heraJobActionService.findJobStatus(actionId);
-
-        if (jobStatus != null) {
-            if (jobStatus.getStatus() == StatusEnum.RUNNING) {
+        HeraAction heraAction = heraJobActionService.findById(actionId);
+        if (heraAction != null) {
+            if (StatusEnum.RUNNING.toString().equals(heraAction.getStatus())) {
                 log.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
-                if (jobStatus.getHistoryId() != null) {
+                if (heraAction.getHistoryId() != null) {
                     HeraJobHistory jobHistory = jobHistoryService.findById(actionId);
                     if (jobHistory == null) {
                         return;
                     }
                     HeraJobHistoryVo heraJobHistory = BeanConvertUtils.convert(jobHistory);
-
-                    if (heraJobHistory != null && heraJobHistory.getStatusEnum().equals(StatusEnum.RUNNING)) {
+                    if (jobHistory.getStatus() == null || jobHistory.getStatus().equals(StatusEnum.RUNNING.toString())) {
                         try {
                             JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
                             heraJobHistory.setIllustrate(LogConstant.SERVER_START_JOB_LOG);
@@ -121,6 +125,7 @@ public class JobHandler extends AbstractHandler {
                             new CancelHadoopJob(tmp).run();
                             master.run(heraJobHistory);
                         } catch (Exception e) {
+                            e.printStackTrace();
                         }
 
                     } else if (heraJobHistory != null && heraJobHistory.getStatusEnum().equals(StatusEnum.FAILED) &&
@@ -132,20 +137,21 @@ public class JobHandler extends AbstractHandler {
                             new CancelHadoopJob(tmp).run();
                             master.run(heraJobHistory);
                         } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 } else {
-                    HeraActionVo heraJobVo = heraGroupService.getUpstreamJobBean(actionId).getHeraActionVo();
-                    HeraJobHistoryVo history = HeraJobHistoryVo.builder()
-                            .id(actionId)
-                            .jobId(heraJobVo.getId())
-                            .triggerType(TriggerTypeEnum.MANUAL_RECOVER)
+
+                    HeraJobHistory heraJobHistory = HeraJobHistory.builder()
+                            .jobId(heraAction.getJobId())
+                            .actionId(heraAction.getId())
+                            .triggerType(TriggerTypeEnum.MANUAL_RECOVER.getId())
                             .illustrate(LogConstant.SERVER_START_JOB_LOG)
-                            .operator(heraJobVo.getOwner())
-                            .hostGroupId(heraJobVo.getHostGroupId())
+                            .log(LogConstant.SERVER_START_JOB_LOG)
+                            .operator(heraAction.getOwner())
                             .build();
-                    masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(history));
-                    master.run(history);
+                    masterContext.getHeraJobHistoryService().insert(heraJobHistory);
+                    master.run(BeanConvertUtils.convert(heraJobHistory));
                 }
             }
         }
@@ -164,7 +170,6 @@ public class JobHandler extends AbstractHandler {
                 if (e instanceof SchedulerException) {
                     heraActionVo.setAuto(false);
                     log.error("create job quartz schedule error");
-                    heraJobActionService.updateStatus(jobStatus);
                 }
                 throw new RuntimeException(e);
             }

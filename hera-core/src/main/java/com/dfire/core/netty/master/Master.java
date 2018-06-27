@@ -74,7 +74,7 @@ public class Master {
         masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
 
         List<HeraAction> allJobList = masterContext.getHeraJobActionService().getAll();
-        allJobList.stream().forEach(heraAction -> masterContext.getDispatcher().
+        allJobList.forEach(heraAction -> masterContext.getDispatcher().
                 addJobHandler(new JobHandler(String.valueOf(heraAction.getId()), this, masterContext)));
 
         masterContext.getDispatcher().forwardEvent(Events.Initialize);
@@ -419,23 +419,23 @@ public class Master {
             if (StringUtils.isNotBlank(dependencies)) {
                 List<String> jobDependList = Arrays.asList(dependencies.split(","));
                 boolean isAllComplete = true;
-                if (jobDependList != null && jobDependList.size() > 0) {
+                if (jobDependList.size() > 0) {
                     for (String jobDepend : jobDependList) {
-                        if (actionMapNew.get(jobDepend) != null) {
-                            HeraAction action = actionMapNew.get(jobDepend);
+                        Long jobDep = Long.parseLong(jobDepend);
+                        if (actionMapNew.get(jobDep) != null) {
+                            HeraAction action = actionMapNew.get(jobDep);
                             if (action != null) {
                                 String status = action.getStatus();
                                 if (status == null || status.equals("wait")) {
                                     isAllComplete = false;
-                                    if (retryCount < 30 && actionIdList.contains(Long.parseLong(jobDepend))) {
-                                        rollBackLostJob(Long.parseLong(jobDepend), actionMapNew, retryCount, actionIdList);
+                                    if (retryCount < 30 && actionIdList.contains(jobDep)) {
+                                        rollBackLostJob(jobDep, actionMapNew, retryCount, actionIdList);
 
                                     }
-                                } else if (status.equals("failed")) {
+                                } else if (status.equals(StatusEnum.FAILED.toString())) {
                                     isAllComplete = false;
                                 }
                             }
-
                         }
                     }
                 }
@@ -739,7 +739,7 @@ public class Master {
         if (masterContext.getHostGroupCache() != null) {
             HeraHostGroupVo hostGroupCache = masterContext.getHostGroupCache().get(hostGroupId);
             List<String> hosts = hostGroupCache.getHosts();
-            if (hostGroupCache != null && hosts != null && hosts.size() > 0) {
+            if (hosts != null && hosts.size() > 0) {
                 int size = hosts.size();
                 for (int i = 0; i < size && workHolder == null; i++) {
                     String host = hostGroupCache.selectHost();

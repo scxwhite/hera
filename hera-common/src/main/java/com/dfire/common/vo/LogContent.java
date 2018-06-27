@@ -1,5 +1,6 @@
 package com.dfire.common.vo;
 
+import com.dfire.common.enums.StatusEnum;
 import lombok.Builder;
 import lombok.Data;
 
@@ -26,7 +27,7 @@ public class LogContent {
         if (lines < COUNT) {
             lines++;
             if (log.toLowerCase().contains(ERROR)
-                    || log.toLowerCase().contains("failed")
+                    || log.toLowerCase().contains(StatusEnum.FAILED.toString())
                     || log.contains("FileNotFoundException")
                     || log.contains("NullPointException")
                     || log.contains("No such file or directory")

@@ -175,7 +175,7 @@ public class WorkExecuteJob {
                 File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                         + File.separator + date + File.separator + history.getId());
                 if (!directory.exists()) {
-                    directory.mkdir();
+                    directory.mkdirs();
                 }
 
                 final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());

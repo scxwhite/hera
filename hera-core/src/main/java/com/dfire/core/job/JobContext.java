@@ -64,12 +64,12 @@ public class JobContext {
         HeraJobHistoryVo jobHistory =  HeraJobHistoryVo.builder().build();
         jobContext.setHeraJobHistory(jobHistory);
         File baseFile = new File(runPath);
-        if (baseFile == null || !baseFile.exists()) {
-            baseFile.mkdir();
+        if (!baseFile.exists()) {
+            baseFile.mkdirs();
         }
         File file = new File(runType + HeraDateTool.getToday());
         if (!file.exists()) {
-            if (!file.mkdir()) {
+            if (!file.mkdirs()) {
                 throw new SecurityException("create file failed,please check : " + file.getAbsolutePath());
             }
         }

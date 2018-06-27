@@ -2,6 +2,7 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.vo.HeraActionVo;
+import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
 import com.dfire.common.service.HeraJobActionService;
@@ -29,7 +30,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public int insert(HeraAction heraAction) {
         HeraAction action = heraJobActionMapper.findById(heraAction);
         if (action != null) {
-            if (action.getStatus() != null && !"running".equals(action.getStatus())) {
+            if (action.getStatus() != null && !StatusEnum.RUNNING.toString().equals(action.getStatus())) {
                 heraAction.setStatus(action.getStatus());
                 heraAction.setHistoryId(action.getHistoryId());
                 heraAction.setReadyDependency(action.getReadyDependency());
@@ -39,7 +40,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             return heraJobActionMapper.update(heraAction);
         } else {
             if (Long.parseLong(heraAction.getId()) < Long.parseLong(DateUtil.getTodayStringForAction())) {
-                heraAction.setStatus("failed");
+                heraAction.setStatus(StatusEnum.FAILED.toString());
             }
             return heraJobActionMapper.insert(heraAction);
         }
