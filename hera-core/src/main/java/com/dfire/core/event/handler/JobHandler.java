@@ -109,14 +109,17 @@ public class JobHandler extends AbstractHandler {
     public void handleInitialEvent() {
         HeraAction heraAction = heraJobActionService.findById(actionId);
         if (heraAction != null) {
+            //对版本表中处于running状态的任务进行重试
             if (StatusEnum.RUNNING.toString().equals(heraAction.getStatus())) {
                 log.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
+                //有历史版本
                 if (heraAction.getHistoryId() != null) {
-                    HeraJobHistory jobHistory = jobHistoryService.findById(actionId);
+                    HeraJobHistory jobHistory = jobHistoryService.findById(heraAction.getHistoryId());
                     if (jobHistory == null) {
                         return;
                     }
                     HeraJobHistoryVo heraJobHistory = BeanConvertUtils.convert(jobHistory);
+                    // 搜索上一次运行的日志，从日志中提取jobId 进行kill
                     if (jobHistory.getStatus() == null || jobHistory.getStatus().equals(StatusEnum.RUNNING.toString())) {
                         try {
                             JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
