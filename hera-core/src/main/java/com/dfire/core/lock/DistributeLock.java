@@ -53,16 +53,14 @@ public class DistributeLock {
     @PostConstruct
     public void init() {
         heraSchedule = new HeraSchedule(applicationContext);
-        checkLock();
-
-//        TimerTask checkLockTask = new TimerTask() {
-//            @Override
-//            public void run(Timeout timeout) throws Exception {
-//                checkLock();
-//                workClient.workClientTimer.newTimeout(this, 3, TimeUnit.SECONDS);
-//            }
-//        };
-//        workClient.workClientTimer.newTimeout(checkLockTask, 2, TimeUnit.SECONDS);
+        TimerTask checkLockTask = new TimerTask() {
+            @Override
+            public void run(Timeout timeout) throws Exception {
+                checkLock();
+                workClient.workClientTimer.newTimeout(this, 3, TimeUnit.SECONDS);
+            }
+        };
+        workClient.workClientTimer.newTimeout(checkLockTask, 2, TimeUnit.SECONDS);
     }
 
     public void checkLock() {
@@ -82,20 +80,20 @@ public class DistributeLock {
             log.info("hold lock and update time");
             heraSchedule.startup();
         } else {
-//            log.info("not my lock");
-//            long currentTime = System.currentTimeMillis();
-//            long lockTime = heraLock.getServerUpdate().getTime();
-//            long interval = currentTime - lockTime;
-//            if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
-//                heraLock.setHost(host);
-//                heraLock.setServerUpdate(new Date());
-//                heraLock.setSubgroup("online");
-//                heraLockService.update(heraLock);
-//                log.error("master 发生切换");
-//                heraSchedule.startup();
-//            } else {
+            log.info("not my lock");
+            long currentTime = System.currentTimeMillis();
+            long lockTime = heraLock.getServerUpdate().getTime();
+            long interval = currentTime - lockTime;
+            if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
+                heraLock.setHost(host);
+                heraLock.setServerUpdate(new Date());
+                heraLock.setSubgroup("online");
+                heraLockService.update(heraLock);
+                log.error("master 发生切换");
+                heraSchedule.startup();
+            } else {
                 heraSchedule.shutdown();//非主节点，调度器不执行
-//            }
+            }
         }
         try {
             workClient.connect(heraLock.getHost());
