@@ -1,11 +1,9 @@
 package com.dfire.core.netty.worker;
 
 
-import com.dfire.common.entity.HeraLock;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
-import com.dfire.common.service.HeraLockService;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
@@ -20,7 +18,10 @@ import com.dfire.core.netty.worker.request.WorkerHandleWebExecute;
 import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
 import com.dfire.core.schedule.ScheduleInfoLog;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -40,7 +41,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
-import java.sql.Time;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.concurrent.*;
