@@ -119,11 +119,11 @@ public class WorkClient {
                     log.info("heart beat send failed ：" + failCount);
                     log.error("heart beat error:", e);
                 } finally {
-                    workClientTimer.newTimeout(this, 3, TimeUnit.SECONDS);
+                    workClientTimer.newTimeout(this, (failCount + 1) * 5, TimeUnit.SECONDS);
                 }
             }
         };
-        workClientTimer.newTimeout(heartBeatTask, 3, TimeUnit.SECONDS);
+        workClientTimer.newTimeout(heartBeatTask, 5, TimeUnit.SECONDS);
 
         TimerTask jobLogUpdateTask = new TimerTask() {
 
