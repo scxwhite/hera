@@ -52,7 +52,7 @@ public class JobHandler extends AbstractHandler {
 
     @Getter
     private final String actionId;
-
+    private final String HERA_GROUP = "heraGroup";
     private JobGroupCache cache;
     private HeraJobHistoryService jobHistoryService;
     private HeraGroupService heraGroupService;
@@ -130,7 +130,7 @@ public class JobHandler extends AbstractHandler {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    //TODO  未测试
+                        //TODO  未测试
                     } else if (heraJobHistory != null && heraJobHistory.getStatusEnum().equals(StatusEnum.FAILED) &&
                             heraJobHistory.getIllustrate().equals(LogConstant.WORK_DISCONNECT_LOG)) {
                         try {
@@ -407,12 +407,12 @@ public class JobHandler extends AbstractHandler {
      */
 
     public void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
-
-        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(actionId, "heraGroup").build();
+        destroy();
+        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(actionId, HERA_GROUP).build();
         jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
         jobDetail.getJobDataMap().put("dispatcher", dispatcher);
         CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression());
-        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, "heraGroup").withSchedule(scheduleBuilder).build();
+        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, HERA_GROUP).withSchedule(scheduleBuilder).build();
         masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
 
     }
@@ -421,13 +421,14 @@ public class JobHandler extends AbstractHandler {
     @Override
     public void destroy() {
         try {
-            JobKey jobKey = new JobKey(actionId, "hera");
+            JobKey jobKey = new JobKey(actionId, HERA_GROUP);
             JobDetail jobDetail = masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey);
             if (jobDetail != null) {
                 masterContext.getQuartzSchedulerService().getScheduler().deleteJob(jobKey);
+                log.error("schedule remove job with actionId:" + actionId);
             }
         } catch (SchedulerException e) {
-            log.error(e.toString());
+            log.error("schedule remove job with exception : {}" + e);
         }
 
     }
