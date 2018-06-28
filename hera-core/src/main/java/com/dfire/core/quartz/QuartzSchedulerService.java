@@ -65,6 +65,7 @@ public class QuartzSchedulerService {
         if (scheduler != null) {
             try {
                 scheduler.shutdown();
+                log.info("worker shutdown quartz service");
             } catch (SchedulerException e) {
                 e.printStackTrace();
                 log.info("failed shutdown quartz scheduler");
