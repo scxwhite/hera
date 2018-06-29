@@ -1,6 +1,5 @@
 stages:
  - build
- - javadoc
  - sonar
 
 build:
@@ -13,7 +12,7 @@ javadoc:
  stage: javadoc
  script:
    - "mvn javadoc:aggregate --fail-never"
-   - "mkdirs -p /usr/share/nginx/javadoc/${PWD##*/}"
+   - "mkdir -p /usr/share/nginx/javadoc/${PWD##*/}"
    - "cp -r ./target/site/apidocs /usr/share/nginx/javadoc/${PWD##*/}"
  tags:
   - java
