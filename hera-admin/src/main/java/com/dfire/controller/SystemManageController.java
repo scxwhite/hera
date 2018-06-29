@@ -39,7 +39,7 @@ public class SystemManageController {
     public Map getTaskQueueStatus() {
 
         Map<String, Queue<JobElement>> res = new HashMap<>(4);
-        res.put("schedult", masterContext.getScheduleQueue());
+        res.put("schedule", masterContext.getScheduleQueue());
         return res;
     }
 
