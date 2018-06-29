@@ -148,9 +148,7 @@ public class Master {
                 int executeMinute = DateUtil.getCurrentMinute(calendar);
                 //凌晨生成版本，早上七点以后开始再次生成版本
                 boolean execute = (executeHour == 0 && executeMinute == 0)
-                        || (executeHour == 0 && executeMinute == 35)
-                        || (executeHour > 7 && executeMinute == 20)
-                        || (executeHour > 7 && executeMinute < 22);
+                        || (executeHour > 7 && executeHour <= 23);
                 if (execute) {
                     String currString = DateUtil.getTodayStringForAction();
                     if (executeHour == 23) {
@@ -181,10 +179,10 @@ public class Master {
                     }
                     log.info("generate all action success");
                 }
-                masterContext.masterTimer.newTimeout(this, 30, TimeUnit.MINUTES);
+                masterContext.masterTimer.newTimeout(this, 1, TimeUnit.HOURS);
             }
         };
-        masterContext.masterTimer.newTimeout(generateActionTask, 30, TimeUnit.MINUTES);
+        masterContext.masterTimer.newTimeout(generateActionTask, 1, TimeUnit.HOURS);
 
         /**
          * 扫描任务等待队列，可获得worker的任务将执行

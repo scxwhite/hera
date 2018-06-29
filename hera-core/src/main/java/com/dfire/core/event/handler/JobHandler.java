@@ -308,32 +308,19 @@ public class JobHandler extends AbstractHandler {
     private void autoRecovery() {
         cache.refresh();
         HeraActionVo heraActionVo = cache.getHeraActionVo();
+        //任务被删除
         if (heraActionVo == null) {
             masterContext.getDispatcher().removeJobHandler(this);
             destroy();
             log.info("remove quartz schedule, actionId = ", heraActionVo.getId());
             return;
         }
-        JobDetail jobDetail = null;
-        JobKey jobKey = new JobKey(actionId, "hera");
-        try {
-
-            jobDetail = masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey);
-        } catch (SchedulerException e) {
-            log.error(e.toString());
-        }
-
+        //自动调度关闭
         if (!heraActionVo.getAuto()) {
-            if (jobDetail != null) {
-                try {
-                    masterContext.getQuartzSchedulerService().getScheduler().deleteJob(jobKey);
-                    log.info("remove close job quartz schedule, actionId = ", heraActionVo.getId());
-                } catch (SchedulerException e) {
-                    log.error(e.toString());
-                }
-            }
+            destroy();
             return;
         }
+
 
         /**
          * 如果是依赖任务 说明原来是独立任务，现在变成依赖任务，需要删除原来的定时调度
@@ -341,23 +328,15 @@ public class JobHandler extends AbstractHandler {
          *
          */
         if (heraActionVo.getScheduleType() == JobScheduleTypeEnum.Dependent) {
-            if (jobDetail != null) {
-                try {
-                    masterContext.getQuartzSchedulerService().getScheduler().deleteJob(jobKey);
-                    log.info("clear dependent job quartz schedule, actionId = ", actionId);
-                } catch (SchedulerException e) {
-                    log.error(e.toString());
-                }
-            }
+            destroy();
         } else if (heraActionVo.getScheduleType() == JobScheduleTypeEnum.Independent) {
+
             try {
-                if (jobDetail != null) {
-                    return;
-                }
                 createScheduleJob(masterContext.getDispatcher(), heraActionVo);
             } catch (SchedulerException e) {
-                log.error(e.toString());
+                e.printStackTrace();
             }
+
         }
 
 
@@ -407,13 +386,17 @@ public class JobHandler extends AbstractHandler {
      */
 
     public void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
-        destroy();
-        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(actionId, HERA_GROUP).build();
-        jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
-        jobDetail.getJobDataMap().put("dispatcher", dispatcher);
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression());
-        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, HERA_GROUP).withSchedule(scheduleBuilder).build();
-        masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
+
+        JobKey jobKey = new JobKey(actionId, HERA_GROUP);
+        if (masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey) == null) {
+            JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(jobKey).build();
+            jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
+            jobDetail.getJobDataMap().put("dispatcher", dispatcher);
+            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression());
+            CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, HERA_GROUP).withSchedule(scheduleBuilder).build();
+            masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
+            log.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
+        }
 
     }
 
@@ -430,7 +413,6 @@ public class JobHandler extends AbstractHandler {
         } catch (SchedulerException e) {
             log.error("schedule remove job with exception : {}" + e);
         }
-
     }
 
     @Override
