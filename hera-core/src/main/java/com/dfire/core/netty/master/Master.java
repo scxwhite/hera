@@ -453,6 +453,7 @@ public class Master {
 
         if (!masterContext.getScheduleQueue().isEmpty()) {
             final JobElement element = masterContext.getScheduleQueue().poll();
+            log.debug("开始执行定时队列任务任务：" + element.getJobId());
             runScheduleJobAction(element);
         }
 
@@ -551,6 +552,7 @@ public class Master {
     private void runScheduleJobAction(JobElement element) {
         MasterWorkHolder workHolder = getRunnableWork(element.getHostGroupId());
         if (workHolder == null) {
+            log.warn("no work in master");
             masterContext.getExceptionQueue().offer(element);
         } else {
             runScheduleJob(workHolder, element.getJobId());
