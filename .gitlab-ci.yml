@@ -8,16 +8,6 @@ build:
  tags:
   - java
 
-javadoc:
- stage: javadoc
- script:
-   - "mvn javadoc:aggregate --fail-never"
-   - "mkdir -p /usr/share/nginx/javadoc/${PWD##*/}"
-   - "cp -r ./target/site/apidocs /usr/share/nginx/javadoc/${PWD##*/}"
- tags:
-  - java
- only:
-  - develop
 
 sonar:
  stage: sonar
