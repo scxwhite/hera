@@ -140,7 +140,7 @@ public class Master {
 
         TimerTask generateActionTask = new TimerTask() {
             @Override
-            public void run(Timeout timeout) {
+            public void run(Timeout timeout) throws Exception{
                 Calendar calendar = Calendar.getInstance();
                 Date now = calendar.getTime();
 
@@ -156,7 +156,7 @@ public class Master {
                         currString = nextDayString.getSource();
                         now = nextDayString.getTarget();
                     }
-                    log.info("generate depend action date: " + currString);
+                    log.error("generate depend action date: " + currString);
                     List<HeraJob> jobList = masterContext.getHeraJobService().getAll();
                     Map<Long, HeraAction> actionMap = new HashMap<>();
                     SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
@@ -165,7 +165,7 @@ public class Master {
                     if (executeHour < 23) {
                         heraActionMap = actionMap;
                     }
-                    log.info("generate depend action success" + actionMap.size());
+                    log.error("generate depend action success" + actionMap.size());
                     Dispatcher dispatcher = masterContext.getDispatcher();
                     if (dispatcher != null) {
                         if (actionMap.size() > 0) {
@@ -224,7 +224,7 @@ public class Master {
 
         TimerTask checkHeartBeatTask = new TimerTask() {
             @Override
-            public void run(Timeout timeout) {
+            public void run(Timeout timeout) throws Exception {
                 Date now = new Date();
                 for (MasterWorkHolder worker : masterContext.getWorkMap().values()) {
                     Date timestamp = worker.getHeartBeatInfo().timestamp;
@@ -284,7 +284,7 @@ public class Master {
                         heraAction.setJobId(String.valueOf(heraJob.getId()));
                         heraAction.setHistoryId(heraJob.getHistoryId());
                         masterContext.getHeraJobActionService().insert(heraAction);
-                        log.info("generate actions success :" + actionDate);
+                        log.error("generate actions success :" + actionId);
                         actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
 
                     });
@@ -453,7 +453,7 @@ public class Master {
 
         if (!masterContext.getScheduleQueue().isEmpty()) {
             final JobElement element = masterContext.getScheduleQueue().poll();
-            log.debug("开始执行定时队列任务任务：" + element.getJobId());
+            log.debug("开始执行定时队列任务：" + element.getJobId());
             runScheduleJobAction(element);
         }
 

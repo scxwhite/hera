@@ -6,6 +6,7 @@ import com.dfire.core.queue.JobElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,9 +36,9 @@ public class SystemManageController {
         return "systemManage/hostGroupManage.index";
     }
 
-    @RequestMapping("getTaskQueueStatus")
+    @RequestMapping("/getTaskQueueStatus")
+    @ResponseBody
     public Map getTaskQueueStatus() {
-
         Map<String, Queue<JobElement>> res = new HashMap<>(4);
         res.put("schedule", masterContext.getScheduleQueue());
         return res;
