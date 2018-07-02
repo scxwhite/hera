@@ -1,5 +1,9 @@
 spring:
-    profiles.active: daily
+    profiles:
+        active: daily
+    monitor:
+        path: /hera
+        port: 8088
     datasource:
         name: default
         type: com.alibaba.druid.pool.DruidDataSource
