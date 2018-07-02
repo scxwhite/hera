@@ -386,12 +386,13 @@ public class Master {
                                 }
                                 HeraAction actionNew = new HeraAction();
                                 BeanUtils.copyProperties(heraJob, actionNew);
-                                actionNew.setId(String.valueOf(longActionId / 1000000 * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()))));
+                                Long actionId = longActionId / 1000000 * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()));
+                                actionNew.setId(String.valueOf(actionId));
                                 actionNew.setGmtCreate(new Date());
                                 actionNew.setDependencies(actionDependencies.toString());
                                 actionNew.setJobDependencies(heraJob.getDependencies());
                                 actionNew.setJobId(String.valueOf(heraJob.getId()));
-                                if (!actionMap.containsKey(actionNew.getId())) {
+                                if (!actionMap.containsKey(actionId)) {
                                     masterContext.getHeraJobActionService().insert(actionNew);
                                     actionMap.put(Long.parseLong(actionNew.getId()), actionNew);
                                 }
@@ -427,10 +428,10 @@ public class Master {
                                 String status = action.getStatus();
                                 if (status == null || status.equals("wait")) {
                                     isAllComplete = false;
-                                    if (retryCount < 30 && actionIdList.contains(jobDep)) {
+                                    //TODO  可能 递归 无意义
+                                   /* if (retryCount < 30 && actionIdList.contains(jobDep)) {
                                         rollBackLostJob(jobDep, actionMapNew, retryCount, actionIdList);
-
-                                    }
+                                    } */
                                 } else if (status.equals(StatusEnum.FAILED.toString())) {
                                     isAllComplete = false;
                                 }
