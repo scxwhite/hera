@@ -87,6 +87,7 @@ public class Master {
         TimerTask clearScheduleTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) {
+                //TODO  检测  删除action
                 log.info("refresh host group success,start clear schedule");
                 masterContext.refreshHostGroupCache();
                 try {
@@ -111,17 +112,18 @@ public class Master {
                             }
                             log.info("roll back action count:" + actionMapNew.size());
 
+                            //移除未生成的调度
                             List<AbstractHandler> handlers = dispatcher.getJobHandlers();
                             if (handlers != null && handlers.size() > 0) {
                                 handlers.forEach(handler -> {
                                     JobHandler jobHandler = (JobHandler) handler;
-                                    String jobId = jobHandler.getActionId();
-                                    if (Long.parseLong(jobId) < (Long.parseLong(currDate) - 15000000)) {
-                                        masterContext.getQuartzSchedulerService().deleteJob(jobId);
-                                    } else if (Long.parseLong(jobId) >= Long.parseLong(currDate) && Long.parseLong(jobId) < Long.parseLong(nextDay)) {
-                                        if (actionMapNew.containsKey(Long.parseLong(jobId))) {
-                                            masterContext.getQuartzSchedulerService().deleteJob(jobId);
-                                            masterContext.getHeraJobActionService().delete(jobId);
+                                    String actionId = jobHandler.getActionId();
+                                    if (Long.parseLong(actionId) < (Long.parseLong(currDate) - 15000000)) {
+                                        masterContext.getQuartzSchedulerService().deleteJob(actionId);
+                                    } else if (Long.parseLong(actionId) >= Long.parseLong(currDate) && Long.parseLong(actionId) < Long.parseLong(nextDay)) {
+                                        if (!actionMapNew.containsKey(Long.parseLong(actionId))) {
+                                            masterContext.getQuartzSchedulerService().deleteJob(actionId);
+                                            masterContext.getHeraJobActionService().delete(actionId);
                                         }
                                     }
                                 });
@@ -132,15 +134,16 @@ public class Master {
 
                 } catch (Exception e) {
                     log.error("roll back lost job failed or clear job schedule failed !", e);
+                } finally {
+                    masterContext.masterTimer.newTimeout(this, 30, TimeUnit.MINUTES);
                 }
-                masterContext.masterTimer.newTimeout(this, 30, TimeUnit.MINUTES);
             }
         };
         masterContext.masterTimer.newTimeout(clearScheduleTask, 30, TimeUnit.MINUTES);
 
         TimerTask generateActionTask = new TimerTask() {
             @Override
-            public void run(Timeout timeout) throws Exception{
+            public void run(Timeout timeout) throws Exception {
                 Calendar calendar = Calendar.getInstance();
                 Date now = calendar.getTime();
 
@@ -161,7 +164,7 @@ public class Master {
                     Map<Long, HeraAction> actionMap = new HashMap<>();
                     SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
                     generateScheduleJobAction(jobList, now, dfDate, actionMap);
-                    generateDependJobAction(jobList,actionMap, 0);
+                    generateDependJobAction(jobList, actionMap, 0);
                     if (executeHour < 23) {
                         heraActionMap = actionMap;
                     }
