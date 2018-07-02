@@ -15,6 +15,7 @@ import com.dfire.common.kv.Tuple;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.HeraDateTool;
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.HeraException;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -57,10 +58,8 @@ public class Master {
     public Master(final MasterContext masterContext) {
 
         this.masterContext = masterContext;
-        ThreadFactory executeJobThreadFactory = new ThreadFactoryBuilder().setNameFormat("exe-job-pool-%d").build();
         executeJobPool = new ThreadPoolExecutor(2, 2, 0L, TimeUnit.MICROSECONDS,
-                new LinkedBlockingQueue<>(1024), executeJobThreadFactory, new ThreadPoolExecutor.AbortPolicy());
-
+                new LinkedBlockingQueue<>(1024), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
         String exeEnvironment = "pre";
         if (HeraGlobalEnvironment.env.equalsIgnoreCase(exeEnvironment)) {
             masterContext.getDispatcher().addDispatcherListener(new HeraStopScheduleJobListener());

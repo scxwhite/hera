@@ -1,8 +1,7 @@
-
-
 var msgHeight;
+
 function successMsg(data) {
-    if(window.screen.width <= 767) {
+    if (window.screen.width <= 767) {
         msgHeight = 100;
     } else {
         msgHeight = 50;
@@ -15,39 +14,42 @@ function successMsg(data) {
     }
 
 }
+
 function success(msg) {
     $('#alertSuccess').css({
-        "width" : 700,
-        "right" : ($(window).width() - 700) / 2,
+        "width": 700,
+        "right": ($(window).width() - 700) / 2,
         "display": "block"
     });
     $('#alertSuccess #successText').text(msg);
     $('#alertSuccess').animate({
-        top:msgHeight
-    },2000);
+        top: msgHeight
+    }, 2000);
     $('#alertSuccess').animate({
-        top:0
-    },2000,"linear",function () {
-        $('#alertSuccess').css("display","none");
+        top: 0
+    }, 2000, "linear", function () {
+        $('#alertSuccess').css("display", "none");
     });
 }
+
 function failure(msg) {
 
     $('#alertFailure').css({
-        "width" : 500,
-        "right" : ($(window).width() - 500) / 2,
+        "width": 500,
+        "right": ($(window).width() - 500) / 2,
         "display": "block"
     });
     $('#alertFailure #failureText').text(msg);
     $('#alertFailure').animate({
-        top:msgHeight
-    },2000);
+        top: msgHeight
+    }, 2000);
     $('#alertFailure').animate({
-        top:0
-    },2000,"linear",function () {
-        $('#alertFailure').css("display","none");
+        top: 0
+    }, 2000, "linear", function () {
+        $('#alertFailure').css("display", "none");
     });
 }
+
 function dealCode(data) {
     if (data.code == 401) {
         location.href = "/";
@@ -55,8 +57,9 @@ function dealCode(data) {
         alert("错误代码：" + data.code);
     }
 }
-function formDataLoad(domId, obj) {
 
+
+function formDataLoad(domId, obj) {
     $("#" + domId)[0].reset();
     for (var property in obj) {
         if (obj.hasOwnProperty(property) == true) {
@@ -86,4 +89,34 @@ function formDataLoad(domId, obj) {
             }
         }
     }
+}
+
+function httpRequest(url, type, success) {
+    httpRequest(url, type, null, false, success);
+}
+
+function httpRequest(url, type, params, async, success) {
+    if (isNull(url)) {
+        return ;
+    }
+    type = type || "post";
+    async = async || false;
+    success = success || function (data) {
+        alert(data);
+    };
+
+    $.ajax({
+        url: url,
+        type: type,
+        data: params,
+        async: async,
+        success: success
+    })
+}
+
+function isNull(val) {
+    if (val == null || val == undefined || val == "") {
+        return true;
+    }
+    return false;
 }
