@@ -1,12 +1,13 @@
 package com.dfire.core.netty.worker;
 
+import com.dfire.common.service.HeraDebugHistoryService;
+import com.dfire.common.service.HeraGroupService;
+import com.dfire.common.service.HeraJobActionService;
+import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.core.job.Job;
 import io.netty.channel.Channel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
 import java.net.InetAddress;
@@ -21,17 +22,14 @@ import java.util.concurrent.Executors;
  * @time: Created in 11:30 2018/1/10
  * @desc
  */
-@Slf4j
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
 public class WorkContext {
 
     public static String host;
     public static Integer cpuCoreNum;
     public String serverHost;
-    private Channel channel;
+    private Channel serverChannel;
     private Map<String, Job> running = new ConcurrentHashMap<String, Job>();
     private Map<String, Job> manualRunning = new ConcurrentHashMap<String, Job>();
     private Map<String, Job> debugRunning = new ConcurrentHashMap<String, Job>();
@@ -49,13 +47,21 @@ public class WorkContext {
         cpuCoreNum = Runtime.getRuntime().availableProcessors();
     }
 
-    @Override
-    public String toString() {
-        return "WorkContext{}";
+    public HeraDebugHistoryService getDebugHistoryService() {
+        return (HeraDebugHistoryService) applicationContext.getBean("heraDebugHistoryService");
     }
 
-    public static void main(String[] args) {
-        System.out.println(host);
-        System.out.println(cpuCoreNum);
+    public HeraJobHistoryService getJobHistoryService() {
+        return (HeraJobHistoryService) applicationContext.getBean("heraJobHistoryService");
     }
+
+    public HeraGroupService getHeraGroupService() {
+        return (HeraGroupService) applicationContext.getBean("heraGroupService");
+    }
+
+    public HeraJobActionService getHeraJobActionService() {
+        return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
+    }
+
+
 }

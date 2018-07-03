@@ -32,7 +32,15 @@ public class HeartBeatInfo {
 
     public String host;
 
-    public Float cpuLoadPerCore;//cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量
+    /**
+     * cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量
+     *
+     */
+    public Float cpuLoadPerCore;
 
-    public Float memTotal; // 每个机器的总内存数
+    /**
+     * 每个机器的总内存数
+     *
+     */
+    public Float memTotal;
 }

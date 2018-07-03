@@ -1,2 +1,2 @@
-# zeus-job-schduler
+# Hera
 A Distributed Job Schedule System

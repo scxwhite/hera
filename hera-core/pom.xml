@@ -20,6 +20,8 @@
     <properties>
         <quartz.version>2.2.1</quartz.version>
         <hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
+        <lang3.version>3.4</lang3.version>
+        <hera.common.version>1.0-SNAPSHOT</hera.common.version>
     </properties>
 
     <dependencies>
@@ -39,7 +41,14 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-data-redis</artifactId>
+                    <groupId>org.springframework.data</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
+
         <!-- redisson-->
         <dependency>
             <groupId>org.redisson</groupId>
@@ -82,6 +91,7 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
+            <version>2.4.0a</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -92,6 +102,11 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${lang3.version}</version>
         </dependency>
 
         <dependency>
@@ -120,12 +135,58 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-common</artifactId>
-            <version>${parent.version}</version>
+            <version>${hera.common.version}</version>
         </dependency>
 
     </dependencies>
+    <!--配置信息-->
+    <profiles>
+        <!--项目环境-->
+        <profile>
+            <id>dev</id>
+            <properties>
+                <env>dev</env>
+                <maven.skip.test>false</maven.skip.test>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <!-- 日常环境，默认激活 mvn package -P daily -->
+        <profile>
+            <id>daily</id>
+            <properties>
+                <env>daily</env>
+                <maven.skip.test>false</maven.skip.test>
+            </properties>
+        </profile>
+
+        <!-- 预发环境 -->
+        <profile>
+            <id>pre</id>
+            <properties>
+                <env>pre</env>
+                <maven.skip.test>true</maven.skip.test>
+            </properties>
+        </profile>
+
+        <!--发布环境-->
+        <profile>
+            <id>publish</id>
+            <properties>
+                <env>publish</env>
+                <maven.skip.test>true</maven.skip.test>
+            </properties>
+        </profile>
+    </profiles>
+
 
     <build>
         <plugins>

@@ -1,17 +1,21 @@
 package com.dfire.controller;
 
-import com.dfire.common.entity.ZeusUser;
+import com.dfire.common.entity.HeraUser;
+import com.dfire.common.enums.HttpCode;
+import com.dfire.common.service.HeraHostGroupService;
+import com.dfire.common.service.HeraJobService;
+import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
+import com.dfire.config.WebSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.dfire.common.service.ZeusHostGroupService;
-import com.dfire.common.service.ZeusJobService;
-import com.dfire.common.service.ZeusUserService;
+
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -24,11 +28,7 @@ import com.dfire.common.service.ZeusUserService;
 public class LoginController {
 
     @Autowired
-    private ZeusUserService zeusUserService;
-    @Autowired
-    private ZeusJobService zeusJobService;
-    @Autowired
-    private ZeusHostGroupService hostGroupService;
+    private HeraUserService heraUserService;
 
     @RequestMapping("/")
     public String login() {
@@ -40,24 +40,39 @@ public class LoginController {
         return "home";
     }
 
-    @RequestMapping(value="/toLogin", method=RequestMethod.POST)
+    @RequestMapping(value = "/toLogin", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse toLogin(String userName, String password) {
-        zeusJobService.findByName(182);
-        ZeusUser user = zeusUserService.findByName(userName);
+    public RestfulResponse toLogin(String userName, String password, HttpSession session) {
+        HeraUser user = heraUserService.findByName(userName);
+
+        if (user == null) {
+            return RestfulResponse.builder().code(400).build();
+        } else {
+            session.setAttribute(WebSecurityConfig.SESSION_KEY, user);
+        }
         String pwd = user.getPassword();
         RestfulResponse response = RestfulResponse
                 .builder().build();
         if (!StringUtils.isEmpty(password)) {
             password = StringUtil.EncoderByMd5(password);
             if (pwd.equals(password)) {
-                response.setCode("200");
-                response.setSuccess(true);
+               response.setHttpCode(HttpCode.REQUEST_SUCCESS);
             } else {
-                response.setCode("400");
+                response.setHttpCode(HttpCode.USER_NOT_LOGIN);
             }
         }
         return response;
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse register(HeraUser user) {
+        HeraUser check = heraUserService.findByName(user.getName());
+        if (check != null) {
+            return new RestfulResponse(false, "用户名已存在");
+        }
+        int res = heraUserService.insert(user);
+        return new RestfulResponse( res > 0, res > 0 ? "注册成功，等待管理员审核" : "注册失败,请联系管理员");
     }
 
 

@@ -1,11 +1,8 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.core.message.HeartBeatInfo;
-import com.dfire.core.netty.Channel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import io.netty.channel.Channel;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,19 +14,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class MasterWorkHolder {
 
-    private  Channel channel;
+    private Channel channel;
 
-    /** 布尔值标记是不是已经发送过超时报警 */
-    private Map<String, Boolean> running = new ConcurrentHashMap<String, Boolean>();
+    private Map<String, Boolean> running = new ConcurrentHashMap<>();
 
-    private Map<String, Boolean> manningRunning = new ConcurrentHashMap<String, Boolean>();
+    private Map<String, Boolean> manningRunning = new ConcurrentHashMap<>();
 
-    private Map<String, Boolean> debugRunning = new ConcurrentHashMap<String, Boolean>();
+    private Map<String, Boolean> debugRunning = new ConcurrentHashMap<>();
 
     public HeartBeatInfo heartBeatInfo;
+
+    public MasterWorkHolder(Channel channel) {
+        this.channel = channel;
+    }
+
 }

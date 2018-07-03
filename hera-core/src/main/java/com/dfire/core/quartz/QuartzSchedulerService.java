@@ -1,13 +1,12 @@
 package com.dfire.core.quartz;
 
-import com.dfire.common.entity.ZeusJob;
-import com.dfire.core.event.Dispatcher;
-import com.dfire.core.schedule.ZeusQuartzJob;
+import com.dfire.common.constants.Constants;
 import jdk.nashorn.internal.objects.annotations.Constructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -20,8 +19,8 @@ import java.util.Properties;
  * @desc quartz调度器初始化
  */
 @Slf4j
-@Service
 @Configuration
+@Service("quartzSchedulerService")
 public class QuartzSchedulerService {
 
     private Scheduler scheduler;
@@ -67,6 +66,7 @@ public class QuartzSchedulerService {
         if (scheduler != null) {
             try {
                 scheduler.shutdown();
+                log.info("worker shutdown quartz service");
             } catch (SchedulerException e) {
                 e.printStackTrace();
                 log.info("failed shutdown quartz scheduler");
@@ -78,27 +78,18 @@ public class QuartzSchedulerService {
         return scheduler;
     }
 
-    /**
-     * 创建定时任务
-     *
-     * @param scheduler the scheduler
-     * @param zeusJob the job name
-     */
-
-    public static void createScheduleJob(Scheduler scheduler, Dispatcher dispatcher, ZeusJob zeusJob) {
-
-        JobDetail jobDetail = JobBuilder.newJob(ZeusQuartzJob.class).withIdentity("zeus").build();
-        jobDetail.getJobDataMap().put("jobId", zeusJob.getId());
-        jobDetail.getJobDataMap().put("dispatcher", dispatcher);
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(zeusJob.getCronExpression());
-        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity("zeus").withSchedule(scheduleBuilder).build();
+    public void deleteJob(String actionId) {
         try {
-            scheduler.scheduleJob(jobDetail, trigger);
-        } catch (SchedulerException e) {
-            log.error("创建定时任务失败", e);
-            e.printStackTrace();
-        }
+            JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+            if(jobDetail != null) {
+                scheduler.deleteJob(jobKey);
+            }
+            log.error("schedule remove job with actionId:" + actionId);
 
+        } catch (SchedulerException e) {
+            log.error("clear quartz schedule error : " + actionId);
+        }
 
     }
 

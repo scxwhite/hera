@@ -1,14 +1,18 @@
 spring:
-    profiles.active: dev
+    profiles:
+        active: daily
+    monitor:
+        path: /hera
+        port: 8088
     datasource:
         name: default
         type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://localhost/zeus?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
-        username: root
-        password: syman
+        url: jdbc:mysql://common101.my.2dfire-daily.com:3306/hera_test?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+        username: twodfire
+        password: 123456
         druid:
                   initial-size: 10
-                  max-active: 20       #最大连接池数量
+                  max-active: 200       #最大连接池数量
                   min-idle: 2              #最小连接池数量
                   max-wait: 5000 #获取连接时最大等待时间，单位毫秒。配置了maxWait之后，缺省启用公平锁，并发效率会有所下降，如果需要可以通过配置useUnfairLock属性为true使用非公平锁。
                   validation-query: select 1                #用来检测连接是否有效的sql，要求是一个查询语句。如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会其作用。
@@ -24,33 +28,67 @@ spring:
 
 
 server:
-  context-path: /
   port: 8080
 
 clean:
    path: ${server.context-path}
+#hera全局配置
+hera:
+   default-worker-group-id : 1 #默认worker的host组id
+   preemption-master-group-id : 1  #抢占master的host组id
+   dos2unix-exclude-file: jar;war
+   env : daily
+   maxMemRate : 0.8       #已使用内存占总内存的最大比例,默认0.8
+   cpuLoadPerCore : 3.0   #cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量，默认3.0
+   scanRate : 2000        #队列扫描频率(毫秒)
+   scanExceptionRate : 2000  #异常队列扫描频率(毫秒)
+   systemMemUserd : 2000  # 系统占用内存
+   taskMem : 300          # 每个任务使用内存300M
+   heatBeat : 2           # 心跳传递时间频率
+   download-dir : /opt/logs/spring-boot
+   hdfsLibPath : /hera/hdfs-upload-dir #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上
+   schedule-group : online
 
-zeus:
-   defaultWorkerGroupId : 1 #默认worker的host组id
-   preemptionMasterGroupId : 1  #抢占master的host组id
+   connect.port : 9887 #netty通信的端口
 
+   #hadoop 配置文件路径
+   hadoop-home : /opt/cloudera/parcels/CDH/lib/hadoop
+   hadoop-conf-dir : /etc/hadoop/conf
+   hive-home : /opt/cloudera/parcels/CDH/lib/hive
+   hive-conf-dir : /opt/cloudera/parcels/CDH/lib/hive/conf
+   sqoop.home : /opt/cloudera/parcels/CDH/lib/sqoop
+   spark-home : /home/hadoop/spark161-hadoop26
 
+logging:
+  config: classpath:logback-spring.xml
+  path: /opt/logs/spring-boot
+  level: info
+
+---
+spring:
+  profiles: dev
+hera:
+  env: dev
+---
+spring:
+  profiles: daily
+hera:
+  env: daily
 ---
 spring:
   profiles: pre
   datasource:
-      url: jdbc:mysql://master1401.my.2dfire-inc.com:3306/report_revaluation?useUnicode=true&amp;characterEncoding=UTF-8
-      username: zeus
-      password: zeus@552208
-
-
-
-
-
+    url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+    username: lineage
+    password: lineage@552208
+hera:
+  env: pre
 ---
 spring:
   profiles: publish
   datasource:
-      url: jdbc:mysql://master1401.my.2dfire-inc.com:3306/report_revaluation?useUnicode=true&amp;characterEncoding=UTF-8
-      username: zeus
-      password: zeus@552208
+    url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+    username: lineage
+    password: lineage@552208
+hera:
+  env: publish

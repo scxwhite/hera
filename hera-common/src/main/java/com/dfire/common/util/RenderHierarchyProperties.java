@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 15:40 2018/3/22
- * @desc 层次结构属性解析，zeus时间配置解析
+ * @desc 层次结构属性解析，hera时间配置解析
  */
 @Slf4j
 public class RenderHierarchyProperties extends HierarchyProperties {
@@ -39,7 +39,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
     /**
      * @param template
      * @return
-     * @desc zeus配置日期变量替换, 如：${zdt.addDay(-2).format("yyyyMMdd")}，${zdt.addDay(-1).format("yyyyMMdd")}
+     * @desc hera配置日期变量替换, 如：${zdt.addDay(-2).format("yyyyMMdd")}，${zdt.addDay(-1).format("yyyyMMdd")}
      */
     public static String render(String template) {
         if (template == null) {
@@ -51,7 +51,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             StringWriter sw = new StringWriter();
             try {
                 VelocityContext context = new VelocityContext();
-                context.put("zdt", new ZeusDateTool(new Date()));
+                context.put("zdt", new HeraDateTool(new Date()));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
                     log.error("render fail with target:" + m);
@@ -64,14 +64,14 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             template = template.replace(m, sw.toString());
             matcher = pt.matcher(template);
         }
-        template = template.replace("${yesterday}", new ZeusDateTool(new Date()).addDay(-1).format("yyyyMMdd"));
+        template = template.replace("${yesterday}", new HeraDateTool(new Date()).addDay(-1).format("yyyyMMdd"));
         return template;
     }
 
     /**
      * @param template
      * @param dateStr
-     * @return zeus配置日期变量替换,"${yesterday}"为系统变量
+     * @return hera配置日期变量替换,"${yesterday}"为系统变量
      */
     public static String render(String template, String dateStr) {
         if (template == null) {
@@ -83,7 +83,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             StringWriter sw = new StringWriter();
             try {
                 VelocityContext context = new VelocityContext();
-                context.put("zdt", new ZeusDateTool(ZeusDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")));
+                context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
                     log.error("render fail with target:" + m);
@@ -96,7 +96,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             template = template.replace(m, sw.toString());
             matcher = pt.matcher(template);
         }
-        template = template.replace("${yesterday}", new ZeusDateTool(ZeusDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")).addDay(-1).format("yyyyMMdd"));
+        template = template.replace("${yesterday}", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")).addDay(-1).format("yyyyMMdd"));
         return template;
     }
 
@@ -108,8 +108,6 @@ public class RenderHierarchyProperties extends HierarchyProperties {
     @Override
     public Map<String, String> getLocalProperties() {
         Map<String, String> map = properties.getLocalProperties();
-//        Map<String, String> result = new HashMap<>();
-//        map.keySet().forEach(key -> result.put(key, render(key)));
         Map<String, String> result = properties.getLocalProperties().keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s)), (t, k) -> k));
         return result;
     }
@@ -153,11 +151,6 @@ public class RenderHierarchyProperties extends HierarchyProperties {
 
     @Override
     public List<String> getHierarchyProperty(String key) {
-//        List<String> list = properties.getHierarchyProperty(key);
-//        List<String> result = new ArrayList<String>();
-//        for (String s : list) {
-//            result.add(render(s));
-//        }
         List<String> result = properties.getHierarchyProperty(key).stream().map(s -> render(s)).collect(Collectors.toList());
         return result;
     }
@@ -165,10 +158,6 @@ public class RenderHierarchyProperties extends HierarchyProperties {
     @Override
     public Map<String, String> getAllProperties() {
         Map<String, String> map = properties.getAllProperties();
-//        Map<String, String> result = new HashMap<String, String>();
-//        for (String key : map.keySet()) {
-//            result.put(key, render(map.get(key)));
-//        }
         Map<String, String> result = properties.getAllProperties().keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s)), (t, k) -> k));
         return result;
     }
@@ -176,7 +165,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
     @Override
     public Map<String, String> getAllProperties(String dateString) {
         Map<String, String> map = properties.getAllProperties();
-        Map<String, String> result = properties.getAllProperties().keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s), dateString), (t, k) -> k));
+        Map<String, String> result = map.keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s), dateString), (t, k) -> k));
         return result;
     }
 }

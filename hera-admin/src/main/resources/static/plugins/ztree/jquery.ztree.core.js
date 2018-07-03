@@ -50,7 +50,9 @@
             folder: {
                 OPEN: "open",
                 CLOSE: "close",
-                DOCU: "docu"
+                DOCU: "docu",
+                OPEN2: "open2",
+                CLOSE2: "close2"
             },
             node: {
                 CURSELECTED: "curSelectedNode"
@@ -301,7 +303,7 @@
             n.open = (typeof n.open == "string") ? tools.eqs(n.open, "true") : !!n.open;
             var isParent = data.nodeIsParent(setting, n);
             if (tools.isArray(children) &&
-              !(isParent === false || (typeof isParent == "string" && tools.eqs(isParent, "false")))) {
+                !(isParent === false || (typeof isParent == "string" && tools.eqs(isParent, "false")))) {
                 data.nodeIsParent(setting, n, true);
                 n.zAsync = true;
             } else {
@@ -690,11 +692,11 @@
                 return r;
 
                 function _do(_node) {
-                  r.push(_node);
-                  var children = data.nodeChildren(setting, _node);
-                  if (children) {
-                      r = r.concat(data.transformToArrayFormat(setting, children));
-                  }
+                    r.push(_node);
+                    var children = data.nodeChildren(setting, _node);
+                    if (children) {
+                        r = r.concat(data.transformToArrayFormat(setting, children));
+                    }
                 }
             },
             transformTozTreeFormat: function (setting, sNodes) {
@@ -816,7 +818,7 @@
             },
             onClickNode: function (event, node) {
                 var setting = data.getSetting(event.data.treeId),
-                    clickFlag = ( (setting.view.autoCancelSelected && (event.ctrlKey || event.metaKey)) && data.isSelectedNode(setting, node)) ? 0 : (setting.view.autoCancelSelected && (event.ctrlKey || event.metaKey) && setting.view.selectedMulti) ? 2 : 1;
+                    clickFlag = ((setting.view.autoCancelSelected && (event.ctrlKey || event.metaKey)) && data.isSelectedNode(setting, node)) ? 0 : (setting.view.autoCancelSelected && (event.ctrlKey || event.metaKey) && setting.view.selectedMulti) ? 2 : 1;
                 if (tools.apply(setting.callback.beforeClick, [setting.treeId, node, clickFlag], true) == false) return true;
                 if (clickFlag === 0) {
                     view.cancelPreSelectedNode(setting, node);
@@ -856,7 +858,7 @@
             },
             onSelectStart: function (e) {
                 var n = e.originalEvent.srcElement.nodeName.toLowerCase();
-                return (n === "input" || n === "textarea" );
+                return (n === "input" || n === "textarea");
             }
         },
         //method of tools for zTree
@@ -919,7 +921,7 @@
                 return ($(target).parent("li").get(0) || $(target).parentsUntil("li").parent().get(0));
             },
             isChildOrSelf: function (dom, parentId) {
-                return ( $(dom).closest("#" + parentId).length > 0 );
+                return ($(dom).closest("#" + parentId).length > 0);
             },
             uCanDo: function (setting, e) {
                 return true;
@@ -1222,10 +1224,17 @@
                     if (node.iconOpen && node.iconClose) {
                         icoObj.attr("style", view.makeNodeIcoStyle(setting, node));
                     }
-
+                    var dir = node.directory;
                     if (node.open) {
-                        view.replaceSwitchClass(node, switchObj, consts.folder.OPEN);
-                        view.replaceIcoClass(node, icoObj, consts.folder.OPEN);
+
+                        if (dir == 1) {
+                            view.replaceSwitchClass(node, switchObj, consts.folder.OPEN2);
+                            view.replaceIcoClass(node, icoObj, consts.folder.OPEN2);
+                        } else {
+                            view.replaceSwitchClass(node, switchObj, consts.folder.OPEN);
+                            view.replaceIcoClass(node, icoObj, consts.folder.OPEN);
+                        }
+
                         if (animateFlag == false || setting.view.expandSpeed == "") {
                             ulObj.show();
                             tools.apply(callback, []);
@@ -1238,8 +1247,15 @@
                             }
                         }
                     } else {
-                        view.replaceSwitchClass(node, switchObj, consts.folder.CLOSE);
-                        view.replaceIcoClass(node, icoObj, consts.folder.CLOSE);
+                        if (dir == 1) {
+                            view.replaceSwitchClass(node, switchObj, consts.folder.CLOSE2);
+                            view.replaceIcoClass(node, icoObj, consts.folder.CLOSE2);
+                        } else {
+                            view.replaceSwitchClass(node, switchObj, consts.folder.CLOSE);
+                            view.replaceIcoClass(node, icoObj, consts.folder.CLOSE);
+                        }
+
+
                         if (animateFlag == false || setting.view.expandSpeed == "" || !(children && children.length > 0)) {
                             ulObj.hide();
                             tools.apply(callback, []);
@@ -1334,12 +1350,16 @@
             makeNodeIcoClass: function (setting, node) {
                 var icoCss = ["ico"];
                 if (!node.isAjaxing) {
-                    var isParent = data.nodeIsParent(setting, node);
                     icoCss[0] = (node.iconSkin ? node.iconSkin + "_" : "") + icoCss[0];
-                    if (isParent) {
+                    var dir = node.directory;
+                    if (dir == 0) {
                         icoCss.push(node.open ? consts.folder.OPEN : consts.folder.CLOSE);
+                    } else if (dir == 1) {
+                        icoCss.push(node.open ? consts.folder.OPEN2 : consts.folder.CLOSE2);
+
                     } else {
                         icoCss.push(consts.folder.DOCU);
+
                     }
                 }
                 return consts.className.BUTTON + " " + icoCss.join('_');
@@ -1425,13 +1445,13 @@
                 }
                 // support IE 7
                 if (typeof Element === 'undefined') {
-                  var contRect = setting.treeObj.get(0).getBoundingClientRect(),
-                    findMeRect = dom.getBoundingClientRect();
-                  if (findMeRect.top < contRect.top || findMeRect.bottom > contRect.bottom
-                    || findMeRect.right > contRect.right || findMeRect.left < contRect.left) {
-                    dom.scrollIntoView();
-                  }
-                  return;
+                    var contRect = setting.treeObj.get(0).getBoundingClientRect(),
+                        findMeRect = dom.getBoundingClientRect();
+                    if (findMeRect.top < contRect.top || findMeRect.bottom > contRect.bottom
+                        || findMeRect.right > contRect.right || findMeRect.left < contRect.left) {
+                        dom.scrollIntoView();
+                    }
+                    return;
                 }
                 // code src: http://jsfiddle.net/08u6cxwj/
                 if (!Element.prototype.scrollIntoViewIfNeeded) {
@@ -1555,8 +1575,19 @@
                     tmp_ulObj = $$(parentNode, consts.id.UL, setting);
                     tmp_switchObj = $$(parentNode, consts.id.SWITCH, setting);
                     tmp_icoObj = $$(parentNode, consts.id.ICON, setting);
-                    view.replaceSwitchClass(parentNode, tmp_switchObj, consts.folder.DOCU);
-                    view.replaceIcoClass(parentNode, tmp_icoObj, consts.folder.DOCU);
+                    var dir = parentNode.directory;
+                    console.log("dir:" + dir);
+                    if (dir == 0) {
+                        view.replaceSwitchClass(parentNode, tmp_switchObj, consts.folder.OPEN);
+                        view.replaceIcoClass(parentNode, tmp_icoObj, consts.folder.OPEN);
+                    } else if (dir == 1) {
+                        view.replaceSwitchClass(parentNode, tmp_switchObj, consts.folder.OPEN2);
+                        view.replaceIcoClass(parentNode, tmp_icoObj, consts.folder.OPEN2);
+                    } else {
+                        view.replaceSwitchClass(parentNode, tmp_switchObj, consts.folder.DOCU);
+                        view.replaceIcoClass(parentNode, tmp_icoObj, consts.folder.DOCU);
+                    }
+
                     tmp_ulObj.css("display", "none");
 
                 } else if (setting.view.showLine && childLength > 0) {
@@ -1587,6 +1618,8 @@
                 var tmpList = tmpName.split("_");
                 switch (newName) {
                     case consts.folder.OPEN:
+                    case consts.folder.OPEN2:
+                    case consts.folder.CLOSE2:
                     case consts.folder.CLOSE:
                     case consts.folder.DOCU:
                         tmpList[tmpList.length - 1] = newName;
@@ -1610,6 +1643,8 @@
                     case consts.folder.OPEN:
                     case consts.folder.CLOSE:
                     case consts.folder.DOCU:
+                    case consts.folder.OPEN2:
+                    case consts.folder.CLOSE2:
                         tmpList[1] = newName;
                         break;
                 }
@@ -1865,12 +1900,12 @@
                     return data.isSelectedNode(setting, node);
                 },
                 reAsyncChildNodesPromise: function (parentNode, reloadType, isSilent) {
-                    var promise = new Promise(function(resolve, reject) {
+                    var promise = new Promise(function (resolve, reject) {
                         try {
-                            zTreeTools.reAsyncChildNodes(parentNode, reloadType, isSilent, function() {
+                            zTreeTools.reAsyncChildNodes(parentNode, reloadType, isSilent, function () {
                                 resolve(parentNode);
                             });
-                        } catch(e) {
+                        } catch (e) {
                             reject(e);
                         }
                     });

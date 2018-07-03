@@ -7,6 +7,7 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.5 -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-tab.css">
     <!-- Font Awesome -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"> -->
     <link rel="stylesheet" href="${request.contextPath}/plugins/font-awesome-4.5.0/css/font-awesome.min.css">
@@ -16,7 +17,10 @@
     <!-- Theme style -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">
     <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
-    <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/skin-green-light.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/_all-skins.css">
+
+	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
+
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -33,6 +37,7 @@
 	<script src="${request.contextPath}/adminlte/plugins/jQuery/jquery-2.2.3.min.js"></script>
 	<!-- Bootstrap 3.3.5 -->
 	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap.min.js"></script>
+	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-tab.js"></script>
 	<!-- FastClick -->
 	<script src="${request.contextPath}/adminlte/plugins/fastclick/fastclick.min.js"></script>
 	<!-- AdminLTE App -->
@@ -46,6 +51,10 @@
 	<script src="${request.contextPath}/plugins/jquery/jquery.cookie.js"></script>
 <#-- layer -->
 	<script src="${request.contextPath}/plugins/layer/layer.js"></script>
+
+	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+	<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.js"></script>
+	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 <#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>
 
@@ -55,9 +64,9 @@
 
 <#macro commonHeader>
 	<header class="main-header">
-        <a href="/" class="logo">
-            <span class="logo-mini"><b>宙斯</b></span>
-            <span class="logo-lg"><b>宙斯任务调度系统</b></span>
+        <a href="${request.contextPath}/home" class="logo">
+            <span class="logo-mini"><b>赫拉</b></span>
+            <span class="logo-lg"><b>赫拉任务调度系统</b></span>
         </a>
         <nav class="navbar navbar-static-top" role="navigation">
             <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button"><span
@@ -80,20 +89,20 @@
 	<aside class="main-sidebar">
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-            <form action="#" method="get" class="sidebar-form">
-                <div class="input-group">
-                    <input type="text" name="q" class="form-control" placeholder="Search...">
-                    <span class="input-group-btn">
-                        <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i
-                                class="fa fa-search"></i></button>
-                   </span>
-                </div>
-            </form>
+            <#--<form action="#" method="get" class="sidebar-form">-->
+                <#--<div class="input-group">-->
+                    <#--<input type="text" name="q" class="form-control" placeholder="Search...">-->
+                    <#--<span class="input-group-btn">-->
+                        <#--<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i-->
+                                <#--class="fa fa-search"></i></button>-->
+                   <#--</span>-->
+                <#--</div>-->
+            <#--</form>-->
             <!-- sidebar menu: : style can be found in sidebar.less -->
             <ul class="sidebar-menu">
 
                 <li class="active treeview menu-open">
-                    <a href="#">
+                    <a href="${request.contextPath}/home">
                         <i class="fa fa-dashboard"></i> <span>首页</span>
                         <span class="pull-right-container">
                               <i class="fa fa-angle-left pull-right"></i>
@@ -116,7 +125,7 @@
 
 
                 <li class="nav-click <#if pageName == "developCenter">active</#if>" ><a href="${request.contextPath}/developCenter"><i class="fa fa-book"></i> <span>开发中心</span></a></li>
-                <li class="nav-click <#if pageName == "scheduleCenter">active</#if>" ><a href="${request.contextPath}/scheduleCenter"><i class="fa fa-book"></i> <span>调度中心</span></a></li>
+                <li class="nav-click <#if pageName == "scheduleCenter">active</#if>" ><a href="${request.contextPath}/scheduleCenter"><i class="fa fa-edit"></i> <span>调度中心</span></a></li>
 
 
 
@@ -205,7 +214,7 @@
 
 <#macro commonFooter >
 	<footer class="main-footer">
-        Powered by <b>zeus-job-scheduler</b> 1.0.0（快照版本）
+        Powered by <b>hera</b> 1.0.0（快照版本）
         <div class="pull-right hidden-xs">
             <strong>Copyright &copy; 2018-${.now?string('yyyy')} &nbsp;
                 <a href="#" target="_blank">lingxiao</a>

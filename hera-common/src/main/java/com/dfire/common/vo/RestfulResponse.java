@@ -1,5 +1,6 @@
 package com.dfire.common.vo;
 
+import com.dfire.common.enums.HttpCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,11 +21,26 @@ public class RestfulResponse {
 
     private boolean success;
 
-    private String code;
+    private Integer code;
 
     private String msg;
     /**
      * total recorded
      */
     private int results;
+
+    public RestfulResponse(boolean success, String msg) {
+        this.success = success;
+        this.msg = msg;
+    }
+
+
+    public void setHttpCode(HttpCode httpCode) {
+        this.code = httpCode.getCode();
+        this.msg = httpCode.getMessage();
+    }
+
+    public RestfulResponse(HttpCode httpCode) {
+        setHttpCode(httpCode);
+    }
 }

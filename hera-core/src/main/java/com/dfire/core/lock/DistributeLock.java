@@ -1,22 +1,21 @@
 package com.dfire.core.lock;
 
-import com.dfire.common.entity.ZeusLock;
-import com.dfire.common.service.ZeusLockService;
+import com.dfire.common.entity.HeraLock;
+import com.dfire.common.service.HeraHostRelationService;
+import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
-import com.dfire.core.schedule.ZeusSchedule;
+import com.dfire.core.schedule.HeraSchedule;
+import com.dfire.core.util.NetUtils;
+import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import com.dfire.common.service.ZeusHostGroupService;
 
 import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,81 +30,84 @@ public class DistributeLock {
     public static String host = "LOCALHOST";
 
     @Autowired
-    private ZeusHostGroupService hostGroupService;
+    private HeraHostRelationService hostGroupService;
     @Autowired
-    private ZeusLockService zeusLockService;
+    private HeraLockService heraLockService;
     @Autowired
     private ApplicationContext applicationContext;
+
     @Autowired
     private WorkClient workClient;
 
-    private ZeusSchedule zeusSchedule;
+    private HeraSchedule heraSchedule;
 
-    private int port = 7979;
 
     static {
         try {
-            host = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
+            host = NetUtils.getLocalAddress();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @PostConstruct
     public void init() {
-        zeusSchedule = new ZeusSchedule(applicationContext);
-        ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
-        service.scheduleAtFixedRate(new Runnable() {
+        heraSchedule = new HeraSchedule(applicationContext);
+        TimerTask checkLockTask = new TimerTask() {
             @Override
-            public void run() {
-                getLock();
+            public void run(Timeout timeout) throws Exception {
+                checkLock();
+                workClient.workClientTimer.newTimeout(this, 3, TimeUnit.SECONDS);
             }
-        }, 20, 60, TimeUnit.SECONDS);
+        };
+        workClient.workClientTimer.newTimeout(checkLockTask, 2, TimeUnit.SECONDS);
     }
 
-    public void getLock() {
-        ZeusLock zeusLock = zeusLockService.getZeusLock("online");
-        if (zeusLock == null) {
-            zeusLock = ZeusLock.builder()
+    public void checkLock() {
+        HeraLock heraLock = heraLockService.findById("online");
+        if (heraLock == null) {
+            heraLock = HeraLock.builder()
                     .host(host)
                     .serverUpdate(new Date())
                     .build();
-            zeusLockService.save(zeusLock);
+            heraLockService.insert(heraLock);
         }
 
-        if (host.equals(zeusLock.getHost())) {
-            zeusLock.setServerUpdate(new Date());
-            zeusLockService.save(zeusLock);
-            log.info("hold lock and update  time");
-            zeusSchedule.startup(port);
+        if (host.equals(heraLock.getHost().trim())) {
+            heraLock.setServerUpdate(new Date());
+            heraLockService.update(heraLock);
+            log.info("hold lock and update time");
+            heraSchedule.startup();
         } else {
-            log.info("not my lock");
             long currentTime = System.currentTimeMillis();
-            long lockTime = zeusLock.getServerUpdate().getTime();
-            long interval = currentTime - lockTime;//host不匹配，切服务器更新时间间隔超过5s,判断发生master  切换
+            long lockTime = heraLock.getServerUpdate().getTime();
+            long interval = currentTime - lockTime;
             if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
-                log.info("master 发生切换");
+                heraLock.setHost(host);
+                heraLock.setServerUpdate(new Date());
+                heraLock.setSubgroup("online");
+                heraLockService.update(heraLock);
+                log.error("master 发生切换");
+                heraSchedule.startup();
+                //TODO  接入通知
             } else {
-                zeusSchedule.shutdown();//非主节点，调度器不执行
+                heraSchedule.shutdown();//非主节点，调度器不执行
             }
-            try {
-                workClient.connect(host, port);
-            } catch (Exception e) {
-                log.info("client worker connect master server exception");
-            }
-
+        }
+        try {
+            workClient.connect(heraLock.getHost());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public boolean isPreemptionHost() {
-        List<String> preemptionHostList = hostGroupService.getPreemptionGroup("1");
+    private boolean isPreemptionHost() {
+        List<String> preemptionHostList = hostGroupService.findPreemptionGroup(1);
         if (preemptionHostList.contains(host)) {
             return true;
         } else {
             log.info(host + "is not in master group " + preemptionHostList.toString());
             return false;
-
         }
     }
-
 }

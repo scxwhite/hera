@@ -63,6 +63,8 @@ website:	http://code.google.com/p/jquerytree/
 .ztree li span.button.bottom_open{background-position:-92px -36px}
 .ztree li span.button.bottom_close{background-position:-74px -36px}
 .ztree li span.button.noline_open{background-position:-92px -72px}
+.ztree li span.button.noline_open2{background-position:-92px -72px}
+.ztree li span.button.noline_close2{background-position:-74px -72px}
 .ztree li span.button.noline_close{background-position:-74px -72px}
 .ztree li span.button.root_docu{ background:none;}
 .ztree li span.button.roots_docu{background-position:-56px 0}
@@ -70,9 +72,13 @@ website:	http://code.google.com/p/jquerytree/
 .ztree li span.button.bottom_docu{background-position:-56px -36px}
 .ztree li span.button.noline_docu{ background:none;}
 
-.ztree li span.button.ico_open{margin-right:2px; background-position:-110px -16px; vertical-align:top; *vertical-align:middle}
-.ztree li span.button.ico_close{margin-right:2px; background-position:-110px 0; vertical-align:top; *vertical-align:middle}
-.ztree li span.button.ico_docu{margin-right:2px; background-position:-110px -32px; vertical-align:top; *vertical-align:middle}
+
+.ztree li span.button.ico_open{margin-right:2px; background:url("./img/folder_open.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_open2{margin-right:2px; background:url("./img/notepad_2.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_docu{margin-right:2px; background:url("./img/leaf.svg") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_close{margin-right:2px; background:url("./img/folder.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_close2{margin-right:2px; background:url("./img/notepad.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+
 .ztree li span.button.edit {margin-right:2px; background-position:-110px -48px; vertical-align:top; *vertical-align:middle}
 .ztree li span.button.remove {margin-right:2px; background-position:-110px -64px; vertical-align:top; *vertical-align:middle}
 

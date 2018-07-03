@@ -16,12 +16,13 @@ import org.springframework.stereotype.Component;
 public class SpringContextHolder implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext = null;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         if(SpringContextHolder.applicationContext == null) {
             SpringContextHolder.applicationContext = applicationContext;
         }
-        log.info("set application success");
+        log.info("set config success");
     }
 
     public static ApplicationContext getApplicationContext() {

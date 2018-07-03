@@ -11,7 +11,7 @@
     <groupId>com.dfire.hera</groupId>
     <artifactId>hera-common</artifactId>
     <packaging>jar</packaging>
-
+    <version>1.0-SNAPSHOT</version>
     <name>hera-common</name>
     <url>http://maven.apache.org</url>
 
@@ -55,10 +55,6 @@
             <version>5.1.2</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -91,6 +87,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${hadoop.version}</version>
@@ -107,9 +108,17 @@
                     <groupId>tomcat</groupId>
                     <artifactId>jasper-runtime</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-all</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
+        </dependency>
 
     </dependencies>
 
