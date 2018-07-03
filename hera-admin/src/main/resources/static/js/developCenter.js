@@ -322,6 +322,7 @@ $(function () {
     $("#execute").click(function () {
 
         var tabId = $("#tabContainer").data("tabs").getCurrentTabId();
+
         var id = $("#id").text();
         var script = $("#script").val();
         var id = '39';
