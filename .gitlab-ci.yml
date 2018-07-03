@@ -12,7 +12,7 @@ build:
 sonar:
  stage: sonar
  script:
-  - mvn org.jacoco:jacoco-maven-plugin:prepare-agent test sonar:sonar
+  - mvn org.jacoco:jacoco-maven-plugin:prepare-agent  sonar:sonar
  tags:
   - java
  only:
