@@ -229,5 +229,29 @@
         </dependencies>
     </dependencyManagement>
 
+    <profiles>
+
+        <profile>
+            <id>daily</id>
+            <properties>
+                <env>daily</env>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>publish</id>
+            <properties>
+                <env>publish</env>
+            </properties>
+        </profile>
+        <profile>
+            <id>pre</id>
+            <properties>
+                <env>pre</env>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>
