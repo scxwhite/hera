@@ -11,18 +11,19 @@ import java.util.List;
  */
 public interface Observable {
 
-    void addListener(EventType eventType, Listener<? extends AbstractEvent> listener);
+    public void addListener(EventType eventType, Listener<? extends AbstractEvent> listener);
 
-    List<Listener<? extends AbstractEvent>> getListeners(EventType eventType);
+    public List<Listener<? extends  AbstractEvent>> getListeners(EventType eventType);
 
-    boolean hasListeners();
+    public boolean hasListeners();
 
-    boolean hasListeners(EventType eventType);
+    public boolean hasListeners(EventType eventType);
 
-    void removeAllListeners();
+    public  void removeAllListeners();
 
+    public void removeAllListeners(EventType eventType, Listener<? extends AbstractEvent> listener);
 
-    boolean fireEvent(EventType eventType, AbstractEvent abstractEvent);
+    public boolean fireEvent(EventType eventType, AbstractEvent abstractEvent);
 
 
 }
