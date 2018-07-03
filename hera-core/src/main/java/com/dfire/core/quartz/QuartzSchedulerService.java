@@ -1,5 +1,6 @@
 package com.dfire.core.quartz;
 
+import com.dfire.common.constants.Constants;
 import jdk.nashorn.internal.objects.annotations.Constructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
@@ -77,15 +78,17 @@ public class QuartzSchedulerService {
         return scheduler;
     }
 
-    public void deleteJob(String jobId) {
+    public void deleteJob(String actionId) {
         try {
-            JobKey jobKey = new JobKey(jobId, "hera");
+            JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
             if(jobDetail != null) {
                 scheduler.deleteJob(jobKey);
             }
+            log.error("schedule remove job with actionId:" + actionId);
+
         } catch (SchedulerException e) {
-            log.error("clear quartz schedule error : " + jobId);
+            log.error("clear quartz schedule error : " + actionId);
         }
 
     }

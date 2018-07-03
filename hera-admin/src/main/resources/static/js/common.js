@@ -15,7 +15,6 @@ function successMsg(data) {
     }
 
 }
-
 function success(msg) {
     $('#alertSuccess').css({
         "width" : 700,
@@ -32,9 +31,8 @@ function success(msg) {
         $('#alertSuccess').css("display","none");
     });
 }
-
-
 function failure(msg) {
+
     $('#alertFailure').css({
         "width" : 500,
         "right" : ($(window).width() - 500) / 2,
@@ -88,45 +86,4 @@ function formDataLoad(domId, obj) {
             }
         }
     }
-}
-
-/**
- * 判断value是否已经存在arr数据中
- *
- * @param arr
- * @param value
- * @returns {boolean}
- */
-function isInArray(arr, value) {
-    var b = false;
-    if(arr == null) {
-        return b;
-    }
-    for (var i = 0; i < arr.length; i++) {
-        if (arr[i]['id'] == value['id']) {
-            b = true;
-            break;
-        }
-    }
-    return b;
-}
-
-/**
- * 以post方式请求数据
- *
- * @param url
- * @returns {*}
- */
-
-function getDataByPost(url) {
-    var dataStore;
-    $.ajax({
-        type: "post",
-        url: url,
-        async: false,
-        success: function (data) {
-            dataStore = data;
-        }
-    });
-    return dataStore;
 }
