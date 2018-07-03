@@ -156,7 +156,6 @@
         //div-content
         var div_content_panel = $(this.template.div_content_panel.format(obj.id));
         this.$element.find(".tab-content:eq(0)").append(div_content_panel);
-        debugger
         var id = obj.id;
 
         $("#" + obj.id).load(obj.url, obj.paramter);
@@ -164,7 +163,6 @@
 
         if (obj.closeable) {
             this.$element.find(".nav-tabs li a[href='#" + obj.id + "'] i.closeable").click(function () {
-                debugger
                 var href = $(this).parents("a").attr("href").substring(1);// id
                 var tabData = JSON.parse(localStorage.getItem('tabData'));
                 console.log(tabData);

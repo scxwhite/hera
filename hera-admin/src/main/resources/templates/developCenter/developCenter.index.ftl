@@ -86,7 +86,9 @@
                     </br>
 
                 <#--tab框-->
-                    <div id="tabContainer"></div>
+                    <div id="tabContainer">
+
+                    </div>
 
                     <div id="scriptEditor" class="box box-success" style="display: block">
                         <div class="box-body">
