@@ -1,6 +1,6 @@
 spring:
     profiles:
-        active: daily
+        active: @env@
     monitor:
         path: /hera
         port: 8088
