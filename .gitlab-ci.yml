@@ -1,6 +1,5 @@
 stages:
  - build
- - javadoc
  - sonar
 
 build:
@@ -9,21 +8,11 @@ build:
  tags:
   - java
 
-javadoc:
- stage: javadoc
- script:
-   - "mvn javadoc:aggregate --fail-never"
-   - "mkdirs -p /usr/share/nginx/javadoc/${PWD##*/}"
-   - "cp -r ./target/site/apidocs /usr/share/nginx/javadoc/${PWD##*/}"
- tags:
-  - java
- only:
-  - develop
 
 sonar:
  stage: sonar
  script:
-  - mvn org.jacoco:jacoco-maven-plugin:prepare-agent test sonar:sonar
+  - mvn org.jacoco:jacoco-maven-plugin:prepare-agent  sonar:sonar
  tags:
   - java
  only:

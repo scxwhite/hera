@@ -64,7 +64,6 @@ public class DistributeLock {
     }
 
     public void checkLock() {
-        log.info("start get lock");
         HeraLock heraLock = heraLockService.findById("online");
         if (heraLock == null) {
             heraLock = HeraLock.builder()
@@ -80,7 +79,6 @@ public class DistributeLock {
             log.info("hold lock and update time");
             heraSchedule.startup();
         } else {
-            log.info("not my lock");
             long currentTime = System.currentTimeMillis();
             long lockTime = heraLock.getServerUpdate().getTime();
             long interval = currentTime - lockTime;
@@ -91,6 +89,7 @@ public class DistributeLock {
                 heraLockService.update(heraLock);
                 log.error("master 发生切换");
                 heraSchedule.startup();
+                //TODO  接入通知
             } else {
                 heraSchedule.shutdown();//非主节点，调度器不执行
             }
@@ -102,7 +101,7 @@ public class DistributeLock {
         }
     }
 
-    public boolean isPreemptionHost() {
+    private boolean isPreemptionHost() {
         List<String> preemptionHostList = hostGroupService.findPreemptionGroup(1);
         if (preemptionHostList.contains(host)) {
             return true;

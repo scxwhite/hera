@@ -19,9 +19,20 @@ $(function () {
         }
     };
 
+    /**
+     * zTree 右键菜单初始化数据
+     */
+    var zTree, rMenu;
+
     var tabObj = {};
     var tabData = [];
-    var zNodes = getDataStore("/developCenter/init.do");
+
+    /**
+     * 添加的叶子节点个数统计，为重命名统计
+     */
+    var addCount = 1;
+
+    var zNodes = getDataByPost("/developCenter/init.do");
 
     function leftClick() {
         var selected = zTree.getSelectedNodes()[0];
@@ -49,6 +60,7 @@ $(function () {
         $("#jobScript").val(script);
 
         var tabDetail = {id: id, text: name, url: "xx", closeable: true, select: 0};
+        tabData = JSON.parse(localStorage.getItem('tabData'));
         var b = isInArray(tabData, tabDetail);
         if (b == false) {
             tabData.push(tabDetail);
@@ -60,12 +72,13 @@ $(function () {
 
             $("#tabContainer").data("tabs").addTab(tabDetail);
         } else {
-            tabObj.showTab(id);
-            location.hash = id;
+            tabObj = $("#tabContainer").tabs({
+                data: tabDetail,
+                showIndex: 0,
+                loadAll: true
+            });
+            tabObj =  $("#tabContainer").data("tabs").showTab(id);
         }
-
-        var currentId = tabObj.getCurrentTabId();
-        location.hash = currentId.substring(0);
         localStorage.setItem("tabData", JSON.stringify(tabData));
 
     }
@@ -86,16 +99,6 @@ $(function () {
         return false;
     });
 
-    function isInArray(arr, value) {
-        var b = false;
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i]['id'] == value['id']) {
-                b = true;
-                break;
-            }
-        }
-        return b;
-    }
 
 
     $("ul#logTab").on("click", "li", function () {
@@ -109,21 +112,6 @@ $(function () {
         }
 
     });
-
-
-    function getDataStore(url) {
-        var dataStore;
-        $.ajax({
-            type: "post",
-            url: url,
-            async: false,
-            success: function (data) {
-                dataStore = data;
-            }
-        });
-        return dataStore;
-    }
-
 
     function OnRightClick(event, treeId, treeNode) {
         if (!treeNode && event.target.tagName.toLowerCase() != "button" && $(event.target).parents("a").length == 0) {
@@ -160,7 +148,6 @@ $(function () {
 
 
     function hideRMenu() {
-        // if (rMenu) rMenu.css({"visibility": "hidden"});
         $("body").unbind("mousedown", onBodyMouseDown);
     }
 
@@ -169,8 +156,6 @@ $(function () {
             rMenu.css({"visibility": "hidden"});
         }
     }
-
-    var addCount = 1;
 
     $("#addFolder").click(function () {
         hideRMenu();
@@ -315,21 +300,6 @@ $(function () {
     });
 
 
-    function resetTree() {
-        hideRMenu();
-        $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-    }
-
-
-    var zTree, rMenu;
-    $(document).ready(function () {
-        $.fn.zTree.init($("#documentTree"), setting, zNodes);
-        zTree = $.fn.zTree.getZTreeObj("documentTree");
-        rMenu = $("#rMenu");
-        fixIcon();//调用修复图标的方法。方法如下：
-
-    });
-
 
     /**
      * 修正zTree的图标，让文件节点显示文件夹图标
@@ -350,11 +320,14 @@ $(function () {
 
 
     $("#execute").click(function () {
+
+        var tabId = $("#tabContainer").data("tabs").getCurrentTabId();
+
         var id = $("#id").text();
         var script = $("#script").val();
         var id = '39';
         script = 'show databases';
-        var parameter = "id=" + id + "&script=" + script;
+        var parameter = "id=" + tabId + "&script=" + script;
         var result = null;
 
         $.ajax({
@@ -369,77 +342,86 @@ $(function () {
 
     });
 
+    var TableInit = function () {
+        var oTableInit = new Object();
+        oTableInit.init = function () {
+            var table = $('#allLogTable');
+            table.bootstrapTable({
+                url: "/developCenter/findDebugHistory",
+                queryParams: getQueryFileId,
+                pagination: true,
+                showPaginationSwitch: false,
+                search: false,
+                cache: false,
+                pageNumber: 1,
+                pageList: [10, 25, 40, 60],
+                columns: [
+                    {
+                        field: "id",
+                        title: "id"
+                    }, {
+                        field: "executeHost",
+                        title: "执行机器ip"
+                    }, {
+                        field: "status",
+                        title: "状态"
+                    }, {
+                        field: "startTime",
+                        title: "结束时间"
+                    }, {
+                        field: "操作",
+                        title: "操作"
+                    }
+                ],
+                detailView: true,
+                detailFormatter: function (index, row) {
+                    debugger
+                    var log = row["log"];
+                    var id = row["id"];
 
-    var tableObject = new TableInit();
-    tableObject.init();
+                    var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" row="20" >'
+                        + log +
+                        '</textarea>' + '<form role="form">' + '<div class="form-group">';
+                    return html;
+                },
 
-    debugger
-    var storeData = JSON.parse(localStorage.getItem('tabData'))
-    if(storeData != null) {
-        for(var i = 0; i < storeData.length; i++) {
-            $("#tabContainer").tabs({
-                data: storeData[i],
-                showIndex: 0,
-                loadAll: true
             });
-
-            $("#tabContainer").data("tabs").addTab(storeData[i]);
         }
+        return oTableInit;
     }
+
+
+    function getQueryFileId() {
+        var tmp = {fileId: "253"};
+        return tmp;
+    }
+
+    /**
+     * 初始化开发中心页面
+     *
+     */
+    $(document).ready(function () {
+        $.fn.zTree.init($("#documentTree"), setting, zNodes);
+        zTree = $.fn.zTree.getZTreeObj("documentTree");
+        rMenu = $("#rMenu");
+        fixIcon();//调用修复图标的方法。方法如下：
+
+        var tableObject = new TableInit();
+        tableObject.init();
+
+        var storeData = JSON.parse(localStorage.getItem('tabData'));
+        if(storeData != null) {
+            for(var i = 0; i < storeData.length; i++) {
+                $("#tabContainer").tabs({
+                    data: storeData[i],
+                    showIndex: 0,
+                    loadAll: true
+                });
+                $("#tabContainer").data("tabs").addTab(storeData[i]);
+            }
+        }
+    });
 
 });
 
-var TableInit = function () {
-    var oTableInit = new Object();
-    oTableInit.init = function () {
-        var table = $('#allLogTable');
-        table.bootstrapTable({
-            url: "/developCenter/findDebugHistory",
-            queryParams: getQueryFileId,
-            pagination: true,
-            showPaginationSwitch: false,
-            search: false,
-            cache: false,
-            pageNumber: 1,
-            pageList: [10, 25, 40, 60],
-            columns: [
-                {
-                    field: "id",
-                    title: "id"
-                }, {
-                    field: "executeHost",
-                    title: "执行机器ip"
-                }, {
-                    field: "status",
-                    title: "状态"
-                }, {
-                    field: "startTime",
-                    title: "结束时间"
-                }, {
-                    field: "操作",
-                    title: "操作"
-                }
-            ],
-            detailView: true,
-            detailFormatter: function (index, row) {
-                debugger
-                var log = row["log"];
-                var id = row["id"];
-
-                var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" row="20" >'
-                    + log +
-                    '</textarea>' + '<form role="form">' + '<div class="form-group">';
-                return html;
-            },
-
-        });
-    }
-    return oTableInit;
-}
-
-
-function getQueryFileId() {
-    var tmp = {fileId: "253"};
-    return tmp;
-}
 

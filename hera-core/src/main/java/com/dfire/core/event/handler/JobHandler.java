@@ -1,5 +1,6 @@
 package com.dfire.core.event.handler;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraAction;
@@ -18,7 +19,6 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
-import com.dfire.common.vo.LogContent;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -52,7 +52,6 @@ public class JobHandler extends AbstractHandler {
 
     @Getter
     private final String actionId;
-    private final String HERA_GROUP = "heraGroup";
     private JobGroupCache cache;
     private HeraJobHistoryService jobHistoryService;
     private HeraGroupService heraGroupService;
@@ -308,32 +307,19 @@ public class JobHandler extends AbstractHandler {
     private void autoRecovery() {
         cache.refresh();
         HeraActionVo heraActionVo = cache.getHeraActionVo();
+        //任务被删除
         if (heraActionVo == null) {
             masterContext.getDispatcher().removeJobHandler(this);
             destroy();
             log.info("remove quartz schedule, actionId = ", heraActionVo.getId());
             return;
         }
-        JobDetail jobDetail = null;
-        JobKey jobKey = new JobKey(actionId, "hera");
-        try {
-
-            jobDetail = masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey);
-        } catch (SchedulerException e) {
-            log.error(e.toString());
-        }
-
+        //自动调度关闭
         if (!heraActionVo.getAuto()) {
-            if (jobDetail != null) {
-                try {
-                    masterContext.getQuartzSchedulerService().getScheduler().deleteJob(jobKey);
-                    log.info("remove close job quartz schedule, actionId = ", heraActionVo.getId());
-                } catch (SchedulerException e) {
-                    log.error(e.toString());
-                }
-            }
+            destroy();
             return;
         }
+
 
         /**
          * 如果是依赖任务 说明原来是独立任务，现在变成依赖任务，需要删除原来的定时调度
@@ -341,23 +327,15 @@ public class JobHandler extends AbstractHandler {
          *
          */
         if (heraActionVo.getScheduleType() == JobScheduleTypeEnum.Dependent) {
-            if (jobDetail != null) {
-                try {
-                    masterContext.getQuartzSchedulerService().getScheduler().deleteJob(jobKey);
-                    log.info("clear dependent job quartz schedule, actionId = ", actionId);
-                } catch (SchedulerException e) {
-                    log.error(e.toString());
-                }
-            }
+            destroy();
         } else if (heraActionVo.getScheduleType() == JobScheduleTypeEnum.Independent) {
+
             try {
-                if (jobDetail != null) {
-                    return;
-                }
                 createScheduleJob(masterContext.getDispatcher(), heraActionVo);
             } catch (SchedulerException e) {
-                log.error(e.toString());
+                e.printStackTrace();
             }
+
         }
 
 
@@ -374,12 +352,12 @@ public class JobHandler extends AbstractHandler {
     }
 
     public void handleLostEvent(HeraJobLostEvent event) {
-        if (event.getType() == Events.UpdateJob && actionId.equals(actionId)) {
+        if (event.getType() == Events.UpdateJob && actionId.equals(event.getJobId())) {
             HeraActionVo heraActionVo = cache.getHeraActionVo();
             if (heraActionVo != null) {
-                JobStatus jobStatus = heraJobActionService.findJobStatus(actionId);
+                HeraAction heraAction = heraJobActionService.findById(actionId);
 
-                if (jobStatus != null) {
+                if (heraAction != null && heraAction.getStatus() == null) {
                     String currentDate = DateUtil.getTodayStringForAction();
                     if (Long.parseLong(actionId) < Long.parseLong(currentDate)) {
                         HeraJobHistoryVo history = HeraJobHistoryVo.builder()
@@ -387,12 +365,11 @@ public class JobHandler extends AbstractHandler {
                                 .jobId(heraActionVo.getId())
                                 .triggerType(TriggerTypeEnum.SCHEDULE)
                                 .statisticsEndTime(heraActionVo.getStatisticStartTime())
-                                .hostGroupId(heraActionVo.getHostGroupId())
-                                .operator(heraActionVo.getOwner() == null ? null : heraActionVo.getOwner())
+                                .operator(heraActionVo.getOwner())
                                 .build();
                         masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(history));
                         master.run(history);
-                        log.info("lost job, start schedule");
+                        log.info("lost job, start schedule :{}", actionId);
                     }
                 }
             }
@@ -407,30 +384,24 @@ public class JobHandler extends AbstractHandler {
      */
 
     public void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
-        destroy();
-        JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(actionId, HERA_GROUP).build();
-        jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
-        jobDetail.getJobDataMap().put("dispatcher", dispatcher);
-        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression());
-        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, HERA_GROUP).withSchedule(scheduleBuilder).build();
-        masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
+
+        JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
+        if (masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey) == null) {
+            JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(jobKey).build();
+            jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
+            jobDetail.getJobDataMap().put("dispatcher", dispatcher);
+            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression());
+            CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, Constants.HERA_GROUP).withSchedule(scheduleBuilder).build();
+            masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
+            log.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
+        }
 
     }
 
 
     @Override
     public void destroy() {
-        try {
-            JobKey jobKey = new JobKey(actionId, HERA_GROUP);
-            JobDetail jobDetail = masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey);
-            if (jobDetail != null) {
-                masterContext.getQuartzSchedulerService().getScheduler().deleteJob(jobKey);
-                log.error("schedule remove job with actionId:" + actionId);
-            }
-        } catch (SchedulerException e) {
-            log.error("schedule remove job with exception : {}" + e);
-        }
-
+        masterContext.getQuartzSchedulerService().deleteJob(actionId);
     }
 
     @Override
