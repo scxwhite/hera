@@ -5,7 +5,7 @@ $(function () {
         increaseArea: '20%' // optional
     });
 
-    jQuery.validator.addMethod("phone", function(value, element) {
+    jQuery.validator.addMethod("phone", function (value, element) {
         var length = value.length;
         var mobile = /^1[3|5|8]{1}[0-9]{9}$/;
         return this.optional(element) || (length == 11 && mobile.test(value));

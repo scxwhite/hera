@@ -77,7 +77,7 @@ $(function () {
                 showIndex: 0,
                 loadAll: true
             });
-            tabObj =  $("#tabContainer").data("tabs").showTab(id);
+            tabObj = $("#tabContainer").data("tabs").showTab(id);
         }
         localStorage.setItem("tabData", JSON.stringify(tabData));
 
@@ -98,7 +98,6 @@ $(function () {
         $(this).tab('show');
         return false;
     });
-
 
 
     $("ul#logTab").on("click", "li", function () {
@@ -141,7 +140,7 @@ $(function () {
         y += document.body.scrollTop;
         x += document.body.scrollLeft;
 
-        rMenu.css({"top": y/2 + "px", "left": x/2 + "px", "visibility": "visible", position: "absolute"});
+        rMenu.css({"top": y / 2 + "px", "left": x / 2 + "px", "visibility": "visible", position: "absolute"});
 
         $("body").bind("mousedown", onBodyMouseDown);
     }
@@ -300,7 +299,6 @@ $(function () {
     });
 
 
-
     /**
      * 修正zTree的图标，让文件节点显示文件夹图标
      */
@@ -410,8 +408,8 @@ $(function () {
         tableObject.init();
 
         var storeData = JSON.parse(localStorage.getItem('tabData'));
-        if(storeData != null) {
-            for(var i = 0; i < storeData.length; i++) {
+        if (storeData != null) {
+            for (var i = 0; i < storeData.length; i++) {
                 $("#tabContainer").tabs({
                     data: storeData[i],
                     showIndex: 0,
