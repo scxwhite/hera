@@ -32,7 +32,7 @@ $(function () {
      */
     var addCount = 1;
 
-    var zNodes = getDataByPost("/developCenter/init.do");
+    var zNodes = getDataByPost(base_url + "/developCenter/init.do");
 
     function leftClick() {
         var selected = zTree.getSelectedNodes()[0];
@@ -45,7 +45,7 @@ $(function () {
         var result = null;
 
         $.ajax({
-            url: "/developCenter/find.do",
+            url: base_url + "/developCenter/find.do",
             type: "get",
             async: false,
             data: parameter,
@@ -170,7 +170,7 @@ $(function () {
         var parameter = "parent=" + parent + "&type=" + "1" + "&name=" + name;
 
         $.ajax({
-            url: "/developCenter/addFile.do",
+            url: base_url + "/developCenter/addFile.do",
             type: "get",
             async: false,
             data: parameter,
@@ -347,7 +347,7 @@ $(function () {
         oTableInit.init = function () {
             var table = $('#allLogTable');
             table.bootstrapTable({
-                url: "/developCenter/findDebugHistory",
+                url: base_url + "/developCenter/findDebugHistory",
                 queryParams: getQueryFileId,
                 pagination: true,
                 showPaginationSwitch: false,

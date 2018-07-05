@@ -86,7 +86,7 @@ $(function () {
     $('#jobOperate [name="switch"]').on('click', function () {
         //回显
         $.ajax({
-            url: "scheduleCenter/changeSwitch",
+            url: base_url +  "scheduleCenter/changeSwitch",
             data:{
                 id:focusId
             },
@@ -120,7 +120,7 @@ $(function () {
             return;
         }
         $.ajax({
-            url: "scheduleCenter/addJob.do",
+            url:  base_url + "scheduleCenter/addJob.do",
             type: "post",
             data: {
                 name: name,
@@ -184,7 +184,7 @@ $(function () {
     $('#editOperator [name="save"]').on('click', function () {
         if (!isGroup) {
             $.ajax({
-                url: "scheduleCenter/updateJobMessage.do",
+                url:  base_url + "scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
                 "&script=" + $('#script textarea').val() + "&resource=" + $('#resource textarea').val() +
                 "&id=" + focusId,
@@ -197,7 +197,7 @@ $(function () {
             });
         } else {
             $.ajax({
-                url: "scheduleCenter/updateGroupMessage.do",
+                url: base_url +  "scheduleCenter/updateGroupMessage.do",
                 data: $('#groupMessageEdit form').serialize() + "&configs=" + $('#config textarea').val() +
                 "&resource=" + $('#resource textarea').val() + "&id=" + focusId,
                 type: "post",
@@ -221,7 +221,7 @@ $(function () {
     $('[name="delete"]').on('click', function () {
         if (confirm("确认删除 :" + focusItem.name + "?")) {
             $.ajax({
-                url: "scheduleCenter/deleteJob.do",
+                url:  base_url + "scheduleCenter/deleteJob.do",
                 data: {
                     id: focusId,
                     isGroup: isGroup
@@ -315,7 +315,7 @@ $(function () {
             isGroup = false;
 
             $.ajax({
-                url: "/scheduleCenter/getJobMessage.do",
+                url: base_url + "/scheduleCenter/getJobMessage.do",
                 type: "get",
                 async: false,
                 data: {
@@ -338,7 +338,7 @@ $(function () {
             });
             //获得版本
             jQuery.ajax({
-                url: "/scheduleCenter/getJobVersion.do",
+                url:  base_url + "/scheduleCenter/getJobVersion.do",
                 type: "get",
                 data: {
                     jobId: id
@@ -363,7 +363,7 @@ $(function () {
             isGroup = true;
 
             $.ajax({
-                url: "scheduleCenter/getGroupMessage.do",
+                url:  base_url + "scheduleCenter/getGroupMessage.do",
                 type: "get",
                 async: false,
                 data: {
@@ -425,7 +425,7 @@ $(function () {
 
     $("#myModal .add-btn").click(function () {
         $.ajax({
-            url: "/scheduleCenter/manual.do",
+            url:  base_url + "/scheduleCenter/manual.do",
             type: "get",
             async: false,
             data: {
@@ -442,7 +442,7 @@ $(function () {
 
     }
 
-    var zNodes = getDataStore("/scheduleCenter/init.do");
+    var zNodes = getDataStore(base_url + "/scheduleCenter/init.do");
 
     function getDataStore(url) {
         var dataStore;
