@@ -20,27 +20,27 @@ import java.util.List;
 @NoArgsConstructor
 public class HeartBeatInfo {
 
-    public Float memRate;
+    private Float memRate;
 
-    public List<String> running;
+    private List<String> running;
 
-    public List<String> manualRunning;
+    private List<String> manualRunning;
 
-    public List<String> debugRunning;
+    private List<String> debugRunning;
 
-    public Date timestamp;
+    private Date timestamp;
 
-    public String host;
+    private String host;
 
     /**
      * cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量
      *
      */
-    public Float cpuLoadPerCore;
+    private Float cpuLoadPerCore;
 
     /**
      * 每个机器的总内存数
      *
      */
-    public Float memTotal;
+    private Float memTotal;
 }

@@ -140,6 +140,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx);
+        log.info("worker miss connection !!!");
+        // work断开  不再分发任务
+        masterContext.getWorkMap().remove(ctx.channel());
     }
 
     @Override

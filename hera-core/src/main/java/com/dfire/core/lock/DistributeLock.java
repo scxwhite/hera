@@ -91,7 +91,7 @@ public class DistributeLock {
                 heraSchedule.startup();
                 //TODO  接入通知
             } else {
-                heraSchedule.shutdown();//非主节点，调度器不执行
+               // heraSchedule.shutdown();//非主节点，调度器不执行
             }
         }
         try {

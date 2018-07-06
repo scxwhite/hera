@@ -60,8 +60,9 @@ public class HeraHostGroupServiceImpl implements HeraHostGroupService {
 
     @Override
     public Map<Integer, HeraHostGroupVo> getAllHostGroupInfo() {
-        Map<Integer, HeraHostGroupVo> hostGroupInfoMap = new HashMap<>();
         List<HeraHostGroup> groupList = getAll();
+        Map<Integer, HeraHostGroupVo> hostGroupInfoMap = new HashMap<>(groupList.size());
+
         List<HeraHostRelation> relationList = heraHostRelationService.getAll();
         groupList.forEach(heraHostGroup -> {
             if(heraHostGroup.getEffective() == 1) {

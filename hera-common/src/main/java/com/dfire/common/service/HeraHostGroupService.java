@@ -24,7 +24,11 @@ public interface HeraHostGroupService {
 
     HeraHostGroup findById(int id);
 
-    public Map<Integer, HeraHostGroupVo> getAllHostGroupInfo();
+    /**
+     * 查询出所有的host组 如：本地 测试 etc.
+     * @return
+     */
+    Map<Integer, HeraHostGroupVo> getAllHostGroupInfo();
 
 
 }

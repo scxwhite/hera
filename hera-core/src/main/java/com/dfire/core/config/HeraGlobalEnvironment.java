@@ -21,13 +21,13 @@ public class HeraGlobalEnvironment {
     public static String env;
 
     @Getter
-    private static Float maxMemRate = Float.valueOf(0.8F);
+    private static Float maxMemRate = 0.8F;
     @Getter
-    private static Float maxCpuLoadPerCore = Float.valueOf(3F);
+    private static Float maxCpuLoadPerCore = 3F;
     @Getter
-    private static Integer scanRate = Integer.valueOf(3000);
+    private static Integer scanRate = 3000;
     @Getter
-    private static Integer scanExceptionRate = Integer.valueOf(3000);
+    private static Integer scanExceptionRate = 3000;
     @Getter
     private static Integer connectPort;
     @Getter

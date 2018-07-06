@@ -29,6 +29,7 @@ import com.dfire.core.message.Protocol;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.message.Protocol.Response;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
+import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.util.CronParse;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -42,6 +43,8 @@ import org.springframework.beans.BeanUtils;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+
+import static sun.tools.jstat.Alignment.keySet;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -58,6 +61,7 @@ public class Master {
     public Master(final MasterContext masterContext) {
 
         this.masterContext = masterContext;
+        heraActionMap = new HashMap<>();
         executeJobPool = new ThreadPoolExecutor(2, 2, 0L, TimeUnit.MICROSECONDS,
                 new LinkedBlockingQueue<>(1024), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
         String exeEnvironment = "pre";
@@ -86,7 +90,6 @@ public class Master {
         TimerTask clearScheduleTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) {
-                //TODO  检测  删除action
                 log.info("refresh host group success,start clear schedule");
                 masterContext.refreshHostGroupCache();
                 try {
@@ -138,49 +141,12 @@ public class Master {
                 }
             }
         };
-        masterContext.masterTimer.newTimeout(clearScheduleTask, 30, TimeUnit.MINUTES);
+        masterContext.masterTimer.newTimeout(clearScheduleTask, 0, TimeUnit.MINUTES);
 
         TimerTask generateActionTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) throws Exception {
-                Calendar calendar = Calendar.getInstance();
-                Date now = calendar.getTime();
-
-                int executeHour = DateUtil.getCurrentHour(calendar);
-                int executeMinute = DateUtil.getCurrentMinute(calendar);
-                //凌晨生成版本，早上七点以后开始再次生成版本
-                boolean execute = (executeHour == 0 && executeMinute == 0)
-                        || (executeHour > 7 && executeHour <= 23);
-                if (execute) {
-                    String currString = DateUtil.getTodayStringForAction();
-                    if (executeHour == 23) {
-                        Tuple<String, Date> nextDayString = DateUtil.getNextDayString();
-                        currString = nextDayString.getSource();
-                        now = nextDayString.getTarget();
-                    }
-                    log.error("generate depend action date: " + currString);
-                    List<HeraJob> jobList = masterContext.getHeraJobService().getAll();
-                    Map<Long, HeraAction> actionMap = new HashMap<>();
-                    SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
-                    generateScheduleJobAction(jobList, now, dfDate, actionMap);
-                    generateDependJobAction(jobList, actionMap, 0);
-                    if (executeHour < 23) {
-                        heraActionMap = actionMap;
-                    }
-                    log.error("generate depend action success" + actionMap.size());
-                    Dispatcher dispatcher = masterContext.getDispatcher();
-                    if (dispatcher != null) {
-                        if (actionMap.size() > 0) {
-                            for (Long id : actionMap.keySet()) {
-                                dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
-                                if (id > Long.parseLong(currString)) {
-                                    masterContext.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateJob, id.toString()));
-                                }
-                            }
-                        }
-                    }
-                    log.info("generate all action success");
-                }
+                generateBatchAction();
                 masterContext.masterTimer.newTimeout(this, 1, TimeUnit.HOURS);
             }
         };
@@ -224,21 +190,22 @@ public class Master {
         };
         masterContext.masterTimer.newTimeout(scanExceptionQueueTask, 3, TimeUnit.SECONDS);
 
+        //定时检测work心跳是否超时
         TimerTask checkHeartBeatTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) throws Exception {
                 Date now = new Date();
-                for (MasterWorkHolder worker : masterContext.getWorkMap().values()) {
-                    Date timestamp = worker.getHeartBeatInfo().timestamp;
-                    try {
-                        if (timestamp == null || (now.getTime() - timestamp.getTime()) > 1000 * 60) {
-                            worker.getChannel().close();
-                        }
-                    } catch (Exception e) {
-                        log.error("worker error, master close channel");
+                Map<Channel, MasterWorkHolder> workMap = masterContext.getWorkMap();
+                List<Channel> removeChannel = new ArrayList<>(workMap.size());
+                for (Channel channel: workMap.keySet()) {
+                    MasterWorkHolder workHolder = workMap.get(channel);
+                    Date workTime = workHolder.getHeartBeatInfo().getTimestamp();
+                    if (workTime == null || now.getTime() - workTime.getTime() > 1000 * 60L) {
+                        workHolder.getChannel().close();
+                        removeChannel.add(channel);
                     }
-
                 }
+                removeChannel.forEach(channel -> workMap.remove(channel));
                 masterContext.masterTimer.newTimeout(this, 4, TimeUnit.SECONDS);
             }
         };
@@ -252,6 +219,64 @@ public class Master {
             runScheduleJobAction(element);
         }
 
+    }
+
+    public void generateBatchAction() {
+        generateAction(false, null);
+    }
+
+    public void generateSingleAction(Integer jobId) {
+        generateAction(true, jobId);
+    }
+
+    private void generateAction(boolean isSingle, Integer jobId) {
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+        int executeHour = DateUtil.getCurrentHour(calendar);
+        int executeMinute = DateUtil.getCurrentMinute(calendar);
+        //凌晨生成版本，早上七点以后开始再次生成版本
+        boolean execute = (executeHour == 0 && executeMinute == 0)
+                || (executeHour > 7 && executeHour <= 23);
+        if (execute) {
+            String currString = DateUtil.getTodayStringForAction();
+            if (executeHour == 23) {
+                Tuple<String, Date> nextDayString = DateUtil.getNextDayString();
+                currString = nextDayString.getSource();
+                now = nextDayString.getTarget();
+            }
+            log.error("generate depend action date: " + currString);
+            Map<Long, HeraAction> actionMap = new HashMap<>(heraActionMap.size());
+            List<HeraJob> jobList = new ArrayList<>();
+            SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
+            //批量生成
+            if (!isSingle) {
+                jobList = masterContext.getHeraJobService().getAll();
+            } else { //单个任务生成版本
+                HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
+                jobList.add(heraJob);
+                actionMap = heraActionMap;
+            }
+            generateScheduleJobAction(jobList, now, dfDate, actionMap);
+            generateDependJobAction(jobList, actionMap, 0);
+
+            if (executeHour < 23) {
+                heraActionMap = actionMap;
+            }
+
+            log.error("generate depend action success" + actionMap.size());
+            Dispatcher dispatcher = masterContext.getDispatcher();
+            if (dispatcher != null) {
+                if (actionMap.size() > 0) {
+                    for (Long id : actionMap.keySet()) {
+                        dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
+                        if (id > Long.parseLong(currString)) {
+                            masterContext.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateJob, id.toString()));
+                        }
+                    }
+                }
+            }
+            log.info("generate all action success");
+        }
     }
 
     /**
@@ -456,7 +481,6 @@ public class Master {
 
         if (!masterContext.getScheduleQueue().isEmpty()) {
             final JobElement element = masterContext.getScheduleQueue().poll();
-            log.debug("开始执行定时队列任务：" + element.getJobId());
             runScheduleJobAction(element);
         }
 
@@ -571,20 +595,17 @@ public class Master {
      */
     private void runScheduleJob(MasterWorkHolder workHolder, String actionId) {
         final MasterWorkHolder work = workHolder;
-        this.executeJobPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                int runCount = 0;
-                int retryCount = 0;
-                int retryWaitTime = 1;
-                HeraActionVo heraActionVo = masterContext.getHeraJobActionService().findHeraActionVo(actionId).getSource();
-                Map<String, String> properties = heraActionVo.getConfigs();
-                if (properties != null && properties.size() > 0) {
-                    retryCount = Integer.parseInt(properties.get("roll.back.times") == null ? "0" : properties.get("roll.back.times"));
-                    retryWaitTime = Integer.parseInt(properties.get("roll.back.wait.time") == null ? "0" : properties.get("roll.back.wait.time"));
-                }
-                runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
+        this.executeJobPool.execute(() -> {
+            int runCount = 0;
+            int retryCount = 0;
+            int retryWaitTime = 1;
+            HeraActionVo heraActionVo = masterContext.getHeraJobActionService().findHeraActionVo(actionId).getSource();
+            Map<String, String> properties = heraActionVo.getConfigs();
+            if (properties != null && properties.size() > 0) {
+                retryCount = Integer.parseInt(properties.get("roll.back.times") == null ? "0" : properties.get("roll.back.times"));
+                retryWaitTime = Integer.parseInt(properties.get("roll.back.wait.time") == null ? "0" : properties.get("roll.back.wait.time"));
             }
+            runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
         });
     }
 
@@ -636,7 +657,6 @@ public class Master {
         jobStatus.setStatus(StatusEnum.RUNNING);
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
 
-        Exception exception = null;
         Response response = null;
         try {
             Future<Response> future = new MasterExecuteJob().executeJob(masterContext, work,
@@ -748,13 +768,13 @@ public class Master {
                         break;
                     }
                     for (MasterWorkHolder worker : masterContext.getWorkMap().values()) {
-                        if (worker != null && worker.heartBeatInfo != null && worker.heartBeatInfo.host.trim().equals(host.trim())) {
-                            HeartBeatInfo heartBeatInfo = worker.heartBeatInfo;
+                        if (worker != null && worker.getHeartBeatInfo() != null && worker.getHeartBeatInfo().getHost().trim().equals(host.trim())) {
+                            HeartBeatInfo heartBeatInfo = worker.getHeartBeatInfo();
                             if (heartBeatInfo.getMemRate() != null && heartBeatInfo.getCpuLoadPerCore() != null
                                     && heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate() && heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()) {
 
                                 Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getMaxCpuLoadPerCore()) / HeraGlobalEnvironment.getMaxCpuLoadPerCore();
-                                int sum = heartBeatInfo.debugRunning.size() + heartBeatInfo.manualRunning.size() + heartBeatInfo.running.size();
+                                int sum = heartBeatInfo.getDebugRunning().size() + heartBeatInfo.getManualRunning().size() + heartBeatInfo.getRunning().size();
                                 if (assignTaskNum.intValue() > sum) {
                                     workHolder = worker;
                                     break;
@@ -763,7 +783,7 @@ public class Master {
                         } else {
                             if (worker == null) {
                                 log.error("worker is null");
-                            } else if (worker != null && worker.getHeartBeatInfo() == null && worker.getChannel() != null) {
+                            } else if (worker.getHeartBeatInfo() == null && worker.getChannel() != null) {
                                 log.error("worker " + worker.getChannel() + "heart is null");
                             }
                         }
