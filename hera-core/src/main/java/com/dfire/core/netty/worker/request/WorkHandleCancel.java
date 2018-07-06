@@ -10,6 +10,7 @@ import com.dfire.core.netty.worker.WorkContext;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -118,7 +119,7 @@ public class WorkHandleCancel {
             });
             HeraDebugHistoryVo debugHistory = workContext.getDebugHistoryService().findById(debugId);
             debugHistory.setStatus(StatusEnum.FAILED);
-            debugHistory.setEndTime(new Date());
+            debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) );
             workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         } else {
             future = workContext.getWorkThreadPool().submit(new Callable<Response>() {

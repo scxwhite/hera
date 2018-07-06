@@ -229,7 +229,6 @@ public class WorkExecuteJob {
         HeraDebugHistoryVo history = workContext.getDebugHistoryService().findById(debugId);
         return workContext.getWorkThreadPool().submit(() -> {
             history.setExecuteHost(WorkContext.host);
-            history.setStartTime(new Date());
             workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
 
             String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -251,7 +250,7 @@ public class WorkExecuteJob {
                 history.getLog().appendHeraException(e);
             } finally {
                 HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
-                heraDebugHistoryVo.setEndTime(new Date());
+                heraDebugHistoryVo.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) );
                 if (exitCode == 0) {
                     heraDebugHistoryVo.setStatus(StatusEnum.SUCCESS);
                 } else {

@@ -32,7 +32,6 @@ import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.util.CronParse;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -759,6 +758,7 @@ public class Master {
         if (hostGroupId == 0) {
             hostGroupId = HeraGlobalEnvironment.defaultWorkerGroup;
         }
+
         MasterWorkHolder workHolder = null;
         if (masterContext.getHostGroupCache() != null) {
             HeraHostGroupVo hostGroupCache = masterContext.getHostGroupCache().get(hostGroupId);
@@ -803,7 +803,7 @@ public class Master {
                 .hostGroupId(debugHistory.getHostGroupId())
                 .build();
         debugHistory.setStatus(StatusEnum.RUNNING);
-        debugHistory.setStartTime(new Date());
+        debugHistory.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) );
         debugHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 进入任务队列");
         masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         masterContext.getDebugQueue().offer(element);

@@ -14,6 +14,7 @@ import com.dfire.core.queue.JobElement;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -87,7 +88,7 @@ public class MasterHandleWebCancel {
                     .build();
         }
         debugHistory = context.getHeraDebugHistoryService().findById(debugId);
-        debugHistory.setEndTime(new Date());
+        debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) );
         debugHistory.setStatus(StatusEnum.FAILED);
         context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         return webResponse;

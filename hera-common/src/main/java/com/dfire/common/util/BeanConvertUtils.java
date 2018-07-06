@@ -12,6 +12,7 @@ import com.dfire.common.vo.LogContent;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -61,6 +62,7 @@ public class BeanConvertUtils {
         jobHistory.setStatus(jobHistoryVo.getStatusEnum() == null ? null : jobHistoryVo.getStatusEnum().toString());
         jobHistory.setProperties(StringUtil.convertMapToString(jobHistoryVo.getProperties()));
         jobHistory.setTriggerType(jobHistoryVo.getTriggerType().getId());
+
         return jobHistory;
     }
 
@@ -69,6 +71,19 @@ public class BeanConvertUtils {
         BeanUtils.copyProperties(heraDebugHistory, heraJobHistoryVo);
         heraJobHistoryVo.setStatus(StatusEnum.parse(heraDebugHistory.getStatus()));
         heraJobHistoryVo.setRunType(JobRunTypeEnum.parser(heraDebugHistory.getRunType()));
+
+        if (heraDebugHistory.getStartTime() != null) {
+            heraJobHistoryVo.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(heraDebugHistory.getStartTime()));
+        }
+        if (heraDebugHistory.getEndTime() != null) {
+            heraJobHistoryVo.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(heraDebugHistory.getEndTime()));
+        }
+        if (heraDebugHistory.getGmtCreate() != null) {
+            heraJobHistoryVo.setGmtCreate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(heraDebugHistory.getGmtCreate()));
+        }
+        if (heraDebugHistory.getGmtModified() != null) {
+            heraJobHistoryVo.setGmtModified(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(heraDebugHistory.getGmtModified()));
+        }
         if (StringUtils.isBlank(heraDebugHistory.getLog())) {
             heraJobHistoryVo.setLog(LogContent.builder().build());
         } else {
@@ -84,6 +99,23 @@ public class BeanConvertUtils {
         jobHistory.setStatus(jobHistoryVo.getStatus().toString());
         jobHistory.setLog(jobHistoryVo.getLog().getContent());
         jobHistory.setRunType(jobHistoryVo.getRunType().toString());
+        try {
+            if (jobHistoryVo.getStartTime() != null) {
+                jobHistory.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jobHistoryVo.getStartTime()));
+            }
+            if (jobHistoryVo.getEndTime() != null) {
+                jobHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jobHistoryVo.getEndTime()));
+            }
+            if (jobHistoryVo.getGmtCreate() != null) {
+                jobHistory.setGmtCreate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jobHistoryVo.getGmtCreate()));
+            }
+            if (jobHistoryVo.getGmtModified() != null) {
+                jobHistory.setGmtModified(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jobHistoryVo.getGmtModified()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return jobHistory;
     }
 
@@ -187,7 +219,7 @@ public class BeanConvertUtils {
         }
 
         heraAction.setId(jobStatus.getActionId());
-        heraAction.setStatus(jobStatus.getStatus() == null ? null :jobStatus.getStatus().toString());
+        heraAction.setStatus(jobStatus.getStatus() == null ? null : jobStatus.getStatus().toString());
         heraAction.setHistoryId(jobStatus.getHistoryId());
         heraAction.setReadyDependency(StringUtil.convertMapToString(jobStatus.getReadyDependency()));
         return heraAction;
@@ -219,7 +251,7 @@ public class BeanConvertUtils {
         heraGroupVo.setConfigs(new HashMap<>(1));
         heraGroupVo.setConfigs(StringUtil.convertStringToMap(heraGroup.getConfigs()));
         heraGroupVo.setResources(new ArrayList<>());
-        if(heraGroup.getResources() != null) {
+        if (heraGroup.getResources() != null) {
             heraGroupVo.setResources(StringUtil.convertResources(heraGroup.getResources()));
         }
         heraGroupVo.setExisted(heraGroup.getExisted() == 1 ? true : false);
