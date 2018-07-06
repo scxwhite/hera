@@ -86,8 +86,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                     masterDoHeartBeat.handleHeartBeat(masterContext, channel, request);
                 }
                 break;
-            case WEB_REUQEST:
+            case WEB_REQUEST:
                 final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                System.out.println(webRequest.getOperate());
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
 
@@ -106,8 +107,11 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         completionService.submit(() ->
                                 new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest)));
                         break;
+                    case GenerateAction:
+                        masterContext.getMaster().generateSingleAction(Integer.parseInt(webRequest.getId()));
+                        break;
                     default:
-                        log.error("unknown operate error");
+                        log.error("unknown operate error:{}",webRequest.getOperate());
                         break;
                 }
                 break;

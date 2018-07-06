@@ -81,12 +81,28 @@ $(function () {
         setJobMessageEdit(focusItem.scheduleType === 0)
     });
     /**
+     * 版本生成
+     */
+    $('#jobOperate [name="version"]').on('click', function () {
+
+        $.ajax({
+            url: base_url + "/scheduleCenter/generateVersion",
+            data: {
+                jobId: focusId
+            },
+            type: "post",
+            success: function (data) {
+                alert(data);
+            }
+        })
+    });
+    /**
      * 任务开启关闭按钮
      */
     $('#jobOperate [name="switch"]').on('click', function () {
         //回显
         $.ajax({
-            url: base_url + "scheduleCenter/changeSwitch",
+            url: base_url + "/scheduleCenter/changeSwitch",
             data: {
                 id: focusId
             },
@@ -120,7 +136,7 @@ $(function () {
             return;
         }
         $.ajax({
-            url: base_url + "scheduleCenter/addJob.do",
+            url: base_url + "/scheduleCenter/addJob.do",
             type: "post",
             data: {
                 name: name,
@@ -184,7 +200,7 @@ $(function () {
     $('#editOperator [name="save"]').on('click', function () {
         if (!isGroup) {
             $.ajax({
-                url: base_url + "scheduleCenter/updateJobMessage.do",
+                url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
                 "&script=" + $('#script textarea').val() + "&resource=" + $('#resource textarea').val() +
                 "&id=" + focusId,

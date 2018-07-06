@@ -27,7 +27,7 @@ public class WorkHandleWebUpdate {
                 .setId(jobId)
                 .build();
         SocketMessage socketMessage = SocketMessage.newBuilder()
-                .setKind(SocketMessage.Kind.WEB_REUQEST)
+                .setKind(SocketMessage.Kind.WEB_REQUEST)
                 .setBody(request.toByteString())
                 .build();
         Future<WebResponse> future = workContext.getWorkThreadPool().submit(new Callable<WebResponse>() {

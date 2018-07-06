@@ -44,7 +44,7 @@ public class MasterExecuteJob {
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder holder, String jobId) {
         holder.getManningRunning().put(jobId, false);
 
-        ExecuteMessage message = ExecuteMessage.newBuilder().setJobId(jobId).build();
+        ExecuteMessage message = ExecuteMessage.newBuilder().setActionId(jobId).build();
         final Request request = Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Manual)
@@ -99,7 +99,7 @@ public class MasterExecuteJob {
         final String actionId = history.getActionId();
         holder.getRunning().put(actionId, false);
 
-        ExecuteMessage message = ExecuteMessage.newBuilder().setJobId(actionId).build();
+        ExecuteMessage message = ExecuteMessage.newBuilder().setActionId(actionId).build();
         final Request request = Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Schedule)

@@ -59,7 +59,7 @@ public class WorkExecuteJob {
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
-        final String historyId = message.getJobId();
+        final String historyId = message.getActionId();
         log.info("worker received master request to run manual job, historyId = {}", historyId);
         final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(historyId));
         return workContext.getWorkThreadPool().submit(() -> {
@@ -112,7 +112,7 @@ public class WorkExecuteJob {
             Response response = Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(Operate.Schedule)
-                    .setStatus(status)
+                    .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
             log.info("send execute message, historyId = {}", historyId);
@@ -136,7 +136,7 @@ public class WorkExecuteJob {
             e.printStackTrace();
         }
         // 查看master分发 actionHistoryId
-        final String jobId = message.getJobId();
+        final String jobId = message.getActionId();
         log.info("worker received master request to run schedule, actionId :" + jobId);
         if (workContext.getRunning().containsKey(jobId)) {
             log.info("job is running, can not run again, actionId :" + jobId);
@@ -144,7 +144,7 @@ public class WorkExecuteJob {
                     Response.newBuilder()
                             .setRid(request.getRid())
                             .setOperate(Operate.Schedule)
-                            .setStatus(Status.ERROR)
+                            .setStatusEnum(Status.ERROR)
                             .build()
             );
         }
@@ -202,7 +202,7 @@ public class WorkExecuteJob {
             Response response = Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(Operate.Schedule)
-                    .setStatus(status)
+                    .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
             log.info("send execute message, actionId = " + jobId);
@@ -274,7 +274,7 @@ public class WorkExecuteJob {
             return Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(Operate.Debug)
-                    .setStatus(status)
+                    .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
         });

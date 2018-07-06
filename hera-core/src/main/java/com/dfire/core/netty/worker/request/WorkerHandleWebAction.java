@@ -1,6 +1,6 @@
 package com.dfire.core.netty.worker.request;
 
-import com.dfire.core.message.Protocol.*;
+import com.dfire.core.message.Protocol;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.core.netty.worker.WorkContext;
@@ -11,44 +11,44 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 
 /**
- * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
- * @time: Created in 上午12:56 2018/5/12
- * @desc
+ *
+ * @author xiaosuda
+ * @date 2018/7/6
  */
 @Slf4j
-public class WorkHandleWebCancel {
+public class WorkerHandleWebAction {
 
-    public Future<WebResponse> handleCancel(final WorkContext workContext, ExecuteKind kind, String id) {
+    public Future<Protocol.WebResponse> handleWebAction(final WorkContext workContext, Protocol.ExecuteKind kind, String id) {
 
-        final WebRequest request = WebRequest.newBuilder()
+        final Protocol.WebRequest request = Protocol.WebRequest.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
-                .setOperate(WebOperate.CancelJob)
+                .setOperate(Protocol.WebOperate.GenerateAction)
                 .setEk(kind)
                 .setId(id)
                 .build();
-        SocketMessage socketMessage = SocketMessage.newBuilder()
-                .setKind(SocketMessage.Kind.WEB_REQUEST)
+        Protocol.SocketMessage socketMessage = Protocol.SocketMessage.newBuilder()
+                .setKind(Protocol.SocketMessage.Kind.WEB_REQUEST)
                 .setBody(request.toByteString())
                 .build();
-        Future<WebResponse> future = workContext.getWorkThreadPool().submit(new Callable<WebResponse>() {
-            private WebResponse webResponse;
+        Future<Protocol.WebResponse> future = workContext.getWorkThreadPool().submit(new Callable<Protocol.WebResponse>() {
+            private Protocol.WebResponse webResponse;
 
             @Override
-            public WebResponse call() throws Exception {
+            public Protocol.WebResponse call() throws Exception {
                 final CountDownLatch latch = new CountDownLatch(1);
-                log.info("Work start Handle Web Cancel, requestId = " + request.getRid());
+                log.info("Worker start Handle Web generate action, requestId = " + request.getRid());
                 workContext.getHandler().addListener(new ResponseListener() {
                     @Override
-                    public void onResponse(Response response) {
+                    public void onResponse(Protocol.Response response) {
                     }
 
                     @Override
-                    public void onWebResponse(WebResponse response) {
+                    public void onWebResponse(Protocol.WebResponse response) {
                         if (request.getRid() == request.getRid()) {
                             workContext.getHandler().removeListener(this);
                             webResponse = response;
                             latch.countDown();
-                            log.info("Work end Handle Web Cancel, requestId = " + request.getRid());
+                            log.info("Worker end Handle Web generate action " + request.getRid());
                         }
                     }
                 });
@@ -57,7 +57,7 @@ public class WorkHandleWebCancel {
             }
         });
         workContext.getServerChannel().write(socketMessage);
-        log.info("send web execute request" + request.getRid() + "kind= " + kind + "id = " + id);
+        log.info("send web generate action request" + request.getRid() + "kind= " + kind + "id = " + id);
         return future;
     }
 }

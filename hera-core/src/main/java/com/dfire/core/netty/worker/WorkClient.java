@@ -12,10 +12,7 @@ import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.message.Protocol.SocketMessage;
 import com.dfire.core.message.Protocol.Status;
 import com.dfire.core.message.Protocol.WebResponse;
-import com.dfire.core.netty.worker.request.WorkHandleWebCancel;
-import com.dfire.core.netty.worker.request.WorkHandleWebUpdate;
-import com.dfire.core.netty.worker.request.WorkerHandleWebExecute;
-import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
+import com.dfire.core.netty.worker.request.*;
 import com.dfire.core.schedule.ScheduleInfoLog;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -65,7 +62,6 @@ public class WorkClient {
     /**
      * ProtobufVarint32LengthFieldPrepender: 对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
      * ProtobufVarint32FrameDecoder:  针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
-     *
      */
     @Autowired
     public void WorkClient(ApplicationContext applicationContext) {
@@ -324,7 +320,15 @@ public class WorkClient {
         if (webResponse.getStatus() == Status.ERROR) {
             log.error("cancel from web exception");
         }
+    }
 
+    public String generateActionFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        WebResponse response = new WorkerHandleWebAction().handleWebAction(workContext, kind, id).get();
+        if (response.getStatus() == Status.ERROR) {
+            log.error("generate action error");
+            return "生成版本失败";
+        }
+        return "生成版本成功";
     }
 
 

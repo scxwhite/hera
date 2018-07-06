@@ -44,7 +44,6 @@ public class ScheduleCenterController {
     HeraGroupService heraGroupService;
     @Autowired
     HeraJobHistoryService heraJobHistoryService;
-
     @Autowired
     WorkClient workClient;
 
@@ -175,5 +174,11 @@ public class ScheduleCenterController {
         return new RestfulResponse(heraJobService.changeSwitch(id) ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
     }
 
+    @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)
+    @ResponseBody
+    public WebAsyncTask<String> generateVersion(String jobId) {
+        return new WebAsyncTask<>(3000,() ->
+             workClient.generateActionFromWeb(ExecuteKind.ManualKind, jobId));
+    }
 
 }

@@ -199,6 +199,9 @@ public class Master {
                 List<Channel> removeChannel = new ArrayList<>(workMap.size());
                 for (Channel channel: workMap.keySet()) {
                     MasterWorkHolder workHolder = workMap.get(channel);
+                    if (workHolder.getHeartBeatInfo() == null) {
+                        continue;
+                    }
                     Date workTime = workHolder.getHeartBeatInfo().getTimestamp();
                     if (workTime == null || now.getTime() - workTime.getTime() > 1000 * 60L) {
                         workHolder.getChannel().close();
@@ -226,6 +229,7 @@ public class Master {
     }
 
     public void generateSingleAction(Integer jobId) {
+        log.info("单个任务版本生成：{}", jobId);
         generateAction(true, jobId);
     }
 
@@ -543,9 +547,8 @@ public class Master {
                     masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
 
                 }
-
-                boolean success = response.getStatus() != null && response.getStatus() == Protocol.Status.OK;
-                log.info("historyId 执行结果" + historyId + "---->" + response.getStatus());
+                boolean success = response.getStatusEnum() != null && response.getStatusEnum() == Protocol.Status.OK;
+                log.info("historyId 执行结果" + historyId + "---->" + response.getStatusEnum());
 
                 if (!success) {
                     HeraException heraException = null;
@@ -669,8 +672,8 @@ public class Master {
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
 
         }
-        boolean success = response.getStatus() == Protocol.Status.OK;
-        log.info("job_id 执行结果" + actionId + "---->" + response.getStatus());
+        boolean success = response.getStatusEnum() == Protocol.Status.OK;
+        log.info("job_id 执行结果" + actionId + "---->" + response.getStatusEnum());
 
         if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
                 || heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER)) {
@@ -723,7 +726,7 @@ public class Master {
                     exception = e;
                     log.error(String.format("debugId:%s run failed", jobId), e);
                 }
-                boolean success = response.getStatus() == Protocol.Status.OK;
+                boolean success = response.getStatusEnum() == Protocol.Status.OK;
                 if (!success) {
                     exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
                     log.info("debug job error");

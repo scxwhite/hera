@@ -508,6 +508,11 @@
                                     <button class="btn btn-primary btn-block" type="button">运行日志</button>
                                 </li>
                                 <br>
+
+                                <li>
+                                    <button class="btn btn-primary btn-block" type="button" name="version">版本生成</button>
+                                </li>
+                                <br>
                                 <li>
                                     <button class="btn btn-primary btn-block" type="button">依赖图</button>
                                 </li>

@@ -52,7 +52,7 @@ public class WorkHandleCancel {
                     return Response.newBuilder()
                             .setRid(request.getRid())
                             .setOperate(Operate.Cancel)
-                            .setStatus(Status.ERROR)
+                            .setStatusEnum(Status.ERROR)
                             .setErrorText("运行任务中查无此任务")
                             .build();
                 }
@@ -65,7 +65,7 @@ public class WorkHandleCancel {
                 return Response.newBuilder()
                         .setRid(request.getRid())
                         .setOperate(Operate.Cancel)
-                        .setStatus(Status.OK)
+                        .setStatusEnum(Status.OK)
                         .build();
             }
         });
@@ -83,7 +83,7 @@ public class WorkHandleCancel {
                     return Response.newBuilder()
                             .setRid(request.getRid())
                             .setOperate(Operate.Cancel)
-                            .setStatus(Status.ERROR)
+                            .setStatusEnum(Status.ERROR)
                             .setErrorText("运行任务中查无此任务")
                             .build();
                 }
@@ -96,7 +96,7 @@ public class WorkHandleCancel {
                 return Response.newBuilder()
                         .setRid(request.getRid())
                         .setOperate(Operate.Cancel)
-                        .setStatus(Status.OK)
+                        .setStatusEnum(Status.OK)
                         .build();
             }
         });
@@ -111,7 +111,7 @@ public class WorkHandleCancel {
                     return Response.newBuilder()
                             .setRid(request.getRid())
                             .setOperate(Operate.Cancel)
-                            .setStatus(Status.ERROR)
+                            .setStatusEnum(Status.ERROR)
                             .setErrorText("运行任务中查无此任务")
                             .build();
                 }
@@ -128,7 +128,7 @@ public class WorkHandleCancel {
                     return Response.newBuilder()
                             .setRid(request.getRid())
                             .setOperate(Operate.Cancel)
-                            .setStatus(Status.OK)
+                            .setStatusEnum(Status.OK)
                             .build();
                 }
             });
