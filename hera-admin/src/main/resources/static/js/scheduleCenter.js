@@ -213,7 +213,7 @@ $(function () {
             });
         } else {
             $.ajax({
-                url: base_url + "scheduleCenter/updateGroupMessage.do",
+                url: base_url + "/scheduleCenter/updateGroupMessage.do",
                 data: $('#groupMessageEdit form').serialize() + "&configs=" + $('#config textarea').val() +
                 "&resource=" + $('#resource textarea').val() + "&id=" + focusId,
                 type: "post",
@@ -237,7 +237,7 @@ $(function () {
     $('[name="delete"]').on('click', function () {
         if (confirm("确认删除 :" + focusItem.name + "?")) {
             $.ajax({
-                url: base_url + "scheduleCenter/deleteJob.do",
+                url: base_url + "/scheduleCenter/deleteJob.do",
                 data: {
                     id: focusId,
                     isGroup: isGroup
@@ -352,34 +352,11 @@ $(function () {
 
                 }
             });
-            //获得版本
-            jQuery.ajax({
-                url: base_url + "/scheduleCenter/getJobVersion.do",
-                type: "get",
-                data: {
-                    jobId: id
-                },
-                success: function (data) {
-                    if (data.success == false) {
-                        alert(data.message);
-                        return;
-                    }
-                    var jobVersion = "";
-
-                    data.forEach(function (action, index) {
-                        jobVersion += '<option value="' + action.id + '" >' + action.id + '</option>';
-                    });
-
-                    $('#selectJobVersion').empty();
-                    $('#selectJobVersion').append(jobVersion);
-                    $('#selectJobVersion').selectpicker('refresh');
-                }
-            });
         } else { //如果点击的是组节点
             isGroup = true;
 
             $.ajax({
-                url: base_url + "scheduleCenter/getGroupMessage.do",
+                url: base_url + "/scheduleCenter/getGroupMessage.do",
                 type: "get",
                 async: false,
                 data: {
@@ -431,12 +408,12 @@ $(function () {
 
     $("#manual").click(function () {
         triggerType = 1;
-        $('#myModal').modal('show');
+        setAction();
     });
 
     $("#manualRecovery").click(function () {
         triggerType = 2;
-        $('#myModal').modal('show');
+        setAction();
     });
 
     $("#myModal .add-btn").click(function () {
@@ -450,10 +427,39 @@ $(function () {
                 script: $('#script textarea').val()
             },
             success: function (data) {
+
             }
         });
+        $('#myModal').modal('hide');
     });
+    function setAction() {
+        //获得版本
+        jQuery.ajax({
+            url: base_url + "/scheduleCenter/getJobVersion.do",
+            type: "get",
+            data: {
+                jobId: focusId
+            },
+            success: function (data) {
+                if (data.success == false) {
+                    alert(data.message);
+                    return;
+                }
+                var jobVersion = "";
 
+                data.forEach(function (action, index) {
+                    jobVersion += '<option value="' + action.id + '" >' + action.id + '</option>';
+                });
+
+                $('#selectJobVersion').empty();
+                $('#selectJobVersion').append(jobVersion);
+                $('#selectJobVersion').selectpicker('refresh');
+
+                $('#myModal').modal('show');
+
+            }
+        });
+    }
     function OnRightClick() {
 
     }

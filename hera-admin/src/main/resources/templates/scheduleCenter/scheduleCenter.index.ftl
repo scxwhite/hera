@@ -352,8 +352,8 @@
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">调度类型:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                 <select class="form-control" name="scheduleType">
-                                                    <option value="0">定时调度</option>
                                                     <option value="1">依赖调度</option>
+                                                    <option value="0">定时调度</option>
                                                 </select>
                                             </div>
                                         </div>
