@@ -1,6 +1,6 @@
 spring:
     profiles:
-        active: @env@
+        active: daily
     monitor:
         path: /hera
         port: 8088
@@ -29,6 +29,7 @@ spring:
 
 server:
   port: 8080
+  context-path: /hera
 
 clean:
    path: ${server.context-path}
