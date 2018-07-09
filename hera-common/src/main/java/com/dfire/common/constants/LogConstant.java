@@ -19,6 +19,6 @@ public class LogConstant {
 
     public static final String CANCEL_JOB_LOG = "已经在队列中，无法再次运行\n";
 
-
+    public static final String FAIL_JOB_RETRY = "失败任务重试，开始执行\n";
 
 }
