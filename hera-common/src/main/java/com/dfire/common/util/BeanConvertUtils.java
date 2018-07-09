@@ -129,7 +129,7 @@ public class BeanConvertUtils {
         heraJobVo.setId(String.valueOf(heraJob.getId()));
         heraJobVo.setAuto(heraJob.getAuto() == 1 ? "开启" : "关闭");
         heraJobVo.setDependencies(heraJob.getDependencies());
-
+        heraJobVo.setRunType(JobRunTypeEnum.parser(heraJob.getRunType()));
         return heraJobVo;
     }
 
@@ -171,7 +171,6 @@ public class BeanConvertUtils {
 
     public static Tuple<HeraActionVo, JobStatus> convert(HeraAction action) {
         HeraActionVo heraActionVo = transform(action);
-
         JobStatus jobStatus = JobStatus.builder().build();
         jobStatus.setActionId(action.getId());
         jobStatus.setHistoryId(action.getHistoryId());

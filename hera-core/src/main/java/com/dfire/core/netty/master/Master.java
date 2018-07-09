@@ -297,8 +297,7 @@ public class Master {
                 String cronDate = format.format(now);
                 List<String> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(cron)) {
-                    boolean isCronExp = false;
-                    isCronExp = CronParse.Parser(cron, cronDate, list);
+                    boolean isCronExp = CronParse.Parser(cron, cronDate, list);
                     if (!isCronExp) {
                         log.error("cron parse error,cron = " + cron);
                     }
