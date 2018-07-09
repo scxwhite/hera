@@ -329,13 +329,11 @@ public class JobHandler extends AbstractHandler {
         if (heraActionVo.getScheduleType() == JobScheduleTypeEnum.Dependent) {
             destroy();
         } else if (heraActionVo.getScheduleType() == JobScheduleTypeEnum.Independent) {
-
             try {
                 createScheduleJob(masterContext.getDispatcher(), heraActionVo);
             } catch (SchedulerException e) {
                 e.printStackTrace();
             }
-
         }
 
 

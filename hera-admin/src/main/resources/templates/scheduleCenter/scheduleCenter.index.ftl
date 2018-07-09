@@ -153,7 +153,7 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">任务类型:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static"></label>
+                                                <label class="form-control-static" name="runType"></label>
                                             </div>
                                         </div>
                                         <div class="form-group">

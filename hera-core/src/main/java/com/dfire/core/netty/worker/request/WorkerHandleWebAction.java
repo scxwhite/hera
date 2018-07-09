@@ -32,7 +32,6 @@ public class WorkerHandleWebAction {
                 .build();
         Future<Protocol.WebResponse> future = workContext.getWorkThreadPool().submit(new Callable<Protocol.WebResponse>() {
             private Protocol.WebResponse webResponse;
-
             @Override
             public Protocol.WebResponse call() throws Exception {
                 final CountDownLatch latch = new CountDownLatch(1);
