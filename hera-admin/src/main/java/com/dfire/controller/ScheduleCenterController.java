@@ -181,6 +181,11 @@ public class ScheduleCenterController {
                 workClient.generateActionFromWeb(ExecuteKind.ManualKind, jobId));
     }
 
+    /**
+     * 获取任务历史版本
+     * @param jobId
+     * @return
+     */
     @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
     @ResponseBody
     public List<HeraJobHistory> getJobHistory(String jobId) {
