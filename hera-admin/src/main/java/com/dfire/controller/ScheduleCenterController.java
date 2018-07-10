@@ -136,9 +136,9 @@ public class ScheduleCenterController {
 
     @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)
     @ResponseBody
-    public boolean updateJobMessage(HeraJobVo heraJobVo) {
+    public RestfulResponse updateJobMessage(HeraJobVo heraJobVo) {
         HeraJob heraJob = BeanConvertUtils.convertToHeraJob(heraJobVo);
-        return heraJobService.update(heraJob) > 0;
+        return heraJobService.checkAndUpdate(heraJob);
     }
 
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)

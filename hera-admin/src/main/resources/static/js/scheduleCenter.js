@@ -206,8 +206,10 @@ $(function () {
                 "&id=" + focusId,
                 type: "post",
                 success: function (data) {
-                    if (data == true) {
+                    if (data.success == true) {
                         leftClick();
+                    } else {
+                        alert(data.msg)
                     }
                 }
             });
