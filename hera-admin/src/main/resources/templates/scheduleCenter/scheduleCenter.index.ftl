@@ -633,8 +633,7 @@
                                 <label class="control-label col-sm-4 col-lg-4 col-md-4">任务类型</label>
                                 <div class="col-sm-8 col-lg-8 col-md-8 ">
                                     <select class="form-control" name="jobType">
-                                        <option value="MapReduce" selected>MapReduce程序</option>
-                                        <option value="shell">shell脚本</option>
+                                        <option value="shell" selected>shell脚本</option>
                                         <option value="hive">hive脚本</option>
                                     </select>
                                 </div>
@@ -647,6 +646,50 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                 <button type="button" class="btn btn-info add-btn" name="addBtn">添加</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="runningLog" tabindex="-1" role="dialog" aria-labelledby="runningLog"
+     aria-hidden="true">
+    <div class="modal-dialog" style="height:100px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">运行日志</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-8 col-md-8 col-lg-8">
+                            <div class="form-group">
+                                <label class="control-label col-sm-4 col-lg-4 col-md-4">任务名称</label>
+                                <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                    <input class="form-control" type="text" name="jobName">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4 col-lg-4 col-md-4">任务类型</label>
+                                <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                    <select class="form-control" name="jobType">
+                                        <option value="shell" selected>shell脚本</option>
+                                        <option value="hive">hive脚本</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-info add-btn" name="addBtn">刷新</button>
             </div>
         </div>
     </div>

@@ -58,8 +58,8 @@
         ul_nav: '<ul id="myTab"  class="nav nav-tabs"></ul>',
         ul_li: '<li><a href="#{0}" data-toggle="tab"><span>{1}</span></a></li>',
         ul_li_close: '<i class="fa fa-remove closeable" title="关闭"></i>',
-        div_content: '<div  class="tab-content"></div>',
-        div_content_panel: '<div class="tab-pane fade" id="{0}"><textarea id="fileScript" class="form-control" rows="35" placeholder="编写脚本 ">{1}</textarea></div>'
+        div_content: '<div  class="tab-content" id="scriptEditor"></div>',
+        div_content_panel: '<div class="tab-pane fade" id="{0}"><textarea id="fileScript_{1}" class="form-control" rows="35" placeholder="编写脚本 ">{2}</textarea></div>'
     }
 
     //初始化
@@ -96,7 +96,7 @@
             }
             ul_nav.append(ul_li);
             //div-content
-            var div_content_panel = $(this.template.div_content_panel.format(data[i].id, data[i].fileScript));
+            var div_content_panel = $(this.template.div_content_panel.format(data[i].id, data[i].id, data[i].fileScript));
             div_content.append(div_content_panel);
         }
 
@@ -154,7 +154,10 @@
 
         this.$element.find(".nav-tabs:eq(0)").append(ul_li);
         //div-content
-        var div_content_panel = $(this.template.div_content_panel.format(obj.id, obj.fileScript));
+        var content_panel = $(this.template.div_content_panel);
+        debugger
+        console.log(content_panel);
+        var div_content_panel = $(this.template.div_content_panel.format(obj.id, obj.id, obj.fileScript));
 
         this.$element.find(".tab-content:eq(0)").append(div_content_panel);
 
@@ -226,7 +229,6 @@
         if (arguments.length == 0) return this;
         for (var s = this, i = 0; i < arguments.length; i++)
             s = s.replace(new RegExp("\\{" + i + "\\}", "g"), arguments[i]);
-        console.log(s)
         return s;
     };
 

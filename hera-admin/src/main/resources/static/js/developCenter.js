@@ -74,13 +74,13 @@ $(function () {
             }
         });
         var script = result['content'];
-        if(script == null || script == '') {
-            script = '开始写脚本';
+        if (script == null || script == '') {
+            script = '';
         }
         $("id").val(id);
         $("#fileScript").text(script);
 
-        var tabDetail = {id: id, text: name, url: "xx", closeable: true, select: 0, fileScript:script};
+        var tabDetail = {id: id, text: name, url: "xx", closeable: true, select: 0, fileScript: script};
         tabData = JSON.parse(localStorage.getItem('tabData'));
         var b = isInArray(tabData, tabDetail);
         debugger
@@ -123,11 +123,13 @@ $(function () {
 
     $("ul#logTab").on("click", "li", function () {
         debugger
-        var tableObject = new TableInit();
-        tableObject.init();
 
         var num = $(this).find("a").attr("href");
         if (num == "#tab_2") {
+            var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
+            $('#allLogTable').bootstrapTable("destroy");
+            var tableObject = new TableInit(targetId);
+            tableObject.init();
             $("#scriptEditor").attr("style", "display:none");
         } else {
             $("#scriptEditor").attr("style", "display:block");
@@ -350,7 +352,8 @@ $(function () {
     $("#execute").click(function () {
         debugger
         var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var fileScript = $("#fileScript").val();
+        var scriptId = "#fileScript_" + fileId;
+        var fileScript = $(scriptId).val();
         var parameter = {
             id: fileId,
             content: fileScript
@@ -371,64 +374,6 @@ $(function () {
         });
 
     });
-
-    var TableInit = function () {
-
-        var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var parameter = {fileId: targetId};
-
-        var oTableInit = new Object();
-        oTableInit.init = function () {
-            var table = $('#allLogTable');
-            table.bootstrapTable({
-                url: base_url + "/developCenter/findDebugHistory",
-                queryParams: parameter,
-                pagination: true,
-                showPaginationSwitch: false,
-                search: false,
-                cache: false,
-                pageNumber: 1,
-                pageList: [10, 25, 40, 60],
-                columns: [
-                    {
-                        field: "id",
-                        title: "id"
-                    }, {
-                        field: "fileId",
-                        title: "文件id"
-                    },
-                    {
-                        field: "executeHost",
-                        title: "执行机器ip"
-                    }, {
-                        field: "status",
-                        title: "状态"
-                    }, {
-                        field: "startTime",
-                        title: "开始时间"
-                    }, {
-                        field: "endTime",
-                        title: "结束时间"
-                    },
-                    {
-                        field: "操作",
-                        title: "操作"
-                    }
-                ],
-                detailView: true,
-                detailFormatter: function (index, row) {
-                    debugger
-                    var log = row["log"]['content'];
-                    var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" >'
-                        + log +
-                        '</textarea>' + '<form role="form">' + '<div class="form-group">';
-                    return html;
-                },
-
-            });
-        }
-        return oTableInit;
-    }
 
     /**
      * 初始化开发中心页面
@@ -459,3 +404,59 @@ $(function () {
 });
 
 
+var TableInit = function (targetId) {
+    console.log(targetId);
+    var parameter = {fileId: targetId};
+
+    var oTableInit = new Object();
+    oTableInit.init = function () {
+        var table = $('#allLogTable');
+        table.bootstrapTable({
+            url: base_url + "/developCenter/findDebugHistory",
+            queryParams: parameter,
+            pagination: true,
+            showPaginationSwitch: false,
+            search: false,
+            cache: false,
+            pageNumber: 1,
+            pageList: [10, 25, 40, 60],
+            columns: [
+                {
+                    field: "id",
+                    title: "id"
+                }, {
+                    field: "fileId",
+                    title: "文件id"
+                },
+                {
+                    field: "executeHost",
+                    title: "执行机器ip"
+                }, {
+                    field: "status",
+                    title: "状态"
+                }, {
+                    field: "startTime",
+                    title: "开始时间"
+                }, {
+                    field: "endTime",
+                    title: "结束时间"
+                },
+                {
+                    field: "操作",
+                    title: "操作"
+                }
+            ],
+            detailView: true,
+            detailFormatter: function (index, row) {
+                debugger
+                var log = row["log"]['content'];
+                var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" >'
+                    + log +
+                    '</textarea>' + '<form role="form">' + '<div class="form-group">';
+                return html;
+            },
+
+        });
+    }
+    return oTableInit;
+}
