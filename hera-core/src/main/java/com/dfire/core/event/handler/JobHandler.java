@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -163,8 +164,8 @@ public class JobHandler extends AbstractHandler {
          *
          */
         HeraActionVo heraActionVo = cache.getHeraActionVo();
-        if (heraActionVo.getAuto()
-                && (heraActionVo.getScheduleType().getType().equals(JobScheduleTypeEnum.Independent.getType()))) {
+        boolean isSchedule = heraActionVo.getAuto() && Objects.equals(heraActionVo.getScheduleType(), JobScheduleTypeEnum.Independent);
+        if (isSchedule) {
             try {
                 createScheduleJob(masterContext.getDispatcher(), heraActionVo);
                 log.info("-----------------start server, create job quartz schedule-----------------");
@@ -382,7 +383,9 @@ public class JobHandler extends AbstractHandler {
      */
 
     public void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
-
+        if (!isNow()) {
+            return ;
+        }
         JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
         if (masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey) == null) {
             JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(jobKey).build();
@@ -414,5 +417,9 @@ public class JobHandler extends AbstractHandler {
     @Override
     public int hashCode() {
         return actionId.hashCode();
+    }
+
+    private boolean isNow() {
+        return DateUtil.getTodayStringForAction().compareTo(actionId) <= 0;
     }
 }

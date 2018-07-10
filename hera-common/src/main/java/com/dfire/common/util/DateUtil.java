@@ -41,10 +41,8 @@ public class DateUtil {
 
 
     public static String getTodayStringForAction() {
-        Date now = new Date();
         SimpleDateFormat dfDateTime = new SimpleDateFormat("yyyyMMddHHmmss0000");
-        String currentDate = dfDateTime.format(now);
-        return currentDate;
+        return dfDateTime.format(new Date());
 
     }
 

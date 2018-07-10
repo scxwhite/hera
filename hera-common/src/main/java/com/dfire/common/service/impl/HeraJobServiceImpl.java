@@ -6,6 +6,9 @@ import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.mapper.HeraJobMapper;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobService;
+import com.dfire.common.util.DagLoopUtil;
+import com.dfire.common.vo.RestfulResponse;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +45,7 @@ public class HeraJobServiceImpl implements HeraJobService {
     }
 
     @Override
-    public int update(HeraJob heraJob) {
+    public Integer update(HeraJob heraJob) {
         return heraJobMapper.update(heraJob);
     }
 
@@ -87,4 +90,44 @@ public class HeraJobServiceImpl implements HeraJobService {
         Integer res = heraJobMapper.updateSwitch(id);
         return res != null && res > 0;
     }
+
+    @Override
+    public RestfulResponse checkAndUpdate(HeraJob heraJob) {
+
+
+        if (StringUtils.isNotBlank(heraJob.getDependencies())) {
+            HeraJob job = this.findById(heraJob.getId());
+
+            if (!heraJob.getDependencies().equals(job.getDependencies())) {
+                List<HeraJob> relation = heraJobMapper.getAllJobRelation();
+
+                DagLoopUtil dagLoopUtil = new DagLoopUtil(heraJobMapper.selectMaxId());
+
+                relation.forEach(x -> {
+                    String dependencies = x.getDependencies();
+                    if (StringUtils.isNotBlank(dependencies)) {
+                        String[] split = dependencies.split(",");
+                        for (String s : split) {
+                            dagLoopUtil.addEdge(heraJob.getId(), Integer.parseInt(s));
+                        }
+                    }
+                });
+
+                if (dagLoopUtil.isLoop()) {
+                    return new RestfulResponse(false, "出现环形依赖，请检测依赖关系:" + dagLoopUtil.getLoop());
+                }
+            }
+
+        }
+
+
+        Integer line = this.update(heraJob);
+        if (line == null || line == 0) {
+            return new RestfulResponse(false, "更新失败，请联系管理员");
+        }
+        return new RestfulResponse(true, "更新成功");
+
+
+    }
+
 }

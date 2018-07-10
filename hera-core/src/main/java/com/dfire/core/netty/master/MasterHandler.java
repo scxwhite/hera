@@ -149,6 +149,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         log.info("worker miss connection !!!");
         // work断开  不再分发任务
         masterContext.getWorkMap().remove(ctx.channel());
+        //TODO 解决work正在执行任务，却无法回写任务状态
     }
 
     @Override
