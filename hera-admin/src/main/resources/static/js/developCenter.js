@@ -463,8 +463,18 @@ var TableInit = function (targetId) {
                     title: "结束时间"
                 },
                 {
-                    field: "操作",
-                    title: "操作"
+                    field: "status",
+                    title: "操作",
+                    width: "20%",
+                    formatter: function (index, row) {
+                        var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
+                        var html2 = '<a href="javascript:getLog(\'' + index + ')">查看日志</a>';
+                        if (row['status'] == 'running') {
+                            return html;
+                        } else {
+                            return html2;
+                        }
+                    }
                 }
             ],
             detailView: true,
@@ -480,4 +490,12 @@ var TableInit = function (targetId) {
         });
     }
     return oTableInit;
+}
+
+
+function cancelJob(historyId) {
+    var url = base_url + "/developCenter/cancelJob.do";
+    var parameter = {id: historyId};
+    getDataByGet(url, parameter)
+
 }
