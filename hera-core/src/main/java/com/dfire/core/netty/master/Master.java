@@ -164,8 +164,9 @@ public class Master {
                     log.info("scan waiting queueTask run");
                 } catch (Exception e) {
                     log.error("scan waiting queueTask exception");
+                } finally {
+                    masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
                 }
-                masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
             }
         };
         masterContext.masterTimer.newTimeout(scanWaitingQueueTask, 3, TimeUnit.SECONDS);
@@ -247,7 +248,6 @@ public class Master {
                 currString = nextDayString.getSource();
                 now = nextDayString.getTarget();
             }
-            log.error("generate depend action date: " + currString);
             Map<Long, HeraAction> actionMap = new HashMap<>(heraActionMap.size());
             List<HeraJob> jobList = new ArrayList<>();
             SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
@@ -266,7 +266,6 @@ public class Master {
                 heraActionMap = actionMap;
             }
 
-            log.error("generate depend action success" + actionMap.size());
             Dispatcher dispatcher = masterContext.getDispatcher();
             if (dispatcher != null) {
                 if (actionMap.size() > 0) {
@@ -313,7 +312,6 @@ public class Master {
                         heraAction.setJobId(String.valueOf(heraJob.getId()));
                         heraAction.setHistoryId(heraJob.getHistoryId());
                         masterContext.getHeraJobActionService().insert(heraAction);
-                        log.error("generate actions success :" + actionId);
                         actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
 
                     });
@@ -482,11 +480,13 @@ public class Master {
     public void scan() {
 
         if (!masterContext.getScheduleQueue().isEmpty()) {
+            log.warn("队列任务：{}", masterContext.getScheduleQueue());
             final JobElement element = masterContext.getScheduleQueue().poll();
             runScheduleJobAction(element);
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
+            log.warn("队列任务：{}", masterContext.getManualQueue());
             final JobElement element = masterContext.getManualQueue().poll();
             MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
             if (selectWork == null) {
@@ -497,6 +497,7 @@ public class Master {
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
+            log.warn("队列任务：{}", masterContext.getDebugQueue());
             final JobElement element = masterContext.getDebugQueue().poll();
             MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
             if (selectWork == null) {
