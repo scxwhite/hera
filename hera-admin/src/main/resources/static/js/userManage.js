@@ -1,3 +1,9 @@
+/**
+ * 用户管理页面，用户注册之后的权限审核
+ *
+ * @type {any[]}
+ */
+
 var userList = new Array();
 var indexList = new Array();
 

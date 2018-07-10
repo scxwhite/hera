@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 17:32 2018/1/11
- * @desc
+ * @desc 开发中心脚本记录
  */
 @Data
 @Builder
@@ -26,6 +26,9 @@ public class HeraFile {
 
     private String parent;
 
+    /**
+     * 脚本内容
+     */
     private String content;
 
     private String type;

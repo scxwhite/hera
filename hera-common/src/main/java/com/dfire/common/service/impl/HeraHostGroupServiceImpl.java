@@ -22,8 +22,6 @@ import java.util.Map;
  * @desc
  */
 @Service("heraHostGroupService")
-@PropertySource(value = "classpath:config.yml", ignoreResourceNotFound = true)
-@ConfigurationProperties("hera")
 public class HeraHostGroupServiceImpl implements HeraHostGroupService {
 
 

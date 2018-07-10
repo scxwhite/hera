@@ -56,7 +56,7 @@ public class WorkerHandleWebExecute {
                 return webResponse;
             }
         });
-        workContext.getServerChannel().write(socketMessage);
+        workContext.getServerChannel().writeAndFlush(socketMessage);
         log.info("send web execute request" + request.getRid() + "kind= " + kind + "id = " + id);
         return future;
     }

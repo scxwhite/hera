@@ -132,3 +132,34 @@ function getDataByPost(url) {
     });
     return dataStore;
 }
+
+/**
+ * 以get方式获取数据
+ * @param url
+ * @param parameter
+ * @returns {*}
+ */
+function getDataByGet(url, parameter) {
+    var result;
+    $.ajax({
+        url: url,
+        type: "get",
+        async: false,
+        data: parameter,
+        success: function (data) {
+            result = data;
+        }
+    });
+    return result;
+}
+
+/**
+ * 格式化日期
+ * @param timestamp
+ * @returns {string}
+ */
+function getLocalTime(timestamp) {
+    var date = new Date(timestamp);
+    var newDate = date.toLocaleDateString().replace(/\//g, "-") + " " + date.toTimeString().substr(0, 8);
+    return newDate;
+}

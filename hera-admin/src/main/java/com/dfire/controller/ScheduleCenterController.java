@@ -1,6 +1,5 @@
 package com.dfire.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
@@ -154,8 +153,9 @@ public class ScheduleCenterController {
         if (isGroup) {
             return heraGroupService.delete(id) > 0;
         }
-        return  heraJobService.delete(id) > 0;
+        return heraJobService.delete(id) > 0;
     }
+
     @RequestMapping(value = "/addJob", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse addJob(HeraJob heraJob, HttpSession session) {
@@ -177,8 +177,39 @@ public class ScheduleCenterController {
     @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)
     @ResponseBody
     public WebAsyncTask<String> generateVersion(String jobId) {
-        return new WebAsyncTask<>(3000,() ->
-             workClient.generateActionFromWeb(ExecuteKind.ManualKind, jobId));
+        return new WebAsyncTask<>(3000, () ->
+                workClient.generateActionFromWeb(ExecuteKind.ManualKind, jobId));
     }
+
+    @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
+    @ResponseBody
+    public List<HeraJobHistory> getJobHistory(String jobId) {
+        List<HeraJobHistory> list = heraJobHistoryService.findByJobId(jobId);
+        return list;
+
+    }
+
+    /**
+     * 取消正在执行的任务
+     *
+     * @param historyId
+     * @return
+     */
+    @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
+    @ResponseBody
+    public WebAsyncTask<String> cancelJob(String id) {
+        HeraJobHistory history = heraJobHistoryService.findById(id);
+        ExecuteKind kind = null;
+        if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
+            kind = ExecuteKind.ManualKind;
+        } else {
+            kind = ExecuteKind.ScheduleKind;
+        }
+        ExecuteKind finalKind = kind;
+        return new WebAsyncTask<String>(3000, () ->
+                workClient.cancelJobFromWeb(finalKind, id));
+
+    }
+
 
 }

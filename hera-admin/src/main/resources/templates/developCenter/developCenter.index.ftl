@@ -90,14 +90,14 @@
 
                     </div>
 
-                    <div id="scriptEditor" class="box box-success" style="display: block">
-                        <div class="box-body">
-                            <div class="form-group">
-                                <textarea id="jobScript" class="form-control" rows="35" placeholder="编写脚本 "></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    </br>
+                    <#--<div id="scriptEditor" class="box box-success" style="display: block">-->
+                        <#--<div class="box-body">-->
+                            <#--<div class="form-group">-->
+                                <#--<textarea id="fileScript" class="form-control" rows="35" placeholder="编写脚本 "></textarea>-->
+                            <#--</div>-->
+                        <#--</div>-->
+                    <#--</div>-->
+                    <#--</br>-->
 
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs" id="logTab">
