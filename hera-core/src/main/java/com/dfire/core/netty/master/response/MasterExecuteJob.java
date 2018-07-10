@@ -95,10 +95,8 @@ public class MasterExecuteJob {
     private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String actionHistoryId) {
 
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(actionHistoryId);
-        HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-        final String actionId = history.getActionId();
+        final String actionId = heraJobHistory.getActionId();
         holder.getRunning().put(actionId, false);
-
         ExecuteMessage message = ExecuteMessage.newBuilder().setActionId(actionId).build();
         final Request request = Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
@@ -124,6 +122,7 @@ public class MasterExecuteJob {
                             latch.countDown();
                         }
                     }
+
                     @Override
                     public void onWebResponse(WebResponse webResponse) {
                     }
@@ -177,6 +176,7 @@ public class MasterExecuteJob {
                             latch.countDown();
                         }
                     }
+
                     @Override
                     public void onWebResponse(WebResponse resp) {
                         System.out.println(response.getRid());
