@@ -244,7 +244,7 @@ public class WorkClient {
         workContext.getDebugRunning().remove(debugId);
 
         HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
-        history.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) );
+        history.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         history.setStatus(StatusEnum.FAILED);
         workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
@@ -308,12 +308,12 @@ public class WorkClient {
         }
     }
 
-    public void cancelJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+    public String cancelJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
         if (webResponse.getStatus() == Status.ERROR) {
             log.error("cancel from web exception");
         }
-
+        return "cancel job success";
     }
 
     public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {

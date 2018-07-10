@@ -51,6 +51,9 @@ $(function () {
 
     var zNodes = getDataByPost(base_url + "/developCenter/init.do");
 
+    /**
+     * 点击脚本的事件
+     */
     function leftClick() {
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
@@ -120,7 +123,9 @@ $(function () {
         return false;
     });
 
-
+    /**
+     * 查看脚本运行日志
+     */
     $("ul#logTab").on("click", "li", function () {
         debugger
 
@@ -138,7 +143,13 @@ $(function () {
 
     });
 
-
+    /**
+     * 树形菜单右击事件
+     * @param event
+     * @param treeId
+     * @param treeNode
+     * @constructor
+     */
     function OnRightClick(event, treeId, treeNode) {
         if (!treeNode && event.target.tagName.toLowerCase() != "button" && $(event.target).parents("a").length == 0) {
             zTree.cancelSelectedNode();
@@ -149,7 +160,12 @@ $(function () {
         }
     }
 
-
+    /**
+     * 修改右击后菜单显示样式
+     * @param type
+     * @param x
+     * @param y
+     */
     function showRMenu(type, x, y) {
         $("#rMenu ul").show();
         if (type == "root") {
@@ -173,12 +189,17 @@ $(function () {
         $("body").bind("mousedown", onBodyMouseDown);
     }
 
-
+    /**
+     * 隐藏菜单
+     */
     function hideRMenu() {
         $("body").unbind("mousedown", onBodyMouseDown);
     }
 
-
+    /**
+     * 鼠标移开后的菜单隐藏事件
+     * @param event
+     */
     function onBodyMouseDown(event) {
         if (!(event.target.id == "rMenu" || $(event.target).parents("#rMenu").length > 0)) {
             rMenu.css({"visibility": "hidden"});

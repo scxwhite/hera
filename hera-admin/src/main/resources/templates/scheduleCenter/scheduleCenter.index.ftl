@@ -37,13 +37,12 @@
         background-color: #DFDFDF;
     }
 
-    .colStyle
-    {
+    .colStyle {
         margin-right: 0px;
         margin-left: 0px;
         margin-top: 0px;
         padding: 0px;
-        background-color:#eee;
+        background-color: #eee;
         border: 1px solid #ddd;
     }
 
@@ -61,7 +60,7 @@
 
         <section class="content">
             <div class="row">
-                <div class="col-md-3 col-sm-3 col-lg-3 colStyle" >
+                <div class="col-md-3 col-sm-3 col-lg-3 colStyle">
 
 
                     <div class="box box-success">
@@ -505,7 +504,8 @@
                         <div class="box-body" style="white-space:nowrap;">
                             <ul class="list-unstyled">
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button">运行日志</button>
+                                    <button class="btn btn-primary btn-block" type="button" name="runningLog">运行日志
+                                    </button>
                                 </li>
                                 <br>
 
@@ -652,41 +652,18 @@
 </div>
 
 
-<div class="modal fade" id="runningLog" tabindex="-1" role="dialog" aria-labelledby="runningLog"
-     aria-hidden="true">
-    <div class="modal-dialog" style="height:100px;">
+<div class="modal fade bd-example-modal-lg" id="jobLog" tabindex="-1" role="dialog" aria-labelledby="jobLog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" >
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title">运行日志</h4>
+                <h4 class="modal-title" id="myModalLabel">信息日志</h4>
             </div>
-            <div class="modal-body">
 
-                <div class="form-horizontal">
-                    <div class="row">
-                        <div class="col-sm-8 col-md-8 col-lg-8">
-                            <div class="form-group">
-                                <label class="control-label col-sm-4 col-lg-4 col-md-4">任务名称</label>
-                                <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                    <input class="form-control" type="text" name="jobName">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label col-sm-4 col-lg-4 col-md-4">任务类型</label>
-                                <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                    <select class="form-control" name="jobType">
-                                        <option value="shell" selected>shell脚本</option>
-                                        <option value="hive">hive脚本</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <br>
+            <div class="modal-body">
+                <table class="table " id="runningLogDetailTable"></table>
             </div>
+
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
                 <button type="button" class="btn btn-info add-btn" name="addBtn">刷新</button>
@@ -702,6 +679,7 @@
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
+<script src="${request.contextPath}/js/common.js"></script>
 
 </body>
 

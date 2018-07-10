@@ -80,6 +80,20 @@ $(function () {
         changeEditStyle(0);
         setJobMessageEdit(focusItem.scheduleType === 0)
     });
+
+    /**
+     * 查看任务日志
+     */
+    $('#jobOperate [name="runningLog"]').on('click', function () {
+
+        $('#runningLogDetailTable').bootstrapTable("destroy");
+        var tableObject = new JobLogTable(focusId);
+        tableObject.init();
+
+        $('#jobLog').modal('show');
+
+    });
+
     /**
      * 版本生成
      */
@@ -432,6 +446,7 @@ $(function () {
         });
         $('#myModal').modal('hide');
     });
+
     function setAction() {
         //获得版本
         jQuery.ajax({
@@ -460,24 +475,13 @@ $(function () {
             }
         });
     }
+
     function OnRightClick() {
 
     }
 
-    var zNodes = getDataStore(base_url + "/scheduleCenter/init.do");
 
-    function getDataStore(url) {
-        var dataStore;
-        $.ajax({
-            type: "post",
-            url: url,
-            async: false,
-            success: function (data) {
-                dataStore = data;
-            }
-        });
-        return dataStore;
-    }
+    var zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
 
     //修正zTree的图标，让文件节点显示文件夹图标
     function fixIcon() {
@@ -494,6 +498,8 @@ $(function () {
     }
 
     var zTree, rMenu;
+
+
     $(document).ready(function () {
         $.fn.zTree.init($("#jobTree"), setting, zNodes);
         zTree = $.fn.zTree.getZTreeObj("jobTree");
@@ -504,3 +510,106 @@ $(function () {
 
 
 });
+
+
+var JobLogTable = function (jobId) {
+    var parameter = {jobId: jobId};
+
+    var oTableInit = new Object();
+    oTableInit.init = function () {
+        var table = $('#runningLogDetailTable');
+        table.bootstrapTable({
+            url: base_url + "/scheduleCenter/getJobHistory.do",
+            queryParams: parameter,
+            pagination: true,
+            showPaginationSwitch: false,
+            search: false,
+            cache: false,
+            pageNumber: 1,
+            pageList: [10, 25, 40, 60],
+            columns: [
+                {
+                    field: "id",
+                    title: "id"
+                }, {
+                    field: "actionId",
+                    title: "版本号"
+                }, {
+                    field: "jobId",
+                    title: "jobId"
+                }, {
+                    field: "executeHost",
+                    title: "执行机器ip"
+                }, {
+                    field: "status",
+                    title: "执行状态"
+                }, {
+                    field: "operator",
+                    title: "执行人"
+                }, {
+                    field: "startTime",
+                    title: "开始时间",
+                    width: "20%",
+                    formatter: function (row) {
+                        return getLocalTime(row);
+                    }
+                }, {
+                    field: "endTime",
+                    title: "结束时间",
+                    width: "20%",
+                    formatter: function (row) {
+                        return getLocalTime(row);
+                    }
+                }, {
+                    field: "triggerType",
+                    title: "触发类型",
+                    width: "20%",
+                    formatter: function (value, row) {
+                        if (row['triggerType'] == 1) {
+                            return "自动调度";
+                        }
+                        if (row['triggerType'] == 2) {
+                            return "手动触发";
+                        }
+                        if (row['triggerType'] == 3) {
+                            return "手动恢复";
+                        }
+                        return value;
+                    }
+                },
+                {
+                    field: "status",
+                    title: "操作",
+                    width: "20%",
+                    formatter: function (index, row) {
+                        var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
+                        var html2 = '<a href="javascript:getLog(\'' + index + ')">查看日志</a>';
+                        if (row['status'] == 'running') {
+                            return html;
+                        } else {
+                            return html2;
+                        }
+                    }
+                }
+            ],
+            detailView: true,
+            detailFormatter: function (index, row) {
+                debugger
+                var log = row["log"];
+                var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" >'
+                    + log +
+                    '</textarea>' + '<form role="form">' + '<div class="form-group">';
+                return html;
+            },
+
+        });
+    }
+    return oTableInit;
+}
+
+function cancelJob(historyId) {
+    var url = base_url + "/scheduleCenter/cancelJob.do";
+    var parameter = {id: historyId};
+    getDataByGet(url, parameter)
+
+}

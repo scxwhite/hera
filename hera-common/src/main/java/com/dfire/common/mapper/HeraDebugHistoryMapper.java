@@ -29,7 +29,7 @@ public interface HeraDebugHistoryMapper {
     @Lang(HeraUpdateLangDriver.class)
     int update(HeraDebugHistory heraDebugHistory);
 
-    @Select("select * from hera_debug_history")
+    @Select("select * from hera_debug_history order by id desc")
     @Lang(HeraSelectLangDriver.class)
     List<HeraDebugHistory> getAll();
 
