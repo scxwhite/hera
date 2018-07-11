@@ -534,7 +534,9 @@ var JobLogTable = function (jobId) {
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
-                $('#log_' + actionRow.id).val(data.log);
+                var logArea = $('#log_' + actionRow.id);
+                logArea.text(data.log);
+                logArea.scrollTo('100%');
                 actionRow.log=data.log;
                 actionRow.status = data.status;
             }
