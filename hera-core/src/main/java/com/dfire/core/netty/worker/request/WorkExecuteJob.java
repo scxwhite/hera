@@ -89,10 +89,11 @@ public class WorkExecuteJob {
                 String res = exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString();
                 //更新状态和日志
                 workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
-                        HeraJobHistory.builder().
-                                id(history.getId()).
-                                log(history.getLog().getContent()).status(res).
-                                endTime(new Date())
+                        HeraJobHistory.builder()
+                                .id(history.getId())
+                                .log(history.getLog().getContent())
+                                .status(res)
+                                .endTime(new Date())
                                 .build());
 
                 workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());

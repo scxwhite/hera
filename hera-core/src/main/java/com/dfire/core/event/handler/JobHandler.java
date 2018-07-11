@@ -204,7 +204,6 @@ public class JobHandler extends AbstractHandler {
         if (heraActionVo.getDependencies() == null || !heraActionVo.getDependencies().contains(jobId)) {
             return;
         }
-        System.out.println(heraActionVo.getId() + ":" + heraActionVo.getDependencies());
         JobStatus jobStatus;
         synchronized (this) {
             jobStatus = heraJobActionService.findJobStatus(actionId);

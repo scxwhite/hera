@@ -78,7 +78,7 @@ public class ShellJob extends ProcessJob {
         //过滤不需要转化的后缀名
         String[] excludes = HeraGlobalEnvironment.excludeFile.split(";");
         boolean isDocToUnix = true;
-        if (excludes != null && excludes.length > 0) {
+        if (excludes.length > 0) {
             String lowCaseShellPath = shellFilePath.toLowerCase();
             for (String exclude : excludes) {
                 if (lowCaseShellPath.endsWith("." + exclude)) {

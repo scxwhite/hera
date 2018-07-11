@@ -63,7 +63,6 @@ public class ProcessJobContainer extends AbstractJob {
             exitCode = job.run();
             jobContext.setCoreExitCode(exitCode);
         }
-        jobContext.setCoreExitCode(exitCode);
         log("核心job处理完毕");
         running = null;
 

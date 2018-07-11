@@ -23,12 +23,10 @@ public class LogContent {
     private static final String ERROR = "error";
 
     public void appendConsole(String log) {
-        System.out.println("日志信息：" + log);
         if (lines < COUNT) {
-            lines++;
             if (log.toLowerCase().contains(ERROR)
                     || log.toLowerCase().contains(StatusEnum.FAILED.toString())
-                    || log.contains("FileNotFoundException")
+                    || log.contains("Exception")
                     || log.contains("NullPointException")
                     || log.contains("No such file or directory")
                     || log.contains("command not found")
@@ -39,7 +37,7 @@ public class LogContent {
             } else {
                 content.append("CONSOLE# ").append(log).append("\n");
             }
-            if (lines == COUNT) {
+            if (++lines >= COUNT) {
                 content.append("HERA# 控制台输出信息过多，停止记录，建议您优化自己的Job");
             }
         }
