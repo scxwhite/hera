@@ -625,9 +625,9 @@ var JobLogTable = function (jobId) {
             detailView: true,
             detailFormatter: function (index, row) {
                 var log = row["log"];
-                var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" id="log_' + row.id + '">'
+                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style=" overflow:scroll; height:600px; id="log_' + row.id + '">'
                     + log +
-                    '</textarea>' + '<form role="form">' + '<div class="form-group">';
+                    '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;
             },
             onExpandRow: function (index, row) {

@@ -17,6 +17,8 @@ import java.io.StringWriter;
 public class LogContent {
 
     private int lines;
+
+    private final String split = "<br>";
     private StringBuffer content;
 
     private static final int COUNT = 20000;
@@ -33,9 +35,9 @@ public class LogContent {
                     || log.contains("Permission denied")) {
                 content.append("CONSOLE# ").append("<font style=\"color:red\">")
                         .append(log).append("</font>")
-                        .append("\n");
+                        .append(split);
             } else {
-                content.append("CONSOLE# ").append(log).append("\n");
+                content.append("CONSOLE# ").append(log).append(split);
             }
             if (++lines >= COUNT) {
                 content.append("HERA# 控制台输出信息过多，停止记录，建议您优化自己的Job");
@@ -48,7 +50,7 @@ public class LogContent {
         if (content == null) {
             content = new StringBuffer();
         }
-        content.append("HERA# ").append(log).append("\n");
+        content.append("HERA# ").append(log).append(split);
     }
 
     public void append(String log) {
@@ -56,7 +58,7 @@ public class LogContent {
         if (content == null) {
             content = new StringBuffer();
         }
-        content.append(log).append("\n");
+        content.append(log).append(split);
     }
 
     public void appendHeraException(Exception e) {
