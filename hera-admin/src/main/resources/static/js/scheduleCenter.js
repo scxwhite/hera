@@ -5,6 +5,7 @@ $(function () {
     var treeObj;
     var selected;
     var triggerType;
+    var actionId;
     var setting = {
         view: {
             showLine: false
@@ -516,10 +517,35 @@ $(function () {
 
 var JobLogTable = function (jobId) {
     var parameter = {jobId: jobId};
-
+    var actionId;
     var oTableInit = new Object();
+    var onExpand = -1;
+    var table = $('#runningLogDetailTable');
+    var timerHandler = null;
+    function scheduleLog() {
+
+        $.ajax({
+            url: base_url + "/scheduleCenter/getLog.do",
+            type: "get",
+            data: {
+                id: actionId,
+            },
+            success: function (data) {
+                if (data.status != 'running') {
+                    window.clearInterval(timerHandler);
+                }
+                $('#log_' + actionId).val(data.log);
+            }
+        })
+    }
+
+    $('#jobLog').on('hide.bs.modal', function () {
+        if (timerHandler != null) {
+            window.clearInterval(timerHandler)
+        }
+    });
+
     oTableInit.init = function () {
-        var table = $('#runningLogDetailTable');
         table.bootstrapTable({
             url: base_url + "/scheduleCenter/getJobHistory.do",
             queryParams: parameter,
@@ -596,18 +622,29 @@ var JobLogTable = function (jobId) {
             ],
             detailView: true,
             detailFormatter: function (index, row) {
-                debugger
                 var log = row["log"];
-                var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" >'
+                var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" id="log_' + row.id + '">'
                     + log +
                     '</textarea>' + '<form role="form">' + '<div class="form-group">';
                 return html;
             },
-
+            onExpandRow: function (index, row) {
+                actionId = row.id;
+                table.bootstrapTable("collapseRow", onExpand);
+                onExpand = index;
+                if (row.status == "running") {
+                    timerHandler = window.setInterval(scheduleLog, 1000);
+                }
+            },
+            onCollapseRow: function (index, row) {
+                window.clearInterval(timerHandler)
+            }
         });
-    }
+    };
     return oTableInit;
-}
+};
+
+
 
 function cancelJob(historyId) {
     var url = base_url + "/scheduleCenter/cancelJob.do";

@@ -41,4 +41,6 @@ public interface HeraJobHistoryService {
      * @return
      */
     List<HeraJobHistory> findByJobId(String jobId);
+
+    HeraJobHistory findLogById(Integer id);
 }

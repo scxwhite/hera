@@ -183,6 +183,7 @@ public class ScheduleCenterController {
 
     /**
      * 获取任务历史版本
+     *
      * @param jobId
      * @return
      */
@@ -197,7 +198,7 @@ public class ScheduleCenterController {
     /**
      * 取消正在执行的任务
      *
-     * @param historyId
+     * @param id
      * @return
      */
     @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
@@ -214,6 +215,12 @@ public class ScheduleCenterController {
         return new WebAsyncTask<String>(3000, () ->
                 workClient.cancelJobFromWeb(finalKind, id));
 
+    }
+
+    @RequestMapping(value = "getLog", method = RequestMethod.GET)
+    @ResponseBody
+    public HeraJobHistory getJobLog(Integer id) {
+        return heraJobHistoryService.findLogById(id);
     }
 
 
