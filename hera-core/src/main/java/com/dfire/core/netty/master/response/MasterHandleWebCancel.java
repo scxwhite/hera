@@ -44,7 +44,7 @@ public class MasterHandleWebCancel {
         WebResponse webResponse = null;
         String debugId = request.getId();
         HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
-        for (JobElement element : new ArrayList<JobElement>(context.getDebugQueue())) {
+        for (JobElement element : new ArrayList<>(context.getDebugQueue())) {
             if (element.getJobId().equals(debugId)) {
                 webResponse = WebResponse.newBuilder()
                         .setRid(request.getRid())
@@ -58,7 +58,7 @@ public class MasterHandleWebCancel {
             }
         }
 
-        for (Channel key : new HashSet<Channel>(context.getWorkMap().keySet())) {
+        for (Channel key : new HashSet<>(context.getWorkMap().keySet())) {
             MasterWorkHolder workHolder = context.getWorkMap().get(key);
             if (workHolder.getDebugRunning().containsKey(debugId)) {
                 Future<Response> future = new MasterHandleCancelJob().cancel(context,
@@ -102,7 +102,7 @@ public class MasterHandleWebCancel {
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         String jobId = history.getJobId();
-        for (JobElement element : new ArrayList<JobElement>(context.getManualQueue())) {
+        for (JobElement element : new ArrayList<>(context.getManualQueue())) {
             if (element.getJobId().equals(historyId)) {
                 webResponse = WebResponse.newBuilder()
                         .setRid(request.getRid())
@@ -117,7 +117,7 @@ public class MasterHandleWebCancel {
         }
 
         if (history.getTriggerType() == TriggerTypeEnum.MANUAL) {
-            for (Channel key : new HashSet<Channel>(context.getWorkMap().keySet())) {
+            for (Channel key : new HashSet<>(context.getWorkMap().keySet())) {
                 MasterWorkHolder workHolder = context.getWorkMap().get(key);
                 if (workHolder.getManningRunning().containsKey(jobId)) {
                     Future<Response> future = new MasterHandleCancelJob().cancel(context,
@@ -162,7 +162,7 @@ public class MasterHandleWebCancel {
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         String jobId = history.getJobId();
-        for (JobElement element : new ArrayList<JobElement>(context.getScheduleQueue())) {
+        for (JobElement element : new ArrayList<>(context.getScheduleQueue())) {
             if (element.getJobId().equals(historyId)) {
                 webResponse = WebResponse.newBuilder()
                         .setRid(request.getRid())
@@ -176,7 +176,7 @@ public class MasterHandleWebCancel {
             }
         }
 
-        for (Channel key : new HashSet<Channel>(context.getWorkMap().keySet())) {
+        for (Channel key : new HashSet<>(context.getWorkMap().keySet())) {
             MasterWorkHolder workHolder = context.getWorkMap().get(key);
             if (workHolder.getRunning().containsKey(jobId)) {
                 Future<Response> future = new MasterHandleCancelJob().cancel(context,

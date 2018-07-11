@@ -140,7 +140,7 @@ function getDataByPost(url) {
  * @returns {*}
  */
 function getDataByGet(url, parameter) {
-    var result;
+    var result = '';
     $.ajax({
         url: url,
         type: "get",

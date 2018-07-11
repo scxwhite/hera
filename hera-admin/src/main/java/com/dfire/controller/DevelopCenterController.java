@@ -10,7 +10,6 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -83,6 +82,14 @@ public class DevelopCenterController {
         return response;
     }
 
+    /**
+     * 手动执行脚本
+     *
+     * @param heraFile
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @RequestMapping(value = "/debug", method = RequestMethod.POST)
     @ResponseBody
     public WebAsyncTask<String> debug(@RequestBody HeraFile heraFile) throws ExecutionException, InterruptedException {
@@ -107,7 +114,12 @@ public class DevelopCenterController {
         });
     }
 
-
+    /**
+     * 获取脚本执行历史
+     *
+     * @param fileId
+     * @return
+     */
     @RequestMapping(value = "findDebugHistory", method = RequestMethod.GET)
     @ResponseBody
     public List<HeraDebugHistoryVo> findDebugHistory(String fileId) {
@@ -117,6 +129,23 @@ public class DevelopCenterController {
             return historyVo;
         }).collect(Collectors.toList());
         return result;
+    }
+
+    /**
+     * 取消执行脚本
+     *
+     * @param id
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    @RequestMapping(value = "/cancelJob", method = RequestMethod.POST)
+    @ResponseBody
+    public WebAsyncTask<String> cancelJob(String id) throws ExecutionException, InterruptedException {
+        ExecuteKind kind = ExecuteKind.DebugKind;
+        return new WebAsyncTask<>(3000, () ->
+                workClient.cancelJobFromWeb(kind, id));
+
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 上午12:56 2018/5/12
- * @desc
+ * @desc 接收到web cancel job 请求的时候,发起netty master handler 取消任务请求
  */
 @Slf4j
 public class WorkHandleWebCancel {

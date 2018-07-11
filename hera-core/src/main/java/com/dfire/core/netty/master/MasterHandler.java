@@ -42,7 +42,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
      */
     private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
 
-
+    /**
+     * master接受到worker取消执行任务请求的处理逻辑
+     */
     private MasterHandleWebCancel masterHandleCancelJob = new MasterHandleWebCancel();
 
     /**
