@@ -517,7 +517,7 @@ $(function () {
 
 var JobLogTable = function (jobId) {
     var parameter = {jobId: jobId};
-    var actionId;
+    var actionRow;
     var oTableInit = new Object();
     var onExpand = -1;
     var table = $('#runningLogDetailTable');
@@ -528,13 +528,15 @@ var JobLogTable = function (jobId) {
             url: base_url + "/scheduleCenter/getLog.do",
             type: "get",
             data: {
-                id: actionId,
+                id: actionRow.id,
             },
             success: function (data) {
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
-                $('#log_' + actionId).val(data.log);
+                $('#log_' + actionRow.id).val(data.log);
+                actionRow.log=data.log;
+                actionRow.status = data.status;
             }
         })
     }
@@ -629,8 +631,10 @@ var JobLogTable = function (jobId) {
                 return html;
             },
             onExpandRow: function (index, row) {
-                actionId = row.id;
-                table.bootstrapTable("collapseRow", onExpand);
+                actionRow = row;
+                if (index != onExpand) {
+                    table.bootstrapTable("collapseRow", onExpand);
+                }
                 onExpand = index;
                 if (row.status == "running") {
                     timerHandler = window.setInterval(scheduleLog, 1000);
