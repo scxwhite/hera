@@ -130,8 +130,7 @@ public class JobUtils {
         } else if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Hive) {
             core = new HiveJob(jobContext, applicationContext);
         }
-        Job job = new ProcessJobContainer(jobContext, pres, posts, core, applicationContext);
-        return job;
+        return new ProcessJobContainer(jobContext, pres, posts, core, applicationContext);
 
     }
 

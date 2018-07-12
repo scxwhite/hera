@@ -3,16 +3,17 @@ package com.dfire.common.service.impl;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.mapper.HeraDebugHistoryMapper;
-import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectLangDriver;
-import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.util.BeanConvertUtils;
-import org.apache.ibatis.annotations.*;
+import com.dfire.common.util.HeraDateTool;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -49,14 +50,15 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     @Override
     public HeraDebugHistoryVo findById(String id) {
         HeraDebugHistory debugHistory = HeraDebugHistory.builder().id(id).build();
-        HeraDebugHistory history= heraDebugHistoryMapper.findById(debugHistory);
+        HeraDebugHistory history = heraDebugHistoryMapper.findById(debugHistory);
         return BeanConvertUtils.convert(history);
     }
 
     @Override
     public List<HeraDebugHistory> findByFileId(String fileId) {
         HeraDebugHistory history = HeraDebugHistory.builder().fileId(fileId).build();
-        return heraDebugHistoryMapper.findByFileId(history);
+        List<HeraDebugHistory> list = heraDebugHistoryMapper.findByFileId(history);
+        return list;
     }
 
     @Override

@@ -27,7 +27,7 @@ public class WorkerHandleWebExecute {
                 .setId(id)
                 .build();
         SocketMessage socketMessage = SocketMessage.newBuilder()
-                .setKind(SocketMessage.Kind.WEB_REUQEST)
+                .setKind(SocketMessage.Kind.WEB_REQUEST)
                 .setBody(request.toByteString())
                 .build();
         Future<WebResponse> future = workContext.getWorkThreadPool().submit(new Callable<WebResponse>() {
@@ -56,7 +56,7 @@ public class WorkerHandleWebExecute {
                 return webResponse;
             }
         });
-        workContext.getServerChannel().write(socketMessage);
+        workContext.getServerChannel().writeAndFlush(socketMessage);
         log.info("send web execute request" + request.getRid() + "kind= " + kind + "id = " + id);
         return future;
     }

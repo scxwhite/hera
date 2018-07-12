@@ -268,7 +268,6 @@ public class HeraBaseDaoTest {
                     master.generateScheduleJobAction(heraJobList, now, dfDate, actionMap);
                     master.generateDependJobAction(heraJobList, actionMap, 0);
 
-
                 }
             }
         } catch (NoSuchFieldException e) {
@@ -279,5 +278,28 @@ public class HeraBaseDaoTest {
 
     }
 
+    @Test
+    public void generateSingleAction() {
+        try {
+
+            Field heraScheduleField = distributeLock.getClass().getDeclaredField("heraSchedule");
+            heraScheduleField.setAccessible(true);
+            HeraSchedule heraSchedule = (HeraSchedule) heraScheduleField.get(distributeLock);
+            heraSchedule.startup();
+            if(heraSchedule != null) {
+                Field masterContextField = heraSchedule.getClass().getDeclaredField("masterContext");
+                masterContextField.setAccessible(true);
+                MasterContext masterContext = (MasterContext) masterContextField.get(heraSchedule);
+                if(masterContext != null) {
+                    Master master = masterContext.getMaster();
+                    master.generateSingleAction(1578);
+                }
+            }
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

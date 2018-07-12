@@ -40,6 +40,7 @@ public class HeraGroupVo {
 
     private boolean existed;
 
+    private String selfConfigs;
     private Map<String, String> configs;
     private List<Map<String,String>> resources;
 }

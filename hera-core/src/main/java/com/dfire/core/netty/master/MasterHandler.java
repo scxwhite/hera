@@ -42,7 +42,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
      */
     private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
 
-
+    /**
+     * master接受到worker取消执行任务请求的处理逻辑
+     */
     private MasterHandleWebCancel masterHandleCancelJob = new MasterHandleWebCancel();
 
     /**
@@ -86,8 +88,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                     masterDoHeartBeat.handleHeartBeat(masterContext, channel, request);
                 }
                 break;
-            case WEB_REUQEST:
+            case WEB_REQUEST:
                 final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                System.out.println(webRequest.getOperate());
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
 
@@ -106,8 +109,11 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         completionService.submit(() ->
                                 new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest)));
                         break;
+                    case GenerateAction:
+                        masterContext.getMaster().generateSingleAction(Integer.parseInt(webRequest.getId()));
+                        break;
                     default:
-                        log.error("unknown operate error");
+                        log.error("unknown operate error:{}",webRequest.getOperate());
                         break;
                 }
                 break;
@@ -140,6 +146,10 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx);
+        log.info("worker miss connection !!!");
+        // work断开  不再分发任务
+        masterContext.getWorkMap().remove(ctx.channel());
+        //TODO 解决work正在执行任务，却无法回写任务状态
     }
 
     @Override

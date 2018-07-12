@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 上午12:56 2018/5/12
- * @desc
+ * @desc 接收到web cancel job 请求的时候,发起netty master handler 取消任务请求
  */
 @Slf4j
 public class WorkHandleWebCancel {
@@ -27,7 +27,7 @@ public class WorkHandleWebCancel {
                 .setId(id)
                 .build();
         SocketMessage socketMessage = SocketMessage.newBuilder()
-                .setKind(SocketMessage.Kind.WEB_REUQEST)
+                .setKind(SocketMessage.Kind.WEB_REQUEST)
                 .setBody(request.toByteString())
                 .build();
         Future<WebResponse> future = workContext.getWorkThreadPool().submit(new Callable<WebResponse>() {
@@ -56,7 +56,7 @@ public class WorkHandleWebCancel {
                 return webResponse;
             }
         });
-        workContext.getServerChannel().write(socketMessage);
+        workContext.getServerChannel().writeAndFlush(socketMessage);
         log.info("send web execute request" + request.getRid() + "kind= " + kind + "id = " + id);
         return future;
     }

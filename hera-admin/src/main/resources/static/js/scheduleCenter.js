@@ -80,15 +80,46 @@ $(function () {
         changeEditStyle(0);
         setJobMessageEdit(focusItem.scheduleType === 0)
     });
+
+    /**
+     * 查看任务日志
+     */
+    $('#jobOperate [name="runningLog"]').on('click', function () {
+
+        $('#runningLogDetailTable').bootstrapTable("destroy");
+        var tableObject = new JobLogTable(focusId);
+        tableObject.init();
+
+        $('#jobLog').modal('show');
+
+    });
+
+
+    /**
+     * 版本生成
+     */
+    $('#jobOperate [name="version"]').on('click', function () {
+
+        $.ajax({
+            url: base_url + "/scheduleCenter/generateVersion",
+            data: {
+                jobId: focusId
+            },
+            type: "post",
+            success: function (data) {
+                alert(data);
+            }
+        })
+    });
     /**
      * 任务开启关闭按钮
      */
     $('#jobOperate [name="switch"]').on('click', function () {
         //回显
         $.ajax({
-            url: "scheduleCenter/changeSwitch",
-            data:{
-                id:focusId
+            url: base_url + "/scheduleCenter/changeSwitch",
+            data: {
+                id: focusId
             },
             type: "post",
             success: function (data) {
@@ -120,7 +151,7 @@ $(function () {
             return;
         }
         $.ajax({
-            url: "scheduleCenter/addJob.do",
+            url: base_url + "/scheduleCenter/addJob.do",
             type: "post",
             data: {
                 name: name,
@@ -146,7 +177,7 @@ $(function () {
         var status = $(this).val();
         //定时调度
         if (status == 0) {
-           setJobMessageEdit(true);
+            setJobMessageEdit(true);
         } else if (status == 1) {//依赖调度
             setJobMessageEdit(false);
         }
@@ -184,21 +215,23 @@ $(function () {
     $('#editOperator [name="save"]').on('click', function () {
         if (!isGroup) {
             $.ajax({
-                url: "scheduleCenter/updateJobMessage.do",
+                url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
                 "&script=" + $('#script textarea').val() + "&resource=" + $('#resource textarea').val() +
                 "&id=" + focusId,
                 type: "post",
                 success: function (data) {
-                    if (data == true) {
+                    if (data.success == true) {
                         leftClick();
+                    } else {
+                        alert(data.msg)
                     }
                 }
             });
         } else {
             $.ajax({
-                url: "scheduleCenter/updateGroupMessage.do",
-                data: $('#groupMessageEdit form').serialize() + "&configs=" + $('#config textarea').val() +
+                url: base_url + "/scheduleCenter/updateGroupMessage.do",
+                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
                 "&resource=" + $('#resource textarea').val() + "&id=" + focusId,
                 type: "post",
                 success: function (data) {
@@ -221,7 +254,7 @@ $(function () {
     $('[name="delete"]').on('click', function () {
         if (confirm("确认删除 :" + focusItem.name + "?")) {
             $.ajax({
-                url: "scheduleCenter/deleteJob.do",
+                url: base_url + "/scheduleCenter/deleteJob.do",
                 data: {
                     id: focusId,
                     isGroup: isGroup
@@ -315,7 +348,7 @@ $(function () {
             isGroup = false;
 
             $.ajax({
-                url: "/scheduleCenter/getJobMessage.do",
+                url: base_url + "/scheduleCenter/getJobMessage.do",
                 type: "get",
                 async: false,
                 data: {
@@ -331,39 +364,16 @@ $(function () {
                     formDataLoad("jobMessage form", data);
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
                     $('#config textarea:first').val(initVal(data.configs, "jobMessage"));
-                    $('#jobMessage [name="auto"]').removeClass("label-success").removeClass("label-default").addClass( data.auto === "开启" ? "label-success" : "label-default");
+                    $('#jobMessage [name="auto"]').removeClass("label-success").removeClass("label-default").addClass(data.auto === "开启" ? "label-success" : "label-default");
 
 
-                }
-            });
-            //获得版本
-            jQuery.ajax({
-                url: "/scheduleCenter/getJobVersion.do",
-                type: "get",
-                data: {
-                    jobId: id
-                },
-                success: function (data) {
-                    if (data.success == false) {
-                        alert(data.message);
-                        return;
-                    }
-                    var jobVersion = "";
-                    
-                    data.forEach(function (action, index) {
-                        jobVersion += '<option value="' + action.id + '" >' + action.id + '</option>';
-                    });
-
-                    $('#selectJobVersion').empty();
-                    $('#selectJobVersion').append(jobVersion);
-                    $('#selectJobVersion').selectpicker('refresh');
                 }
             });
         } else { //如果点击的是组节点
             isGroup = true;
 
             $.ajax({
-                url: "scheduleCenter/getGroupMessage.do",
+                url: base_url + "/scheduleCenter/getGroupMessage.do",
                 type: "get",
                 async: false,
                 data: {
@@ -415,17 +425,17 @@ $(function () {
 
     $("#manual").click(function () {
         triggerType = 1;
-        $('#myModal').modal('show');
+        setAction();
     });
 
     $("#manualRecovery").click(function () {
         triggerType = 2;
-        $('#myModal').modal('show');
+        setAction();
     });
 
     $("#myModal .add-btn").click(function () {
         $.ajax({
-            url: "/scheduleCenter/manual.do",
+            url: base_url + "/scheduleCenter/manual.do",
             type: "get",
             async: false,
             data: {
@@ -434,28 +444,47 @@ $(function () {
                 script: $('#script textarea').val()
             },
             success: function (data) {
+
             }
         });
+        $('#myModal').modal('hide');
     });
+
+    function setAction() {
+        //获得版本
+        jQuery.ajax({
+            url: base_url + "/scheduleCenter/getJobVersion.do",
+            type: "get",
+            data: {
+                jobId: focusId
+            },
+            success: function (data) {
+                if (data.success == false) {
+                    alert(data.message);
+                    return;
+                }
+                var jobVersion = "";
+
+                data.forEach(function (action, index) {
+                    jobVersion += '<option value="' + action.id + '" >' + action.id + '</option>';
+                });
+
+                $('#selectJobVersion').empty();
+                $('#selectJobVersion').append(jobVersion);
+                $('#selectJobVersion').selectpicker('refresh');
+
+                $('#myModal').modal('show');
+
+            }
+        });
+    }
 
     function OnRightClick() {
 
     }
 
-    var zNodes = getDataStore("/scheduleCenter/init.do");
 
-    function getDataStore(url) {
-        var dataStore;
-        $.ajax({
-            type: "post",
-            url: url,
-            async: false,
-            success: function (data) {
-                dataStore = data;
-            }
-        });
-        return dataStore;
-    }
+    var zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
 
     //修正zTree的图标，让文件节点显示文件夹图标
     function fixIcon() {
@@ -472,6 +501,8 @@ $(function () {
     }
 
     var zTree, rMenu;
+
+
     $(document).ready(function () {
         $.fn.zTree.init($("#jobTree"), setting, zNodes);
         zTree = $.fn.zTree.getZTreeObj("jobTree");
@@ -482,3 +513,155 @@ $(function () {
 
 
 });
+
+
+var JobLogTable = function (jobId) {
+    var parameter = {jobId: jobId};
+    var actionRow;
+    var oTableInit = new Object();
+    var onExpand = -1;
+    var table = $('#runningLogDetailTable');
+    var timerHandler = null;
+
+
+    function scheduleLog() {
+
+        $.ajax({
+            url: base_url + "/scheduleCenter/getLog.do",
+            type: "get",
+            data: {
+                id: actionRow.id,
+            },
+            success: function (data) {
+                if (data.status != 'running') {
+                    window.clearInterval(timerHandler);
+                }
+                var logArea = $('#log_' + actionRow.id);
+                logArea[0].innerHTML = data.log;
+                logArea.scrollTop(logArea.prop("scrollHeight"),200);
+                actionRow.log = data.log;
+                actionRow.status = data.status;
+            }
+        })
+    }
+
+    $('#jobLog').on('hide.bs.modal', function () {
+        if (timerHandler != null) {
+            window.clearInterval(timerHandler)
+        }
+    });
+
+    $('#jobLog [name="refreshLog"]').on('click', function () {
+        table.bootstrapTable('refresh');
+        table.bootstrapTable('expandRow', onExpand);
+    });
+
+    oTableInit.init = function () {
+        table.bootstrapTable({
+            url: base_url + "/scheduleCenter/getJobHistory.do",
+            queryParams: parameter,
+            pagination: true,
+            showPaginationSwitch: false,
+            search: false,
+            cache: false,
+            pageNumber: 1,
+            pageList: [10, 25, 40, 60],
+            columns: [
+                {
+                    field: "id",
+                    title: "id"
+                }, {
+                    field: "actionId",
+                    title: "版本号"
+                }, {
+                    field: "jobId",
+                    title: "jobId"
+                }, {
+                    field: "executeHost",
+                    title: "执行机器ip"
+                }, {
+                    field: "status",
+                    title: "执行状态"
+                }, {
+                    field: "operator",
+                    title: "执行人"
+                }, {
+                    field: "startTime",
+                    title: "开始时间",
+                    width: "20%",
+                    formatter: function (row) {
+                        return getLocalTime(row);
+                    }
+                }, {
+                    field: "endTime",
+                    title: "结束时间",
+                    width: "20%",
+                    formatter: function (row) {
+                        return getLocalTime(row);
+                    }
+                }, {
+                    field: "triggerType",
+                    title: "触发类型",
+                    width: "20%",
+                    formatter: function (value, row) {
+                        if (row['triggerType'] == 1) {
+                            return "自动调度";
+                        }
+                        if (row['triggerType'] == 2) {
+                            return "手动触发";
+                        }
+                        if (row['triggerType'] == 3) {
+                            return "手动恢复";
+                        }
+                        return value;
+                    }
+                },
+                {
+                    field: "status",
+                    title: "操作",
+                    width: "20%",
+                    formatter: function (index, row) {
+                        var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
+                        var html2 = '<a href="javascript:getLog(\'' + index + ')">查看日志</a>';
+                        if (row['status'] == 'running') {
+                            return html;
+                        } else {
+                            return html2;
+                        }
+                    }
+                }
+            ],
+            detailView: true,
+            detailFormatter: function (index, row) {
+                var log = row["log"];
+                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
+                    + log +
+                    '</div>' + '<form role="form">' + '<div class="form-group">';
+                return html;
+            },
+            onExpandRow: function (index, row) {
+                actionRow = row;
+                if (index != onExpand) {
+                    table.bootstrapTable("collapseRow", onExpand);
+                }
+                onExpand = index;
+                if (row.status == "running") {
+                    timerHandler = window.setInterval(scheduleLog, 3000);
+                }
+            },
+            onCollapseRow: function (index, row) {
+                window.clearInterval(timerHandler)
+            }
+        });
+    };
+    return oTableInit;
+};
+
+
+
+function cancelJob(historyId) {
+    var url = base_url + "/scheduleCenter/cancelJob.do";
+    var parameter = {id: historyId};
+    getDataByGet(url, parameter)
+
+}

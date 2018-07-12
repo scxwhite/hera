@@ -28,7 +28,7 @@ public interface HeraJobMapper {
 
     @Update("update hera_job (#{heraJob}) where id = #{id}")
     @Lang(HeraUpdateLangDriver.class)
-    int update(HeraJob heraJob);
+    Integer update(HeraJob heraJob);
 
     @Select("select * from hera_job")
     @Lang(HeraSelectLangDriver.class)
@@ -49,4 +49,13 @@ public interface HeraJobMapper {
 
     @Update("update hera_job set auto = !auto where id = #{id}")
     Integer updateSwitch(Integer id);
+
+
+
+    @Select("select id,dependencies from hera_job")
+    List<HeraJob> getAllJobRelation();
+
+
+    @Select("select max(id) from hera_job")
+    Integer selectMaxId();
 }

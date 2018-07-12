@@ -32,17 +32,33 @@
     //默认配置
     BaseTab.prototype.default = {
         showIndex: 0, //默认显示页索引
-        loadAll: true,//true=一次全部加在页面,false=只加在showIndex指定的页面，其他点击时加载，提高响应速度
-
+        loadAll: true//true=一次全部加在页面,false=只加在showIndex指定的页面，其他点击时加载，提高响应速度
     }
 
-    //结构模板
+    /**
+     * 结构模板
+     *  <ul class="nav nav-tabs" id="myTab">
+             <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+             <li><a data-toggle="tab" href="#profile">Profile</a><i class="fa fa-remove closeable" title="关闭"></i></li>
+             <li><a data-toggle="tab" href="#messages">Messages</a></li>
+             <li><a data-toggle="tab" href="#settings">Settings</a></li>
+        </ul>
+
+        <div class="tab-content">
+             <div class="tab-pane" id="home">home1111</div>
+             <div class="tab-pane active" id="profile">profile11111</div>
+             <div class="tab-pane" id="messages">messages111</div>
+             <div class="tab-pane" id="settings">settings1111</div>
+     *  </div>
+     *
+     */
+
     BaseTab.prototype.template = {
         ul_nav: '<ul id="myTab"  class="nav nav-tabs"></ul>',
         ul_li: '<li><a href="#{0}" data-toggle="tab"><span>{1}</span></a></li>',
         ul_li_close: '<i class="fa fa-remove closeable" title="关闭"></i>',
-        div_content: '<div  class="tab-content"></div>',
-        div_content_panel: '<div class="tab-pane fade" id="{0}"></div>'
+        div_content: '<div  class="tab-content" id="scriptEditor"></div>',
+        div_content_panel: '<div class="tab-pane fade" id="{0}"><textarea id="fileScript_{1}" class="form-control" rows="35" placeholder="编写脚本 ">{2}</textarea></div>'
     }
 
     //初始化
@@ -77,13 +93,9 @@
                 ul_li.find("a").append(ul_li_close);
                 ul_li.find("a").append("&nbsp;");
             }
-
             ul_nav.append(ul_li);
-
             //div-content
-            var div_content_panel = $(this.template.div_content_panel.format(data[i].id));
-
-
+            var div_content_panel = $(this.template.div_content_panel.format(data[i].id, data[i].id, data[i].fileScript));
             div_content.append(div_content_panel);
         }
 
@@ -97,7 +109,6 @@
 
     BaseTab.prototype.loadData = function () {
         var self = this;
-
         //tab点击即加载事件
         //设置一个值，记录每个tab页是否加载过
         this.stateObj = {};
@@ -114,29 +125,16 @@
                 }
             } else {
                 this.stateObj[data[i].id] = false;
-                (function (id, url, paramter) {
+                (function (id, url, parameter) {
                     self.$element.find(".nav-tabs a[href='#" + id + "']").on('show.bs.tab', function () {
                         if (!self.stateObj[id]) {
-                            $("#" + id).load(url, paramter);
+                            $("#" + id).load(url, parameter);
                             self.stateObj[id] = true;
                         }
                     });
-                }(data[i].id, data[i].url, data[i].paramter))
+                }(data[i].id, data[i].url, data[i].parameter))
             }
         }
-
-        //关闭tab事件
-        this.$element.find(".nav-tabs li a i.closeable").each(function (index, item) {
-            $(item).click(function () {
-                var href = $(this).parents("a").attr("href").substring(1);
-                if (self.getCurrentTabId() == href) {
-                    self.$element.find(".nav-tabs li:eq(0) a").tab("show");
-                }
-                $(this).parents("li").remove();
-                $("#" + href).remove();
-            })
-        });
-
     }
 
     //新增一个tab页
@@ -154,23 +152,25 @@
 
         this.$element.find(".nav-tabs:eq(0)").append(ul_li);
         //div-content
-        var div_content_panel = $(this.template.div_content_panel.format(obj.id));
-        this.$element.find(".tab-content:eq(0)").append(div_content_panel);
-        var id = obj.id;
+        var content_panel = $(this.template.div_content_panel);
+        var div_content_panel = $(this.template.div_content_panel.format(obj.id, obj.id, obj.fileScript));
 
-        $("#" + obj.id).load(obj.url, obj.paramter);
+        this.$element.find(".tab-content:eq(0)").append(div_content_panel);
+
+        $("#" + obj.id).load(obj.url, obj.parameter);
         this.stateObj[obj.id] = true;
 
         if (obj.closeable) {
             this.$element.find(".nav-tabs li a[href='#" + obj.id + "'] i.closeable").click(function () {
                 var href = $(this).parents("a").attr("href").substring(1);// id
+
+                //关闭的时候，tab点击事件，删除tabData中的数据
                 var tabData = JSON.parse(localStorage.getItem('tabData'));
-                console.log(tabData);
-                tabData = tabData.filter(function(item) {
+                tabData = tabData.filter(function (item) {
                     return item['id'] != href;
                 });
                 localStorage.setItem("tabData", JSON.stringify(tabData));
-                console.log(tabData);
+
                 if (self.getCurrentTabId() == href) {
                     self.$element.find(".nav-tabs li:eq(0) a").tab("show");
                 }

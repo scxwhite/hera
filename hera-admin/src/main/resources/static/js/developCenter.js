@@ -1,5 +1,9 @@
 $(function () {
 
+    /**
+     * 开发中心zTree初始化配置
+     *
+     */
     var setting = {
         view: {
             showLine: false
@@ -24,28 +28,47 @@ $(function () {
      */
     var zTree, rMenu;
 
+    /**
+     * tab项数据
+     *
+     * @type {{}}
+     */
     var tabObj = {};
-    var tabData = [];
+
+    /**
+     * 存储在localStorage中的数据
+     *
+     * @type {Array}
+     */
+
+    var tabData = new Array();
 
     /**
      * 添加的叶子节点个数统计，为重命名统计
+     *
      */
     var addCount = 1;
 
-    var zNodes = getDataByPost("/developCenter/init.do");
+    var zNodes = getDataByPost(base_url + "/developCenter/init.do");
 
+    /**
+     * 点击脚本的事件
+     */
     function leftClick() {
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
         var parent = selected['parent'];
         var name = selected['name'];
         var isParent = selected['isParent'];//true false
+        if (isParent == true) {
+            return;
+        }
 
         var parameter = "id=" + id;
         var result = null;
 
         $.ajax({
-            url: "/developCenter/find.do",
+            url: base_url + "/developCenter/find.do",
             type: "get",
             async: false,
             data: parameter,
@@ -54,12 +77,13 @@ $(function () {
             }
         });
         var script = result['content'];
-        $("#script").text(script);
+        if (script == null || script == '') {
+            script = '';
+        }
         $("id").val(id);
+        $("#fileScript").text(script);
 
-        $("#jobScript").val(script);
-
-        var tabDetail = {id: id, text: name, url: "xx", closeable: true, select: 0};
+        var tabDetail = {id: id, text: name, url: "xx", closeable: true, select: 0, fileScript: script};
         tabData = JSON.parse(localStorage.getItem('tabData'));
         var b = isInArray(tabData, tabDetail);
         if (b == false) {
@@ -77,13 +101,15 @@ $(function () {
                 showIndex: 0,
                 loadAll: true
             });
-            tabObj =  $("#tabContainer").data("tabs").showTab(id);
+            tabObj = $("#tabContainer").data("tabs").showTab(id);
         }
         localStorage.setItem("tabData", JSON.stringify(tabData));
-
     }
 
 
+    /**
+     * 刷新页面后的定位问题
+     */
     $('body').on('click', 'a[data-toggle=\'tab\']', function (e) {
         e.preventDefault()
         var tab_name = this.getAttribute('href')
@@ -93,18 +119,23 @@ $(function () {
         else {
             location.hash = tab_name
         }
-        localStorage.setItem('activeTab', tab_name)
+        localStorage.setItem('activeTab', tab_name);
 
         $(this).tab('show');
         return false;
     });
 
-
-
+    /**
+     * 查看脚本运行日志
+     */
     $("ul#logTab").on("click", "li", function () {
-        debugger
+
         var num = $(this).find("a").attr("href");
         if (num == "#tab_2") {
+            var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
+            $('#allLogTable').bootstrapTable("destroy");
+            var tableObject = new TableInit(targetId);
+            tableObject.init();
             $("#scriptEditor").attr("style", "display:none");
         } else {
             $("#scriptEditor").attr("style", "display:block");
@@ -113,6 +144,13 @@ $(function () {
 
     });
 
+    /**
+     * 树形菜单右击事件
+     * @param event
+     * @param treeId
+     * @param treeNode
+     * @constructor
+     */
     function OnRightClick(event, treeId, treeNode) {
         if (!treeNode && event.target.tagName.toLowerCase() != "button" && $(event.target).parents("a").length == 0) {
             zTree.cancelSelectedNode();
@@ -123,6 +161,12 @@ $(function () {
         }
     }
 
+    /**
+     * 修改右击后菜单显示样式
+     * @param type
+     * @param x
+     * @param y
+     */
     function showRMenu(type, x, y) {
         $("#rMenu ul").show();
         if (type == "root") {
@@ -141,16 +185,22 @@ $(function () {
         y += document.body.scrollTop;
         x += document.body.scrollLeft;
 
-        rMenu.css({"top": y/2 + "px", "left": x/2 + "px", "visibility": "visible", position: "absolute"});
+        rMenu.css({"top": y / 2 + "px", "left": x / 2 + "px", "visibility": "visible", position: "absolute"});
 
         $("body").bind("mousedown", onBodyMouseDown);
     }
 
-
+    /**
+     * 隐藏菜单
+     */
     function hideRMenu() {
         $("body").unbind("mousedown", onBodyMouseDown);
     }
 
+    /**
+     * 鼠标移开后的菜单隐藏事件
+     * @param event
+     */
     function onBodyMouseDown(event) {
         if (!(event.target.id == "rMenu" || $(event.target).parents("#rMenu").length > 0)) {
             rMenu.css({"visibility": "hidden"});
@@ -170,7 +220,7 @@ $(function () {
         var parameter = "parent=" + parent + "&type=" + "1" + "&name=" + name;
 
         $.ajax({
-            url: "/developCenter/addFile.do",
+            url: base_url + "/developCenter/addFile.do",
             type: "get",
             async: false,
             data: parameter,
@@ -190,19 +240,23 @@ $(function () {
 
 
     $("#addHiveFile").click(function () {
+        debugger
         hideRMenu();
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
         var parent = selected['parent'];
         var name = selected['name'];
 
-        var newNode = {name: +addCount + name, isParent: true};
+        var newNode = {
+            name: +addCount + name,
+            isParent: true
+        };
         addCount++;
 
         var parameter = "parent=" + parent + "&type=" + "2" + "&name=" + "copy_" + name;
 
         $.ajax({
-            url: "/developCenter/addFile.do",
+            url: base_url + "/developCenter/addFile.do",
             type: "get",
             async: false,
             data: parameter,
@@ -219,6 +273,7 @@ $(function () {
         fixIcon();//调用修复图标的方法。方法如下：
 
     });
+
 
     $("#addShellFile").click(function () {
         hideRMenu();
@@ -233,7 +288,7 @@ $(function () {
         var parameter = "parent=" + parent + "&type=" + "2" + "&name=" + "copy_" + name;
 
         $.ajax({
-            url: "/developCenter/addFile.do",
+            url: base_url + "/developCenter/addFile.do",
             type: "get",
             async: false,
             data: parameter,
@@ -249,6 +304,7 @@ $(function () {
         fixIcon();//调用修复图标的方法。方法如下：
 
     });
+
 
     $("#rename").click(function () {
         hideRMenu();
@@ -273,7 +329,7 @@ $(function () {
         var parameter = "id=" + id;
 
         $.ajax({
-            url: "/developCenter/delete.do",
+            url: base_url + "/developCenter/delete.do",
             type: "get",
             async: false,
             data: parameter,
@@ -291,6 +347,7 @@ $(function () {
 
     });
 
+
     $("#copyFile").click(function () {
         hideRMenu();
         var selected = zTree.getSelectedNodes()[0];
@@ -298,7 +355,6 @@ $(function () {
         var parent = selected['parent'];
 
     });
-
 
 
     /**
@@ -320,81 +376,29 @@ $(function () {
 
 
     $("#execute").click(function () {
-
-        var tabId = $("#tabContainer").data("tabs").getCurrentTabId();
-
-        var id = $("#id").text();
-        var script = $("#script").val();
-        var id = '39';
-        script = 'show databases';
-        var parameter = "id=" + tabId + "&script=" + script;
+        var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+        var scriptId = "#fileScript_" + fileId;
+        var fileScript = $(scriptId).val();
+        var parameter = {
+            id: fileId,
+            content: fileScript
+        };
         var result = null;
+        var url = base_url + "/developCenter/debug.do";
+
 
         $.ajax({
-            url: "/developCenter/debug.do",
-            type: "get",
-            async: false,
-            data: parameter,
+            url: url,
+            type: "post",
+            data: JSON.stringify(parameter),
+            contentType: "application/json",
+            dataType: "json",
             success: function (data) {
                 result = data;
             }
         });
 
     });
-
-    var TableInit = function () {
-        var oTableInit = new Object();
-        oTableInit.init = function () {
-            var table = $('#allLogTable');
-            table.bootstrapTable({
-                url: "/developCenter/findDebugHistory",
-                queryParams: getQueryFileId,
-                pagination: true,
-                showPaginationSwitch: false,
-                search: false,
-                cache: false,
-                pageNumber: 1,
-                pageList: [10, 25, 40, 60],
-                columns: [
-                    {
-                        field: "id",
-                        title: "id"
-                    }, {
-                        field: "executeHost",
-                        title: "执行机器ip"
-                    }, {
-                        field: "status",
-                        title: "状态"
-                    }, {
-                        field: "startTime",
-                        title: "结束时间"
-                    }, {
-                        field: "操作",
-                        title: "操作"
-                    }
-                ],
-                detailView: true,
-                detailFormatter: function (index, row) {
-                    debugger
-                    var log = row["log"];
-                    var id = row["id"];
-
-                    var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" row="20" >'
-                        + log +
-                        '</textarea>' + '<form role="form">' + '<div class="form-group">';
-                    return html;
-                },
-
-            });
-        }
-        return oTableInit;
-    }
-
-
-    function getQueryFileId() {
-        var tmp = {fileId: "253"};
-        return tmp;
-    }
 
     /**
      * 初始化开发中心页面
@@ -404,14 +408,11 @@ $(function () {
         $.fn.zTree.init($("#documentTree"), setting, zNodes);
         zTree = $.fn.zTree.getZTreeObj("documentTree");
         rMenu = $("#rMenu");
-        fixIcon();//调用修复图标的方法。方法如下：
-
-        var tableObject = new TableInit();
-        tableObject.init();
+        fixIcon();
 
         var storeData = JSON.parse(localStorage.getItem('tabData'));
-        if(storeData != null) {
-            for(var i = 0; i < storeData.length; i++) {
+        if (storeData != null) {
+            for (var i = 0; i < storeData.length; i++) {
                 $("#tabContainer").tabs({
                     data: storeData[i],
                     showIndex: 0,
@@ -419,9 +420,85 @@ $(function () {
                 });
                 $("#tabContainer").data("tabs").addTab(storeData[i]);
             }
+        } else {
+            var tmp = new Array();
+            localStorage.setItem("tabData", JSON.stringify(tmp));
         }
     });
 
 });
 
 
+var TableInit = function (targetId) {
+    console.log(targetId);
+    var parameter = {fileId: targetId};
+
+    var oTableInit = new Object();
+    oTableInit.init = function () {
+        var table = $('#allLogTable');
+        table.bootstrapTable({
+            url: base_url + "/developCenter/findDebugHistory",
+            queryParams: parameter,
+            pagination: true,
+            showPaginationSwitch: false,
+            search: false,
+            cache: false,
+            pageNumber: 1,
+            pageList: [10, 25, 40, 60],
+            columns: [
+                {
+                    field: "id",
+                    title: "id"
+                }, {
+                    field: "fileId",
+                    title: "文件id"
+                },
+                {
+                    field: "executeHost",
+                    title: "执行机器ip"
+                }, {
+                    field: "status",
+                    title: "状态"
+                }, {
+                    field: "startTime",
+                    title: "开始时间"
+                }, {
+                    field: "endTime",
+                    title: "结束时间"
+                },
+                {
+                    field: "status",
+                    title: "操作",
+                    width: "20%",
+                    formatter: function (index, row) {
+                        var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
+                        var html2 = '<a href="javascript:getLog(\'' + index + ')">查看日志</a>';
+                        if (row['status'] == 'running') {
+                            return html;
+                        } else {
+                            return html2;
+                        }
+                    }
+                }
+            ],
+            detailView: true,
+            detailFormatter: function (index, row) {
+                var log = row["log"]['content'];
+                var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" >'
+                    + log +
+                    '</textarea>' + '<form role="form">' + '<div class="form-group">';
+                return html;
+            },
+
+        });
+    }
+    return oTableInit;
+}
+
+
+function cancelJob(historyId) {
+    var url = base_url + "/developCenter/cancelJob.do";
+    var parameter = {id: historyId};
+    getDataByGet(url, parameter)
+
+}

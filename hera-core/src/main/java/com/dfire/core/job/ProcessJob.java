@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -66,19 +67,19 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             } else {
                 threadName = "not-normal-job";
             }
+            CountDownLatch latch = new CountDownLatch(2);
             InputStream inputStream = process.getInputStream();
             InputStream errorStream = process.getErrorStream();
-            Thread inputThread = new StreamThread(inputStream, threadName);
-            Thread outputThread = new StreamThread(errorStream, threadName);
+            Thread inputThread = new StreamThread(inputStream, threadName, latch);
+            Thread outputThread = new StreamThread(errorStream, threadName, latch);
             inputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
             outputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
             inputThread.start();
             outputThread.start();
-
             exitCode = -999;
             try {
                 exitCode = process.waitFor();
-
+                latch.await();
             } catch (InterruptedException e) {
                 log(e);
             } finally {
@@ -213,25 +214,27 @@ public abstract class ProcessJob extends AbstractJob implements Job {
     private class StreamThread extends Thread {
         private InputStream inputStream;
         private String threadName;
+        private CountDownLatch latch;
 
-        public StreamThread(InputStream inputStream, String threadName) {
+        public StreamThread(InputStream inputStream, String threadName, CountDownLatch latch) {
             this.inputStream = inputStream;
             this.threadName = threadName;
+            this.latch = latch;
         }
 
         @Override
         public void run() {
             try {
-
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     logConsole(line);
                 }
-
             } catch (Exception e) {
                 log(e);
                 log(threadName + ": 接收日志出错，退出日志接收");
+            } finally {
+                latch.countDown();
             }
         }
     }
