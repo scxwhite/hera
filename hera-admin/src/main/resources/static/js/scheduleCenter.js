@@ -5,7 +5,6 @@ $(function () {
     var treeObj;
     var selected;
     var triggerType;
-    var actionId;
     var setting = {
         view: {
             showLine: false
@@ -94,6 +93,7 @@ $(function () {
         $('#jobLog').modal('show');
 
     });
+
 
     /**
      * 版本生成
@@ -231,7 +231,7 @@ $(function () {
         } else {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
-                data: $('#groupMessageEdit form').serialize() + "&configs=" + $('#config textarea').val() +
+                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
                 "&resource=" + $('#resource textarea').val() + "&id=" + focusId,
                 type: "post",
                 success: function (data) {
@@ -517,24 +517,30 @@ $(function () {
 
 var JobLogTable = function (jobId) {
     var parameter = {jobId: jobId};
-    var actionId;
+    var actionRow;
     var oTableInit = new Object();
     var onExpand = -1;
     var table = $('#runningLogDetailTable');
     var timerHandler = null;
+
+
     function scheduleLog() {
 
         $.ajax({
             url: base_url + "/scheduleCenter/getLog.do",
             type: "get",
             data: {
-                id: actionId,
+                id: actionRow.id,
             },
             success: function (data) {
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
-                $('#log_' + actionId).val(data.log);
+                var logArea = $('#log_' + actionRow.id);
+                logArea[0].innerHTML = data.log;
+                logArea.scrollTop(logArea.prop("scrollHeight"),200);
+                actionRow.log = data.log;
+                actionRow.status = data.status;
             }
         })
     }
@@ -543,6 +549,11 @@ var JobLogTable = function (jobId) {
         if (timerHandler != null) {
             window.clearInterval(timerHandler)
         }
+    });
+
+    $('#jobLog [name="refreshLog"]').on('click', function () {
+        table.bootstrapTable('refresh');
+        table.bootstrapTable('expandRow', onExpand);
     });
 
     oTableInit.init = function () {
@@ -623,17 +634,19 @@ var JobLogTable = function (jobId) {
             detailView: true,
             detailFormatter: function (index, row) {
                 var log = row["log"];
-                var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" id="log_' + row.id + '">'
+                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
                     + log +
-                    '</textarea>' + '<form role="form">' + '<div class="form-group">';
+                    '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;
             },
             onExpandRow: function (index, row) {
-                actionId = row.id;
-                table.bootstrapTable("collapseRow", onExpand);
+                actionRow = row;
+                if (index != onExpand) {
+                    table.bootstrapTable("collapseRow", onExpand);
+                }
                 onExpand = index;
                 if (row.status == "running") {
-                    timerHandler = window.setInterval(scheduleLog, 1000);
+                    timerHandler = window.setInterval(scheduleLog, 3000);
                 }
             },
             onCollapseRow: function (index, row) {

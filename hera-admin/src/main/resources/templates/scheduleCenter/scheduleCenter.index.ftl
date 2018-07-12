@@ -666,7 +666,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
-                <button type="button" class="btn btn-info add-btn" name="addBtn">刷新</button>
+                <button type="button" class="btn btn-info add-btn" name="refreshLog">刷新</button>
             </div>
         </div>
     </div>

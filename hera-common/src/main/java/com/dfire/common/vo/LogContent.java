@@ -17,6 +17,10 @@ import java.io.StringWriter;
 public class LogContent {
 
     private int lines;
+
+    private final String SPLIT = "<br><br>";
+    private final String CONSOLE = "<b>CONSOLE#</b> ";
+    private final String HERA = "<b>HERA#</b> ";
     private StringBuffer content;
 
     private static final int COUNT = 20000;
@@ -31,14 +35,14 @@ public class LogContent {
                     || log.contains("No such file or directory")
                     || log.contains("command not found")
                     || log.contains("Permission denied")) {
-                content.append("CONSOLE# ").append("<font style=\"color:red\">")
+                content.append(CONSOLE).append("<font style=\"color:red\">")
                         .append(log).append("</font>")
-                        .append("\n");
+                        .append(SPLIT);
             } else {
-                content.append("CONSOLE# ").append(log).append("\n");
+                content.append(CONSOLE).append(log).append(SPLIT);
             }
             if (++lines >= COUNT) {
-                content.append("HERA# 控制台输出信息过多，停止记录，建议您优化自己的Job");
+                content.append(HERA).append("控制台输出信息过多，停止记录，建议您优化自己的Job");
             }
         }
     }
@@ -48,7 +52,7 @@ public class LogContent {
         if (content == null) {
             content = new StringBuffer();
         }
-        content.append("HERA# ").append(log).append("\n");
+        content.append(HERA).append(log).append(SPLIT);
     }
 
     public void append(String log) {
@@ -56,7 +60,7 @@ public class LogContent {
         if (content == null) {
             content = new StringBuffer();
         }
-        content.append(log).append("\n");
+        content.append(log).append(SPLIT);
     }
 
     public void appendHeraException(Exception e) {
