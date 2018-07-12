@@ -86,7 +86,6 @@ $(function () {
         var tabDetail = {id: id, text: name, url: "xx", closeable: true, select: 0, fileScript: script};
         tabData = JSON.parse(localStorage.getItem('tabData'));
         var b = isInArray(tabData, tabDetail);
-        debugger
         if (b == false) {
             tabData.push(tabDetail);
             tabObj = $("#tabContainer").tabs({
@@ -108,6 +107,9 @@ $(function () {
     }
 
 
+    /**
+     * 刷新页面后的定位问题
+     */
     $('body').on('click', 'a[data-toggle=\'tab\']', function (e) {
         e.preventDefault()
         var tab_name = this.getAttribute('href')
@@ -117,7 +119,7 @@ $(function () {
         else {
             location.hash = tab_name
         }
-        localStorage.setItem('activeTab', tab_name)
+        localStorage.setItem('activeTab', tab_name);
 
         $(this).tab('show');
         return false;
@@ -127,7 +129,6 @@ $(function () {
      * 查看脚本运行日志
      */
     $("ul#logTab").on("click", "li", function () {
-        debugger
 
         var num = $(this).find("a").attr("href");
         if (num == "#tab_2") {
@@ -239,19 +240,23 @@ $(function () {
 
 
     $("#addHiveFile").click(function () {
+        debugger
         hideRMenu();
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
         var parent = selected['parent'];
         var name = selected['name'];
 
-        var newNode = {name: +addCount + name, isParent: true};
+        var newNode = {
+            name: +addCount + name,
+            isParent: true
+        };
         addCount++;
 
         var parameter = "parent=" + parent + "&type=" + "2" + "&name=" + "copy_" + name;
 
         $.ajax({
-            url: "/developCenter/addFile.do",
+            url: base_url + "/developCenter/addFile.do",
             type: "get",
             async: false,
             data: parameter,
@@ -283,7 +288,7 @@ $(function () {
         var parameter = "parent=" + parent + "&type=" + "2" + "&name=" + "copy_" + name;
 
         $.ajax({
-            url: "/developCenter/addFile.do",
+            url: base_url + "/developCenter/addFile.do",
             type: "get",
             async: false,
             data: parameter,
@@ -324,7 +329,7 @@ $(function () {
         var parameter = "id=" + id;
 
         $.ajax({
-            url: "/developCenter/delete.do",
+            url: base_url + "/developCenter/delete.do",
             type: "get",
             async: false,
             data: parameter,
@@ -371,7 +376,6 @@ $(function () {
 
 
     $("#execute").click(function () {
-        debugger
         var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
         var scriptId = "#fileScript_" + fileId;
         var fileScript = $(scriptId).val();
@@ -479,7 +483,6 @@ var TableInit = function (targetId) {
             ],
             detailView: true,
             detailFormatter: function (index, row) {
-                debugger
                 var log = row["log"]['content'];
                 var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" >'
                     + log +

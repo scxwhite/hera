@@ -32,25 +32,24 @@
     //默认配置
     BaseTab.prototype.default = {
         showIndex: 0, //默认显示页索引
-        loadAll: true,//true=一次全部加在页面,false=只加在showIndex指定的页面，其他点击时加载，提高响应速度
-
+        loadAll: true//true=一次全部加在页面,false=只加在showIndex指定的页面，其他点击时加载，提高响应速度
     }
 
     /**
      * 结构模板
      *  <ul class="nav nav-tabs" id="myTab">
-     <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-     <li><a data-toggle="tab" href="#profile">Profile</a><i class="fa fa-remove closeable" title="关闭"></i></li>
-     <li><a data-toggle="tab" href="#messages">Messages</a></li>
-     <li><a data-toggle="tab" href="#settings">Settings</a></li>
-     </ul>
+             <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+             <li><a data-toggle="tab" href="#profile">Profile</a><i class="fa fa-remove closeable" title="关闭"></i></li>
+             <li><a data-toggle="tab" href="#messages">Messages</a></li>
+             <li><a data-toggle="tab" href="#settings">Settings</a></li>
+        </ul>
 
-     <div class="tab-content">
-     <div class="tab-pane" id="home">home1111</div>
-     <div class="tab-pane active" id="profile">profile11111</div>
-     <div class="tab-pane" id="messages">messages111</div>
-     <div class="tab-pane" id="settings">settings1111</div>
-     *    </div>
+        <div class="tab-content">
+             <div class="tab-pane" id="home">home1111</div>
+             <div class="tab-pane active" id="profile">profile11111</div>
+             <div class="tab-pane" id="messages">messages111</div>
+             <div class="tab-pane" id="settings">settings1111</div>
+     *  </div>
      *
      */
 
@@ -110,7 +109,6 @@
 
     BaseTab.prototype.loadData = function () {
         var self = this;
-        debugger
         //tab点击即加载事件
         //设置一个值，记录每个tab页是否加载过
         this.stateObj = {};
@@ -155,8 +153,6 @@
         this.$element.find(".nav-tabs:eq(0)").append(ul_li);
         //div-content
         var content_panel = $(this.template.div_content_panel);
-        debugger
-        console.log(content_panel);
         var div_content_panel = $(this.template.div_content_panel.format(obj.id, obj.id, obj.fileScript));
 
         this.$element.find(".tab-content:eq(0)").append(div_content_panel);

@@ -99,16 +99,18 @@ public class ScheduleCenterController {
         //todo 权限判定
 
         HeraAction heraAction = heraJobActionService.findById(actionId);
+        HeraJob heraJob = heraJobService.findById(Integer.parseInt(heraAction.getJobId()));
+        String configs = heraJob.getConfigs();
         HeraJobHistory actionHistory = HeraJobHistory.builder().build();
         actionHistory.setJobId(heraAction.getJobId());
         actionHistory.setActionId(heraAction.getId());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
         actionHistory.setOperator(heraAction.getOwner());
-        actionHistory.setIllustrate("触发人pjx");
+        actionHistory.setIllustrate(heraJob.getOwner());
         actionHistory.setStatus(StatusEnum.RUNNING.toString());
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
         actionHistory.setHostGroupId(heraAction.getHistoryId());
-        actionHistory.setProperties("{}");
+        actionHistory.setProperties(configs);
         heraJobHistoryService.insert(actionHistory);
         heraAction.setScript(script);
         heraJobActionService.update(heraAction);
@@ -142,9 +144,9 @@ public class ScheduleCenterController {
 
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
     @ResponseBody
-    public boolean updateGroupMessage(HeraGroupVo heraGroup) {
-
-        return heraGroupService.update(BeanConvertUtils.convert(heraGroup)) > 0;
+    public boolean updateGroupMessage(HeraGroupVo groupVo) {
+        HeraGroup heraGroup = BeanConvertUtils.convert(groupVo);
+        return heraGroupService.update(heraGroup) > 0;
     }
 
     @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
@@ -205,14 +207,14 @@ public class ScheduleCenterController {
     @ResponseBody
     public WebAsyncTask<String> cancelJob(String id) {
         HeraJobHistory history = heraJobHistoryService.findById(id);
-        ExecuteKind kind;
+        ExecuteKind kind = null;
         if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
             kind = ExecuteKind.ManualKind;
         } else {
             kind = ExecuteKind.ScheduleKind;
         }
         ExecuteKind finalKind = kind;
-        return new WebAsyncTask<>(3000, () ->
+        return new WebAsyncTask<String>(3000, () ->
                 workClient.cancelJobFromWeb(finalKind, id));
 
     }
