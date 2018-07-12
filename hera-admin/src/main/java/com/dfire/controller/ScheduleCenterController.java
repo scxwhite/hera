@@ -106,7 +106,7 @@ public class ScheduleCenterController {
         actionHistory.setActionId(heraAction.getId());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
         actionHistory.setOperator(heraAction.getOwner());
-        actionHistory.setIllustrate("触发人pjx");
+        actionHistory.setIllustrate(heraJob.getOwner());
         actionHistory.setStatus(StatusEnum.RUNNING.toString());
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
         actionHistory.setHostGroupId(heraAction.getHistoryId());
