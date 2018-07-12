@@ -205,14 +205,14 @@ public class ScheduleCenterController {
     @ResponseBody
     public WebAsyncTask<String> cancelJob(String id) {
         HeraJobHistory history = heraJobHistoryService.findById(id);
-        ExecuteKind kind = null;
+        ExecuteKind kind;
         if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
             kind = ExecuteKind.ManualKind;
         } else {
             kind = ExecuteKind.ScheduleKind;
         }
         ExecuteKind finalKind = kind;
-        return new WebAsyncTask<String>(3000, () ->
+        return new WebAsyncTask<>(3000, () ->
                 workClient.cancelJobFromWeb(finalKind, id));
 
     }
