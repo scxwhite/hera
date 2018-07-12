@@ -253,14 +253,13 @@ public class BeanConvertUtils {
         if (heraGroup.getResources() != null) {
             heraGroupVo.setResources(StringUtil.convertResources(heraGroup.getResources()));
         }
-        heraGroupVo.setExisted(heraGroup.getExisted() == 1 ? true : false);
+        heraGroupVo.setExisted(heraGroup.getExisted() == 1);
         return heraGroupVo;
     }
 
     public static HeraGroup convert(HeraGroupVo groupVo) {
         HeraGroup heraGroup = new HeraGroup();
         BeanUtils.copyProperties(groupVo, heraGroup);
-
         Map<String, String> configs = new HashMap<>();
         Optional<String> selfConfigs = Optional.ofNullable(groupVo.getSelfConfigs());
         selfConfigs.ifPresent(s -> {

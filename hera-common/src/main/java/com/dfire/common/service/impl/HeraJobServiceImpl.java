@@ -102,13 +102,17 @@ public class HeraJobServiceImpl implements HeraJobService {
                 List<HeraJob> relation = heraJobMapper.getAllJobRelation();
 
                 DagLoopUtil dagLoopUtil = new DagLoopUtil(heraJobMapper.selectMaxId());
-
                 relation.forEach(x -> {
-                    String dependencies = x.getDependencies();
+                    String dependencies;
+                    if (x.getId() == heraJob.getId()) {
+                        dependencies = heraJob.getDependencies();
+                    } else {
+                        dependencies = x.getDependencies();
+                    }
                     if (StringUtils.isNotBlank(dependencies)) {
                         String[] split = dependencies.split(",");
                         for (String s : split) {
-                            dagLoopUtil.addEdge(heraJob.getId(), Integer.parseInt(s));
+                            dagLoopUtil.addEdge(x.getId(), Integer.parseInt(s));
                         }
                     }
                 });
