@@ -44,7 +44,6 @@
         <redisson.version>3.3.2</redisson.version>
         <commons.lang.version>2.6</commons.lang.version>
         <velocity.version>1.5</velocity.version>
-        <hyperic.sigar.veriosn>1.6.3</hyperic.sigar.veriosn>
         <jdk.version>1.8</jdk.version>
         <quartz.version>2.2.1</quartz.version>
         <jgrapht-core.version>1.1.0</jgrapht-core.version>
@@ -218,12 +217,6 @@
                 <groupId>org.jgrapht</groupId>
                 <artifactId>jgrapht-core</artifactId>
                 <version>${jgrapht-core.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.hyperic.sigar</groupId>
-                <artifactId>com.springsource.org.hyperic.sigar</artifactId>
-                <version>${hyperic.sigar.veriosn}</version>
             </dependency>
 
         </dependencies>
