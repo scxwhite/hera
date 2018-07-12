@@ -142,9 +142,9 @@ public class ScheduleCenterController {
 
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
     @ResponseBody
-    public boolean updateGroupMessage(HeraGroupVo groupVo) {
-        HeraGroup heraGroup = BeanConvertUtils.convert(groupVo);
-        return heraGroupService.update(heraGroup) > 0;
+    public boolean updateGroupMessage(HeraGroupVo heraGroup) {
+
+        return heraGroupService.update(BeanConvertUtils.convert(heraGroup)) > 0;
     }
 
     @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)

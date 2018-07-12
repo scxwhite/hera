@@ -231,7 +231,7 @@ $(function () {
         } else {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
-                data: $('#groupMessageEdit form').serialize() + "&configs=" + $('#config textarea').val() +
+                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
                 "&resource=" + $('#resource textarea').val() + "&id=" + focusId,
                 type: "post",
                 success: function (data) {
