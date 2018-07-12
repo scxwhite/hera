@@ -69,12 +69,13 @@
                     </div>
                 </div>
 
-                <div class="col-md-9 panel panel-primary" >
+                <div class="col-md-9 panel panel-primary">
                     <div id="config" class="box box-success" style="height:8px">
                         <div class="box-header with-border">
                             <div class="form-group">
                                 <button id="execute" type="submit" class="btn btn-success btn-sm">执行</button>
-                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码</button>
+                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码
+                                </button>
                                 <button id="uploadResource" type="submit" class="btn btn-success btn-sm">上传资源</button>
                                 <button id="syncingTask" type="submit" class="btn btn-success btn-sm">同步任务</button>
                             </div>
@@ -100,7 +101,8 @@
 
                             <!-- /.tab-pane -->
                             <div class="tab-pane" id="tab_2">
-                                <table id="allLogTable" class="allDetailTable"/></table>
+                                <table id="allLogTable" class="allDetailTable">
+                                </table>
                                 <div class="modal" id="debugLogDetail" tabindex="-1" role="dialog"
                                      aria-labelledby="title">
                                     <div class="modal-dialog" style="width: 1300px">
