@@ -5,7 +5,6 @@ $(function () {
     var treeObj;
     var selected;
     var triggerType;
-    var actionId;
     var setting = {
         view: {
             showLine: false
@@ -94,6 +93,7 @@ $(function () {
         $('#jobLog').modal('show');
 
     });
+
 
     /**
      * 版本生成
@@ -522,6 +522,8 @@ var JobLogTable = function (jobId) {
     var onExpand = -1;
     var table = $('#runningLogDetailTable');
     var timerHandler = null;
+
+
     function scheduleLog() {
 
         $.ajax({
@@ -547,6 +549,11 @@ var JobLogTable = function (jobId) {
         if (timerHandler != null) {
             window.clearInterval(timerHandler)
         }
+    });
+
+    $('#jobLog [name="refreshLog"]').on('click', function () {
+        table.bootstrapTable('refresh');
+        table.bootstrapTable('expandRow', onExpand);
     });
 
     oTableInit.init = function () {
@@ -627,7 +634,7 @@ var JobLogTable = function (jobId) {
             detailView: true,
             detailFormatter: function (index, row) {
                 var log = row["log"];
-                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; height:600px;" id="log_' + row.id + '">'
+                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
                     + log +
                     '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;
