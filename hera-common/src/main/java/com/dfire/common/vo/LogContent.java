@@ -18,7 +18,7 @@ public class LogContent {
 
     private int lines;
 
-    private final String split = "<br>";
+    private final String split = "<br><br>";
     private StringBuffer content;
 
     private static final int COUNT = 20000;

@@ -535,9 +535,9 @@ var JobLogTable = function (jobId) {
                     window.clearInterval(timerHandler);
                 }
                 var logArea = $('#log_' + actionRow.id);
-                logArea.text(data.log);
-                logArea.scrollTo('100%');
-                actionRow.log=data.log;
+                logArea[0].innerHTML = data.log;
+                logArea.scrollTop(logArea.prop("scrollHeight"),200);
+                actionRow.log = data.log;
                 actionRow.status = data.status;
             }
         })
@@ -627,7 +627,7 @@ var JobLogTable = function (jobId) {
             detailView: true,
             detailFormatter: function (index, row) {
                 var log = row["log"];
-                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style=" overflow:scroll; height:600px; id="log_' + row.id + '">'
+                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; height:600px;" id="log_' + row.id + '">'
                     + log +
                     '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;
@@ -639,7 +639,7 @@ var JobLogTable = function (jobId) {
                 }
                 onExpand = index;
                 if (row.status == "running") {
-                    timerHandler = window.setInterval(scheduleLog, 1000);
+                    timerHandler = window.setInterval(scheduleLog, 3000);
                 }
             },
             onCollapseRow: function (index, row) {
