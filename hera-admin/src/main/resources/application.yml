@@ -1,13 +1,13 @@
 spring:
     profiles:
-        active: daily
+        active: @env@
     monitor:
         path: /hera
         port: 8088
     datasource:
         name: default
         type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://common101.my.2dfire-daily.com:3306/hera?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+        url: jdbc:mysql://common101.my.2dfire-daily.com:3306/hera_test?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
         username: twodfire
         password: 123456
         druid:
