@@ -519,56 +519,53 @@ public class Master {
         final MasterWorkHolder workHolder = selectWork;
         log.info("start run manual job, historyId = {}", historyId);
 
-        this.executeJobPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(historyId);
-                HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
-                historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
-                JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(history.getActionId());
+        this.executeJobPool.execute(() -> {
+            HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(historyId);
+            HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
+            historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
+            JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(history.getActionId());
 
-                jobStatus.setStatus(StatusEnum.RUNNING);
-                jobStatus.setHistoryId(historyId);
-                historyVo.setStatusEnum(jobStatus.getStatus());
-                masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(historyVo));
+            jobStatus.setStatus(StatusEnum.RUNNING);
+            jobStatus.setHistoryId(historyId);
+            historyVo.setStatusEnum(jobStatus.getStatus());
+            masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(historyVo));
 
-                Exception exception = null;
-                Response response = null;
-                try {
-                    Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder,
-                            ExecuteKind.ManualKind, history.getId());
-                    response = future.get();
-                } catch (Exception e) {
-                    exception = e;
-                    log.error("manual job run error" + historyId, e);
-                    jobStatus.setStatus(StatusEnum.FAILED);
-                    history.setStatus(jobStatus.getStatus().toString());
-                    masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
+            Exception exception = null;
+            Response response = null;
+            try {
+                Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder,
+                        ExecuteKind.ManualKind, history.getId());
+                response = future.get();
+            } catch (Exception e) {
+                exception = e;
+                log.error("manual job run error" + historyId, e);
+                jobStatus.setStatus(StatusEnum.FAILED);
+                history.setStatus(jobStatus.getStatus().toString());
+                masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
 
+            }
+            boolean success = response.getStatusEnum() != null && response.getStatusEnum() == Protocol.Status.OK;
+            log.info("historyId 执行结果" + historyId + "---->" + response.getStatusEnum());
+
+            if (!success) {
+                HeraException heraException = null;
+                if (exception != null) {
+                    heraException = new HeraException(exception);
+                    log.error("manual actionId = {} error, {}", history.getActionId(), heraException.getMessage());
                 }
-                boolean success = response.getStatusEnum() != null && response.getStatusEnum() == Protocol.Status.OK;
-                log.info("historyId 执行结果" + historyId + "---->" + response.getStatusEnum());
-
-                if (!success) {
-                    HeraException heraException = null;
-                    if (exception != null) {
-                        heraException = new HeraException(exception);
-                        log.error("manual actionId = {} error, {}", history.getActionId(), heraException.getMessage());
-                    }
-                    log.info("actionId = {} manual execute failed", history.getActionId());
-                    jobStatus.setStatus(StatusEnum.FAILED);
-                    HeraJobHistory jobHistory = masterContext.getHeraJobHistoryService().findById(history.getId());
-                    HeraJobHistoryVo jobHistoryVo = BeanConvertUtils.convert(jobHistory);
-                    HeraJobFailedEvent failedEvent = new HeraJobFailedEvent(history.getActionId(), jobHistoryVo.getTriggerType(), jobHistoryVo);
-                    if (jobHistory != null && jobHistory.getIllustrate() != null
-                            && jobHistory.getIllustrate().contains(LogConstant.CANCEL_JOB_LOG)) {
-                        masterContext.getDispatcher().forwardEvent(failedEvent);
-                    }
-                } else {
-                    jobStatus.setStatus(StatusEnum.SUCCESS);
-                    HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(history.getActionId(), historyVo.getTriggerType(), history.getId());
-                    masterContext.getDispatcher().forwardEvent(successEvent);
+                log.info("actionId = {} manual execute failed", history.getActionId());
+                jobStatus.setStatus(StatusEnum.FAILED);
+                HeraJobHistory jobHistory = masterContext.getHeraJobHistoryService().findById(history.getId());
+                HeraJobHistoryVo jobHistoryVo = BeanConvertUtils.convert(jobHistory);
+                HeraJobFailedEvent failedEvent = new HeraJobFailedEvent(history.getActionId(), jobHistoryVo.getTriggerType(), jobHistoryVo);
+                if (jobHistory != null && jobHistory.getIllustrate() != null
+                        && jobHistory.getIllustrate().contains(LogConstant.CANCEL_JOB_LOG)) {
+                    masterContext.getDispatcher().forwardEvent(failedEvent);
                 }
+            } else {
+                jobStatus.setStatus(StatusEnum.SUCCESS);
+                HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(history.getActionId(), historyVo.getTriggerType(), history.getId());
+                masterContext.getDispatcher().forwardEvent(successEvent);
             }
         });
     }
@@ -715,40 +712,37 @@ public class Master {
      */
     private void runDebugJob(MasterWorkHolder selectWork, String jobId) {
         final MasterWorkHolder workHolder = selectWork;
-        this.executeJobPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(jobId);
-                history.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
-                masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
-                Exception exception = null;
-                Response response = null;
-                try {
-                    Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder, ExecuteKind.DebugKind, jobId);
-                    response = future.get();
-                } catch (Exception e) {
-                    exception = e;
-                    log.error(String.format("debugId:%s run failed", jobId), e);
-                }
-                boolean success = response.getStatusEnum() == Protocol.Status.OK;
-                if (!success) {
-                    exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
-                    log.info("debug job error");
-                    history = masterContext.getHeraDebugHistoryService().findById(jobId);
-                    HeraDebugFailEvent failEvent = HeraDebugFailEvent.builder()
-                            .debugHistory(BeanConvertUtils.convert(history))
-                            .throwable(exception)
-                            .fileId(history.getFileId())
-                            .build();
-                    masterContext.getDispatcher().forwardEvent(failEvent);
-                } else {
-                    log.info("debug success");
-                    HeraDebugSuccessEvent successEvent = HeraDebugSuccessEvent.builder()
-                            .fileId(history.getFileId())
-                            .history(BeanConvertUtils.convert(history))
-                            .build();
-                    masterContext.getDispatcher().forwardEvent(successEvent);
-                }
+        this.executeJobPool.execute(() -> {
+            HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(jobId);
+            history.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
+            masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
+            Exception exception = null;
+            Response response = null;
+            try {
+                Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder, ExecuteKind.DebugKind, jobId);
+                response = future.get();
+            } catch (Exception e) {
+                exception = e;
+                log.error(String.format("debugId:%s run failed", jobId), e);
+            }
+            boolean success = response.getStatusEnum() == Protocol.Status.OK;
+            if (!success) {
+                exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
+                log.info("debug job error");
+                history = masterContext.getHeraDebugHistoryService().findById(jobId);
+                HeraDebugFailEvent failEvent = HeraDebugFailEvent.builder()
+                        .debugHistory(BeanConvertUtils.convert(history))
+                        .throwable(exception)
+                        .fileId(history.getFileId())
+                        .build();
+                masterContext.getDispatcher().forwardEvent(failEvent);
+            } else {
+                log.info("debug success");
+                HeraDebugSuccessEvent successEvent = HeraDebugSuccessEvent.builder()
+                        .fileId(history.getFileId())
+                        .history(BeanConvertUtils.convert(history))
+                        .build();
+                masterContext.getDispatcher().forwardEvent(successEvent);
             }
         });
     }

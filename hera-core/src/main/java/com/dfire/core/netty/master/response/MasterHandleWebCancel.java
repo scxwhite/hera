@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 下午3:58 2018/5/11
- * @desc
+ * @desc 取消任务，master查询出任务所在的worker channel,发起取消任务请求
  */
 @Slf4j
 public class MasterHandleWebCancel {
