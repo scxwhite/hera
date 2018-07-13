@@ -8,6 +8,7 @@ import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.WebSecurityConfig;
+import com.dfire.core.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 
@@ -30,7 +33,13 @@ public class LoginController {
     @Autowired
     private HeraUserService heraUserService;
 
+
     @RequestMapping("/")
+    public String toLogin() {
+        return "login";
+    }
+
+    @RequestMapping("/login")
     public String login() {
         return "login";
     }
@@ -40,28 +49,26 @@ public class LoginController {
         return "home";
     }
 
-    @RequestMapping(value = "/toLogin", method = RequestMethod.POST)
+    @RequestMapping(value = "/loginCheck", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse toLogin(String userName, String password, HttpSession session) {
+    public RestfulResponse toLogin(String userName, String password, HttpServletResponse response) {
         HeraUser user = heraUserService.findByName(userName);
 
         if (user == null) {
-            return RestfulResponse.builder().code(400).build();
-        } else {
-            session.setAttribute(WebSecurityConfig.SESSION_KEY, user);
+            return RestfulResponse.builder().code(HttpCode.USER_NOT_LOGIN.getCode()).build();
         }
         String pwd = user.getPassword();
-        RestfulResponse response = RestfulResponse
-                .builder().build();
+        RestfulResponse restfulResponse = new RestfulResponse();
         if (!StringUtils.isEmpty(password)) {
             password = StringUtil.EncoderByMd5(password);
             if (pwd.equals(password)) {
-               response.setHttpCode(HttpCode.REQUEST_SUCCESS);
+                restfulResponse.setHttpCode(HttpCode.REQUEST_SUCCESS);
+                response.addCookie(new Cookie(WebSecurityConfig.TOKEN_NAME, JwtUtils.createToken(userName)));
             } else {
-                response.setHttpCode(HttpCode.USER_NOT_LOGIN);
+                restfulResponse.setHttpCode(HttpCode.USER_NOT_LOGIN);
             }
         }
-        return response;
+        return restfulResponse;
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
@@ -72,7 +79,7 @@ public class LoginController {
             return new RestfulResponse(false, "用户名已存在");
         }
         int res = heraUserService.insert(user);
-        return new RestfulResponse( res > 0, res > 0 ? "注册成功，等待管理员审核" : "注册失败,请联系管理员");
+        return new RestfulResponse(res > 0, res > 0 ? "注册成功，等待管理员审核" : "注册失败,请联系管理员");
     }
 
 
