@@ -16,7 +16,6 @@ public class BeanConvertUtilsTest {
     @Test
     public void convertToHeraJob() {
         HeraJobVo heraJobVo = new HeraJobVo();
-        heraJobVo.setId("1");
         HeraJob heraJob = BeanConvertUtils.convertToHeraJob(heraJobVo);
 
         System.out.println(heraJob.getResources());

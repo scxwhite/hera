@@ -12,6 +12,7 @@ import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.WebSecurityConfig;
 import com.dfire.core.message.Protocol.ExecuteKind;
@@ -25,6 +26,11 @@ import org.springframework.web.context.request.async.WebAsyncTask;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -139,7 +145,9 @@ public class ScheduleCenterController {
     @ResponseBody
     public RestfulResponse updateJobMessage(HeraJobVo heraJobVo) {
         HeraJob heraJob = BeanConvertUtils.convertToHeraJob(heraJobVo);
-        return heraJobService.checkAndUpdate(heraJob);
+        RestfulResponse response = heraJobService.checkAndUpdate(heraJob);
+        updateJobToMaster(response.isSuccess(), heraJob.getId());
+        return response;
     }
 
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
@@ -155,7 +163,9 @@ public class ScheduleCenterController {
         if (isGroup) {
             return heraGroupService.delete(id) > 0;
         }
-        return heraJobService.delete(id) > 0;
+        boolean res = heraJobService.delete(id) > 0;
+        updateJobToMaster(res, id);
+        return res;
     }
 
     @RequestMapping(value = "/addJob", method = RequestMethod.POST)
@@ -173,7 +183,9 @@ public class ScheduleCenterController {
     @RequestMapping(value = "/changeSwitch", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse changeSwitch(Integer id) {
-        return new RestfulResponse(heraJobService.changeSwitch(id) ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+        boolean result = heraJobService.changeSwitch(id);
+        updateJobToMaster(result, id);
+        return new RestfulResponse(result ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
     }
 
     @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)
@@ -225,5 +237,23 @@ public class ScheduleCenterController {
         return heraJobHistoryService.findLogById(id);
     }
 
+
+    private void updateJobToMaster(boolean result, Integer id) {
+        if (result) {
+
+            ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(
+                    1, 1, 10L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("updateJob"), new ThreadPoolExecutor.AbortPolicy());
+            poolExecutor.execute(() -> {
+                try {
+                    workClient.updateJobFromWeb(String.valueOf(id));
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            poolExecutor.shutdown();
+        }
+    }
 
 }

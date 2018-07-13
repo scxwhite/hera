@@ -81,12 +81,14 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
+                listeners.clear();
                 break;
             case WEB_RESPONSE:
                 final WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }
+                listeners.clear();
                 break;
             default:
                 log.error("can not recognition ");

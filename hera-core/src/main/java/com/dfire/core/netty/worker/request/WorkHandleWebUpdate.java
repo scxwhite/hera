@@ -57,7 +57,6 @@ public class WorkHandleWebUpdate {
             }
         });
         workContext.getServerChannel().writeAndFlush(socketMessage);
-        log.info("send web execute request" + request.getRid() + "kind= " + jobId + "id = " + jobId);
         return future;
     }
 }
