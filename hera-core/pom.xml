@@ -110,11 +110,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hyperic.sigar</groupId>
-            <artifactId>com.springsource.org.hyperic.sigar</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${hadoop.version}</version>
