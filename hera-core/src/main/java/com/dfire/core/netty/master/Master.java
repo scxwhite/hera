@@ -778,12 +778,17 @@ public class Master {
                             if (worker == null) {
                                 log.error("worker is null");
                             } else if (worker.getHeartBeatInfo() == null && worker.getChannel() != null) {
-                                log.error("worker " + worker.getChannel() + "heart is null");
+                                log.error("worker " + worker.getChannel().remoteAddress() + "heart is null");
                             }
                         }
                     }
                 }
             }
+        }
+        if (workHolder != null) {
+            log.warn("select work is :{}", workHolder.getChannel().remoteAddress());
+        } else {
+            log.warn("worker is null");
         }
         return workHolder;
     }
