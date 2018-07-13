@@ -55,8 +55,8 @@ public class Master {
 
         this.masterContext = masterContext;
         heraActionMap = new HashMap<>();
-        executeJobPool = new ThreadPoolExecutor(2, 2, 0L, TimeUnit.MICROSECONDS,
-                new LinkedBlockingQueue<>(1024), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
+        executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 0L, TimeUnit.MICROSECONDS,
+                new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
         String exeEnvironment = "pre";
         if (HeraGlobalEnvironment.env.equalsIgnoreCase(exeEnvironment)) {
             masterContext.getDispatcher().addDispatcherListener(new HeraStopScheduleJobListener());
@@ -75,7 +75,6 @@ public class Master {
         masterContext.setMaster(this);
         masterContext.refreshHostGroupCache();
         log.info("refresh hostGroup cache");
-
 
 
         TimerTask generateActionTask = new TimerTask() {
@@ -144,7 +143,7 @@ public class Master {
                         removeChannel.add(channel);
                     }
                 }
-                removeChannel.forEach(channel -> workMap.remove(channel));
+                removeChannel.forEach(workMap::remove);
                 masterContext.masterTimer.newTimeout(this, 4, TimeUnit.SECONDS);
             }
         };

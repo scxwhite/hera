@@ -32,6 +32,8 @@ public class HeraGlobalEnvironment {
     private static Integer connectPort;
     @Getter
     private static String downloadDir;
+    @Getter
+    private static Integer maxParallelNum;
 
 
     @Value("${hera.dos2unix-exclude-file}")
@@ -82,6 +84,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.download-dir}")
     public void setDownloadDir(String dir) {
         HeraGlobalEnvironment.downloadDir = dir;
+    }
+
+    @Value("${hera.max-parallel-num}")
+    public static void setMaxParallelNum(Integer maxParallelNum) {
+        HeraGlobalEnvironment.maxParallelNum = maxParallelNum;
     }
 
     /**
