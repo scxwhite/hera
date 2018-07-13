@@ -82,10 +82,10 @@ public class Master {
             @Override
             public void run(Timeout timeout) throws Exception {
                 generateBatchAction();
-                masterContext.masterTimer.newTimeout(this, 1, TimeUnit.MINUTES);
+                masterContext.masterTimer.newTimeout(this, 1, TimeUnit.HOURS);
             }
         };
-        masterContext.masterTimer.newTimeout(generateActionTask, 0, TimeUnit.MINUTES);
+        masterContext.masterTimer.newTimeout(generateActionTask, 0, TimeUnit.HOURS);
 
         /**
          * 扫描任务等待队列，可获得worker的任务将执行
