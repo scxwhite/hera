@@ -82,10 +82,10 @@ public class Master {
             @Override
             public void run(Timeout timeout) throws Exception {
                 generateBatchAction();
-                masterContext.masterTimer.newTimeout(this, 1, TimeUnit.HOURS);
+                masterContext.masterTimer.newTimeout(this, 1, TimeUnit.MINUTES);
             }
         };
-        masterContext.masterTimer.newTimeout(generateActionTask, 0, TimeUnit.HOURS);
+        masterContext.masterTimer.newTimeout(generateActionTask, 0, TimeUnit.MINUTES);
 
         /**
          * 扫描任务等待队列，可获得worker的任务将执行
@@ -461,6 +461,12 @@ public class Master {
                         actionIdList.add(actionId);
                         log.info("roll back lost actionId :" + actionId);
                     }
+                }
+            } else { //独立任务情况
+                if (!actionIdList.contains(actionId)) {
+                    masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId.toString()));
+                    actionIdList.add(actionId);
+                    log.info("roll back lost actionId :" + actionId);
                 }
             }
         }

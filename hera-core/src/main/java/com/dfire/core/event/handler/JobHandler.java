@@ -19,6 +19,7 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
+import com.dfire.common.vo.LogContent;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -351,18 +352,19 @@ public class JobHandler extends AbstractHandler {
             if (heraActionVo != null) {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
 
-                if (heraAction != null && heraAction.getStatus() == null) {
+                if (heraAction != null && StringUtils.isBlank(heraAction.getStatus())) {
                     String currentDate = DateUtil.getTodayStringForAction();
                     if (Long.parseLong(actionId) < Long.parseLong(currentDate)) {
-                        HeraJobHistoryVo history = HeraJobHistoryVo.builder()
+                        HeraJobHistory history = HeraJobHistory.builder()
                                 .illustrate(LogConstant.LOST_JOB_LOG)
-                                .jobId(heraActionVo.getId())
-                                .triggerType(TriggerTypeEnum.SCHEDULE)
-                                .statisticsEndTime(heraActionVo.getStatisticStartTime())
+                                .actionId(heraActionVo.getId())
+                                .jobId(heraActionVo.getJobId())
+                                .triggerType(Integer.parseInt(TriggerTypeEnum.SCHEDULE.toString()))
+                                .statisticEndTime(heraActionVo.getStatisticStartTime())
                                 .operator(heraActionVo.getOwner())
                                 .build();
-                        masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(history));
-                        master.run(history);
+                        masterContext.getHeraJobHistoryService().insert(history);
+                        master.run(BeanConvertUtils.convert(history));
                         log.info("lost job, start schedule :{}", actionId);
                     }
                 }
