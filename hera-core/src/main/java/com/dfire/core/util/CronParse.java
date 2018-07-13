@@ -48,15 +48,12 @@ public class CronParse {
             c.add(Calendar.DATE, 1);
             Date dEnd = c.getTime();
 
-            Long nowMillis = System.currentTimeMillis();
             // 生成时间序列
             Date dd = dStart;
             dd = exp.getNextValidTimeAfter(dd);
             while ((dd.getTime() >= dStart.getTime())
                     && (dd.getTime() <= dEnd.getTime())) {
-                if (nowMillis <= dd.getTime()) {
                     result.add(sdf.format(dd));
-                }
                 dd = exp.getNextValidTimeAfter(dd);
             }
         }

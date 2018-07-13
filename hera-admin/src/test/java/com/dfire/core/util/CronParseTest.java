@@ -2,6 +2,9 @@ package com.dfire.core.util;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 /**
@@ -11,5 +14,8 @@ public class CronParseTest {
 
     @Test
     public void parser() {
+        List<String> x = new ArrayList<>();
+        CronParse.Parser("0 0 1 * * ?", "2018-07-13", x );
+        System.out.println(x.size());
     }
 }
