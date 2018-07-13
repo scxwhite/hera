@@ -461,6 +461,12 @@ public class Master {
                         log.info("roll back lost actionId :" + actionId);
                     }
                 }
+            } else { //独立任务情况
+                if (!actionIdList.contains(actionId)) {
+                    masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId.toString()));
+                    actionIdList.add(actionId);
+                    log.info("roll back lost actionId :" + actionId);
+                }
             }
         }
     }
