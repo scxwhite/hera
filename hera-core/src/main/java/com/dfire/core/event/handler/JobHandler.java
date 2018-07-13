@@ -346,6 +346,11 @@ public class JobHandler extends AbstractHandler {
 
     }
 
+    /**
+     * 漏泡重新触发调度事件
+     *
+     * @param event
+     */
     private void handleLostEvent(HeraJobLostEvent event) {
         if (event.getType() == Events.UpdateJob && actionId.equals(event.getJobId())) {
             HeraActionVo heraActionVo = cache.getHeraActionVo();
