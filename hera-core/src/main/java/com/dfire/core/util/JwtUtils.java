@@ -5,9 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 
-import javax.sound.midi.Soundbank;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
