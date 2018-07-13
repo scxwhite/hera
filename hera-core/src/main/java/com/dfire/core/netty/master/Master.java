@@ -55,7 +55,7 @@ public class Master {
 
         this.masterContext = masterContext;
         heraActionMap = new HashMap<>();
-        executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 0L, TimeUnit.MICROSECONDS,
+        executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 60L, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
         String exeEnvironment = "pre";
         if (HeraGlobalEnvironment.env.equalsIgnoreCase(exeEnvironment)) {
