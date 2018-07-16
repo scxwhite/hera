@@ -255,11 +255,11 @@ public class Master {
 
             Dispatcher dispatcher = masterContext.getDispatcher();
             if (dispatcher != null) {
-                if (actionMap.size() > 0) {
-                    for (Long id : actionMap.keySet()) {
+                if (heraActionMap.size() > 0) {
+                    for (Long id : heraActionMap.keySet()) {
                         dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
                         if (id > Long.parseLong(currString)) {
-                            masterContext.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id.toString()));
+                            dispatcher.forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id.toString()));
                         }
                     }
                 }
@@ -302,6 +302,7 @@ public class Master {
                         heraAction.setGmtCreate(new Date());
                         heraAction.setJobId(String.valueOf(heraJob.getId()));
                         heraAction.setHistoryId(heraJob.getHistoryId());
+                        heraAction.setAuto(heraJob.getAuto());
                         masterContext.getHeraJobActionService().insert(heraAction);
                         actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
 
@@ -407,6 +408,7 @@ public class Master {
                                 actionNew.setDependencies(actionDependencies.toString());
                                 actionNew.setJobDependencies(heraJob.getDependencies());
                                 actionNew.setJobId(String.valueOf(heraJob.getId()));
+                                actionNew.setAuto(heraJob.getAuto());
                                 if (!actionMap.containsKey(actionId)) {
                                     masterContext.getHeraJobActionService().insert(actionNew);
                                     actionMap.put(Long.parseLong(actionNew.getId()), actionNew);

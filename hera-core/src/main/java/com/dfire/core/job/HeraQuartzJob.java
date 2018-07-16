@@ -14,7 +14,6 @@ public class HeraQuartzJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        System.out.println("定时任务执行了");
         String jobId = context.getJobDetail().getJobDataMap().getString("actionId");
         Dispatcher dispatcher = (Dispatcher) context.getJobDetail().getJobDataMap().get("dispatcher");
         HeraScheduleTriggerEvent scheduledEvent = HeraScheduleTriggerEvent.builder().jobId(jobId).build();
