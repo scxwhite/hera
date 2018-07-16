@@ -26,19 +26,16 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 调度器执行上下文信息
-     *
      */
     private MasterContext masterContext;
 
     /**
      * 开发中心执行任务时候，masterHandler在read到SocketMessage处理逻辑
-     *
      */
     private MasterHandleWebDebug masterHandleWebDebug = new MasterHandleWebDebug();
 
     /**
      * 主节点接收到心跳，masterHandler在read到HeartBeat处理逻辑
-     *
      */
     private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
 
@@ -49,9 +46,13 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 调度中心执行任务时候，masterHandler在read到SocketMessage的任务处理消息的时候的处理逻辑
-     *
      */
     private MasterHandleWebExecute masterHandleWebExecute = new MasterHandleWebExecute();
+
+    /**
+     * 生成单个任务action
+     */
+    private MasterGenerateAction masterGenerateAction = new MasterGenerateAction();
 
     private MasterHandleWebUpdate masterHandleWebUpdate = new MasterHandleWebUpdate();
 
@@ -93,7 +94,6 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 System.out.println(webRequest.getOperate());
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
-
                         completionService.submit(() ->
                                 new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest)));
                         break;
@@ -110,10 +110,11 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                                 new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest)));
                         break;
                     case GenerateAction:
-                        masterContext.getMaster().generateSingleAction(Integer.parseInt(webRequest.getId()));
+                        completionService.submit(() ->
+                                new ChannelResponse(channel, masterGenerateAction.generateActionByJobId(masterContext, webRequest)));
                         break;
                     default:
-                        log.error("unknown operate error:{}",webRequest.getOperate());
+                        log.error("unknown operate error:{}", webRequest.getOperate());
                         break;
                 }
                 break;
@@ -121,11 +122,13 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
+                listeners.clear();
                 break;
             case WEB_RESPONSE:
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
+                listeners.clear();
                 break;
             default:
                 log.error("unknown request type : {}", socketMessage.getKind());

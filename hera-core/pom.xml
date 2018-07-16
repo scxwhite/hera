@@ -19,6 +19,7 @@
 
     <properties>
         <quartz.version>2.2.1</quartz.version>
+        <jwt.version>3.3.0</jwt.version>
         <hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
         <lang3.version>3.4</lang3.version>
         <hera.common.version>1.0-SNAPSHOT</hera.common.version>
@@ -48,7 +49,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>${jwt.version}</version>
+        </dependency>
         <!-- redisson-->
         <dependency>
             <groupId>org.redisson</groupId>
@@ -107,11 +112,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${lang3.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hyperic.sigar</groupId>
-            <artifactId>com.springsource.org.hyperic.sigar</artifactId>
         </dependency>
 
         <dependency>
