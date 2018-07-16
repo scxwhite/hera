@@ -44,7 +44,7 @@ hera:
    scanExceptionRate : 2000  #异常队列扫描频率(毫秒)
    systemMemUserd : 2000  # 系统占用内存
    taskMem : 300          # 每个任务使用内存300M
-   heatBeat : 2           # 心跳传递时间频率
+   heart-beat : 5           # 心跳传递时间频率
    download-dir : /opt/logs/spring-boot
    hdfsLibPath : /hera/hdfs-upload-dir #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上
    schedule-group : online
