@@ -575,7 +575,7 @@ var JobLogTable = function (jobId) {
                     title: "版本号"
                 }, {
                     field: "jobId",
-                    title: "jobId"
+                    title: "任务ID"
                 }, {
                     field: "executeHost",
                     title: "执行机器ip"
@@ -599,7 +599,17 @@ var JobLogTable = function (jobId) {
                     formatter: function (row) {
                         return getLocalTime(row);
                     }
-                }, {
+                },{
+                    field: "illustrate",
+                    title: "说明",
+                    formatter: function (val) {
+                        if (val == null) {
+                            return val;
+                        }
+                        return "<span class='label label-info' data-toggle='tooltip' title='"+val+"' >"+val.slice(0, 6)+"</span>";
+                    }
+                },
+                {
                     field: "triggerType",
                     title: "触发类型",
                     width: "20%",
