@@ -34,8 +34,8 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 heraAction.setStatus(action.getStatus());
                 heraAction.setHistoryId(action.getHistoryId());
                 heraAction.setReadyDependency(action.getReadyDependency());
-                heraAction.setAuto(action.getAuto());
             } else {
+                action.setAuto(heraAction.getAuto());
                 heraAction = action;
             }
             return heraJobActionMapper.update(heraAction);
