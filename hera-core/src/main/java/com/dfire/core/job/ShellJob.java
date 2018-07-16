@@ -66,10 +66,10 @@ public class ShellJob extends ProcessJob {
         String user = "";
         if (jobContext.getRunType() == JobContext.SCHEDULE_RUN || jobContext.getRunType() == JobContext.MANUAL_RUN) {
             user = jobContext.getHeraJobHistory().getOperator();
-            shellPrefix = "sudo su " + user;
+            shellPrefix = "sudo -u " + user;
         } else if (jobContext.getRunType() == JobContext.DEBUG_RUN) {
             user = jobContext.getDebugHistory().getOwner();
-            shellPrefix = "sudo su " + user;
+            shellPrefix = "sudo -u " + user;
         } else if (jobContext.getRunType() == JobContext.SYSTEM_RUN) {
             shellPrefix = "";
         } else {
@@ -112,12 +112,15 @@ public class ShellJob extends ProcessJob {
                     IOUtils.closeQuietly(tmpWriter);
                 }
                 list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-                String command = "sh " + tmpFilePath;
-                list.add(command);
+                list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
+//                String command = "sh " + tmpFilePath;
+//                list.add(command);
             } else {
                 list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-                String command = "sh " + tmpFilePath;
-                list.add(command);
+                list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
+
+//                String command = "sh " + tmpFilePath;
+//                list.add(command);
             }
 
         } else {

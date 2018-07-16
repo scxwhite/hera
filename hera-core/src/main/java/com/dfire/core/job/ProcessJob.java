@@ -33,6 +33,8 @@ public abstract class ProcessJob extends AbstractJob implements Job {
     }
 
     /**
+     * 组装脚本执行命令
+     *
      * @return
      */
     public abstract List<String> getCommandList();
