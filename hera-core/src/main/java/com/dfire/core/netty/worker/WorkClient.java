@@ -100,10 +100,10 @@ public class WorkClient {
                         channelFuture.addListener((future) -> {
                             if (!future.isSuccess()) {
                                 failCount++;
-                                log.info("send heart beat failed ,failCount :" + failCount);
+                                log.error("send heart beat failed ,failCount :" + failCount);
                             } else {
                                 failCount = 0;
-                                log.info("send heart beat success");
+                                log.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
                             }
                             if (failCount > 10) {
                                 future.cancel(true);
