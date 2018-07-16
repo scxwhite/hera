@@ -3,6 +3,7 @@ package com.dfire.common.service;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
+import com.dfire.common.vo.RestfulResponse;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface HeraJobService {
 
     int delete(int id);
 
-    int update(HeraJob heraJob);
+    Integer update(HeraJob heraJob);
 
     List<HeraJob> getAll();
 
@@ -35,4 +36,7 @@ public interface HeraJobService {
     List<HeraJobTreeNodeVo> buildJobTree();
 
     boolean changeSwitch(Integer id);
+
+    RestfulResponse checkAndUpdate(HeraJob heraJob);
+
 }

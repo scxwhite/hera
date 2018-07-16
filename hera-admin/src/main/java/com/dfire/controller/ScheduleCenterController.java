@@ -1,6 +1,5 @@
 package com.dfire.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
@@ -44,7 +43,6 @@ public class ScheduleCenterController {
     HeraGroupService heraGroupService;
     @Autowired
     HeraJobHistoryService heraJobHistoryService;
-
     @Autowired
     WorkClient workClient;
 
@@ -101,16 +99,18 @@ public class ScheduleCenterController {
         //todo 权限判定
 
         HeraAction heraAction = heraJobActionService.findById(actionId);
+        HeraJob heraJob = heraJobService.findById(Integer.parseInt(heraAction.getJobId()));
+        String configs = heraJob.getConfigs();
         HeraJobHistory actionHistory = HeraJobHistory.builder().build();
         actionHistory.setJobId(heraAction.getJobId());
         actionHistory.setActionId(heraAction.getId());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
         actionHistory.setOperator(heraAction.getOwner());
-        actionHistory.setIllustrate("触发人pjx");
+        actionHistory.setIllustrate(heraJob.getOwner());
         actionHistory.setStatus(StatusEnum.RUNNING.toString());
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
         actionHistory.setHostGroupId(heraAction.getHistoryId());
-        actionHistory.setProperties("{}");
+        actionHistory.setProperties(configs);
         heraJobHistoryService.insert(actionHistory);
         heraAction.setScript(script);
         heraJobActionService.update(heraAction);
@@ -137,9 +137,9 @@ public class ScheduleCenterController {
 
     @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)
     @ResponseBody
-    public boolean updateJobMessage(HeraJobVo heraJobVo) {
+    public RestfulResponse updateJobMessage(HeraJobVo heraJobVo) {
         HeraJob heraJob = BeanConvertUtils.convertToHeraJob(heraJobVo);
-        return heraJobService.update(heraJob) > 0;
+        return heraJobService.checkAndUpdate(heraJob);
     }
 
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
@@ -155,8 +155,9 @@ public class ScheduleCenterController {
         if (isGroup) {
             return heraGroupService.delete(id) > 0;
         }
-        return  heraJobService.delete(id) > 0;
+        return heraJobService.delete(id) > 0;
     }
+
     @RequestMapping(value = "/addJob", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse addJob(HeraJob heraJob, HttpSession session) {
@@ -173,6 +174,55 @@ public class ScheduleCenterController {
     @ResponseBody
     public RestfulResponse changeSwitch(Integer id) {
         return new RestfulResponse(heraJobService.changeSwitch(id) ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+    }
+
+    @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)
+    @ResponseBody
+    public WebAsyncTask<String> generateVersion(String jobId) {
+        return new WebAsyncTask<>(3000, () ->
+                workClient.generateActionFromWeb(ExecuteKind.ManualKind, jobId));
+    }
+
+    /**
+     * 获取任务历史版本
+     *
+     * @param jobId
+     * @return
+     */
+    @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
+    @ResponseBody
+    public List<HeraJobHistory> getJobHistory(String jobId) {
+        List<HeraJobHistory> list = heraJobHistoryService.findByJobId(jobId);
+        return list;
+
+    }
+
+    /**
+     * 取消正在执行的任务
+     *
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
+    @ResponseBody
+    public WebAsyncTask<String> cancelJob(String id) {
+        HeraJobHistory history = heraJobHistoryService.findById(id);
+        ExecuteKind kind = null;
+        if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
+            kind = ExecuteKind.ManualKind;
+        } else {
+            kind = ExecuteKind.ScheduleKind;
+        }
+        ExecuteKind finalKind = kind;
+        return new WebAsyncTask<String>(3000, () ->
+                workClient.cancelJobFromWeb(finalKind, id));
+
+    }
+
+    @RequestMapping(value = "getLog", method = RequestMethod.GET)
+    @ResponseBody
+    public HeraJobHistory getJobLog(Integer id) {
+        return heraJobHistoryService.findLogById(id);
     }
 
 

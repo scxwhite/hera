@@ -21,9 +21,9 @@ public class HeraDebugHistoryVo {
 
     private String fileId;
 
-    private Date startTime;
+    private String startTime;
 
-    private Date endTime;
+    private String endTime;
 
     private String executeHost;
 
@@ -31,9 +31,9 @@ public class HeraDebugHistoryVo {
 
     private String owner;
 
-    private Date gmtCreate;
+    private String gmtCreate;
 
-    private Date gmtModified;
+    private String gmtModified;
 
     private String script;
 

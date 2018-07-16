@@ -1,3 +1,9 @@
+/**
+ * 用户管理页面，用户注册之后的权限审核
+ *
+ * @type {any[]}
+ */
+
 var userList = new Array();
 var indexList = new Array();
 
@@ -22,7 +28,7 @@ $(function () {
 
         jQuery.ajax({
             type: "post",
-            url: "userManage/editUser",
+            url: base_url + "userManage/editUser",
             data: JSON.stringify(user),
             contentType: "application/json",
             dataType: "json",
@@ -45,8 +51,8 @@ $(function () {
         }
         jQuery.ajax({
             type: "post",
-            url: "userManage/operateUser.do",
-            data: JSON.stringify(parameter) ,
+            url: base_url + "userManage/operateUser.do",
+            data: JSON.stringify(parameter),
             contentType: "application/json",
             dataType: "json",
             success: function (result) {
@@ -61,7 +67,7 @@ $(function () {
         oTableInit.init = function () {
             var table = $('#table');
             table.bootstrapTable({
-                url: '/userManage/initUser.do',
+                url: base_url + '/userManage/initUser.do',
                 method: 'post',
                 toolbar: '#toolbar',
                 pagination: true,

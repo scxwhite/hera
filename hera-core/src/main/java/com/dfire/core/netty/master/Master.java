@@ -29,9 +29,9 @@ import com.dfire.core.message.Protocol;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.message.Protocol.Response;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
+import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.util.CronParse;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -42,6 +42,8 @@ import org.springframework.beans.BeanUtils;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+
+import static sun.tools.jstat.Alignment.keySet;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -58,6 +60,7 @@ public class Master {
     public Master(final MasterContext masterContext) {
 
         this.masterContext = masterContext;
+        heraActionMap = new HashMap<>();
         executeJobPool = new ThreadPoolExecutor(2, 2, 0L, TimeUnit.MICROSECONDS,
                 new LinkedBlockingQueue<>(1024), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
         String exeEnvironment = "pre";
@@ -86,7 +89,6 @@ public class Master {
         TimerTask clearScheduleTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) {
-                //TODO  检测  删除action
                 log.info("refresh host group success,start clear schedule");
                 masterContext.refreshHostGroupCache();
                 try {
@@ -138,49 +140,12 @@ public class Master {
                 }
             }
         };
-        masterContext.masterTimer.newTimeout(clearScheduleTask, 30, TimeUnit.MINUTES);
+        masterContext.masterTimer.newTimeout(clearScheduleTask, 0, TimeUnit.MINUTES);
 
         TimerTask generateActionTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) throws Exception {
-                Calendar calendar = Calendar.getInstance();
-                Date now = calendar.getTime();
-
-                int executeHour = DateUtil.getCurrentHour(calendar);
-                int executeMinute = DateUtil.getCurrentMinute(calendar);
-                //凌晨生成版本，早上七点以后开始再次生成版本
-                boolean execute = (executeHour == 0 && executeMinute == 0)
-                        || (executeHour > 7 && executeHour <= 23);
-                if (execute) {
-                    String currString = DateUtil.getTodayStringForAction();
-                    if (executeHour == 23) {
-                        Tuple<String, Date> nextDayString = DateUtil.getNextDayString();
-                        currString = nextDayString.getSource();
-                        now = nextDayString.getTarget();
-                    }
-                    log.error("generate depend action date: " + currString);
-                    List<HeraJob> jobList = masterContext.getHeraJobService().getAll();
-                    Map<Long, HeraAction> actionMap = new HashMap<>();
-                    SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
-                    generateScheduleJobAction(jobList, now, dfDate, actionMap);
-                    generateDependJobAction(jobList, actionMap, 0);
-                    if (executeHour < 23) {
-                        heraActionMap = actionMap;
-                    }
-                    log.error("generate depend action success" + actionMap.size());
-                    Dispatcher dispatcher = masterContext.getDispatcher();
-                    if (dispatcher != null) {
-                        if (actionMap.size() > 0) {
-                            for (Long id : actionMap.keySet()) {
-                                dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
-                                if (id > Long.parseLong(currString)) {
-                                    masterContext.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateJob, id.toString()));
-                                }
-                            }
-                        }
-                    }
-                    log.info("generate all action success");
-                }
+                generateBatchAction();
                 masterContext.masterTimer.newTimeout(this, 1, TimeUnit.HOURS);
             }
         };
@@ -199,8 +164,9 @@ public class Master {
                     log.info("scan waiting queueTask run");
                 } catch (Exception e) {
                     log.error("scan waiting queueTask exception");
+                } finally {
+                    masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
                 }
-                masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
             }
         };
         masterContext.masterTimer.newTimeout(scanWaitingQueueTask, 3, TimeUnit.SECONDS);
@@ -224,21 +190,25 @@ public class Master {
         };
         masterContext.masterTimer.newTimeout(scanExceptionQueueTask, 3, TimeUnit.SECONDS);
 
+        //定时检测work心跳是否超时
         TimerTask checkHeartBeatTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) throws Exception {
                 Date now = new Date();
-                for (MasterWorkHolder worker : masterContext.getWorkMap().values()) {
-                    Date timestamp = worker.getHeartBeatInfo().timestamp;
-                    try {
-                        if (timestamp == null || (now.getTime() - timestamp.getTime()) > 1000 * 60) {
-                            worker.getChannel().close();
-                        }
-                    } catch (Exception e) {
-                        log.error("worker error, master close channel");
+                Map<Channel, MasterWorkHolder> workMap = masterContext.getWorkMap();
+                List<Channel> removeChannel = new ArrayList<>(workMap.size());
+                for (Channel channel : workMap.keySet()) {
+                    MasterWorkHolder workHolder = workMap.get(channel);
+                    if (workHolder.getHeartBeatInfo() == null) {
+                        continue;
                     }
-
+                    Date workTime = workHolder.getHeartBeatInfo().getTimestamp();
+                    if (workTime == null || now.getTime() - workTime.getTime() > 1000 * 60L) {
+                        workHolder.getChannel().close();
+                        removeChannel.add(channel);
+                    }
                 }
+                removeChannel.forEach(channel -> workMap.remove(channel));
                 masterContext.masterTimer.newTimeout(this, 4, TimeUnit.SECONDS);
             }
         };
@@ -252,6 +222,63 @@ public class Master {
             runScheduleJobAction(element);
         }
 
+    }
+
+    public void generateBatchAction() {
+        generateAction(false, null);
+    }
+
+    public void generateSingleAction(Integer jobId) {
+        log.info("单个任务版本生成：{}", jobId);
+        generateAction(true, jobId);
+    }
+
+    private void generateAction(boolean isSingle, Integer jobId) {
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime();
+        int executeHour = DateUtil.getCurrentHour(calendar);
+        int executeMinute = DateUtil.getCurrentMinute(calendar);
+        //凌晨生成版本，早上七点以后开始再次生成版本
+        boolean execute = (executeHour == 0 && executeMinute == 0)
+                || (executeHour > 7 && executeHour <= 23);
+        if (execute) {
+            String currString = DateUtil.getTodayStringForAction();
+            if (executeHour == 23) {
+                Tuple<String, Date> nextDayString = DateUtil.getNextDayString();
+                currString = nextDayString.getSource();
+                now = nextDayString.getTarget();
+            }
+            Map<Long, HeraAction> actionMap = new HashMap<>(heraActionMap.size());
+            List<HeraJob> jobList = new ArrayList<>();
+            SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
+            //批量生成
+            if (!isSingle) {
+                jobList = masterContext.getHeraJobService().getAll();
+            } else { //单个任务生成版本
+                HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
+                jobList.add(heraJob);
+                actionMap = heraActionMap;
+            }
+            generateScheduleJobAction(jobList, now, dfDate, actionMap);
+            generateDependJobAction(jobList, actionMap, 0);
+
+            if (executeHour < 23) {
+                heraActionMap = actionMap;
+            }
+
+            Dispatcher dispatcher = masterContext.getDispatcher();
+            if (dispatcher != null) {
+                if (actionMap.size() > 0) {
+                    for (Long id : actionMap.keySet()) {
+                        dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
+                        if (id > Long.parseLong(currString)) {
+                            masterContext.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateJob, id.toString()));
+                        }
+                    }
+                }
+            }
+            log.info("generate all action success");
+        }
     }
 
     /**
@@ -269,8 +296,7 @@ public class Master {
                 String cronDate = format.format(now);
                 List<String> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(cron)) {
-                    boolean isCronExp = false;
-                    isCronExp = CronParse.Parser(cron, cronDate, list);
+                    boolean isCronExp = CronParse.Parser(cron, cronDate, list);
                     if (!isCronExp) {
                         log.error("cron parse error,cron = " + cron);
                     }
@@ -286,7 +312,6 @@ public class Master {
                         heraAction.setJobId(String.valueOf(heraJob.getId()));
                         heraAction.setHistoryId(heraJob.getHistoryId());
                         masterContext.getHeraJobActionService().insert(heraAction);
-                        log.error("generate actions success :" + actionId);
                         actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
 
                     });
@@ -455,12 +480,13 @@ public class Master {
     public void scan() {
 
         if (!masterContext.getScheduleQueue().isEmpty()) {
+            log.warn("队列任务：{}", masterContext.getScheduleQueue());
             final JobElement element = masterContext.getScheduleQueue().poll();
-            log.debug("开始执行定时队列任务：" + element.getJobId());
             runScheduleJobAction(element);
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
+            log.warn("队列任务：{}", masterContext.getManualQueue());
             final JobElement element = masterContext.getManualQueue().poll();
             MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
             if (selectWork == null) {
@@ -471,6 +497,7 @@ public class Master {
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
+            log.warn("队列任务：{}", masterContext.getDebugQueue());
             final JobElement element = masterContext.getDebugQueue().poll();
             MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
             if (selectWork == null) {
@@ -492,57 +519,53 @@ public class Master {
         final MasterWorkHolder workHolder = selectWork;
         log.info("start run manual job, historyId = {}", historyId);
 
-        this.executeJobPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(historyId);
-                HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
-                historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
-                JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(history.getActionId());
+        this.executeJobPool.execute(() -> {
+            HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(historyId);
+            HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
+            historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
+            JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(history.getActionId());
 
-                jobStatus.setStatus(StatusEnum.RUNNING);
-                jobStatus.setHistoryId(historyId);
-                historyVo.setStatusEnum(jobStatus.getStatus());
-                masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(historyVo));
+            jobStatus.setStatus(StatusEnum.RUNNING);
+            jobStatus.setHistoryId(historyId);
+            historyVo.setStatusEnum(jobStatus.getStatus());
+            masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(historyVo));
 
-                Exception exception = null;
-                Response response = null;
-                try {
-                    Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder,
-                            ExecuteKind.ManualKind, history.getId());
-                    response = future.get();
-                } catch (Exception e) {
-                    exception = e;
-                    log.error("manual job run error" + historyId, e);
-                    jobStatus.setStatus(StatusEnum.FAILED);
-                    history.setStatus(jobStatus.getStatus().toString());
-                    masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
+            Exception exception = null;
+            Response response = null;
+            try {
+                Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder,
+                        ExecuteKind.ManualKind, history.getId());
+                response = future.get();
+            } catch (Exception e) {
+                exception = e;
+                log.error("manual job run error" + historyId, e);
+                jobStatus.setStatus(StatusEnum.FAILED);
+                history.setStatus(jobStatus.getStatus().toString());
+                masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
 
+            }
+            boolean success = response.getStatusEnum() != null && response.getStatusEnum() == Protocol.Status.OK;
+            log.info("historyId 执行结果" + historyId + "---->" + response.getStatusEnum());
+
+            if (!success) {
+                HeraException heraException = null;
+                if (exception != null) {
+                    heraException = new HeraException(exception);
+                    log.error("manual actionId = {} error, {}", history.getActionId(), heraException.getMessage());
                 }
-
-                boolean success = response.getStatus() != null && response.getStatus() == Protocol.Status.OK;
-                log.info("historyId 执行结果" + historyId + "---->" + response.getStatus());
-
-                if (!success) {
-                    HeraException heraException = null;
-                    if (exception != null) {
-                        heraException = new HeraException(exception);
-                        log.error("manual actionId = {} error, {}", history.getActionId(), heraException.getMessage());
-                    }
-                    log.info("actionId = {} manual execute failed", history.getActionId());
-                    jobStatus.setStatus(StatusEnum.FAILED);
-                    HeraJobHistory jobHistory = masterContext.getHeraJobHistoryService().findById(history.getId());
-                    HeraJobHistoryVo jobHistoryVo = BeanConvertUtils.convert(jobHistory);
-                    HeraJobFailedEvent failedEvent = new HeraJobFailedEvent(history.getActionId(), jobHistoryVo.getTriggerType(), jobHistoryVo);
-                    if (jobHistory != null && jobHistory.getIllustrate() != null
-                            && jobHistory.getIllustrate().contains(LogConstant.CANCEL_JOB_LOG)) {
-                        masterContext.getDispatcher().forwardEvent(failedEvent);
-                    }
-                } else {
-                    jobStatus.setStatus(StatusEnum.SUCCESS);
-                    HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(history.getActionId(), historyVo.getTriggerType(), history.getId());
-                    masterContext.getDispatcher().forwardEvent(successEvent);
+                log.info("actionId = {} manual execute failed", history.getActionId());
+                jobStatus.setStatus(StatusEnum.FAILED);
+                HeraJobHistory jobHistory = masterContext.getHeraJobHistoryService().findById(history.getId());
+                HeraJobHistoryVo jobHistoryVo = BeanConvertUtils.convert(jobHistory);
+                HeraJobFailedEvent failedEvent = new HeraJobFailedEvent(history.getActionId(), jobHistoryVo.getTriggerType(), jobHistoryVo);
+                if (jobHistory != null && jobHistory.getIllustrate() != null
+                        && jobHistory.getIllustrate().contains(LogConstant.CANCEL_JOB_LOG)) {
+                    masterContext.getDispatcher().forwardEvent(failedEvent);
                 }
+            } else {
+                jobStatus.setStatus(StatusEnum.SUCCESS);
+                HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(history.getActionId(), historyVo.getTriggerType(), history.getId());
+                masterContext.getDispatcher().forwardEvent(successEvent);
             }
         });
     }
@@ -571,20 +594,17 @@ public class Master {
      */
     private void runScheduleJob(MasterWorkHolder workHolder, String actionId) {
         final MasterWorkHolder work = workHolder;
-        this.executeJobPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                int runCount = 0;
-                int retryCount = 0;
-                int retryWaitTime = 1;
-                HeraActionVo heraActionVo = masterContext.getHeraJobActionService().findHeraActionVo(actionId).getSource();
-                Map<String, String> properties = heraActionVo.getConfigs();
-                if (properties != null && properties.size() > 0) {
-                    retryCount = Integer.parseInt(properties.get("roll.back.times") == null ? "0" : properties.get("roll.back.times"));
-                    retryWaitTime = Integer.parseInt(properties.get("roll.back.wait.time") == null ? "0" : properties.get("roll.back.wait.time"));
-                }
-                runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
+        this.executeJobPool.execute(() -> {
+            int runCount = 0;
+            int retryCount = 0;
+            int retryWaitTime = 1;
+            HeraActionVo heraActionVo = masterContext.getHeraJobActionService().findHeraActionVo(actionId).getSource();
+            Map<String, String> properties = heraActionVo.getConfigs();
+            if (properties != null && properties.size() > 0) {
+                retryCount = Integer.parseInt(properties.get("roll.back.times") == null ? "0" : properties.get("roll.back.times"));
+                retryWaitTime = Integer.parseInt(properties.get("roll.back.wait.time") == null ? "0" : properties.get("roll.back.wait.time"));
             }
+            runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
         });
     }
 
@@ -598,9 +618,12 @@ public class Master {
      * @param retryWaitTime
      */
     private void runScheduleJobContext(MasterWorkHolder work, String actionId, int runCount, int retryCount, int retryWaitTime) {
+
+        log.info("重试次数：{},重试时间：{}", retryCount, retryWaitTime);
         runCount++;
         boolean isCancelJob = false;
         if (runCount > 1) {
+            log.warn("任务重试，睡眠：{}秒", retryWaitTime);
             try {
                 Thread.sleep(retryWaitTime * 60 * 1000);
             } catch (InterruptedException e) {
@@ -608,9 +631,10 @@ public class Master {
             }
         }
         HeraJobHistoryVo heraJobHistoryVo;
-        TriggerTypeEnum triggerType = null;
+        HeraJobHistory heraJobHistory;
+        TriggerTypeEnum triggerType;
         if (runCount == 1) {
-            HeraJobHistory heraJobHistory = masterContext.getHeraJobHistoryService().
+            heraJobHistory = masterContext.getHeraJobHistoryService().
                     findById(masterContext.getHeraJobActionService().findById(actionId).getHistoryId());
             heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
             triggerType = heraJobHistoryVo.getTriggerType();
@@ -618,43 +642,42 @@ public class Master {
 
         } else {
             HeraActionVo heraJobVo = masterContext.getHeraJobActionService().findHeraActionVo(actionId).getSource();
-            heraJobHistoryVo = HeraJobHistoryVo.builder()
-                    .illustrate("失败任务重试，开始执行")
-                    .triggerType(TriggerTypeEnum.SCHEDULE)
-                    .jobId(actionId)
+            heraJobHistory = HeraJobHistory.builder()
+                    .illustrate(LogConstant.FAIL_JOB_RETRY)
+                    .triggerType(TriggerTypeEnum.SCHEDULE.getId())
+                    .jobId(heraJobVo.getJobId())
+                    .actionId(heraJobVo.getId())
                     .operator(heraJobVo.getOwner())
-                    .status(StatusEnum.RUNNING)
-                    .hostGroupId(heraJobVo.getHostGroupId())
                     .build();
-            masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(heraJobHistoryVo));
-            heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行");
+            masterContext.getHeraJobHistoryService().insert(heraJobHistory);
+            heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
+            heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行\n");
+            triggerType = heraJobHistoryVo.getTriggerType();
         }
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(heraJobHistoryVo));
-        heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);
         JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
-        jobStatus.setHistoryId(actionId);
+        jobStatus.setHistoryId(heraJobHistory.getId());
         jobStatus.setStatus(StatusEnum.RUNNING);
+        masterContext.getHeraJobActionService().updateStatus(jobStatus);
+        heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
-
-        Exception exception = null;
         Response response = null;
         try {
             Future<Response> future = new MasterExecuteJob().executeJob(masterContext, work,
-                    ExecuteKind.ScheduleKind, heraJobHistoryVo.getId());
+                    ExecuteKind.ScheduleKind, heraJobHistory.getId());
             response = future.get();
         } catch (Exception e) {
             log.error("schedule job run error :" + actionId, e);
             jobStatus.setStatus(StatusEnum.FAILED);
             heraJobHistoryVo.setStatusEnum(jobStatus.getStatus());
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
-
         }
-        boolean success = response.getStatus() == Protocol.Status.OK;
-        log.info("job_id 执行结果" + actionId + "---->" + response.getStatus());
+        boolean success = response.getStatusEnum() == Protocol.Status.OK;
+        log.info("job_id 执行结果" + actionId + "---->" + response.getStatusEnum());
 
         if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
                 || heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER)) {
-            jobStatus.setReadyDependency(new HashMap<>());
+            jobStatus.setReadyDependency(new HashMap<>(0));
         }
         if (!success) {
             jobStatus.setStatus(StatusEnum.FAILED);
@@ -671,11 +694,12 @@ public class Master {
             }
         } else {
             jobStatus.setStatus(StatusEnum.SUCCESS);
-            HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, triggerType, heraJobHistoryVo.getId());
-            heraJobHistoryVo.setStatus(StatusEnum.SUCCESS);
+            HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, triggerType, heraJobHistory.getId());
+            heraJobHistory.setStatus(StatusEnum.SUCCESS.toString());
             masterContext.getDispatcher().forwardEvent(successEvent);
         }
         if (runCount < (retryCount + 1) && !success && !isCancelJob) {
+            log.warn("--------------------------失败任务，准备重试--------------------------");
             runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
         }
     }
@@ -688,40 +712,37 @@ public class Master {
      */
     private void runDebugJob(MasterWorkHolder selectWork, String jobId) {
         final MasterWorkHolder workHolder = selectWork;
-        this.executeJobPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(jobId);
-                history.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
-                masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
-                Exception exception = null;
-                Response response = null;
-                try {
-                    Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder, ExecuteKind.DebugKind, jobId);
-                    response = future.get();
-                } catch (Exception e) {
-                    exception = e;
-                    log.error(String.format("debugId:%s run failed", jobId), e);
-                }
-                boolean success = response.getStatus() == Protocol.Status.OK;
-                if (!success) {
-                    exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
-                    log.info("debug job error");
-                    history = masterContext.getHeraDebugHistoryService().findById(jobId);
-                    HeraDebugFailEvent failEvent = HeraDebugFailEvent.builder()
-                            .debugHistory(BeanConvertUtils.convert(history))
-                            .throwable(exception)
-                            .fileId(history.getFileId())
-                            .build();
-                    masterContext.getDispatcher().forwardEvent(failEvent);
-                } else {
-                    log.info("debug success");
-                    HeraDebugSuccessEvent successEvent = HeraDebugSuccessEvent.builder()
-                            .fileId(history.getFileId())
-                            .history(BeanConvertUtils.convert(history))
-                            .build();
-                    masterContext.getDispatcher().forwardEvent(successEvent);
-                }
+        this.executeJobPool.execute(() -> {
+            HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(jobId);
+            history.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
+            masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
+            Exception exception = null;
+            Response response = null;
+            try {
+                Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder, ExecuteKind.DebugKind, jobId);
+                response = future.get();
+            } catch (Exception e) {
+                exception = e;
+                log.error(String.format("debugId:%s run failed", jobId), e);
+            }
+            boolean success = response.getStatusEnum() == Protocol.Status.OK;
+            if (!success) {
+                exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
+                log.info("debug job error");
+                history = masterContext.getHeraDebugHistoryService().findById(jobId);
+                HeraDebugFailEvent failEvent = HeraDebugFailEvent.builder()
+                        .debugHistory(BeanConvertUtils.convert(history))
+                        .throwable(exception)
+                        .fileId(history.getFileId())
+                        .build();
+                masterContext.getDispatcher().forwardEvent(failEvent);
+            } else {
+                log.info("debug success");
+                HeraDebugSuccessEvent successEvent = HeraDebugSuccessEvent.builder()
+                        .fileId(history.getFileId())
+                        .history(BeanConvertUtils.convert(history))
+                        .build();
+                masterContext.getDispatcher().forwardEvent(successEvent);
             }
         });
     }
@@ -736,6 +757,7 @@ public class Master {
         if (hostGroupId == 0) {
             hostGroupId = HeraGlobalEnvironment.defaultWorkerGroup;
         }
+
         MasterWorkHolder workHolder = null;
         if (masterContext.getHostGroupCache() != null) {
             HeraHostGroupVo hostGroupCache = masterContext.getHostGroupCache().get(hostGroupId);
@@ -748,13 +770,13 @@ public class Master {
                         break;
                     }
                     for (MasterWorkHolder worker : masterContext.getWorkMap().values()) {
-                        if (worker != null && worker.heartBeatInfo != null && worker.heartBeatInfo.host.trim().equals(host.trim())) {
-                            HeartBeatInfo heartBeatInfo = worker.heartBeatInfo;
+                        if (worker != null && worker.getHeartBeatInfo() != null && worker.getHeartBeatInfo().getHost().trim().equals(host.trim())) {
+                            HeartBeatInfo heartBeatInfo = worker.getHeartBeatInfo();
                             if (heartBeatInfo.getMemRate() != null && heartBeatInfo.getCpuLoadPerCore() != null
                                     && heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate() && heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()) {
 
                                 Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getMaxCpuLoadPerCore()) / HeraGlobalEnvironment.getMaxCpuLoadPerCore();
-                                int sum = heartBeatInfo.debugRunning.size() + heartBeatInfo.manualRunning.size() + heartBeatInfo.running.size();
+                                int sum = heartBeatInfo.getDebugRunning().size() + heartBeatInfo.getManualRunning().size() + heartBeatInfo.getRunning().size();
                                 if (assignTaskNum.intValue() > sum) {
                                     workHolder = worker;
                                     break;
@@ -763,7 +785,7 @@ public class Master {
                         } else {
                             if (worker == null) {
                                 log.error("worker is null");
-                            } else if (worker != null && worker.getHeartBeatInfo() == null && worker.getChannel() != null) {
+                            } else if (worker.getHeartBeatInfo() == null && worker.getChannel() != null) {
                                 log.error("worker " + worker.getChannel() + "heart is null");
                             }
                         }
@@ -780,7 +802,7 @@ public class Master {
                 .hostGroupId(debugHistory.getHostGroupId())
                 .build();
         debugHistory.setStatus(StatusEnum.RUNNING);
-        debugHistory.setStartTime(new Date());
+        debugHistory.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) );
         debugHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 进入任务队列");
         masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         masterContext.getDebugQueue().offer(element);

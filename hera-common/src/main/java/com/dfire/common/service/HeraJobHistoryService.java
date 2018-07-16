@@ -33,4 +33,14 @@ public interface HeraJobHistoryService {
     HeraJobHistory findByActionId(String actionId);
 
     Integer updateHeraJobHistoryLogAndStatus(HeraJobHistory build);
+
+    /**
+     * 根据jobId查询运行历史
+     *
+     * @param jobId
+     * @return
+     */
+    List<HeraJobHistory> findByJobId(String jobId);
+
+    HeraJobHistory findLogById(Integer id);
 }

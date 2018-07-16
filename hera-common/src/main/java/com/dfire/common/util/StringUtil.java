@@ -54,6 +54,9 @@ public class StringUtil {
         return buf.toString();
     }
 
+    public static void main(String[] args) {
+        System.out.println(EncoderByMd5("etl123456"));
+    }
     public static Map<String, String> convertStringToMap(String config) {
         if (config == null || "{}".equals(config)) {
             return new HashMap<>(0);

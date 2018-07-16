@@ -52,7 +52,7 @@
 
             <div class="row">
 
-                <div class="col-md-2 panel panel-primary" style="height:10px;padding-bottom:70%">
+                <div class="col-md-3 panel panel-primary" style="height:10px;padding-bottom:70%">
                     <div>
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
@@ -69,17 +69,15 @@
                     </div>
                 </div>
 
-                <div class="col-md-10 panel panel-primary" >
+                <div class="col-md-9 panel panel-primary">
                     <div id="config" class="box box-success" style="height:8px">
                         <div class="box-header with-border">
                             <div class="form-group">
                                 <button id="execute" type="submit" class="btn btn-success btn-sm">执行</button>
                                 <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码
                                 </button>
-                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">上传资源
-                                </button>
-                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">同步任务
-                                </button>
+                                <button id="uploadResource" type="submit" class="btn btn-success btn-sm">上传资源</button>
+                                <button id="syncingTask" type="submit" class="btn btn-success btn-sm">同步任务</button>
                             </div>
                         </div>
                     </div>
@@ -89,15 +87,6 @@
                     <div id="tabContainer">
 
                     </div>
-
-                    <div id="scriptEditor" class="box box-success" style="display: block">
-                        <div class="box-body">
-                            <div class="form-group">
-                                <textarea id="jobScript" class="form-control" rows="35" placeholder="编写脚本 "></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    </br>
 
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs" id="logTab">
@@ -112,7 +101,8 @@
 
                             <!-- /.tab-pane -->
                             <div class="tab-pane" id="tab_2">
-                                <table id="allLogTable" class="allDetailTable"/></table>
+                                <table id="allLogTable" class="allDetailTable">
+                                </table>
                                 <div class="modal" id="debugLogDetail" tabindex="-1" role="dialog"
                                      aria-labelledby="title">
                                     <div class="modal-dialog" style="width: 1300px">

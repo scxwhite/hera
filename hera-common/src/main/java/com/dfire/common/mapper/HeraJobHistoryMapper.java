@@ -61,4 +61,22 @@ public interface HeraJobHistoryMapper {
      */
     @Update("update hera_action_history set log = #{log},status = #{status},end_time = #{endTime} where id = #{id}")
     Integer updateHeraJobHistoryLogAndStatus(HeraJobHistory heraJobHistory);
+
+    /**
+     * 根据jobId查询运行历史
+     *
+     * @param jobId
+     * @return
+     */
+    @Select("select * from hera_action_history where job_id = #{job_id} order by id desc")
+    List<HeraJobHistory> findByJobId(@Param("job_id") String jobId);
+
+    /**
+     * 根据ID查询日志逆袭
+     * @param id
+     * @return
+     */
+    @Select("select log,status from hera_action_history where id = #{id}")
+    HeraJobHistory selectLogById(Integer id);
 }
+

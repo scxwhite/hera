@@ -59,7 +59,7 @@ public class WorkExecuteJob {
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
-        final String historyId = message.getJobId();
+        final String historyId = message.getActionId();
         log.info("worker received master request to run manual job, historyId = {}", historyId);
         final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(historyId));
         return workContext.getWorkThreadPool().submit(() -> {
@@ -89,10 +89,11 @@ public class WorkExecuteJob {
                 String res = exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString();
                 //更新状态和日志
                 workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
-                        HeraJobHistory.builder().
-                                id(history.getId()).
-                                log(history.getLog().getContent()).status(res).
-                                endTime(new Date())
+                        HeraJobHistory.builder()
+                                .id(history.getId())
+                                .log(history.getLog().getContent())
+                                .status(res)
+                                .endTime(new Date())
                                 .build());
 
                 workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
@@ -112,7 +113,7 @@ public class WorkExecuteJob {
             Response response = Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(Operate.Schedule)
-                    .setStatus(status)
+                    .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
             log.info("send execute message, historyId = {}", historyId);
@@ -136,7 +137,7 @@ public class WorkExecuteJob {
             e.printStackTrace();
         }
         // 查看master分发 actionHistoryId
-        final String jobId = message.getJobId();
+        final String jobId = message.getActionId();
         log.info("worker received master request to run schedule, actionId :" + jobId);
         if (workContext.getRunning().containsKey(jobId)) {
             log.info("job is running, can not run again, actionId :" + jobId);
@@ -144,7 +145,7 @@ public class WorkExecuteJob {
                     Response.newBuilder()
                             .setRid(request.getRid())
                             .setOperate(Operate.Schedule)
-                            .setStatus(Status.ERROR)
+                            .setStatusEnum(Status.ERROR)
                             .build()
             );
         }
@@ -202,7 +203,7 @@ public class WorkExecuteJob {
             Response response = Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(Operate.Schedule)
-                    .setStatus(status)
+                    .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
             log.info("send execute message, actionId = " + jobId);
@@ -229,7 +230,6 @@ public class WorkExecuteJob {
         HeraDebugHistoryVo history = workContext.getDebugHistoryService().findById(debugId);
         return workContext.getWorkThreadPool().submit(() -> {
             history.setExecuteHost(WorkContext.host);
-            history.setStartTime(new Date());
             workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
 
             String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -251,7 +251,7 @@ public class WorkExecuteJob {
                 history.getLog().appendHeraException(e);
             } finally {
                 HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
-                heraDebugHistoryVo.setEndTime(new Date());
+                heraDebugHistoryVo.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) );
                 if (exitCode == 0) {
                     heraDebugHistoryVo.setStatus(StatusEnum.SUCCESS);
                 } else {
@@ -274,7 +274,7 @@ public class WorkExecuteJob {
             return Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(Operate.Debug)
-                    .setStatus(status)
+                    .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
         });
