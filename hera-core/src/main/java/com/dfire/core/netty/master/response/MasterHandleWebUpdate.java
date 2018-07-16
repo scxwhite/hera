@@ -13,13 +13,14 @@ import com.dfire.core.netty.master.MasterContext;
 public class MasterHandleWebUpdate {
 
     public WebResponse handleWebUpdate(MasterContext context, WebRequest request) {
-        context.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, request.getId()));
-        WebResponse response = WebResponse.newBuilder()
+        String id = request.getId();
+        context.getMaster().generateSingleAction(Integer.parseInt(id));
+        context.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateJob, id));
+        return WebResponse.newBuilder()
                 .setRid(request.getRid())
                 .setOperate(WebOperate.UpdateJob)
                 .setStatus(Status.OK)
                 .build();
-        return response;
 
     }
 }

@@ -1,5 +1,7 @@
 package com.dfire.config;
 
+import com.dfire.core.util.JwtUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
@@ -7,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -20,6 +23,7 @@ import javax.servlet.http.HttpSession;
 public class WebSecurityConfig extends WebMvcConfigurerAdapter {
 
     public final static String SESSION_KEY = "username";
+    public final static String TOKEN_NAME = "HERA_Token";
 
     @Bean
     public SecurityInterceptor getSecurityInterceptor() {
@@ -29,9 +33,7 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry interceptorRegistry) {
         InterceptorRegistration addRegistry = interceptorRegistry.addInterceptor(getSecurityInterceptor());
-        addRegistry.excludePathPatterns("/error");
-        addRegistry.excludePathPatterns("/login**");
-        addRegistry.excludePathPatterns("/**");
+        addRegistry.excludePathPatterns("/error").excludePathPatterns("/login**");
     }
 
 
@@ -39,13 +41,16 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
 
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-            HttpSession session = request.getSession();
-            if(session.getAttribute(SESSION_KEY) != null) {
+            String heraToken = JwtUtils.getValFromCookies(TOKEN_NAME, request);
+            if (StringUtils.isNotBlank(heraToken) && JwtUtils.verifyToken(heraToken)) {
                 return true;
             }
-            String url = "/login";
-            response.sendRedirect(url);
+            response.sendRedirect("login");
             return false;
         }
+
+
     }
+
+
 }

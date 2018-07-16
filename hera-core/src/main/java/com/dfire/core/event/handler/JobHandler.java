@@ -19,6 +19,7 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
+import com.dfire.common.vo.LogContent;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -107,6 +108,7 @@ public class JobHandler extends AbstractHandler {
      * 2.调度任务加入调度池
      */
     public void handleInitialEvent() {
+
         HeraAction heraAction = heraJobActionService.findById(actionId);
         if (heraAction != null) {
             //对版本表中处于running状态的任务进行重试
@@ -168,7 +170,6 @@ public class JobHandler extends AbstractHandler {
         if (isSchedule) {
             try {
                 createScheduleJob(masterContext.getDispatcher(), heraActionVo);
-                log.info("-----------------start server, create job quartz schedule-----------------");
             } catch (Exception e) {
                 if (e instanceof SchedulerException) {
                     heraActionVo.setAuto(false);
@@ -311,7 +312,6 @@ public class JobHandler extends AbstractHandler {
         if (heraActionVo == null) {
             masterContext.getDispatcher().removeJobHandler(this);
             destroy();
-            log.info("remove quartz schedule, actionId = ", heraActionVo.getId());
             return;
         }
         //自动调度关闭
@@ -320,9 +320,8 @@ public class JobHandler extends AbstractHandler {
             return;
         }
 
-
         /**
-         * 如果是依赖任务 说明原来是独立任务，现在变成依赖任务，需要删除原来的定时调度
+         * 如果是依赖任务 原来可能是独立任务，需要尝试删除原来的定时调度
          * 如果是独立任务,则重新创建quartz调度
          *
          */
@@ -335,38 +334,42 @@ public class JobHandler extends AbstractHandler {
                 e.printStackTrace();
             }
         }
+    }
 
+    private void handleMaintenanceEvent(HeraJobMaintenanceEvent event) {
+        if (event.getType() == Events.UpdateJob && StringUtil.actionIdToJobId(actionId, event.getId())) {
+            autoRecovery();
+        }
+        if (event.getType() == Events.UpdateActions && Objects.equals(actionId, event.getId())) {
+            autoRecovery();
+        }
 
     }
 
-    public void handleMaintenanceEvent(HeraJobMaintenanceEvent event) {
-        if (event.getType() == Events.UpdateJob && actionId.equals(event.getId())) {
-            autoRecovery();
-        }
-        if (event.getType() == Events.UpdateActions && StringUtil.actionIdToJobId(event.getId(), actionId)) {
-            autoRecovery();
-        }
-
-    }
-
-    public void handleLostEvent(HeraJobLostEvent event) {
+    /**
+     * 漏泡重新触发调度事件
+     *
+     * @param event
+     */
+    private void handleLostEvent(HeraJobLostEvent event) {
         if (event.getType() == Events.UpdateJob && actionId.equals(event.getJobId())) {
             HeraActionVo heraActionVo = cache.getHeraActionVo();
             if (heraActionVo != null) {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
 
-                if (heraAction != null && heraAction.getStatus() == null) {
+                if (heraAction != null && StringUtils.isBlank(heraAction.getStatus())) {
                     String currentDate = DateUtil.getTodayStringForAction();
                     if (Long.parseLong(actionId) < Long.parseLong(currentDate)) {
-                        HeraJobHistoryVo history = HeraJobHistoryVo.builder()
+                        HeraJobHistory history = HeraJobHistory.builder()
                                 .illustrate(LogConstant.LOST_JOB_LOG)
-                                .jobId(heraActionVo.getId())
-                                .triggerType(TriggerTypeEnum.SCHEDULE)
-                                .statisticsEndTime(heraActionVo.getStatisticStartTime())
+                                .actionId(heraActionVo.getId())
+                                .jobId(heraActionVo.getJobId())
+                                .triggerType(Integer.parseInt(TriggerTypeEnum.SCHEDULE.toString()))
+                                .statisticEndTime(heraActionVo.getStatisticStartTime())
                                 .operator(heraActionVo.getOwner())
                                 .build();
-                        masterContext.getHeraJobHistoryService().insert(BeanConvertUtils.convert(history));
-                        master.run(history);
+                        masterContext.getHeraJobHistoryService().insert(history);
+                        master.run(BeanConvertUtils.convert(history));
                         log.info("lost job, start schedule :{}", actionId);
                     }
                 }
@@ -381,9 +384,9 @@ public class JobHandler extends AbstractHandler {
      * @param heraActionVo the job name
      */
 
-    public void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
+    private void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
         if (!isNow()) {
-            return ;
+            return;
         }
         JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
         if (masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey) == null) {

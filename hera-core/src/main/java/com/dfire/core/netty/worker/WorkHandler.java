@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 @Slf4j
 public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
-    private CompletionService<Response> completionService = new ExecutorCompletionService<Response>(Executors.newCachedThreadPool());
+    private CompletionService<Response> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
     private WorkContext workContext;
 
     public WorkHandler(final WorkContext workContext) {

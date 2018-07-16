@@ -20,7 +20,7 @@ public class CronParse {
                 || cronDate == null || cronDate.length() < 1) {
             return false;
         } else {
-            CronExpression exp = null;
+            CronExpression exp;
             try {
                 // 初始化cron表达式解析器
                 exp = new CronExpression(cronExpression);
@@ -53,10 +53,9 @@ public class CronParse {
             dd = exp.getNextValidTimeAfter(dd);
             while ((dd.getTime() >= dStart.getTime())
                     && (dd.getTime() <= dEnd.getTime())) {
-                result.add(sdf.format(dd));
+                    result.add(sdf.format(dd));
                 dd = exp.getNextValidTimeAfter(dd);
             }
-            exp = null;
         }
         return true;
     }

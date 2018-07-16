@@ -7,7 +7,7 @@ spring:
     datasource:
         name: default
         type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://common101.my.2dfire-daily.com:3306/hera_test?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+        url: jdbc:mysql://common101.my.2dfire-daily.com:3306/hera?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
         username: twodfire
         password: 123456
         druid:
@@ -38,18 +38,17 @@ hera:
    default-worker-group-id : 1 #默认worker的host组id
    preemption-master-group-id : 1  #抢占master的host组id
    dos2unix-exclude-file: jar;war
-   env : daily
    maxMemRate : 0.8       #已使用内存占总内存的最大比例,默认0.8
    cpuLoadPerCore : 3.0   #cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量，默认3.0
    scanRate : 2000        #队列扫描频率(毫秒)
    scanExceptionRate : 2000  #异常队列扫描频率(毫秒)
    systemMemUserd : 2000  # 系统占用内存
    taskMem : 300          # 每个任务使用内存300M
-   heatBeat : 2           # 心跳传递时间频率
+   heart-beat : 5           # 心跳传递时间频率
    download-dir : /opt/logs/spring-boot
    hdfsLibPath : /hera/hdfs-upload-dir #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上
    schedule-group : online
-
+   max-parallel-num: 1000
    connect.port : 9887 #netty通信的端口
 
    #hadoop 配置文件路径

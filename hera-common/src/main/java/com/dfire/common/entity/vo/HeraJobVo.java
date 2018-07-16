@@ -20,7 +20,7 @@ import java.util.*;
 @AllArgsConstructor
 public class HeraJobVo {
 
-    private String id;
+    private int id;
 
     private String auto;
 

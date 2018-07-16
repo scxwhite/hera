@@ -37,6 +37,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             } else {
                 heraAction = action;
             }
+            heraAction.setAuto(action.getAuto());
             return heraJobActionMapper.update(heraAction);
         } else {
             if (Long.parseLong(heraAction.getId()) < Long.parseLong(DateUtil.getTodayStringForAction())) {
