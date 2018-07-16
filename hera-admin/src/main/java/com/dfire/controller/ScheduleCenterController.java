@@ -1,5 +1,6 @@
 package com.dfire.controller;
 
+import com.cloudera.org.jets3t.service.model.WebsiteConfig;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
@@ -17,6 +18,7 @@ import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.WebSecurityConfig;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.core.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Objects;
@@ -60,13 +63,8 @@ public class ScheduleCenterController {
 
     @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
-    public List<HeraJobTreeNodeVo> initJobTree(HttpSession session) {
+    public List<HeraJobTreeNodeVo> initJobTree() {
         List<HeraJobTreeNodeVo> list = heraJobService.buildJobTree();
-        HeraUser user = (HeraUser) session.getAttribute(WebSecurityConfig.SESSION_KEY);
-        if (user != null) {
-            String name = user.getName();
-
-        }
         return list;
     }
 
@@ -170,13 +168,8 @@ public class ScheduleCenterController {
 
     @RequestMapping(value = "/addJob", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse addJob(HeraJob heraJob, HttpSession session) {
-        Object attribute = session.getAttribute(WebSecurityConfig.SESSION_KEY);
-        if (attribute == null) {
-            return new RestfulResponse(HttpCode.USER_NOT_LOGIN);
-        }
-        HeraUser user = (HeraUser) attribute;
-        heraJob.setOwner(user.getName());
+    public RestfulResponse addJob(HeraJob heraJob, HttpServletRequest request) {
+        heraJob.setOwner(JwtUtils.getObjectFromToken(WebSecurityConfig.TOKEN_NAME, request, WebSecurityConfig.SESSION_KEY));
         return new RestfulResponse(heraJobService.insert(heraJob) > 0 ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
     }
 

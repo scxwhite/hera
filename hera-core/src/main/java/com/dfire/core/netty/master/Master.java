@@ -55,8 +55,8 @@ public class Master {
 
         this.masterContext = masterContext;
         heraActionMap = new HashMap<>();
-        executeJobPool = new ThreadPoolExecutor(2, 2, 0L, TimeUnit.MICROSECONDS,
-                new LinkedBlockingQueue<>(1024), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
+        executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 60L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
         String exeEnvironment = "pre";
         if (HeraGlobalEnvironment.env.equalsIgnoreCase(exeEnvironment)) {
             masterContext.getDispatcher().addDispatcherListener(new HeraStopScheduleJobListener());
@@ -75,7 +75,6 @@ public class Master {
         masterContext.setMaster(this);
         masterContext.refreshHostGroupCache();
         log.info("refresh hostGroup cache");
-
 
 
         TimerTask generateActionTask = new TimerTask() {
@@ -144,7 +143,7 @@ public class Master {
                         removeChannel.add(channel);
                     }
                 }
-                removeChannel.forEach(channel -> workMap.remove(channel));
+                removeChannel.forEach(workMap::remove);
                 masterContext.masterTimer.newTimeout(this, 4, TimeUnit.SECONDS);
             }
         };
@@ -256,11 +255,11 @@ public class Master {
 
             Dispatcher dispatcher = masterContext.getDispatcher();
             if (dispatcher != null) {
-                if (actionMap.size() > 0) {
-                    for (Long id : actionMap.keySet()) {
+                if (heraActionMap.size() > 0) {
+                    for (Long id : heraActionMap.keySet()) {
                         dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
                         if (id > Long.parseLong(currString)) {
-                            masterContext.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id.toString()));
+                            dispatcher.forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id.toString()));
                         }
                     }
                 }
@@ -303,6 +302,7 @@ public class Master {
                         heraAction.setGmtCreate(new Date());
                         heraAction.setJobId(String.valueOf(heraJob.getId()));
                         heraAction.setHistoryId(heraJob.getHistoryId());
+                        heraAction.setAuto(heraJob.getAuto());
                         masterContext.getHeraJobActionService().insert(heraAction);
                         actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
 
@@ -408,6 +408,7 @@ public class Master {
                                 actionNew.setDependencies(actionDependencies.toString());
                                 actionNew.setJobDependencies(heraJob.getDependencies());
                                 actionNew.setJobId(String.valueOf(heraJob.getId()));
+                                actionNew.setAuto(heraJob.getAuto());
                                 if (!actionMap.containsKey(actionId)) {
                                     masterContext.getHeraJobActionService().insert(actionNew);
                                     actionMap.put(Long.parseLong(actionNew.getId()), actionNew);

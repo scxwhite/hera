@@ -3,6 +3,7 @@ package com.dfire.core.lock;
 import com.dfire.common.entity.HeraLock;
 import com.dfire.common.service.HeraHostRelationService;
 import com.dfire.common.service.HeraLockService;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.HeraSchedule;
 import com.dfire.core.util.NetUtils;
@@ -55,9 +56,14 @@ public class DistributeLock {
         heraSchedule = new HeraSchedule(applicationContext);
         TimerTask checkLockTask = new TimerTask() {
             @Override
-            public void run(Timeout timeout) throws Exception {
-                checkLock();
-                workClient.workClientTimer.newTimeout(this, 3, TimeUnit.SECONDS);
+            public void run(Timeout timeout) {
+                try {
+                    checkLock();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    workClient.workClientTimer.newTimeout(this, 3, TimeUnit.SECONDS);
+                }
             }
         };
         workClient.workClientTimer.newTimeout(checkLockTask, 2, TimeUnit.SECONDS);
@@ -108,7 +114,7 @@ public class DistributeLock {
         if (preemptionHostList.contains(host)) {
             return true;
         } else {
-            log.info(host + "is not in master group " + preemptionHostList.toString());
+            log.info(host + " is not in master group " + preemptionHostList.toString());
             return false;
         }
     }

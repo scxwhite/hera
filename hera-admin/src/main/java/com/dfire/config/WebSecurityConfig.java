@@ -41,7 +41,7 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
 
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-            String heraToken = this.getValFromCookies(TOKEN_NAME, request);
+            String heraToken = JwtUtils.getValFromCookies(TOKEN_NAME, request);
             if (StringUtils.isNotBlank(heraToken) && JwtUtils.verifyToken(heraToken)) {
                 return true;
             }
@@ -49,15 +49,7 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
             return false;
         }
 
-        private String getValFromCookies(String tokenName, HttpServletRequest request) {
-            Cookie[] cookies = request.getCookies();
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(tokenName)) {
-                    return cookie.getValue();
-                }
-            }
-            return null;
-        }
+
     }
 
 

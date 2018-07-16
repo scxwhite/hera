@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 @Slf4j
 public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
-    private CompletionService<Response> completionService = new ExecutorCompletionService<Response>(Executors.newCachedThreadPool());
+    private CompletionService<Response> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
     private WorkContext workContext;
 
     public WorkHandler(final WorkContext workContext) {
@@ -81,14 +81,12 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
-                listeners.clear();
                 break;
             case WEB_RESPONSE:
                 final WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }
-                listeners.clear();
                 break;
             default:
                 log.error("can not recognition ");
