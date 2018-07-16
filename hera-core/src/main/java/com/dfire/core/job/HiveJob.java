@@ -126,10 +126,10 @@ public class HiveJob extends ProcessJob {
                     IOUtils.closeQuietly(tmpWriter);
                 }
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add("sh " + tmpFilePath);
+                list.add(shellPrefix + " sh " + tmpFilePath);
             } else {
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add("hive " + sb.toString());
+                list.add(shellPrefix + " hive " + sb.toString());
             }
 
         } else {
