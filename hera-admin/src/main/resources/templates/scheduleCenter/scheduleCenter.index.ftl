@@ -652,8 +652,8 @@
 </div>
 
 
-<div class="modal fade bd-example-modal-lg" id="jobLog" tabindex="-1" role="dialog" aria-labelledby="jobLog" aria-hidden="true">
-    <div class="modal-dialog modal-lg" >
+<div class="modal fade" id="jobLog" tabindex="-1" role="dialog" aria-labelledby="jobLog" aria-hidden="true">
+    <div class="modal-dialog"  style="width: 80%">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="myModalLabel">信息日志</h4>

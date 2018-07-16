@@ -98,10 +98,10 @@ public class DevelopCenterController {
             HeraFile file = heraFileService.findById(heraFile.getId());
 
             HeraDebugHistory history = HeraDebugHistory.builder()
-                    .fileId(heraFile.getId())
+                    .fileId(file.getId())
                     .script(heraFile.getContent())
                     .startTime(new Date())
-                    .owner("pjx")
+                    .owner(file.getOwner())
                     .build();
             if (file.getType().equals("1")) {
                 history.setRunType("hive");

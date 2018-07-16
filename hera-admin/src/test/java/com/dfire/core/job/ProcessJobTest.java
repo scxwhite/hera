@@ -1,10 +1,6 @@
 package com.dfire.core.job;
 
-import org.junit.Test;
-
 import java.io.*;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by xiaosuda on 2018/7/11.
@@ -14,7 +10,8 @@ public class ProcessJobTest {
     public static void main(String[] args) throws IOException, InterruptedException {
 
 
-        ProcessBuilder processBuilder = new ProcessBuilder("ls");
+        String[] commands = {"sudo","-u","pjx","sh","/opt/logs/spring-boot/2018-07-16/debug-480/tmp.sh"};
+        ProcessBuilder processBuilder = new ProcessBuilder(commands);
         processBuilder.directory(new File("/"));
         Process process = processBuilder.start();
 
@@ -37,7 +34,7 @@ public class ProcessJobTest {
         @Override
         public void run() {
             try {
-
+                System.out.println(threadName);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
                 while ((line = reader.readLine()) != null) {
