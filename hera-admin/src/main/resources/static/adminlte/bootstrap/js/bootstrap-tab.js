@@ -58,7 +58,7 @@
         ul_li: '<li><a href="#{0}" data-toggle="tab"><span>{1}</span></a></li>',
         ul_li_close: '<i class="fa fa-remove closeable" title="关闭"></i>',
         div_content: '<div  class="tab-content" id="scriptEditor"></div>',
-        div_content_panel: '<div class="tab-pane fade" id="{0}"><textarea id="fileScript_{1}" class="form-control" rows="35" placeholder="编写脚本 ">{2}</textarea></div>'
+        div_content_panel: '<div class="tab-pane fade" id="{0}"></div>'
     }
 
     //初始化
@@ -117,7 +117,7 @@
         for (var i = 0; i < data.length; i++) {
             if (this.options.loadAll || this.options.showIndex == i) {
                 if (data[i].url) {
-                    $("#" + data[i].id).load(data[i].url, data[i].param);
+                    // $("#" + data[i].id).load(data[i].url, data[i].param);
                     this.stateObj[data[i].id] = true;
                 } else {
                     console.error("id=" + data[i].id + "的tab页未指定url");
@@ -128,7 +128,7 @@
                 (function (id, url, parameter) {
                     self.$element.find(".nav-tabs a[href='#" + id + "']").on('show.bs.tab', function () {
                         if (!self.stateObj[id]) {
-                            $("#" + id).load(url, parameter);
+                            // $("#" + id).load(url, parameter);
                             self.stateObj[id] = true;
                         }
                     });
@@ -152,12 +152,13 @@
 
         this.$element.find(".nav-tabs:eq(0)").append(ul_li);
         //div-content
-        var content_panel = $(this.template.div_content_panel);
-        var div_content_panel = $(this.template.div_content_panel.format(obj.id, obj.id, obj.fileScript));
+        var div_content_panel = $(this.template.div_content_panel.format(obj.id));
+        this.$element.find(".tab-content:eq(0)").append(div_content_panel);
+        var id = obj.id;
 
         this.$element.find(".tab-content:eq(0)").append(div_content_panel);
 
-        $("#" + obj.id).load(obj.url, obj.parameter);
+        // $("#" + obj.id).load(obj.url, obj.parameter);
         this.stateObj[obj.id] = true;
 
         if (obj.closeable) {
