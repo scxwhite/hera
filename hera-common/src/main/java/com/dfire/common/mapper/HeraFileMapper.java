@@ -51,5 +51,7 @@ public interface HeraFileMapper {
     @Lang(HeraSelectLangDriver.class)
     List<HeraFile> findByOwner(HeraFile heraFile);
 
+    @Update("update hera_file set content = #{content} where id = #{id}")
+    int updateContent(HeraFile heraFile);
 
 }

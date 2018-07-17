@@ -1,6 +1,7 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.mapper.HeraDebugHistoryMapper;
 import com.dfire.common.service.HeraDebugHistoryService;
@@ -69,6 +70,11 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     @Override
     public int updateLog(HeraDebugHistory heraDebugHistory) {
         return heraDebugHistoryMapper.updateLog(heraDebugHistory);
+    }
+
+    @Override
+    public HeraJobHistory findLogById(Integer id) {
+        return heraDebugHistoryMapper.findLogById(id);
     }
 
 

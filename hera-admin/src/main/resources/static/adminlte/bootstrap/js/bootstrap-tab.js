@@ -38,17 +38,17 @@
     /**
      * 结构模板
      *  <ul class="nav nav-tabs" id="myTab">
-             <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-             <li><a data-toggle="tab" href="#profile">Profile</a><i class="fa fa-remove closeable" title="关闭"></i></li>
-             <li><a data-toggle="tab" href="#messages">Messages</a></li>
-             <li><a data-toggle="tab" href="#settings">Settings</a></li>
-        </ul>
+     <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+     <li><a data-toggle="tab" href="#profile">Profile</a><i class="fa fa-remove closeable" title="关闭"></i></li>
+     <li><a data-toggle="tab" href="#messages">Messages</a></li>
+     <li><a data-toggle="tab" href="#settings">Settings</a></li>
+     </ul>
 
-        <div class="tab-content">
-             <div class="tab-pane" id="home">home1111</div>
-             <div class="tab-pane active" id="profile">profile11111</div>
-             <div class="tab-pane" id="messages">messages111</div>
-             <div class="tab-pane" id="settings">settings1111</div>
+     <div class="tab-content">
+     <div class="tab-pane" id="home">home1111</div>
+     <div class="tab-pane active" id="profile">profile11111</div>
+     <div class="tab-pane" id="messages">messages111</div>
+     <div class="tab-pane" id="settings">settings1111</div>
      *  </div>
      *
      */
@@ -58,7 +58,7 @@
         ul_li: '<li><a href="#{0}" data-toggle="tab"><span>{1}</span></a></li>',
         ul_li_close: '<i class="fa fa-remove closeable" title="关闭"></i>',
         div_content: '<div  class="tab-content" id="scriptEditor"></div>',
-        div_content_panel: '<div class="tab-pane fade" id="{0}"><textarea id="fileScript_{1}" class="form-control" rows="35" placeholder="编写脚本 ">{2}</textarea></div>'
+        div_content_panel: '<div class="tab-pane fade" id="{0}"></div>'
     }
 
     //初始化
@@ -81,6 +81,10 @@
     //使用模板搭建页面结构
     BaseTab.prototype.builder = function (data) {
         var ul_nav = $(this.template.ul_nav);
+        ul_nav.on("click","li", function () {
+            var id = $(this).children().attr('href').substring(1);
+            setScript(id)
+        })
         var div_content = $(this.template.div_content);
 
         for (var i = 0; i < data.length; i++) {
@@ -95,7 +99,7 @@
             }
             ul_nav.append(ul_li);
             //div-content
-            var div_content_panel = $(this.template.div_content_panel.format(data[i].id, data[i].id, data[i].fileScript));
+            var div_content_panel = $(this.template.div_content_panel.format(data[i].id));
             div_content.append(div_content_panel);
         }
 
@@ -117,7 +121,6 @@
         for (var i = 0; i < data.length; i++) {
             if (this.options.loadAll || this.options.showIndex == i) {
                 if (data[i].url) {
-                    $("#" + data[i].id).load(data[i].url, data[i].param);
                     this.stateObj[data[i].id] = true;
                 } else {
                     console.error("id=" + data[i].id + "的tab页未指定url");
@@ -128,7 +131,6 @@
                 (function (id, url, parameter) {
                     self.$element.find(".nav-tabs a[href='#" + id + "']").on('show.bs.tab', function () {
                         if (!self.stateObj[id]) {
-                            $("#" + id).load(url, parameter);
                             self.stateObj[id] = true;
                         }
                     });
@@ -152,17 +154,16 @@
 
         this.$element.find(".nav-tabs:eq(0)").append(ul_li);
         //div-content
-        var content_panel = $(this.template.div_content_panel);
-        var div_content_panel = $(this.template.div_content_panel.format(obj.id, obj.id, obj.fileScript));
-
+        var div_content_panel = $(this.template.div_content_panel.format(obj.id));
         this.$element.find(".tab-content:eq(0)").append(div_content_panel);
 
-        $("#" + obj.id).load(obj.url, obj.parameter);
         this.stateObj[obj.id] = true;
 
         if (obj.closeable) {
             this.$element.find(".nav-tabs li a[href='#" + obj.id + "'] i.closeable").click(function () {
+
                 var href = $(this).parents("a").attr("href").substring(1);// id
+                var id = localStorage.getItem("id");
 
                 //关闭的时候，tab点击事件，删除tabData中的数据
                 var tabData = JSON.parse(localStorage.getItem('tabData'));
@@ -170,9 +171,12 @@
                     return item['id'] != href;
                 });
                 localStorage.setItem("tabData", JSON.stringify(tabData));
+                var headId  = self.$element.find(".nav-tabs li:eq(0) a").attr("href").substring(1);
 
                 if (self.getCurrentTabId() == href) {
                     self.$element.find(".nav-tabs li:eq(0) a").tab("show");
+
+                    setScript(headId);
                 }
                 $(this).parents("li").remove();
                 $("#" + href).remove();
@@ -205,6 +209,7 @@
             self.addTab(obj);
         } else {
             self.addTab(obj);
+
         }
     }
 

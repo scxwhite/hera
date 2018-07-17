@@ -163,3 +163,19 @@ function getLocalTime(timestamp) {
     var newDate = date.toLocaleDateString().replace(/\//g, "-") + " " + date.toTimeString().substr(0, 8);
     return newDate;
 }
+
+/**
+ * 根据id设置代码区值
+ * @param id
+ */
+
+function setScript(id) {
+    var parameter = "id=" + id;
+    var url = base_url + "/developCenter/find.do";
+    var result = getDataByGet(url, parameter)
+    var script = result['content'];
+    if (script == null || script == '') {
+        script = '';
+    }
+    $("#fileScript").text(script);
+}

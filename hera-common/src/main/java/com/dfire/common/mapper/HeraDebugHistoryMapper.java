@@ -1,6 +1,7 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
@@ -41,7 +42,7 @@ public interface HeraDebugHistoryMapper {
     @Lang(HeraSelectInLangDriver.class)
     List<HeraDebugHistory> findByIds(@Param("list") List<Integer> list);
 
-    @Select("select * from hera_debug_history where file_id = #{fileId} ")
+    @Select("select * from hera_debug_history where file_id = #{fileId} order by id desc ")
     @Lang(HeraSelectLangDriver.class)
     List<HeraDebugHistory> findByFileId(HeraDebugHistory heraDebugHistory);
 
@@ -51,5 +52,6 @@ public interface HeraDebugHistoryMapper {
     @Update("update hera_debug_history set log = #{log}  where id = #{id}")
     int updateLog(HeraDebugHistory heraDebugHistory);
 
-
+    @Select("select * from hera_debug_history where id = #{id}")
+    HeraJobHistory findLogById(Integer id);
 }
