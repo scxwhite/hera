@@ -57,6 +57,7 @@ $(function () {
     function leftClick() {
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
+        localStorage.setItem("id", id);
         var parent = selected['parent'];
         var name = selected['name'];
         var isParent = selected['isParent'];//true false
@@ -65,25 +66,17 @@ $(function () {
         }
 
         var parameter = "id=" + id;
-        var result = null;
+        var url = base_url + "/developCenter/find.do";
+        var result = getDataByGet(url, parameter)
 
-        $.ajax({
-            url: base_url + "/developCenter/find.do",
-            type: "get",
-            async: false,
-            data: parameter,
-            success: function (data) {
-                result = data;
-            }
-        });
         var script = result['content'];
         if (script == null || script == '') {
             script = '';
         }
-        $("id").val(id);
         $("#fileScript").text(script);
 
-        var tabDetail = {id: id, text: name, url: "xx", closeable: true, select: 0, fileScript: script};
+        var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0, fileScript: script};
+        localStorage.setItem("id", id);//记录活动选项卡id
         tabData = JSON.parse(localStorage.getItem('tabData'));
         var b = isInArray(tabData, tabDetail);
         if (b == false) {
@@ -106,24 +99,6 @@ $(function () {
         localStorage.setItem("tabData", JSON.stringify(tabData));
     }
 
-
-    /**
-     * 刷新页面后的定位问题
-     */
-    $('body').on('click', 'a[data-toggle=\'tab\']', function (e) {
-        e.preventDefault()
-        var tab_name = this.getAttribute('href')
-        if (history.pushState) {
-            history.pushState(null, null, tab_name)
-        }
-        else {
-            location.hash = tab_name
-        }
-        localStorage.setItem('activeTab', tab_name);
-
-        $(this).tab('show');
-        return false;
-    });
 
     /**
      * 查看脚本运行日志
@@ -377,15 +352,13 @@ $(function () {
 
     $("#execute").click(function () {
         var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var scriptId = "#fileScript_" + fileId;
-        var fileScript = $(scriptId).val();
+        var fileScript = $("#fileScript").val();
         var parameter = {
             id: fileId,
             content: fileScript
         };
         var result = null;
         var url = base_url + "/developCenter/debug.do";
-
 
         $.ajax({
             url: url,
@@ -409,7 +382,6 @@ $(function () {
         zTree = $.fn.zTree.getZTreeObj("documentTree");
         rMenu = $("#rMenu");
         fixIcon();
-
         var storeData = JSON.parse(localStorage.getItem('tabData'));
         if (storeData != null) {
             for (var i = 0; i < storeData.length; i++) {
@@ -419,6 +391,7 @@ $(function () {
                     loadAll: true
                 });
                 $("#tabContainer").data("tabs").addTab(storeData[i]);
+                setScript(storeData[i]['id']);
             }
         } else {
             var tmp = new Array();

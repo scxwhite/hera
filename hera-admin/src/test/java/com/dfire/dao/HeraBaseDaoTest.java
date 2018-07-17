@@ -182,6 +182,13 @@ public class HeraBaseDaoTest {
     }
 
     @Test
+    public void heraFileContent() {
+        HeraFile heraFile = HeraFile.builder().id("4").content("ls /").build();
+        heraFileService.updateContent(heraFile);
+
+    }
+
+    @Test
     public void heraGroupDaoTest() {
         heraGroup = heraGroupService.findById(3579);
         System.out.println(heraGroup.getConfigs());

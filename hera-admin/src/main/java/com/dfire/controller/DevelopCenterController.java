@@ -96,6 +96,8 @@ public class DevelopCenterController {
 
         return new WebAsyncTask<>(3000, () -> {
             HeraFile file = heraFileService.findById(heraFile.getId());
+            file.setContent(heraFile.getContent());
+            heraFileService.updateContent(heraFile);
 
             HeraDebugHistory history = HeraDebugHistory.builder()
                     .fileId(file.getId())
