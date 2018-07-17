@@ -57,6 +57,7 @@ $(function () {
     function leftClick() {
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
+        localStorage.setItem("id", id);
         var parent = selected['parent'];
         var name = selected['name'];
         var isParent = selected['isParent'];//true false
@@ -65,25 +66,17 @@ $(function () {
         }
 
         var parameter = "id=" + id;
-        var result = null;
+        var url = base_url + "/developCenter/find.do";
+        var result = getDataByGet(url, parameter)
 
-        $.ajax({
-            url: base_url + "/developCenter/find.do",
-            type: "get",
-            async: false,
-            data: parameter,
-            success: function (data) {
-                result = data;
-            }
-        });
         var script = result['content'];
         if (script == null || script == '') {
             script = '';
         }
-        $("id").val(id);
         $("#fileScript").text(script);
 
-        var tabDetail = {id: id, text: name, url: "xx", closeable: true, select: 0, fileScript: script};
+        var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0, fileScript: script};
+        localStorage.setItem("id", id);//记录活动选项卡id
         tabData = JSON.parse(localStorage.getItem('tabData'));
         var b = isInArray(tabData, tabDetail);
         if (b == false) {
@@ -106,24 +99,6 @@ $(function () {
         localStorage.setItem("tabData", JSON.stringify(tabData));
     }
 
-
-    /**
-     * 刷新页面后的定位问题
-     */
-    $('body').on('click', 'a[data-toggle=\'tab\']', function (e) {
-        e.preventDefault()
-        var tab_name = this.getAttribute('href')
-        if (history.pushState) {
-            history.pushState(null, null, tab_name)
-        }
-        else {
-            location.hash = tab_name
-        }
-        localStorage.setItem('activeTab', tab_name);
-
-        $(this).tab('show');
-        return false;
-    });
 
     /**
      * 查看脚本运行日志
@@ -385,18 +360,19 @@ $(function () {
         };
         var result = null;
         var url = base_url + "/developCenter/debug.do";
+        result = getDataByPost(url);
+        console.log(result);
 
-
-        $.ajax({
-            url: url,
-            type: "post",
-            data: JSON.stringify(parameter),
-            contentType: "application/json",
-            dataType: "json",
-            success: function (data) {
-                result = data;
-            }
-        });
+        // $.ajax({
+        //     url: url,
+        //     type: "post",
+        //     data: JSON.stringify(parameter),
+        //     contentType: "application/json",
+        //     dataType: "json",
+        //     success: function (data) {
+        //         result = data;
+        //     }
+        // });
 
     });
 
@@ -409,7 +385,7 @@ $(function () {
         zTree = $.fn.zTree.getZTreeObj("documentTree");
         rMenu = $("#rMenu");
         fixIcon();
-
+        localStorage.setItem("id", "0");//初始化页面的时候活动选项卡页面id设置初始值
         var storeData = JSON.parse(localStorage.getItem('tabData'));
         if (storeData != null) {
             for (var i = 0; i < storeData.length; i++) {

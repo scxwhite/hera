@@ -163,3 +163,4 @@ function getLocalTime(timestamp) {
     var newDate = date.toLocaleDateString().replace(/\//g, "-") + " " + date.toTimeString().substr(0, 8);
     return newDate;
 }
+

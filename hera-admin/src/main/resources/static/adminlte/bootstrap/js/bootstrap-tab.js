@@ -38,17 +38,17 @@
     /**
      * 结构模板
      *  <ul class="nav nav-tabs" id="myTab">
-             <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-             <li><a data-toggle="tab" href="#profile">Profile</a><i class="fa fa-remove closeable" title="关闭"></i></li>
-             <li><a data-toggle="tab" href="#messages">Messages</a></li>
-             <li><a data-toggle="tab" href="#settings">Settings</a></li>
-        </ul>
+     <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+     <li><a data-toggle="tab" href="#profile">Profile</a><i class="fa fa-remove closeable" title="关闭"></i></li>
+     <li><a data-toggle="tab" href="#messages">Messages</a></li>
+     <li><a data-toggle="tab" href="#settings">Settings</a></li>
+     </ul>
 
-        <div class="tab-content">
-             <div class="tab-pane" id="home">home1111</div>
-             <div class="tab-pane active" id="profile">profile11111</div>
-             <div class="tab-pane" id="messages">messages111</div>
-             <div class="tab-pane" id="settings">settings1111</div>
+     <div class="tab-content">
+     <div class="tab-pane" id="home">home1111</div>
+     <div class="tab-pane active" id="profile">profile11111</div>
+     <div class="tab-pane" id="messages">messages111</div>
+     <div class="tab-pane" id="settings">settings1111</div>
      *  </div>
      *
      */
@@ -81,6 +81,9 @@
     //使用模板搭建页面结构
     BaseTab.prototype.builder = function (data) {
         var ul_nav = $(this.template.ul_nav);
+        ul_nav.on("click","li", function () {
+            alert($(this).text());
+        })
         var div_content = $(this.template.div_content);
 
         for (var i = 0; i < data.length; i++) {
@@ -95,7 +98,7 @@
             }
             ul_nav.append(ul_li);
             //div-content
-            var div_content_panel = $(this.template.div_content_panel.format(data[i].id, data[i].id, data[i].fileScript));
+            var div_content_panel = $(this.template.div_content_panel.format(data[i].id));
             div_content.append(div_content_panel);
         }
 
@@ -127,6 +130,7 @@
                 this.stateObj[data[i].id] = false;
                 (function (id, url, parameter) {
                     self.$element.find(".nav-tabs a[href='#" + id + "']").on('show.bs.tab', function () {
+                        console.log(id);
                         if (!self.stateObj[id]) {
                             // $("#" + id).load(url, parameter);
                             self.stateObj[id] = true;
@@ -154,16 +158,15 @@
         //div-content
         var div_content_panel = $(this.template.div_content_panel.format(obj.id));
         this.$element.find(".tab-content:eq(0)").append(div_content_panel);
-        var id = obj.id;
-
-        this.$element.find(".tab-content:eq(0)").append(div_content_panel);
 
         // $("#" + obj.id).load(obj.url, obj.parameter);
         this.stateObj[obj.id] = true;
 
         if (obj.closeable) {
             this.$element.find(".nav-tabs li a[href='#" + obj.id + "'] i.closeable").click(function () {
+
                 var href = $(this).parents("a").attr("href").substring(1);// id
+                var id = localStorage.getItem("id");
 
                 //关闭的时候，tab点击事件，删除tabData中的数据
                 var tabData = JSON.parse(localStorage.getItem('tabData'));
@@ -171,9 +174,19 @@
                     return item['id'] != href;
                 });
                 localStorage.setItem("tabData", JSON.stringify(tabData));
+                var headId  = self.$element.find(".nav-tabs li:eq(0) a").attr("href").substring(1);
 
                 if (self.getCurrentTabId() == href) {
                     self.$element.find(".nav-tabs li:eq(0) a").tab("show");
+
+                    var parameter = "id=" + headId;
+                    var url = base_url + "/developCenter/find.do";
+                    var result = getDataByGet(url, parameter)
+                    var script = result['content'];
+                    if (script == null || script == '') {
+                        script = '';
+                    }
+                    $("#fileScript").text(script);
                 }
                 $(this).parents("li").remove();
                 $("#" + href).remove();
@@ -206,6 +219,7 @@
             self.addTab(obj);
         } else {
             self.addTab(obj);
+
         }
     }
 
