@@ -46,9 +46,6 @@ $(function () {
             lineNumbers: true,
             autofocus: true,
             theme: "paraiso-light",
-            extraKeys: {
-
-            },
             readOnly:true
         });
         if (id != undefined && id != null) {
@@ -58,7 +55,9 @@ $(function () {
         }
         codeMirror.display.wrapper.style.height = "600px";
         codeMirror.on('keypress', function () {
-            codeMirror.showHint();
+            if (!codeMirror.getOption('readOnly')) {
+                codeMirror.showHint();
+            }
         })
     }
 
@@ -175,7 +174,6 @@ $(function () {
                 groupId: focusId
             },
             success: function (data) {
-
                 if (data.code == 200) {
                     location.reload(false);
                 } else {
