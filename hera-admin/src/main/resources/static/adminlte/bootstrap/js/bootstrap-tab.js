@@ -82,11 +82,8 @@
     BaseTab.prototype.builder = function (data) {
         var ul_nav = $(this.template.ul_nav);
         ul_nav.on("click","li", function () {
-            debugger
             var id = $(this).children().attr('href').substring(1);
-
             setScript(id)
-
         })
         var div_content = $(this.template.div_content);
 
@@ -124,7 +121,6 @@
         for (var i = 0; i < data.length; i++) {
             if (this.options.loadAll || this.options.showIndex == i) {
                 if (data[i].url) {
-                    // $("#" + data[i].id).load(data[i].url, data[i].param);
                     this.stateObj[data[i].id] = true;
                 } else {
                     console.error("id=" + data[i].id + "的tab页未指定url");
@@ -134,9 +130,7 @@
                 this.stateObj[data[i].id] = false;
                 (function (id, url, parameter) {
                     self.$element.find(".nav-tabs a[href='#" + id + "']").on('show.bs.tab', function () {
-                        console.log(id);
                         if (!self.stateObj[id]) {
-                            // $("#" + id).load(url, parameter);
                             self.stateObj[id] = true;
                         }
                     });
@@ -163,7 +157,6 @@
         var div_content_panel = $(this.template.div_content_panel.format(obj.id));
         this.$element.find(".tab-content:eq(0)").append(div_content_panel);
 
-        // $("#" + obj.id).load(obj.url, obj.parameter);
         this.stateObj[obj.id] = true;
 
         if (obj.closeable) {

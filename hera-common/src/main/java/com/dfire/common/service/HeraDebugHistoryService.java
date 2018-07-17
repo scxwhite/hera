@@ -1,6 +1,7 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraDebugHistory;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
@@ -33,4 +34,5 @@ public interface HeraDebugHistoryService {
     int updateLog(HeraDebugHistory heraDebugHistory);
 
 
+    HeraJobHistory findLogById(Integer id);
 }

@@ -82,21 +82,12 @@
                         </div>
                     </div>
                     </br>
-
                 <#--tab框-->
-                    <div id="tabContainer">
+                    <div id="tabContainer"></div>
 
+                    <div class="box box-success" id="scriptEditor" style="display:block">
+                        <textarea id="fileScript" class="form-control" rows="35" placeholder="编写脚本 "></textarea>
                     </div>
-
-                    <div id="scriptEditor" class="box box-success" style="display: block">
-                        <div class="box-body">
-                            <div class="form-group">
-                                <textarea id="fileScript" class="form-control" rows="35" placeholder="编写脚本 "></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    </br>
-
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs" id="logTab">
                             <li class="active"><a href="#tab_1" data-toggle="tab">编辑</a></li>
@@ -114,18 +105,24 @@
                                 </table>
                                 <div class="modal" id="debugLogDetail" tabindex="-1" role="dialog"
                                      aria-labelledby="title">
-                                    <div class="modal-dialog" style="width: 1300px">
+                                    <div id="debugLog" class="modal-dialog" style="width: 1300px">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <button type="button" class="close" data-dismiss="modal">&time</button>
-                                                <div class="modal-title">
-                                                    详细日志
-                                                </div>
+                                                <div class="modal-title">详细日志</div>
                                             </div>
                                             <div class="modal-body">
-                                                <table class="table " id="debugLogDetailTable">
-                                                </table>
+                                                <table class="table " id="debugLogDetailTable"></table>
                                             </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">返回
+                                                </button>
+                                                <button type="button" class="btn btn-info add-btn" name="refreshLog">
+                                                    刷新
+                                                </button>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -143,12 +140,12 @@
         </section>
     </div>
 <#--content-wrapper-->
-
+</div>
 <@netCommon.commonScript />
-    <script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
-    <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
-    <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
-    <script src="${request.contextPath}/js/developCenter.js"></script>
+<script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
+<script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
+<script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
+<script src="${request.contextPath}/js/developCenter.js"></script>
 
 </body>
 

@@ -111,9 +111,10 @@ $(function () {
             $('#allLogTable').bootstrapTable("destroy");
             var tableObject = new TableInit(targetId);
             tableObject.init();
-            $("#scriptEditor").attr("style", "display:none");
+            debugger
+            $("#scriptEditor").css("display","none");
         } else {
-            $("#scriptEditor").attr("style", "display:block");
+            $("#scriptEditor").css("display","block");
 
         }
 
@@ -403,8 +404,43 @@ $(function () {
 
 
 var TableInit = function (targetId) {
-    console.log(targetId);
+    debugger
     var parameter = {fileId: targetId};
+    var actionRow;
+    var onExpand = -1;
+    var table = $('#debugLogDetailTable');
+    var timerHandler = null;
+
+    function debugLog() {
+        $.ajax({
+            url: base_url + "/developCenter/getLog.do",
+            type: "get",
+            data: {
+                id: actionRow.id,
+            },
+            success: function (data) {
+                if (data.status != 'running') {
+                    window.clearInterval(timerHandler);
+                }
+                var logArea = $('#log_' + actionRow.id);
+                logArea[0].innerHTML = data.log;
+                logArea.scrollTop(logArea.prop("scrollHeight"), 200);
+                actionRow.log = data.log;
+                actionRow.status = data.status;
+            }
+        })
+    }
+
+    $('#debugLog').on('hide.bs.modal', function () {
+        if (timerHandler != null) {
+            window.clearInterval(timerHandler)
+        }
+    });
+
+    $('#debugLog [name="refreshLog"]').on('click', function () {
+        table.bootstrapTable('refresh');
+        table.bootstrapTable('expandRow', onExpand);
+    });
 
     var oTableInit = new Object();
     oTableInit.init = function () {
@@ -462,6 +498,19 @@ var TableInit = function (targetId) {
                     '</textarea>' + '<form role="form">' + '<div class="form-group">';
                 return html;
             },
+            onExpandRow: function (index, row) {
+                actionRow = row;
+                if (index != onExpand) {
+                    table.bootstrapTable("collapseRow", onExpand);
+                }
+                onExpand = index;
+                if (row.status == "running") {
+                    timerHandler = window.setInterval(debugLog, 3000);
+                }
+            },
+            onCollapseRow: function (index, row) {
+                window.clearInterval(timerHandler)
+            }
 
         });
     }

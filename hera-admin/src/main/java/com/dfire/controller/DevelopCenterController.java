@@ -2,6 +2,7 @@ package com.dfire.controller;
 
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.service.HeraDebugHistoryService;
@@ -149,5 +150,13 @@ public class DevelopCenterController {
                 workClient.cancelJobFromWeb(kind, id));
 
     }
+
+
+    @RequestMapping(value = "getLog", method = RequestMethod.GET)
+    @ResponseBody
+    public HeraJobHistory getJobLog(Integer id) {
+        return debugHistoryService.findLogById(id);
+    }
+
 
 }
