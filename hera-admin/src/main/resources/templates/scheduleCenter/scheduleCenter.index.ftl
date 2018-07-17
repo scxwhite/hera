@@ -5,6 +5,9 @@
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
     <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/paraiso-light.css">
 </head>
 
 <style type="text/css">
@@ -424,8 +427,8 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>脚本</label>
-                                <textarea class="form-control" rows="10" placeholder="Enter ..."
-                                          disabled></textarea>
+                                <textarea id="editor" name="editor" rows="70"
+                                          >select 1</textarea>
                             </div>
                         </div>
                     </div>
@@ -653,7 +656,7 @@
 
 
 <div class="modal fade" id="jobLog" tabindex="-1" role="dialog" aria-labelledby="jobLog" aria-hidden="true">
-    <div class="modal-dialog"  style="width: 80%">
+    <div class="modal-dialog" style="width: 80%">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="myModalLabel">信息日志</h4>
@@ -675,7 +678,15 @@
 
 
 <@netCommon.commonScript />
+
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/lib/codemirror.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/mode/shell/shell.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/anyword-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/sql-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/mode/python/python.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
