@@ -36,6 +36,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 heraAction.setReadyDependency(action.getReadyDependency());
             } else {
                 action.setAuto(heraAction.getAuto());
+                action.setGmtModified(new Date());
                 heraAction = action;
             }
             return heraJobActionMapper.update(heraAction);
