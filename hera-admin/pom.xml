@@ -137,8 +137,16 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>./static/adminlte/bootstrap/fonts/**</exclude>
+                </excludes>
+            </resource>
+            <!-- fonts file cannot use filter as the data structure of byte file will be changed via filter -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
                 <includes>
-                    <include>**/**</include>
+                    <include>./static/adminlte/bootstrap/fonts/**</include>
                 </includes>
             </resource>
         </resources>
@@ -169,6 +177,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+
         </plugins>
     </build>
 
