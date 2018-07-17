@@ -92,7 +92,7 @@ public class ScheduleCenterController {
      */
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask<String> manual(String actionId, Integer triggerType, String script) {
+    public WebAsyncTask<String> manual(String actionId, Integer triggerType) {
         ExecuteKind kind = null;
         TriggerTypeEnum triggerTypeEnum = null;
         if (triggerType == 1) {
@@ -116,7 +116,7 @@ public class ScheduleCenterController {
         actionHistory.setHostGroupId(heraAction.getHistoryId());
         actionHistory.setProperties(configs);
         heraJobHistoryService.insert(actionHistory);
-        heraAction.setScript(script);
+        heraAction.setScript(heraJob.getScript());
         heraJobActionService.update(heraAction);
 
         return new WebAsyncTask<>(3000, () -> {

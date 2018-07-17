@@ -5,6 +5,8 @@ $(function () {
     var treeObj;
     var selected;
     var triggerType;
+    var codeMirror;
+    var editor = $('#editor');
     var setting = {
         view: {
             showLine: false
@@ -39,11 +41,24 @@ $(function () {
      * @param id    节点ID
      */
     function setDefaultSelectNode(id) {
+        codeMirror = CodeMirror.fromTextArea(editor[0], {
+            mode: "sql",
+            lineNumbers: true,
+            autofocus: true,
+            theme: "paraiso-light",
+            extraKeys: {
+
+            },
+            readOnly:true
+        });
         if (id != undefined && id != null) {
             treeObj.selectNode(treeObj.getNodeByParam("id", id));
             leftClick();
         }
-
+        codeMirror.display.wrapper.style.height = "600px";
+        codeMirror.on('keypress', function () {
+            codeMirror.showHint();
+        })
     }
 
     /**
@@ -59,10 +74,10 @@ $(function () {
             val2 = "block";
             val3 = false;
         }
+        codeMirror.setOption("readOnly", status != 0);
         $('#jobMessage').css("display", val1);
         $('#jobMessageEdit').css("display", val2);
         $('#config textarea').attr('disabled', val3);
-        $('#script textarea').attr('disabled', val3);
         $('#resource textarea').attr('disabled', val3);
         $('#jobOperate').css("display", val1);
         $('#editOperator').css("display", val2);
@@ -202,12 +217,7 @@ $(function () {
      * 编辑返回
      */
     $('#editOperator [name="back"]').on('click', function () {
-        if (!isGroup) {
-            changeEditStyle(1);
-        } else {
-            changeGroupStyle(1);
-
-        }
+        leftClick();
     });
     /**
      * 保存按钮
@@ -217,7 +227,7 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
-                "&script=" + $('#script textarea').val() + "&resource=" + $('#resource textarea').val() +
+                "&script=" + codeMirror.getValue() + "&resource=" + $('#resource textarea').val() +
                 "&id=" + focusId,
                 type: "post",
                 success: function (data) {
@@ -287,7 +297,6 @@ $(function () {
         $('#editOperator').css("display", status2);
         var config = $("#config textarea");
         var resource = $("#resource textarea");
-        config.attr("disabled", status3);
         resource.attr("disabled", status3);
         $("#resource").css("display", "block");
         $("#config").css("display", "block");
@@ -356,7 +365,13 @@ $(function () {
                 },
                 success: function (data) {
                     focusItem = data;
-                    $("#script textarea").val(data.script);
+                    if (data.runType == "Shell") {
+                        codeMirror.setOption("mode", "text/x-sh");
+                    } else {
+                        codeMirror.setOption("mode", "text/x-hive");
+                    }
+                    codeMirror.setValue(data.script);
+                    codeMirror.refresh();
                     var isShow = data.scheduleType === 0;
                     $('#dependencies').css("display", isShow ? "none" : "");
                     $('#heraDependencyCycle').css("display", isShow ? "none" : "");
@@ -440,8 +455,7 @@ $(function () {
             async: false,
             data: {
                 actionId: $("#selectJobVersion").val(),
-                triggerType: triggerType,
-                script: $('#script textarea').val()
+                triggerType: triggerType
             },
             success: function (data) {
 
@@ -538,7 +552,7 @@ var JobLogTable = function (jobId) {
                 }
                 var logArea = $('#log_' + actionRow.id);
                 logArea[0].innerHTML = data.log;
-                logArea.scrollTop(logArea.prop("scrollHeight"),200);
+                logArea.scrollTop(logArea.prop("scrollHeight"), 200);
                 actionRow.log = data.log;
                 actionRow.status = data.status;
             }
@@ -599,14 +613,14 @@ var JobLogTable = function (jobId) {
                     formatter: function (row) {
                         return getLocalTime(row);
                     }
-                },{
+                }, {
                     field: "illustrate",
                     title: "说明",
                     formatter: function (val) {
                         if (val == null) {
                             return val;
                         }
-                        return "<span class='label label-info' data-toggle='tooltip' title='"+val+"' >"+val.slice(0, 6)+"</span>";
+                        return "<span class='label label-info' data-toggle='tooltip' title='" + val + "' >" + val.slice(0, 6) + "</span>";
                     }
                 },
                 {
@@ -666,7 +680,6 @@ var JobLogTable = function (jobId) {
     };
     return oTableInit;
 };
-
 
 
 function cancelJob(historyId) {
