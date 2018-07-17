@@ -54,6 +54,7 @@ $(function () {
         if (id != undefined && id != null) {
             treeObj.selectNode(treeObj.getNodeByParam("id", id));
             leftClick();
+            leftClick();
         }
         codeMirror.display.wrapper.style.height = "600px";
         codeMirror.on('keypress', function () {
