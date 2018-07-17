@@ -352,27 +352,24 @@ $(function () {
 
     $("#execute").click(function () {
         var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var scriptId = "#fileScript_" + fileId;
-        var fileScript = $(scriptId).val();
+        var fileScript = $("#fileScript").val();
         var parameter = {
             id: fileId,
             content: fileScript
         };
         var result = null;
         var url = base_url + "/developCenter/debug.do";
-        result = getDataByPost(url);
-        console.log(result);
 
-        // $.ajax({
-        //     url: url,
-        //     type: "post",
-        //     data: JSON.stringify(parameter),
-        //     contentType: "application/json",
-        //     dataType: "json",
-        //     success: function (data) {
-        //         result = data;
-        //     }
-        // });
+        $.ajax({
+            url: url,
+            type: "post",
+            data: JSON.stringify(parameter),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                result = data;
+            }
+        });
 
     });
 
@@ -385,7 +382,6 @@ $(function () {
         zTree = $.fn.zTree.getZTreeObj("documentTree");
         rMenu = $("#rMenu");
         fixIcon();
-        localStorage.setItem("id", "0");//初始化页面的时候活动选项卡页面id设置初始值
         var storeData = JSON.parse(localStorage.getItem('tabData'));
         if (storeData != null) {
             for (var i = 0; i < storeData.length; i++) {
@@ -395,6 +391,7 @@ $(function () {
                     loadAll: true
                 });
                 $("#tabContainer").data("tabs").addTab(storeData[i]);
+                setScript(storeData[i]['id']);
             }
         } else {
             var tmp = new Array();

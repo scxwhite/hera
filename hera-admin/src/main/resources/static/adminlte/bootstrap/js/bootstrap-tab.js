@@ -82,7 +82,11 @@
     BaseTab.prototype.builder = function (data) {
         var ul_nav = $(this.template.ul_nav);
         ul_nav.on("click","li", function () {
-            alert($(this).text());
+            debugger
+            var id = $(this).children().attr('href').substring(1);
+
+            setScript(id)
+
         })
         var div_content = $(this.template.div_content);
 
@@ -179,14 +183,7 @@
                 if (self.getCurrentTabId() == href) {
                     self.$element.find(".nav-tabs li:eq(0) a").tab("show");
 
-                    var parameter = "id=" + headId;
-                    var url = base_url + "/developCenter/find.do";
-                    var result = getDataByGet(url, parameter)
-                    var script = result['content'];
-                    if (script == null || script == '') {
-                        script = '';
-                    }
-                    $("#fileScript").text(script);
+                    setScript(headId);
                 }
                 $(this).parents("li").remove();
                 $("#" + href).remove();

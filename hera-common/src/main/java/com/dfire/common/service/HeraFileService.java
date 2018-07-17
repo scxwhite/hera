@@ -31,5 +31,7 @@ public interface HeraFileService {
 
     List<HeraFileTreeNodeVo> buildFileTree(String user);
 
+    int updateContent(HeraFile heraFile);
+
 
 }
