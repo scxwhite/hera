@@ -51,7 +51,6 @@ $(function () {
         if (id != undefined && id != null) {
             treeObj.selectNode(treeObj.getNodeByParam("id", id));
             leftClick();
-            leftClick();
         }
         codeMirror.display.wrapper.style.height = "600px";
         codeMirror.on('keypress', function () {
@@ -108,7 +107,26 @@ $(function () {
         $('#jobLog').modal('show');
 
     });
+    $("#groupOperate [name='addGroup']").on('click', function () {
+        $('#addGroupModal [name="groupName"]').val("");
+        $('#addGroupModal [name="groupType"]').val("0");
+        $('#addGroupModal').modal('show');
 
+    });
+
+    $('#addGroupModal [name="addBtn"]').on('click', function () {
+        $.ajax({
+            url: base_url + "/scheduleCenter/addGroup.do",
+            type:"post",
+            data: {
+                name: $('#addGroupModal [name="groupName"]').val(),
+                parent: $('#addGroupModal [name="groupType"]').val()
+            },
+            success: function (data) {
+                $('#addGroupModal').modal('hide');
+            }
+        })
+    });
 
     /**
      * 版本生成
@@ -370,7 +388,6 @@ $(function () {
                         codeMirror.setOption("mode", "text/x-hive");
                     }
                     codeMirror.setValue(data.script);
-                    codeMirror.refresh();
                     var isShow = data.scheduleType === 0;
                     $('#dependencies').css("display", isShow ? "none" : "");
                     $('#heraDependencyCycle').css("display", isShow ? "none" : "");
