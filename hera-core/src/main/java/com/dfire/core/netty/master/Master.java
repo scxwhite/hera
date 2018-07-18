@@ -84,7 +84,8 @@ public class Master {
                 masterContext.masterTimer.newTimeout(this, 1, TimeUnit.HOURS);
             }
         };
-        masterContext.masterTimer.newTimeout(generateActionTask, 0, TimeUnit.HOURS);
+        //延迟加载  避免定时调度未启动
+        masterContext.masterTimer.newTimeout(generateActionTask, 20, TimeUnit.SECONDS);
 
         /**
          * 扫描任务等待队列，可获得worker的任务将执行
@@ -225,6 +226,7 @@ public class Master {
             String currString = DateUtil.getTodayStringForAction();
             if (executeHour == 23) {
                 Tuple<String, Date> nextDayString = DateUtil.getNextDayString();
+                //例如：今天 2018.07.17 23:50  currString = 2018.07.18 now = 2018.07.18 23:50
                 currString = nextDayString.getSource();
                 now = nextDayString.getTarget();
             }
@@ -255,10 +257,10 @@ public class Master {
 
             Dispatcher dispatcher = masterContext.getDispatcher();
             if (dispatcher != null) {
-                if (heraActionMap.size() > 0) {
-                    for (Long id : heraActionMap.keySet()) {
+                if (actionMap.size() > 0) {
+                    for (Long id : actionMap.keySet()) {
                         dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
-                        if (id > Long.parseLong(currString)) {
+                        if (id >= Long.parseLong(currString)) {
                             dispatcher.forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id.toString()));
                         }
                     }
@@ -303,9 +305,9 @@ public class Master {
                         heraAction.setJobId(String.valueOf(heraJob.getId()));
                         heraAction.setHistoryId(heraJob.getHistoryId());
                         heraAction.setAuto(heraJob.getAuto());
+                        heraAction.setGmtModified(new Date());
                         masterContext.getHeraJobActionService().insert(heraAction);
                         actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
-
                     });
                 }
             }
@@ -397,7 +399,6 @@ public class Master {
                                         }
                                         actionDependencies.append(",");
                                         actionDependencies.append(Long.parseLong(otherActionId) / 1000000 * 1000000 + Long.parseLong(dependency));
-
                                     }
                                 }
                                 HeraAction actionNew = new HeraAction();
@@ -409,6 +410,7 @@ public class Master {
                                 actionNew.setJobDependencies(heraJob.getDependencies());
                                 actionNew.setJobId(String.valueOf(heraJob.getId()));
                                 actionNew.setAuto(heraJob.getAuto());
+                                actionNew.setGmtModified(new Date());
                                 if (!actionMap.containsKey(actionId)) {
                                     masterContext.getHeraJobActionService().insert(actionNew);
                                     actionMap.put(Long.parseLong(actionNew.getId()), actionNew);
