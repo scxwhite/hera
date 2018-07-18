@@ -411,7 +411,6 @@ var TableInit = function (targetId) {
 
 
     function debugLog() {
-        debugger
         $.ajax({
             url: base_url + "/developCenter/getLog.do",
             type: "get",
@@ -502,9 +501,7 @@ var TableInit = function (targetId) {
                     table.bootstrapTable("collapseRow", onExpand);
                 }
                 onExpand = index;
-                console.log(row.status)
                 if (row.status == "RUNNING") {
-                    console.log('time internval')
                     timerHandler = window.setInterval(debugLog, 200);
                 }
             },

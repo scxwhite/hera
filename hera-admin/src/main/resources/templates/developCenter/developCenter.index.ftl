@@ -100,7 +100,7 @@
 
                         <div class="tab-content">
                             <div class="tab-pane active" id="tab_1">
-                                <textarea id="logDetail" class="form-control" rows="35" placeholder="运行日志 "></textarea>
+                                <#--<textarea id="logDetail" class="form-control" rows="35" placeholder="运行日志 "></textarea>-->
                             </div>
 
                             <!-- /.tab-pane -->
