@@ -52,7 +52,7 @@
 
             <div class="row">
 
-                <div class="col-md-3 panel panel-primary" style="height:10px;padding-bottom:70%">
+                <div class="col-md-3 panel panel-primary colStyle" style="height:10px;padding-bottom:70%">
                     <div>
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
@@ -69,7 +69,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-9 panel panel-primary">
+                <div class="col-md-9 panel panel-primary colStyle" style="white-space:nowrap;">
                     <div id="config" class="box box-success" style="height:8px">
                         <div class="box-header with-border">
                             <div class="form-group">
