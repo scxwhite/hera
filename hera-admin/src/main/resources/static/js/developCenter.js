@@ -419,7 +419,7 @@ var TableInit = function (targetId) {
                 id: actionRow.id,
             },
             success: function (data) {
-                if (data.status != 'running') {
+                if (data.status != 'RUNNING') {
                     window.clearInterval(timerHandler);
                 }
                 var logArea = $('#log_' + actionRow.id);
@@ -480,7 +480,7 @@ var TableInit = function (targetId) {
                     formatter: function (index, row) {
                         var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
                         var html2 = '<a href="javascript:getLog(\'' + index + ')">查看日志</a>';
-                        if (row['status'] == 'running') {
+                        if (row['status'] == 'RUNNING') {
                             return html;
                         } else {
                             return html2;
@@ -502,9 +502,10 @@ var TableInit = function (targetId) {
                     table.bootstrapTable("collapseRow", onExpand);
                 }
                 onExpand = index;
-                if (row.status == "running") {
+                console.log(row.status)
+                if (row.status == "RUNNING") {
                     console.log('time internval')
-                    timerHandler = window.setInterval(debugLog, 3000);
+                    timerHandler = window.setInterval(debugLog, 200);
                 }
             },
             onCollapseRow: function (index, row) {
