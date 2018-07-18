@@ -419,7 +419,7 @@ var TableInit = function (targetId) {
                 id: actionRow.id,
             },
             success: function (data) {
-                if (data.status != 'RUNNING') {
+                if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
                 var logArea = $('#log_' + actionRow.id);
