@@ -152,7 +152,7 @@ public class DevelopCenterController {
     }
 
 
-    @RequestMapping(value = "getLog", method = RequestMethod.GET)
+    @RequestMapping(value = "/getLog", method = RequestMethod.GET)
     @ResponseBody
     public HeraJobHistory getJobLog(Integer id) {
         return debugHistoryService.findLogById(id);

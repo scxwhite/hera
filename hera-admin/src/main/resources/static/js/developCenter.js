@@ -108,14 +108,13 @@ $(function () {
         var num = $(this).find("a").attr("href");
         if (num == "#tab_2") {
             var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
-            $('#allLogTable').bootstrapTable("destroy");
+            $('#debugLogDetailTable').bootstrapTable("destroy");
             var tableObject = new TableInit(targetId);
             tableObject.init();
-            debugger
-            $("#scriptEditor").css("display","none");
+            $("#scriptEditor").attr("style","display:none;");
+            $("#debugLogDetail").modal('show');
         } else {
-            $("#scriptEditor").css("display","block");
-
+            $("#scriptEditor").attr("style","display:block;");
         }
 
     });
@@ -216,7 +215,6 @@ $(function () {
 
 
     $("#addHiveFile").click(function () {
-        debugger
         hideRMenu();
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
@@ -404,14 +402,16 @@ $(function () {
 
 
 var TableInit = function (targetId) {
-    debugger
     var parameter = {fileId: targetId};
     var actionRow;
     var onExpand = -1;
     var table = $('#debugLogDetailTable');
     var timerHandler = null;
+    var oTableInit = new Object();
+
 
     function debugLog() {
+        debugger
         $.ajax({
             url: base_url + "/developCenter/getLog.do",
             type: "get",
@@ -442,11 +442,9 @@ var TableInit = function (targetId) {
         table.bootstrapTable('expandRow', onExpand);
     });
 
-    var oTableInit = new Object();
     oTableInit.init = function () {
-        var table = $('#allLogTable');
         table.bootstrapTable({
-            url: base_url + "/developCenter/findDebugHistory",
+            url: base_url + "/developCenter/findDebugHistory.do",
             queryParams: parameter,
             pagination: true,
             showPaginationSwitch: false,
@@ -493,9 +491,9 @@ var TableInit = function (targetId) {
             detailView: true,
             detailFormatter: function (index, row) {
                 var log = row["log"]['content'];
-                var html = '<form role="form">' + '<div class="form-group">' + '<textarea class="form-control" rows="30" >'
+                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
                     + log +
-                    '</textarea>' + '<form role="form">' + '<div class="form-group">';
+                    '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;
             },
             onExpandRow: function (index, row) {
@@ -505,6 +503,7 @@ var TableInit = function (targetId) {
                 }
                 onExpand = index;
                 if (row.status == "running") {
+                    console.log('time internval')
                     timerHandler = window.setInterval(debugLog, 3000);
                 }
             },

@@ -83,11 +83,15 @@
                     </div>
                     </br>
                 <#--tab框-->
-                    <div id="tabContainer"></div>
+                    <div id="tabContainer">
 
-                    <div class="box box-success" id="scriptEditor" style="display:block">
+                    </div>
+
+                    <div id="scriptEditor" class="box box-success">
                         <textarea id="fileScript" class="form-control" rows="35" placeholder="编写脚本 "></textarea>
                     </div>
+                    </br>
+
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs" id="logTab">
                             <li class="active"><a href="#tab_1" data-toggle="tab">编辑</a></li>
@@ -101,9 +105,7 @@
 
                             <!-- /.tab-pane -->
                             <div class="tab-pane" id="tab_2">
-                                <table id="allLogTable" class="allDetailTable">
-                                </table>
-                                <div class="modal" id="debugLogDetail" tabindex="-1" role="dialog"
+                                <div class="modal fade" id="debugLogDetail" tabindex="-1" role="dialog"
                                      aria-labelledby="title">
                                     <div id="debugLog" class="modal-dialog" style="width: 1300px">
                                         <div class="modal-content">
