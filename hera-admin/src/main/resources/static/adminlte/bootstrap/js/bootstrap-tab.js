@@ -57,7 +57,7 @@
         ul_nav: '<ul id="myTab"  class="nav nav-tabs"></ul>',
         ul_li: '<li><a href="#{0}" data-toggle="tab"><span>{1}</span></a></li>',
         ul_li_close: '<i class="fa fa-remove closeable" title="关闭"></i>',
-        div_content: '<div  class="tab-content" id="scriptEditor"></div>',
+        div_content: '<div  class="tab-content" ></div>',
         div_content_panel: '<div class="tab-pane fade" id="{0}"></div>'
     }
 
@@ -83,7 +83,8 @@
         var ul_nav = $(this.template.ul_nav);
         ul_nav.on("click","li", function () {
             var id = $(this).children().attr('href').substring(1);
-            setScript(id)
+            $("#scriptEditor").attr("style","display:block;");
+            setScript(id);
         })
         var div_content = $(this.template.div_content);
 

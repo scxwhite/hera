@@ -173,6 +173,12 @@ public class ScheduleCenterController {
         return new RestfulResponse(heraJobService.insert(heraJob) > 0 ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
     }
 
+    @RequestMapping(value = "/addGroup", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse addJob(HeraGroup heraGroup, HttpServletRequest request) {
+        return new RestfulResponse(heraGroupService.insert(heraGroup) > 0 ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+    }
+
     @RequestMapping(value = "/changeSwitch", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse changeSwitch(Integer id) {
@@ -219,9 +225,8 @@ public class ScheduleCenterController {
             kind = ExecuteKind.ScheduleKind;
         }
         ExecuteKind finalKind = kind;
-        return new WebAsyncTask<String>(3000, () ->
+        return new WebAsyncTask<>(3000, () ->
                 workClient.cancelJobFromWeb(finalKind, id));
-
     }
 
     @RequestMapping(value = "getLog", method = RequestMethod.GET)
@@ -233,7 +238,6 @@ public class ScheduleCenterController {
 
     private void updateJobToMaster(boolean result, Integer id) {
         if (result) {
-
             ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(
                     1, 1, 10L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("updateJob"), new ThreadPoolExecutor.AbortPolicy());
             poolExecutor.execute(() -> {

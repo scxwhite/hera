@@ -653,7 +653,48 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="addGroupModal"
+     aria-hidden="true">
+    <div class="modal-dialog" style="height:100px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">添加组</h4>
+            </div>
+            <div class="modal-body">
 
+                <div class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-8 col-md-8 col-lg-8">
+                            <div class="form-group">
+                                <label class="control-label col-sm-4 col-lg-4 col-md-4">目录名称</label>
+                                <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                    <input class="form-control" type="text" name="groupName">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-sm-4 col-lg-4 col-md-4">目录类型</label>
+                                <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                    <select class="form-control" name="groupType">
+                                        <option value="0" selected>大目录</option>
+                                        <option value="1">小目录</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-info add-btn" name="addBtn">添加</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="jobLog" tabindex="-1" role="dialog" aria-labelledby="jobLog" aria-hidden="true">
     <div class="modal-dialog" style="width: 80%">
