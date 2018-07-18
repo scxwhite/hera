@@ -144,6 +144,13 @@
 <#--content-wrapper-->
 </div>
 <@netCommon.commonScript />
+<script src="${request.contextPath}/plugins/codemirror/lib/codemirror.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/mode/shell/shell.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/anyword-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/sql-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/mode/python/python.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
