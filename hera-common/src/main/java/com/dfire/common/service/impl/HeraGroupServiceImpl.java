@@ -9,6 +9,7 @@ import graph.JobGroupGraphTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,7 +27,8 @@ public class HeraGroupServiceImpl implements HeraGroupService {
 
     @Override
     public HeraGroup getRootGroup() {
-        HeraGroup rootGroup = findById(3578);
+        //TODO ROOT不应该直接指定 因该根据parent = 0 进行判断
+        HeraGroup rootGroup = findById(-1);
         return rootGroup;
     }
 

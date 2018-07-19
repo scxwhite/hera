@@ -8,6 +8,7 @@ import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
 import com.dfire.common.enums.HttpCode;
+import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.service.HeraGroupService;
@@ -29,6 +30,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -42,7 +45,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Controller
 @RequestMapping("/scheduleCenter")
-public class ScheduleCenterController {
+public class ScheduleCenterController extends BaseHeraController {
 
     @Autowired
     HeraJobService heraJobService;
@@ -168,15 +171,21 @@ public class ScheduleCenterController {
 
     @RequestMapping(value = "/addJob", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse addJob(HeraJob heraJob, HttpServletRequest request) {
-        heraJob.setOwner(JwtUtils.getObjectFromToken(WebSecurityConfig.TOKEN_NAME, request, WebSecurityConfig.SESSION_KEY));
-        return new RestfulResponse(heraJobService.insert(heraJob) > 0 ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+    public RestfulResponse addJob(HeraJob heraJob) {
+        heraJob.setOwner(getOwner());
+        heraJob.setScheduleType(JobScheduleTypeEnum.Independent.getType());
+        return new RestfulResponse(heraJobService.insert(heraJob) > 0, String.valueOf(heraJob.getId()));
     }
 
     @RequestMapping(value = "/addGroup", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse addJob(HeraGroup heraGroup, HttpServletRequest request) {
-        return new RestfulResponse(heraGroupService.insert(heraGroup) > 0 ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+    public RestfulResponse addJob(HeraGroup heraGroup) {
+        Date date = new Date();
+        heraGroup.setGmtModified(date);
+        heraGroup.setGmtCreate(date);
+        heraGroup.setOwner(getOwner());
+        heraGroup.setExisted(1);
+        return new RestfulResponse(heraGroupService.insert(heraGroup) > 0, String.valueOf(heraGroup.getId() == null ? -1 : heraGroup.getId()));
     }
 
     @RequestMapping(value = "/changeSwitch", method = RequestMethod.POST)

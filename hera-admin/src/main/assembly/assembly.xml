@@ -42,14 +42,6 @@
             <outputDirectory>/conf</outputDirectory>
         </fileSet>
 
-        <!-- 环境变量文件 -->
-        <fileSet>
-            <directory>${basedir}/${project.build.directory}/classes</directory>
-            <includes>
-                <include>env.conf</include>
-            </includes>
-            <outputDirectory>/</outputDirectory>
-        </fileSet>
     </fileSets>
 
     <dependencySets>
