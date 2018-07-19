@@ -5,6 +5,9 @@
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
     <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/paraiso-light.css">
 </head>
 
 <style type="text/css">
@@ -87,10 +90,13 @@
 
                     </div>
 
-                    <div id="scriptEditor" class="box box-success">
-                        <textarea id="fileScript" class="form-control" rows="35" placeholder="编写脚本 "></textarea>
+                    <div id="scriptEditor" class="box box-danger " >
+                        <div class="box-body">
+                            <div class="form-group">
+                                <textarea id="fileScript" name="editor" rows="70">select 1</textarea>
+                            </div>
+                        </div>
                     </div>
-                    </br>
 
                     <div class="nav-tabs-custom">
                         <ul class="nav nav-tabs" id="logTab">
@@ -154,6 +160,7 @@
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
+<script src="${request.contextPath}/js/common.js"></script>
 <script src="${request.contextPath}/js/developCenter.js"></script>
 
 </body>

@@ -1,7 +1,9 @@
 package com.dfire.controller;
 
-import com.cloudera.org.jets3t.service.model.WebsiteConfig;
-import com.dfire.common.entity.*;
+import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraGroup;
+import com.dfire.common.entity.HeraJob;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
@@ -27,9 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
