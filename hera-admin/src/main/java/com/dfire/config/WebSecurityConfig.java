@@ -1,9 +1,11 @@
 package com.dfire.config;
 
+import com.dfire.controller.BaseHeraController;
 import com.dfire.core.util.JwtUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -50,6 +52,11 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
         }
 
 
+        @Override
+        public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+            BaseHeraController.remove();
+            super.postHandle(request, response, handler, modelAndView);
+        }
     }
 
 

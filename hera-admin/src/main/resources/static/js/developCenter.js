@@ -1,3 +1,4 @@
+var codeMirror;
 $(function () {
 
     /**
@@ -50,6 +51,10 @@ $(function () {
     var addCount = 1;
 
     var zNodes = getDataByPost(base_url + "/developCenter/init.do");
+    var editor = $("#fileScript");
+
+
+
 
     /**
      * 点击脚本的事件
@@ -68,12 +73,12 @@ $(function () {
         var parameter = "id=" + id;
         var url = base_url + "/developCenter/find.do";
         var result = getDataByGet(url, parameter)
-
         var script = result['content'];
         if (script == null || script == '') {
             script = '';
         }
-        $("#fileScript").text(script);
+
+       setScript( id);
 
         var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0, fileScript: script};
         localStorage.setItem("id", id);//记录活动选项卡id
@@ -111,10 +116,10 @@ $(function () {
             $('#debugLogDetailTable').bootstrapTable("destroy");
             var tableObject = new TableInit(targetId);
             tableObject.init();
-            $("#scriptEditor").attr("style","display:none;");
+            $("#scriptEditor").attr("style", "display:none;");
             $("#debugLogDetail").modal('show');
         } else {
-            $("#scriptEditor").attr("style","display:block;");
+            $("#scriptEditor").attr("style", "display:block;");
         }
 
     });
@@ -377,10 +382,28 @@ $(function () {
      *
      */
     $(document).ready(function () {
+
         $.fn.zTree.init($("#documentTree"), setting, zNodes);
         zTree = $.fn.zTree.getZTreeObj("documentTree");
         rMenu = $("#rMenu");
         fixIcon();
+        var currentId;
+
+        codeMirror = CodeMirror.fromTextArea(editor[0], {
+            mode: "sql",
+            lineNumbers: true,
+            autofocus: true,
+            theme: "paraiso-light",
+            readOnly:false
+        });
+        codeMirror.display.wrapper.style.height = "600px";
+        codeMirror.on('keypress', function () {
+            if (!codeMirror.getOption('readOnly')) {
+                codeMirror.showHint();
+            }
+        });
+
+
         var storeData = JSON.parse(localStorage.getItem('tabData'));
         if (storeData != null) {
             for (var i = 0; i < storeData.length; i++) {
@@ -390,7 +413,8 @@ $(function () {
                     loadAll: true
                 });
                 $("#tabContainer").data("tabs").addTab(storeData[i]);
-                setScript(storeData[i]['id']);
+                currentId = storeData[i]['id'];
+                setScript( storeData[i]['id']);
             }
         } else {
             var tmp = new Array();
@@ -521,3 +545,31 @@ function cancelJob(historyId) {
     getDataByGet(url, parameter)
 
 }
+
+/**
+ * 根据id设置代码区值
+ * @param id
+ */
+
+
+function setScript(id) {
+
+    var parameter = "id=" + id;
+    var url = base_url + "/developCenter/find.do";
+    var result = getDataByGet(url, parameter)
+
+
+    var type = result['type'];
+    if (type == '2') {
+        codeMirror.setOption("mode", "text/x-hive");
+    } else if (type == '1') {
+        codeMirror.setOption("mode", "text/x-sh");
+    }
+    var script = result['content'];
+    if (script == null || script == '') {
+        script = '';
+    }
+    codeMirror.setValue(script);
+
+}
+
