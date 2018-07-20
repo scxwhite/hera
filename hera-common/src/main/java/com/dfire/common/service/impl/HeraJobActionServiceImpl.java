@@ -39,6 +39,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 if (!isExpire) {
                     action.setAuto(heraAction.getAuto());
                     action.setGmtModified(new Date());
+                    action.setScript(heraAction.getScript());
                 }
                 heraAction = action;
             }
