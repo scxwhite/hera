@@ -4,14 +4,12 @@ import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.mapper.HeraFileMapper;
 import com.dfire.common.service.HeraFileService;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.dfire.common.service.HeraUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -29,10 +27,6 @@ public class HeraFileServiceImpl implements HeraFileService {
 
     @Autowired
     private HeraFileMapper heraFileMapper;
-
-    @Autowired
-    private HeraUserService heraUserService;
-
 
     @Override
     public int insert(HeraFile heraFile) {
@@ -84,7 +78,7 @@ public class HeraFileServiceImpl implements HeraFileService {
      */
     @Override
     public List<HeraFileTreeNodeVo> buildFileTree(String user) {
-        List<HeraFile> fileVoList = this.findByOwner("biadmin");
+        List<HeraFile> fileVoList = this.findByOwner(user);
         List<HeraFileTreeNodeVo> list = fileVoList.stream().map(file -> {
             HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
             if (file.getParent() == null || StringUtils.isBlank(file.getParent())) {

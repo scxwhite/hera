@@ -15,7 +15,7 @@ $(function () {
         rules: {
             name: {
                 required: true,
-                minlength: 5,
+                minlength: 3,
                 maxlength: 18
             },
             password: {
@@ -79,24 +79,24 @@ $(function () {
         rules: {
             userName: {
                 required: true,
-                minlength: 5,
+                minlength: 4,
                 maxlength: 18
             },
             password: {
                 required: true,
-                minlength: 5,
+                minlength: 4,
                 maxlength: 18
             }
         },
         messages: {
             userName: {
                 required: "请输入登录账号.",
-                minlength: "登录账号不应低于5位",
+                minlength: "登录账号不应低于4位",
                 maxlength: "登录账号不应超过18位"
             },
             password: {
                 required: "请输入登录密码.",
-                minlength: "登录密码不应低于5位",
+                minlength: "登录密码不应低于4位",
                 maxlength: "登录密码不应超过18位"
             }
         },

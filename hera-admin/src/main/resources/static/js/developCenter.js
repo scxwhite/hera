@@ -377,6 +377,34 @@ $(function () {
 
     });
 
+
+    /**
+     * 点击执行选中代码执行逻辑
+     */
+    $("#executeSelector").click(function () {
+        var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+        var fileScript = codeMirror.getSelection();
+        var parameter = {
+            id: fileId,
+            content: fileScript
+        };
+        var result = null;
+        var url = base_url + "/developCenter/debugSelectCode.do";
+
+        $.ajax({
+            url: url,
+            type: "post",
+            data: JSON.stringify(parameter),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                result = data;
+            }
+        });
+
+    });
+
+
     /**
      * 初始化开发中心页面
      *
