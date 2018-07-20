@@ -69,7 +69,7 @@
                     <div class="box box-success">
                         <div class="box-body">
 
-                            <div>
+                            <div style="overflow: auto">
                                 <ul id="jobTree" class="ztree"></ul>
                             </div>
                         </div>
