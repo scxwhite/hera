@@ -37,6 +37,9 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 heraAction.setReadyDependency(action.getReadyDependency());
             } else {
                 if (!isExpire) {
+                    action.setJobDependencies(heraAction.getJobDependencies());
+                    action.setReadyDependency(heraAction.getReadyDependency());
+                    action.setDependencies(heraAction.getDependencies());
                     action.setAuto(heraAction.getAuto());
                     action.setGmtModified(new Date());
                     action.setScript(heraAction.getScript());

@@ -306,6 +306,9 @@ public class Master {
                         heraAction.setHistoryId(heraJob.getHistoryId());
                         heraAction.setAuto(heraJob.getAuto());
                         heraAction.setGmtModified(new Date());
+                        heraAction.setJobDependencies(null);
+                        heraAction.setDependencies(null);
+                        heraAction.setReadyDependency(null);
                         masterContext.getHeraJobActionService().insert(heraAction);
                         actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
                     });
