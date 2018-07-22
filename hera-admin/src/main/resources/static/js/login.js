@@ -40,7 +40,7 @@ $(function () {
             },
             description: {
                 required: true,
-                minlength: 20,
+                minlength: 10,
                 maxlength: 200
             }
         },
