@@ -85,6 +85,11 @@ public class JobHandler extends AbstractHandler {
         return false;
     }
 
+    /**
+     * 接受到任务事件广播处理逻辑
+     *
+     * @param event
+     */
     @Override
     public void handleEvent(ApplicationEvent event) {
         if (event instanceof HeraJobSuccessEvent) {
