@@ -1,7 +1,5 @@
 package com.dfire.core.quartz;
 
-import com.dfire.core.event.handler.JobHandler;
-import com.dfire.core.job.HeraQuartzJob;
 import org.junit.Test;
 import org.quartz.*;
 

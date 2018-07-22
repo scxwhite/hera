@@ -1,4 +1,4 @@
-package com.dfire.core.job;
+package com.dfire.core.quartz;
 
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.event.HeraScheduleTriggerEvent;
