@@ -623,11 +623,11 @@ public class Master {
      */
     private void runScheduleJobContext(MasterWorkHolder work, String actionId, int runCount, int retryCount, int retryWaitTime) {
 
-        log.info("重试次数：{},重试时间：{}", retryCount, retryWaitTime);
+        log.debug("重试次数：{},重试时间：{},actionId:{}", retryCount, retryWaitTime, actionId);
         runCount++;
         boolean isCancelJob = false;
         if (runCount > 1) {
-            log.warn("任务重试，睡眠：{}秒", retryWaitTime);
+            log.debug("任务重试，睡眠：{}秒", retryWaitTime);
             try {
                 Thread.sleep(retryWaitTime * 60 * 1000);
             } catch (InterruptedException e) {
@@ -669,7 +669,7 @@ public class Master {
         try {
             Future<Response> future = new MasterExecuteJob().executeJob(masterContext, work,
                     ExecuteKind.ScheduleKind, heraJobHistory.getId());
-            response = future.get();
+            response = future.get(3, TimeUnit.HOURS);
         } catch (Exception e) {
             log.error("schedule job run error :" + actionId, e);
             jobStatus.setStatus(StatusEnum.FAILED);
@@ -677,7 +677,7 @@ public class Master {
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
         }
         boolean success = response.getStatusEnum() == Protocol.Status.OK;
-        log.info("job_id 执行结果" + actionId + "---->" + response.getStatusEnum());
+        log.debug("job_id 执行结果" + actionId + "---->" + response.getStatusEnum());
 
         if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
                 || heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER)) {
@@ -703,7 +703,7 @@ public class Master {
             masterContext.getDispatcher().forwardEvent(successEvent);
         }
         if (runCount < (retryCount + 1) && !success && !isCancelJob) {
-            log.warn("--------------------------失败任务，准备重试--------------------------");
+            log.debug("--------------------------失败任务，准备重试--------------------------");
             runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
         }
     }
