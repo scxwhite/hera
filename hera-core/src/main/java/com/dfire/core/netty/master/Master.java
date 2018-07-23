@@ -669,7 +669,7 @@ public class Master {
         try {
             Future<Response> future = new MasterExecuteJob().executeJob(masterContext, work,
                     ExecuteKind.ScheduleKind, heraJobHistory.getId());
-            response = future.get(3, TimeUnit.HOURS);
+            response = future.get();
         } catch (Exception e) {
             log.error("schedule job run error :" + actionId, e);
             jobStatus.setStatus(StatusEnum.FAILED);
