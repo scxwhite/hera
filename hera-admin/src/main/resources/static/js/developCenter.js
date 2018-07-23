@@ -54,8 +54,6 @@ $(function () {
     var editor = $("#fileScript");
 
 
-
-
     /**
      * 点击脚本的事件
      */
@@ -78,9 +76,9 @@ $(function () {
             script = '';
         }
 
-       setScript( id);
+        setScript(id);
 
-        var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0, fileScript: script};
+        var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
         localStorage.setItem("id", id);//记录活动选项卡id
         tabData = JSON.parse(localStorage.getItem('tabData'));
         var b = isInArray(tabData, tabDetail);
@@ -116,10 +114,7 @@ $(function () {
             $('#debugLogDetailTable').bootstrapTable("destroy");
             var tableObject = new TableInit(targetId);
             tableObject.init();
-            $("#scriptEditor").attr("style", "display:none;");
             $("#debugLogDetail").modal('show');
-        } else {
-            $("#scriptEditor").attr("style", "display:block;");
         }
 
     });
@@ -377,6 +372,70 @@ $(function () {
 
     });
 
+
+    /**
+     * 点击执行选中代码执行逻辑
+     */
+    $("#executeSelector").click(function () {
+        var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+        var fileScript = codeMirror.getSelection();
+        var parameter = {
+            id: fileId,
+            content: fileScript
+        };
+        var result = null;
+        var url = base_url + "/developCenter/debugSelectCode.do";
+
+        $.ajax({
+            url: url,
+            type: "post",
+            data: JSON.stringify(parameter),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                result = data;
+            }
+        });
+
+    });
+
+
+    /**
+     * 文件上传
+     */
+
+    $("#uploadResource").click(function () {
+        $("#uploadFile").modal('show');
+
+        $("#fileForm").fileinput({
+            uploadUrl: base_url + "/uploadResource/upload.do",
+            maxFileCount: 10,
+            enctype: 'multipart/form-data',
+            uploadExtraData:function (previewId, index) {
+                console.log( base_url + "/uploadResource/upload.do");
+                return {
+                    "id": 1
+                };
+            }
+        }).on("fileuploaded", function (event, data) {
+            var response = data.response;
+            var message = response.msg;
+            var msg = "<b>" + message + "</b>"
+            if (response.success == false) {
+                $("#responseResult").html(msg);
+            }
+            if (response.success == true) {
+                $("#responseResult").html(msg);
+            }
+        });
+    });
+
+
+    $("#closeUploadModal").click(function () {
+        $("#uploadFile").modal('hide');
+    });
+
+
     /**
      * 初始化开发中心页面
      *
@@ -394,7 +453,7 @@ $(function () {
             lineNumbers: true,
             autofocus: true,
             theme: "paraiso-light",
-            readOnly:false
+            readOnly: false
         });
         codeMirror.display.wrapper.style.height = "600px";
         codeMirror.on('keypress', function () {
@@ -414,7 +473,7 @@ $(function () {
                 });
                 $("#tabContainer").data("tabs").addTab(storeData[i]);
                 currentId = storeData[i]['id'];
-                setScript( storeData[i]['id']);
+                setScript(storeData[i]['id']);
             }
         } else {
             var tmp = new Array();
