@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -75,6 +74,8 @@ public class HeraJobServiceImpl implements HeraJobService {
     public List<HeraJobTreeNodeVo> buildJobTree() {
         List<HeraGroup> groups = groupService.getAll();
         List<HeraJob> jobs = heraJobMapper.getAll();
+        groups.sort((x, y) -> x.getName().trim().compareTo(y.getName().trim()));
+        jobs.sort((x, y) -> x.getName().trim().compareTo(y.getName().trim()));
         List<HeraJobTreeNodeVo> list = groups.stream()
                 .filter(group -> group.getExisted() == 1)
                 .map(g -> HeraJobTreeNodeVo.builder().id(g.getId() + "").parent(g.getParent() + "").directory(g.getDirectory()).isParent(true).name(g.getName() + "(" + g.getId() + ")").build()
