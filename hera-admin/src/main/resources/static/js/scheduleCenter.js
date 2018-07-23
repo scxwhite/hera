@@ -41,23 +41,11 @@ $(function () {
      * @param id    节点ID
      */
     function setDefaultSelectNode(id) {
-        codeMirror = CodeMirror.fromTextArea(editor[0], {
-            mode: "sql",
-            lineNumbers: true,
-            autofocus: true,
-            theme: "paraiso-light",
-            readOnly:true
-        });
+
         if (id != undefined && id != null) {
             treeObj.selectNode(treeObj.getNodeByParam("id", id));
             leftClick();
         }
-        codeMirror.display.wrapper.style.height = "600px";
-        codeMirror.on('keypress', function () {
-            if (!codeMirror.getOption('readOnly')) {
-                codeMirror.showHint();
-            }
-        })
     }
 
     /**
@@ -117,13 +105,19 @@ $(function () {
     $('#addGroupModal [name="addBtn"]').on('click', function () {
         $.ajax({
             url: base_url + "/scheduleCenter/addGroup.do",
-            type:"post",
+            type: "post",
             data: {
                 name: $('#addGroupModal [name="groupName"]').val(),
-                parent: $('#addGroupModal [name="groupType"]').val()
+                directory: $('#addGroupModal [name="groupType"]').val(),
+                parent: focusId
             },
             success: function (data) {
                 $('#addGroupModal').modal('hide');
+                if (data.success == true) {
+                    localStorage.setItem("defaultId", data.msg);
+                    location.reload(false);
+
+                }
             }
         })
     });
@@ -192,10 +186,11 @@ $(function () {
                 groupId: focusId
             },
             success: function (data) {
-                if (data.code == 200) {
+                if (data.success == true) {
+                    localStorage.setItem("defaultId", data.msg)
                     location.reload(false);
                 } else {
-                    dealCode(data);
+                    alert("发生错误，请联系管理员")
                 }
 
             }
@@ -387,7 +382,10 @@ $(function () {
                     } else {
                         codeMirror.setOption("mode", "text/x-hive");
                     }
-                    codeMirror.setValue(data.script);
+                    if (data.script != null) {
+                        codeMirror.setValue(data.script);
+                    }
+                    codeMirror.refresh();
                     var isShow = data.scheduleType === 0;
                     $('#dependencies').css("display", isShow ? "none" : "");
                     $('#heraDependencyCycle').css("display", isShow ? "none" : "");
@@ -538,7 +536,22 @@ $(function () {
         zTree = $.fn.zTree.getZTreeObj("jobTree");
         rMenu = $("#rMenu");
         fixIcon();//调用修复图标的方法。方法如下：
-        setDefaultSelectNode(localStorage.getItem("defaultId"))
+        codeMirror = CodeMirror.fromTextArea(editor[0], {
+            mode: "sql",
+            lineNumbers: true,
+            theme: "paraiso-light",
+            readOnly: true,
+            matchBrackets: true,
+            smartIndent : true
+        });
+
+        codeMirror.display.wrapper.style.height = "600px";
+        codeMirror.on('keypress', function () {
+            if (!codeMirror.getOption('readOnly')) {
+                codeMirror.showHint();
+            }
+        });
+        setDefaultSelectNode(localStorage.getItem("defaultId"));
     });
 
 

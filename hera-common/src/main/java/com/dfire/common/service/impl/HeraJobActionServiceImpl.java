@@ -29,19 +29,22 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     @Override
     public int insert(HeraAction heraAction) {
         HeraAction action = heraJobActionMapper.findById(heraAction);
+        boolean isExpire = Long.parseLong(heraAction.getId()) < Long.parseLong(DateUtil.getTodayStringForAction());
         if (action != null) {
             if (action.getStatus() != null && !StatusEnum.RUNNING.toString().equals(action.getStatus())) {
                 heraAction.setStatus(action.getStatus());
                 heraAction.setHistoryId(action.getHistoryId());
                 heraAction.setReadyDependency(action.getReadyDependency());
             } else {
-                action.setAuto(heraAction.getAuto());
-                action.setGmtModified(new Date());
+                if (!isExpire) {
+                    action.setAuto(heraAction.getAuto());
+                    action.setGmtModified(new Date());
+                }
                 heraAction = action;
             }
             return heraJobActionMapper.update(heraAction);
         } else {
-            if (Long.parseLong(heraAction.getId()) < Long.parseLong(DateUtil.getTodayStringForAction())) {
+            if (isExpire) {
                 heraAction.setStatus(StatusEnum.FAILED.toString());
             }
             return heraJobActionMapper.insert(heraAction);

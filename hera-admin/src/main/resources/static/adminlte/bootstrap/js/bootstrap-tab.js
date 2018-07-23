@@ -81,10 +81,10 @@
     //使用模板搭建页面结构
     BaseTab.prototype.builder = function (data) {
         var ul_nav = $(this.template.ul_nav);
-        ul_nav.on("click","li", function () {
+        ul_nav.on("click", "li", function () {
             var id = $(this).children().attr('href').substring(1);
-            $("#scriptEditor").attr("style","display:block;");
-            setScript(id);
+            $("#scriptEditor").attr("style", "display:block;");
+            setScript( id);
         })
         var div_content = $(this.template.div_content);
 
@@ -172,12 +172,12 @@
                     return item['id'] != href;
                 });
                 localStorage.setItem("tabData", JSON.stringify(tabData));
-                var headId  = self.$element.find(".nav-tabs li:eq(0) a").attr("href").substring(1);
+                var headId = self.$element.find(".nav-tabs li:eq(0) a").attr("href").substring(1);
 
                 if (self.getCurrentTabId() == href) {
                     self.$element.find(".nav-tabs li:eq(0) a").tab("show");
 
-                    setScript(headId);
+                     setScript(headId);
                 }
                 $(this).parents("li").remove();
                 $("#" + href).remove();
