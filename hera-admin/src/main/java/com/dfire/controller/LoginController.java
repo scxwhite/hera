@@ -74,6 +74,7 @@ public class LoginController {
     @ResponseBody
     public RestfulResponse register(HeraUser user) {
         HeraUser check = heraUserService.findByName(user.getName());
+        check.setIsEffective(0);
         if (check != null) {
             return new RestfulResponse(false, "用户名已存在");
         }

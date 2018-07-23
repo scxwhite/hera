@@ -21,6 +21,9 @@
 
 	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
 
+	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.css"></link>
+	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput-rtl.min.css"></link>
+
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -55,6 +58,9 @@
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+
+    <script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.js"></script>
+
 <#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>
 

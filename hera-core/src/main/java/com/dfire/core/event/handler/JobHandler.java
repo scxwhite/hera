@@ -19,12 +19,11 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
-import com.dfire.common.vo.LogContent;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import com.dfire.core.job.CancelHadoopJob;
-import com.dfire.core.job.HeraQuartzJob;
+import com.dfire.core.quartz.HeraQuartzJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
@@ -86,6 +85,11 @@ public class JobHandler extends AbstractHandler {
         return false;
     }
 
+    /**
+     * 接受到任务事件广播处理逻辑
+     *
+     * @param event
+     */
     @Override
     public void handleEvent(ApplicationEvent event) {
         if (event instanceof HeraJobSuccessEvent) {

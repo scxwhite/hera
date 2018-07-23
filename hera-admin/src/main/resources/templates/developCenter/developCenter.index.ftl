@@ -55,6 +55,27 @@
 
             <div class="row">
 
+                <div class="modal" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="title">
+                    <div class="modal-dialog" style="width: 600px" >
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"></button>
+                                <div class="modal-title"><h5>上传文件</h5></div>
+                            </div>
+                            <div class="modal-body">
+                                <div id="responseResult" class="modal-title"></div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <input  multiple  id="fileForm" name="fileForm" type="file" class="file-loading" data-show-preview="false" >
+                                <br>
+                                <button class="btn btn-primary" id="closeUploadModal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-3 panel panel-primary colStyle" style="height:10px;padding-bottom:70%">
                     <div>
                         <ul id="documentTree" class="ztree"></ul>
@@ -77,8 +98,7 @@
                         <div class="box-header with-border">
                             <div class="form-group">
                                 <button id="execute" type="submit" class="btn btn-success btn-sm">执行</button>
-                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码
-                                </button>
+                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码</button>
                                 <button id="uploadResource" type="submit" class="btn btn-success btn-sm">上传资源</button>
                                 <button id="syncingTask" type="submit" class="btn btn-success btn-sm">同步任务</button>
                             </div>
@@ -116,7 +136,7 @@
                                     <div id="debugLog" class="modal-dialog" style="width: 1300px">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal">&time</button>
+                                                <button type="button" class="close" data-dismiss="modal"></button>
                                                 <div class="modal-title">详细日志</div>
                                             </div>
                                             <div class="modal-body">
