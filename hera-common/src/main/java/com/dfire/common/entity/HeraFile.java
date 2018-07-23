@@ -31,6 +31,9 @@ public class HeraFile {
      */
     private String content;
 
+    /**
+     * 1 shell 2 hive
+     */
     private String type;
 
     private Date gmtCreate;

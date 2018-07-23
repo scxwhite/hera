@@ -24,7 +24,7 @@ public class DagLoopUtil {
     private boolean hasCheck;
 
     public DagLoopUtil(Integer edgeSize) {
-        this.edgeSize = edgeSize;
+        this.edgeSize = edgeSize + 1;
         init();
     }
 

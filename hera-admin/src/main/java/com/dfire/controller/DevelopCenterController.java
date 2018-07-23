@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Controller
 @RequestMapping("/developCenter")
-public class DevelopCenterController {
+public class DevelopCenterController  extends BaseHeraController{
 
     @Autowired
     HeraFileService heraFileService;
@@ -49,7 +51,8 @@ public class DevelopCenterController {
     @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
     public List<HeraFileTreeNodeVo> initFileTree() {
-        List<HeraFileTreeNodeVo> list = heraFileService.buildFileTree("biadmin");
+        String owner = getOwner();
+        List<HeraFileTreeNodeVo> list = heraFileService.buildFileTree(owner);
         return list;
     }
 
@@ -106,9 +109,42 @@ public class DevelopCenterController {
                     .startTime(new Date())
                     .owner(file.getOwner())
                     .build();
-            if (file.getType().equals("1")) {
+            if (file.getType().equals(FileTypeEnum.Hive.toString())) {
                 history.setRunType("hive");
-            } else if (file.getType().equals("2")) {
+            } else if (file.getType().equals(FileTypeEnum.Shell.toString())) {
+                history.setRunType("shell");
+            }
+            String newId = debugHistoryService.insert(history);
+            workClient.executeJobFromWeb(ExecuteKind.DebugKind, newId);
+            return file.getId();
+        });
+    }
+
+    /**
+     * 手动执行选中的代码
+     *
+     * @param heraFile
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    @RequestMapping(value = "/debugSelectCode", method = RequestMethod.POST)
+    @ResponseBody
+    public WebAsyncTask<String> debugSelectCode(@RequestBody HeraFile heraFile) throws ExecutionException, InterruptedException {
+
+        return new WebAsyncTask<>(3000, () -> {
+            HeraFile file = heraFileService.findById(heraFile.getId());
+            file.setContent(heraFile.getContent());
+
+            HeraDebugHistory history = HeraDebugHistory.builder()
+                    .fileId(file.getId())
+                    .script(heraFile.getContent())
+                    .startTime(new Date())
+                    .owner(getOwner())
+                    .build();
+            if (file.getType().equals(FileTypeEnum.Hive.toString())) {
+                history.setRunType("hive");
+            } else if (file.getType().equals(FileTypeEnum.Shell.toString())) {
                 history.setRunType("shell");
             }
             String newId = debugHistoryService.insert(history);
@@ -156,6 +192,32 @@ public class DevelopCenterController {
     @ResponseBody
     public HeraJobHistory getJobLog(Integer id) {
         return debugHistoryService.findLogById(id);
+    }
+
+
+    /**
+     * 文件类型
+     */
+    public enum FileTypeEnum {
+        Shell("1"), Hive("2");
+        private String fileType;
+
+        @Override
+        public String toString() {
+            return fileType;
+        }
+
+        FileTypeEnum(String type) {
+            this.fileType = type;
+        }
+
+        public static FileTypeEnum parse(String fileType) {
+            Optional<FileTypeEnum> option = Arrays.asList(FileTypeEnum.values())
+                    .stream()
+                    .filter(operate -> operate.toString().equals(fileType))
+                    .findAny();
+            return option.get();
+        }
     }
 
 

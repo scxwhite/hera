@@ -102,6 +102,12 @@
             <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
+
+
 
         <dependency>
             <groupId>io.springfox</groupId>

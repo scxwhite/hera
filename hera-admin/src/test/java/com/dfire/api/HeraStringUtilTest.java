@@ -5,6 +5,7 @@ import com.dfire.common.util.RenderHierarchyProperties;
 import com.dfire.common.util.StringUtil;
 import com.dfire.core.job.ProcessJob;
 import com.dfire.core.util.CronParse;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import java.io.File;
@@ -113,5 +114,14 @@ public class HeraStringUtilTest {
     @Test
     public void getDate() {
         System.out.println(DateUtil.longToDate(System.currentTimeMillis()));
+    }
+
+    @Test
+    public void fileNameSplit() {
+        String fileName = "sqoop.sh";
+        String prefix = StringUtils.substringBefore(fileName, ".");
+        System.out.println(prefix);
+        String suffix = StringUtils.substringAfter(fileName,".");
+        System.out.println(suffix);
     }
 }

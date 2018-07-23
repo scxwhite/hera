@@ -164,7 +164,6 @@
             this.$element.find(".nav-tabs li a[href='#" + obj.id + "'] i.closeable").click(function () {
 
                 var href = $(this).parents("a").attr("href").substring(1);// id
-                var id = localStorage.getItem("id");
 
                 //关闭的时候，tab点击事件，删除tabData中的数据
                 var tabData = JSON.parse(localStorage.getItem('tabData'));
