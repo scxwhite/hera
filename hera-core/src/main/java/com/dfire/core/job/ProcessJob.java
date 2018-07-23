@@ -3,7 +3,6 @@ package com.dfire.core.job;
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.core.exception.HeraCaughtExceptionHandler;
-import com.dfire.core.exception.HeraHandlerThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -13,8 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
