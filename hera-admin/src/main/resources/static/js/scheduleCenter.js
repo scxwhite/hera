@@ -43,7 +43,9 @@ $(function () {
     function setDefaultSelectNode(id) {
 
         if (id != undefined && id != null) {
-            treeObj.selectNode(treeObj.getNodeByParam("id", id));
+            var node = treeObj.getNodeByParam("id", id);
+            expandParent(node);
+            treeObj.selectNode(node);
             leftClick();
         }
     }
@@ -210,6 +212,60 @@ $(function () {
         }
     });
 
+    $('#keyWords').on('keyup', function () {
+        var key = $.trim($(this).val());
+        searchNodeLazy(key);
+
+    });
+    var timeoutId;
+    function searchNodeLazy(key) {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(function() {
+            search(key); //lazy load ztreeFilter function
+            $('#keyWords').focus();//focus input field again after filtering
+        }, 300);
+
+        function search() {
+            if (key == null || key == "" || key == undefined) {
+                treeObj.expandAll(false);
+                setDefaultSelectNode(localStorage.getItem("defaultId"));
+            } else {
+                var nodeShow = treeObj.getNodesByFilter(filterNodes);
+                if (nodeShow && nodeShow.length > 0) {
+                    nodeShow.forEach(function (node) {
+                        expandParent(node);
+                    })
+                }
+            }
+
+            function filterNodes(node) {
+                if (node.name && node.name.toLowerCase().indexOf(key.toLowerCase()) != -1) {
+                    treeObj.showNode(node);
+                    return true;
+                }
+                treeObj.hideNode(node);
+                return false;
+            }
+
+        }
+    }
+
+    function search() {
+
+    }
+
+    function expandParent(node) {
+        var path = node.getPath();
+        if (path && path.length > 0) {
+            for (var i = 0; i < path.length - 1; i++) {
+                treeObj.showNode(path[i]);
+                treeObj.expandNode(path[i], true);
+            }
+        }
+    }
+
     /**
      * 动态变化任务编辑界面
      * @param val
@@ -230,6 +286,12 @@ $(function () {
      */
     $('#editOperator [name="back"]').on('click', function () {
         leftClick();
+    });
+    /**
+     * 上传文件
+     */
+    $('#editOperator [name="upload"]').on('click', function () {
+        uploadFile();
     });
     /**
      * 保存按钮
@@ -518,13 +580,6 @@ $(function () {
     function fixIcon() {
         $.fn.zTree.init($("#jobTree"), setting, zNodes);
         treeObj = $.fn.zTree.getZTreeObj("jobTree");
-        //过滤出sou属性为true的节点（也可用你自己定义的其他字段来区分，这里通过sou保存的true或false来区分）
-        var folderNode = treeObj.getNodesByFilter(function (node) {
-            return node.isParent
-        });
-        for (var j = 0; j < folderNode.length; j++) {//遍历目录节点，设置isParent属性为true;
-            folderNode[j].isParent = true;
-        }
         treeObj.refresh();//调用api自带的refresh函数。
     }
 
@@ -542,7 +597,7 @@ $(function () {
             theme: "paraiso-light",
             readOnly: true,
             matchBrackets: true,
-            smartIndent : true
+            smartIndent: true
         });
 
         codeMirror.display.wrapper.style.height = "600px";
@@ -709,7 +764,6 @@ var JobLogTable = function (jobId) {
     };
     return oTableInit;
 };
-
 
 function cancelJob(historyId) {
     var url = base_url + "/scheduleCenter/cancelJob.do";

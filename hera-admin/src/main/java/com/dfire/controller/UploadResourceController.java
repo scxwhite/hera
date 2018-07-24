@@ -37,6 +37,7 @@ public class UploadResourceController {
     public RestfulResponse uploadResource(MultipartHttpServletRequest request, @RequestParam("id") Integer id) {
         Map<String, MultipartFile> fileMap = request.getFileMap();
         String fileName;
+        String newFilePath = "";
         String newFileName = "";
         File file = null;
         RestfulResponse restfulResponse = RestfulResponse.builder().build();
@@ -47,22 +48,24 @@ public class UploadResourceController {
                     fileName = multipartFile.getOriginalFilename();
                     String prefix = StringUtils.substringBefore(fileName, ".");
                     String suffix = StringUtils.substringAfter(fileName, ".");
-                    newFileName = "/opt/logs/spring-boot/" + prefix + "-" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + "." + suffix;
-                    file = new File(newFileName);
+                    newFileName =  prefix + "-" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + "." + suffix;
+                    newFilePath = "/opt/logs/spring-boot/" + newFileName;
+                    file = new File(newFilePath);
                     multipartFile.transferTo(file);
-                    file.deleteOnExit();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            JobContext jobContext = new JobContext();
-            jobContext.setProperties(new HierarchyProperties(new HashMap<>()));
+            JobContext jobContext =  JobContext.builder().build();
+            jobContext.setProperties(new HierarchyProperties(new HashMap<>(16)));
+            jobContext.setWorkDir("/opt/logs/spring-boot");
             UploadLocalFileJob uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), "/hera/hdfs-upload-dir");
+            log.info("controller upload file command {}",uploadJob.getCommandList().toString());
 
             int exitCode = uploadJob.run();
             if (exitCode == 0) {
                 restfulResponse.setSuccess(true);
-                restfulResponse.setMsg(newFileName);
+                restfulResponse.setMsg("/hera/hdfs-upload-dir/" + newFileName);
                 return restfulResponse;
             } else {
                 restfulResponse.setSuccess(false);
