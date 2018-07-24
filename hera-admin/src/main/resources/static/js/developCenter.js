@@ -351,7 +351,7 @@ $(function () {
 
     $("#execute").click(function () {
         var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var fileScript = $("#fileScript").val();
+        var fileScript = codeMirror.getValue();
         var parameter = {
             id: fileId,
             content: fileScript
