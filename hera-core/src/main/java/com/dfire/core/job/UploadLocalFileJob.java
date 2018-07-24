@@ -26,10 +26,8 @@ public class UploadLocalFileJob extends ProcessJob {
 
     @Override
     public List<String> getCommandList() {
-        String hadoopCommand = CancelHadoopJob.getHadoopCmd(envMap);
         List<String> commands = new ArrayList<>();
-        commands.add(hadoopCommand + " fs -copyFromLocal " + localPath + " " + hadoopPath);
-        log.info("hadoop upload file command  " + commands.toString());
+        commands.add("hadoop fs -copyFromLocal " + localPath + " " + hadoopPath);
         return commands;
     }
 }

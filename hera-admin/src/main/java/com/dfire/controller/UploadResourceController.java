@@ -54,8 +54,9 @@ public class UploadResourceController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            JobContext jobContext = new JobContext();
-            jobContext.setProperties(new HierarchyProperties(new HashMap<>()));
+            JobContext jobContext =  JobContext.builder().build();
+            jobContext.setProperties(new HierarchyProperties(new HashMap<>(16)));
+            jobContext.setWorkDir("/opt/logs/spring-boot");
             UploadLocalFileJob uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), "/hera/hdfs-upload-dir");
             log.info("controller upload file command {}",uploadJob.getCommandList().toString());
 

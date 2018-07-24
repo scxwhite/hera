@@ -25,12 +25,9 @@ public class DownloadHadoopFileJob extends ProcessJob {
 
     @Override
     public List<String> getCommandList() {
-        String hadoopCommand = CancelHadoopJob.getHadoopCmd(envMap);
         List<String> commands = new ArrayList<>();
-        commands.add(hadoopCommand + "fs -copyToLocal" + hadoopPath + " " + localPath);
+        commands.add("hadoop fs -copyToLocal " + hadoopPath + " " + localPath);
         //格式转换
-        commands.add("dos2unix " + localPath);
-        log.info("dos2unix file: " + localPath);
         return commands;
     }
 }
