@@ -405,32 +405,7 @@ $(function () {
      */
 
     $("#uploadResource").click(function () {
-        $("#uploadFile").modal('show');
-
-        $("#fileForm").fileinput({
-            uploadUrl: base_url + "/uploadResource/upload.do",
-            maxFileCount: 10,
-            enctype: 'multipart/form-data',
-            uploadExtraData:function (previewId, index) {
-                return {
-                    "id": 1
-                };
-            }
-        }).on("fileuploaded", function (event, data) {
-            var response = data.response;
-            var message = response.msg;
-            var msg = "<b>" +"hadoop文件使用路径: "+ message + "</b>"
-            if (response.success == false) {
-                $("#responseResult").html(msg);
-            }
-            if (response.success == true) {
-                $("#responseResult").html(msg);
-            }
-        }).on('filepredelete', function () {
-            $("#responseResult").html("");
-            }
-
-        );
+        uploadFile();
     });
 
 

@@ -232,6 +232,12 @@ $(function () {
         leftClick();
     });
     /**
+     * 上传文件
+     */
+    $('#editOperator [name="upload"]').on('click', function () {
+        uploadFile();
+    });
+    /**
      * 保存按钮
      */
     $('#editOperator [name="save"]').on('click', function () {
