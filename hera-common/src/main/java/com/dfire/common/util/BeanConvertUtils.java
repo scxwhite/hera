@@ -58,7 +58,7 @@ public class BeanConvertUtils {
     public static HeraJobHistory convert(HeraJobHistoryVo jobHistoryVo) {
         HeraJobHistory jobHistory = HeraJobHistory.builder().build();
         BeanUtils.copyProperties(jobHistoryVo, jobHistory);
-        jobHistory.setLog(jobHistoryVo.getLog().getContent() == null ? null:jobHistoryVo.getLog().getContent());
+        jobHistory.setLog(jobHistoryVo.getLog().getContent());
         jobHistory.setStatus(jobHistoryVo.getStatusEnum() == null ? null : jobHistoryVo.getStatusEnum().toString());
         jobHistory.setProperties(StringUtil.convertMapToString(jobHistoryVo.getProperties()));
         jobHistory.setTriggerType(jobHistoryVo.getTriggerType().getId());
@@ -115,7 +115,6 @@ public class BeanConvertUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return jobHistory;
     }
 

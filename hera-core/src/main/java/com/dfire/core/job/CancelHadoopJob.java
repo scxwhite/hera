@@ -58,7 +58,7 @@ public class CancelHadoopJob extends ProcessJob {
         if (hadoopHome != null) {
             cmd.append(hadoopHome).append("/bin/");
         }
-        cmd.append("hadoop");
+        cmd.append("hadoop ");
         return cmd.toString();
     }
 }

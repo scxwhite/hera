@@ -101,7 +101,7 @@ public class Master {
                 } catch (Exception e) {
                     log.error("scan waiting queueTask exception");
                 } finally {
-                    masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
+                    masterContext.masterTimer.newTimeout(this, 1, TimeUnit.SECONDS);
                 }
             }
         };
@@ -120,8 +120,9 @@ public class Master {
                     log.info("scan exception queueTask run");
                 } catch (Exception e) {
                     log.error("scan exception queueTask exception");
+                } finally {
+                    masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
                 }
-                masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
             }
         };
         masterContext.masterTimer.newTimeout(scanExceptionQueueTask, 3, TimeUnit.SECONDS);

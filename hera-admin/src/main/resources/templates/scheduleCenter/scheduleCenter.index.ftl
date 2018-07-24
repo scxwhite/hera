@@ -70,6 +70,7 @@
                         <div class="box-body">
 
                             <div style="overflow: auto">
+                                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
                                 <ul id="jobTree" class="ztree"></ul>
                             </div>
                         </div>
@@ -565,8 +566,8 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="back">
-                                        上传资源文件夹
+                                    <button class="btn btn-primary btn-block" type="button" name="upload">
+                                        上传资源文件
                                     </button>
                                 </li>
                                 <br>
@@ -716,6 +717,27 @@
     </div>
 </div>
 
+<div class="modal" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="title">
+    <div class="modal-dialog" style="width: 600px" >
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"></button>
+                <div class="modal-title"><h4>上传文件</h4></div>
+            </div>
+            <div class="modal-body">
+                <div id="responseResult" class="modal-title"></div>
+            </div>
+
+            <div class="modal-footer">
+                <input  multiple  id="fileForm" name="fileForm" type="file" class="file-loading" data-show-preview="false" >
+                <br>
+                <button class="btn btn-primary" id="closeUploadModal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <@netCommon.commonScript />
@@ -730,6 +752,7 @@
 <script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
+<script src="${request.contextPath}/plugins/ztree/jquery.ztree.exhide.min.js"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
 
