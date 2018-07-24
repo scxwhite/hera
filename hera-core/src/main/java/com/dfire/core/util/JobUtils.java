@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class JobUtils {
 
-    public static final Pattern pattern = Pattern.compile("download\\[(doc|hdfs|http)://.+]");
+    public static final Pattern pattern = Pattern.compile("download\\[(hdfs)://.+]");
 
     public static Job createDebugJob(JobContext jobContext, HeraDebugHistory heraDebugHistory,
                                      String workDir, ApplicationContext applicationContext) {
@@ -243,35 +243,11 @@ public class JobUtils {
         while (matcher.find()) {
             String group = matcher.group();
             group = group.substring(group.indexOf("[") + 1, group.indexOf("]"));
-            String[] url = StringUtils.split(group, ".");
+            String[] url = StringUtils.split(group, " ");
             String uri = url[0];
-            String name = "";
-            String referScript = null;
-            String path = uri.substring(uri.lastIndexOf('/') + 1);
+            String name = url[1];
             Map<String, String> map = new HashMap<>(2);
-            if (uri.startsWith("doc://")) {
-                HeraFileService fileService = (HeraFileService) applicationContext.getBean("fileService");
-                HeraFile heraFile = fileService.findById(path);
-                name = heraFile.getName();
-                referScript = heraFile.getContent();
-            }
 
-            if (url.length > 1) {
-                name = "";
-                for (int i = 0; i < url.length; i++) {
-                    if (i > 1) {
-                        name += "_";
-                    }
-                    name += url[i];
-                }
-            } else if (url.length == 1) {
-                if (uri.startsWith("hdfs://")) {
-                    if (uri.endsWith("/")) {
-                        continue;
-                    }
-                    name = path;
-                }
-            }
             boolean exist = false;
             for (Map<String, String> env : resources) {
                 if (env.get("name").equals(name)) {
@@ -283,9 +259,6 @@ public class JobUtils {
                 map.put("uri", uri);
                 map.put("name", name);
                 resources.add(map);
-                if (uri.startsWith("doc://") && referScript != null) {
-                    map.put("hera-doc-" + path, resolveScriptResource(resources, referScript, applicationContext));
-                }
             }
         }
         script = matcher.replaceAll("");

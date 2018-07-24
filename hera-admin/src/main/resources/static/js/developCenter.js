@@ -351,7 +351,7 @@ $(function () {
 
     $("#execute").click(function () {
         var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var fileScript = $("#fileScript").val();
+        var fileScript = codeMirror.getValue();
         var parameter = {
             id: fileId,
             content: fileScript
@@ -405,29 +405,7 @@ $(function () {
      */
 
     $("#uploadResource").click(function () {
-        $("#uploadFile").modal('show');
-
-        $("#fileForm").fileinput({
-            uploadUrl: base_url + "/uploadResource/upload.do",
-            maxFileCount: 10,
-            enctype: 'multipart/form-data',
-            uploadExtraData:function (previewId, index) {
-                console.log( base_url + "/uploadResource/upload.do");
-                return {
-                    "id": 1
-                };
-            }
-        }).on("fileuploaded", function (event, data) {
-            var response = data.response;
-            var message = response.msg;
-            var msg = "<b>" + message + "</b>"
-            if (response.success == false) {
-                $("#responseResult").html(msg);
-            }
-            if (response.success == true) {
-                $("#responseResult").html(msg);
-            }
-        });
+        uploadFile();
     });
 
 

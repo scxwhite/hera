@@ -566,8 +566,8 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="back">
-                                        上传资源文件夹
+                                    <button class="btn btn-primary btn-block" type="button" name="upload">
+                                        上传资源文件
                                     </button>
                                 </li>
                                 <br>
@@ -712,6 +712,27 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
                 <button type="button" class="btn btn-info add-btn" name="refreshLog">刷新</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="title">
+    <div class="modal-dialog" style="width: 600px" >
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"></button>
+                <div class="modal-title"><h4>上传文件</h4></div>
+            </div>
+            <div class="modal-body">
+                <div id="responseResult" class="modal-title"></div>
+            </div>
+
+            <div class="modal-footer">
+                <input  multiple  id="fileForm" name="fileForm" type="file" class="file-loading" data-show-preview="false" >
+                <br>
+                <button class="btn btn-primary" id="closeUploadModal">关闭</button>
             </div>
         </div>
     </div>
