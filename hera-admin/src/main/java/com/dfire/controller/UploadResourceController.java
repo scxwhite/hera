@@ -50,7 +50,6 @@ public class UploadResourceController {
                     newFileName = "/opt/logs/spring-boot/" + prefix + "-" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + "." + suffix;
                     file = new File(newFileName);
                     multipartFile.transferTo(file);
-                    file.deleteOnExit();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
