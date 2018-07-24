@@ -59,6 +59,7 @@ public class UploadResourceController {
             UploadLocalFileJob uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), "/hera/hdfs-upload-dir");
 
             int exitCode = uploadJob.run();
+            log.info("controller upload file command {}",uploadJob.getCommandList().toString());
             if (exitCode == 0) {
                 restfulResponse.setSuccess(true);
                 restfulResponse.setMsg(newFileName);
