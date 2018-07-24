@@ -63,7 +63,7 @@ public class UploadResourceController {
             int exitCode = uploadJob.run();
             if (exitCode == 0) {
                 restfulResponse.setSuccess(true);
-                restfulResponse.setMsg(newFileName);
+                restfulResponse.setMsg("/hera/hdfs-upload-dir/" + StringUtils.substringAfter("/", newFileName));
                 return restfulResponse;
             } else {
                 restfulResponse.setSuccess(false);
