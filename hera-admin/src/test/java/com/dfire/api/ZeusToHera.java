@@ -28,7 +28,7 @@ public class ZeusToHera {
     private Connection heraConnection = null;
     private Connection zeusConnection = null;
 
-    private List<Integer> jobs = Arrays.asList(6608, 6610, 6613, 6622, 6612, 6620, 6624, 4946, 6625, 6628, 971);
+    private List<Integer> jobs = Arrays.asList(2847,3382,3382,3389);
 
 
     @Before
@@ -54,19 +54,33 @@ public class ZeusToHera {
         Map<String, String> cacheMap = new HashMap<>();
         List<String> fields = initFields(cacheMap);
 
+        StringBuilder insertSql = new StringBuilder();
+        StringBuilder fieldStr = new StringBuilder();
+        StringBuilder valueStr = new StringBuilder();
+        PreparedStatement heraPs;
         while (resultSet.next()) {
             Map<String, String> res = new HashMap<>();
-            HeraJob job = new HeraJob();
+            insertSql.delete(0, insertSql.length());
+            fieldStr.delete(0, fieldStr.length());
+            valueStr.delete(0, valueStr.length());
+
+            insertSql.append("insert into hera_job (");
             fields.forEach(x -> {
                 try {
-                    res.put(x, resultSet.getString(x));
+                    if (resultSet.getString(x) != null) {
+                        valueStr.append("'").append(resultSet.getString(x).replace("'", "''").replace("\\", "\\\\")).append("',");
+                        fieldStr.append(x).append(",");
+                    }
                 } catch (SQLException e) {
                     res.put(x, null);
                 }
             });
-            setValue(res, cacheMap, job);
-            //TODO  插入hera
+            insertSql.append(fieldStr.substring(0, fieldStr.length() - 1))
+                    .append(") values (")
+                    .append(valueStr.substring(0, valueStr.length() - 1)).append(")").append(";");
 
+            heraPs = heraConnection.prepareStatement(insertSql.toString());
+            System.out.println("执行结果：" + heraPs.executeUpdate());
         }
     }
 
@@ -95,10 +109,8 @@ public class ZeusToHera {
     }
 
     public void setValue(Map<String, String> map, Map<String, String> cacheMap, Object bean) {
-
         Class<?> aClass = bean.getClass();
         Method[] methods = aClass.getDeclaredMethods();
-
         String methodName;
         for (Method method : methods) {
             methodName = method.getName();
@@ -112,13 +124,12 @@ public class ZeusToHera {
                         System.out.println(typeName);
                         if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
                             method.invoke(bean, Integer.parseInt(map.get(key)));
-                        } else if(typeName.equals("java.util.Date")) {
+                        } else if (typeName.equals("java.util.Date")) {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
                             method.invoke(bean, sdf.parse(map.get(key)));
-                        } else if(typeName.equals("java.lang.Long")) {
+                        } else if (typeName.equals("java.lang.Long")) {
                             method.invoke(bean, Long.parseLong(map.get(key)));
-                        }
-                        else {
+                        } else {
                             method.invoke(bean, map.get(key));
                         }
                     }
@@ -132,11 +143,6 @@ public class ZeusToHera {
 
             }
         }
-
-    }
-
-    public static void main(String[] args) throws ParseException {
-
 
     }
 }

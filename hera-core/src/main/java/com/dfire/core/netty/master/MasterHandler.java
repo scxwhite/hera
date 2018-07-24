@@ -122,13 +122,11 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
-                listeners.clear();
                 break;
             case WEB_RESPONSE:
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
-                listeners.clear();
                 break;
             default:
                 log.error("unknown request type : {}", socketMessage.getKind());
