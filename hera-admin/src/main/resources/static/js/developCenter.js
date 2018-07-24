@@ -426,7 +426,11 @@ $(function () {
             if (response.success == true) {
                 $("#responseResult").html(msg);
             }
-        });
+        }).on('filepredelete', function () {
+            $("#responseResult").html("");
+            }
+
+        );
     });
 
 
