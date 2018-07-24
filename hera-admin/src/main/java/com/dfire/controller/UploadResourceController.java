@@ -37,6 +37,7 @@ public class UploadResourceController {
     public RestfulResponse uploadResource(MultipartHttpServletRequest request, @RequestParam("id") Integer id) {
         Map<String, MultipartFile> fileMap = request.getFileMap();
         String fileName;
+        String newFilePath = "";
         String newFileName = "";
         File file = null;
         RestfulResponse restfulResponse = RestfulResponse.builder().build();
@@ -47,8 +48,9 @@ public class UploadResourceController {
                     fileName = multipartFile.getOriginalFilename();
                     String prefix = StringUtils.substringBefore(fileName, ".");
                     String suffix = StringUtils.substringAfter(fileName, ".");
-                    newFileName = "/opt/logs/spring-boot/" + prefix + "-" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + "." + suffix;
-                    file = new File(newFileName);
+                    newFileName =  prefix + "-" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + "." + suffix;
+                    newFilePath = "/opt/logs/spring-boot/" + newFileName;
+                    file = new File(newFilePath);
                     multipartFile.transferTo(file);
                 }
             } catch (Exception e) {
@@ -63,7 +65,7 @@ public class UploadResourceController {
             int exitCode = uploadJob.run();
             if (exitCode == 0) {
                 restfulResponse.setSuccess(true);
-                restfulResponse.setMsg("/hera/hdfs-upload-dir/" + StringUtils.substringAfter("/", newFileName));
+                restfulResponse.setMsg("/hera/hdfs-upload-dir/" + newFileName);
                 return restfulResponse;
             } else {
                 restfulResponse.setSuccess(false);
