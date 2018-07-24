@@ -479,6 +479,7 @@ var TableInit = function (targetId) {
                 id: actionRow.id,
             },
             success: function (data) {
+                console.log("data.status " + data.status )
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
@@ -528,10 +529,16 @@ var TableInit = function (targetId) {
                     title: "状态"
                 }, {
                     field: "startTime",
-                    title: "开始时间"
+                    title: "开始时间",
+                    formatter: function (row) {
+                        return getLocalTime(row);
+                    }
                 }, {
                     field: "endTime",
-                    title: "结束时间"
+                    title: "结束时间",
+                    formatter: function (row) {
+                        return getLocalTime(row);
+                    }
                 },
                 {
                     field: "status",
@@ -550,7 +557,7 @@ var TableInit = function (targetId) {
             ],
             detailView: true,
             detailFormatter: function (index, row) {
-                var log = row["log"]['content'];
+                var log = row["log"];
                 var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
                     + log +
                     '</div>' + '<form role="form">' + '<div class="form-group">';
@@ -562,12 +569,13 @@ var TableInit = function (targetId) {
                     table.bootstrapTable("collapseRow", onExpand);
                 }
                 onExpand = index;
-                if (row.status == "RUNNING") {
-                    timerHandler = window.setInterval(debugLog, 200);
+                console.log("row.status" + row.status)
+                if (row.status == "running") {
+                    timerHandler = window.setInterval(debugLog, 2000);
                 }
             },
             onCollapseRow: function (index, row) {
-                window.clearInterval(timerHandler)
+                window.clearInterval(timerHandler);
             }
 
         });
