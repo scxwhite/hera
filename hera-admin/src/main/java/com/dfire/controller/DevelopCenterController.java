@@ -199,7 +199,7 @@ public class DevelopCenterController  extends BaseHeraController{
      * 文件类型
      */
     public enum FileTypeEnum {
-        Shell("1"), Hive("2");
+        Shell("2"), Hive("1");
         private String fileType;
 
         @Override
