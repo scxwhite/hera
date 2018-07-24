@@ -61,7 +61,7 @@
 
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal"></button>
-                                <div class="modal-title"><h5>上传文件</h5></div>
+                                <div class="modal-title"><h4>上传文件</h4></div>
                             </div>
                             <div class="modal-body">
                                 <div id="responseResult" class="modal-title"></div>

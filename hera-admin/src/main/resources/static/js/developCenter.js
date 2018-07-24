@@ -412,7 +412,6 @@ $(function () {
             maxFileCount: 10,
             enctype: 'multipart/form-data',
             uploadExtraData:function (previewId, index) {
-                console.log( base_url + "/uploadResource/upload.do");
                 return {
                     "id": 1
                 };
@@ -420,7 +419,7 @@ $(function () {
         }).on("fileuploaded", function (event, data) {
             var response = data.response;
             var message = response.msg;
-            var msg = "<b>" + message + "</b>"
+            var msg = "<b>" +"hadoop文件使用路径: "+ message + "</b>"
             if (response.success == false) {
                 $("#responseResult").html(msg);
             }
