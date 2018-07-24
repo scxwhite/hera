@@ -218,11 +218,12 @@ $(function () {
 
     });
     var timeoutId;
+
     function searchNodeLazy(key) {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
-        timeoutId = setTimeout(function() {
+        timeoutId = setTimeout(function () {
             search(key); //lazy load ztreeFilter function
             $('#keyWords').focus();//focus input field again after filtering
         }, 300);
@@ -230,6 +231,9 @@ $(function () {
         function search() {
             if (key == null || key == "" || key == undefined) {
                 treeObj.expandAll(false);
+                treeObj.getNodesByFilter(function (node) {
+                    treeObj.showNode(node);
+                });
                 setDefaultSelectNode(localStorage.getItem("defaultId"));
             } else {
                 var nodeShow = treeObj.getNodesByFilter(filterNodes);
