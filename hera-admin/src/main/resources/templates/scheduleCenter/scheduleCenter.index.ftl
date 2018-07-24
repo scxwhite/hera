@@ -70,6 +70,7 @@
                         <div class="box-body">
 
                             <div style="overflow: auto">
+                                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
                                 <ul id="jobTree" class="ztree"></ul>
                             </div>
                         </div>
@@ -730,6 +731,7 @@
 <script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
+<script src="${request.contextPath}/plugins/ztree/jquery.ztree.exhide.min.js"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
 

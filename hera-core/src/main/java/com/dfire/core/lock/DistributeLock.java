@@ -62,11 +62,11 @@ public class DistributeLock {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    workClient.workClientTimer.newTimeout(this, 3, TimeUnit.SECONDS);
+                    workClient.workClientTimer.newTimeout(this, 1, TimeUnit.MINUTES);
                 }
             }
         };
-        workClient.workClientTimer.newTimeout(checkLockTask, 2, TimeUnit.SECONDS);
+        workClient.workClientTimer.newTimeout(checkLockTask, 20, TimeUnit.SECONDS);
     }
 
     public void checkLock() {
