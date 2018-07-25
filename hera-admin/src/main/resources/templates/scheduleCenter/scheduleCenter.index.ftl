@@ -52,7 +52,7 @@
 
 </style>
 
-<body class="hold-transition skin-green sidebar-mini">
+<body class="hold-transition skin-blue-light sidebar-mini">
 <div class="wrapper">
     <!-- header -->
 	<@netCommon.commonHeader />
