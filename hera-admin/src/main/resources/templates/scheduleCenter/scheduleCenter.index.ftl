@@ -77,7 +77,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-7 col-sm-7 col-lg-7 colStyle" style="white-space:nowrap;">
+                <div class="col-md-8 col-sm-8 col-lg-8 colStyle" style="white-space:nowrap;">
 
                     <div class="box box-primary">
 
@@ -454,48 +454,48 @@
 
                 </div>
 
-                <div class="col-md-2 col-lg-2 col-sm-2 colStyle">
+                <div class="col-md-1 col-lg-1 col-sm-1 colStyle">
                     <div id="groupOperate" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div>
                                 <ul class="list-unstyled">
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button">任务总览</button>
+                                        <button class="btn btn-xs  btn-primary btn-block" type="button">任务总览</button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button">自动任务</button>
+                                        <button class="btn btn-xs  btn-primary btn-block" type="button">自动任务</button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button">手动任务</button>
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button">手动任务</button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button" name="addGroup">
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup">
                                             添加组
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button" name="edit">编辑
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit">编辑
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button" name="addJob">
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addJob">
                                             添加任务
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button" name="delete">
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete">
                                             删除
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button">配置管理员</button>
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button">配置管理员</button>
 
                                     </li>
                                 </ul>
@@ -508,49 +508,49 @@
                         <div class="box-body" style="white-space:nowrap;">
                             <ul class="list-unstyled">
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="runningLog">运行日志
+                                    <button class="btn btn-xs btn-primary btn-block" type="button" name="runningLog">运行日志
                                     </button>
                                 </li>
                                 <br>
 
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="version">版本生成</button>
+                                    <button class="btn btn-xs btn-primary btn-block" type="button" name="version">版本生成</button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button">依赖图</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button">依赖图</button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="edit">编辑
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit">编辑
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button id="manual" class="btn btn-primary btn-block" type="button"
+                                    <button id="manual" class="btn  btn-xs btn-primary btn-block" type="button"
                                             data-toggle="modal">
                                         手动执行
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button id="manualRecovery" class="btn btn-primary btn-block" type="button">
+                                    <button id="manualRecovery" class="btn  btn-xs btn-primary btn-block" type="button">
                                         手动恢复
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="switch">开启/关闭</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="switch">开启/关闭</button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="delete">删除
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete">删除
                                     </button>
 
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button">配置管理员</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button">配置管理员</button>
 
                                 </li>
                             </ul>
@@ -561,18 +561,18 @@
                         <div class="box-body">
                             <ul class="list-unstyled">
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="back">返回
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="back">返回
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="upload">
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="upload">
                                         上传资源文件
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="save">保存
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="save">保存
                                     </button>
                                 </li>
                                 <br>
