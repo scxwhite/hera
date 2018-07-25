@@ -162,7 +162,7 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4"> 自动调度:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="auto"></label>
+                                                <label class="label" name="auto"></label>
                                             </div>
                                         </div>
                                         <div class="form-group">
