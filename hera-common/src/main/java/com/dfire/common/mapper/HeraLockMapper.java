@@ -6,6 +6,8 @@ import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Date;
+
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 14:25 2018/1/12
@@ -27,4 +29,18 @@ public interface HeraLockMapper {
     @Lang(HeraUpdateLangDriver.class)
     int update(HeraLock heraLock);
 
+    /**
+     * 根据上一次的master ip 更新抢占的master信息 保证三者抢占只有一个成功
+     * @param host          新的master抢占ip
+     * @param serverUpdate  更新时间
+     * @param gmtModified   修改时间
+     * @param lastHost      老master ip
+     * @return
+     */
+    @Update("update hera_lock set gmt_modified = #{gmtModified},host = #{host},server_update = #{serverUpdate} where host = #{lastHost}")
+    Integer updateLock(@Param("host") String host,
+                       @Param("serverUpdate") Date serverUpdate,
+                       @Param("gmtModified") Date gmtModified,
+                       @Param("lastHost") String lastHost);
 }
+

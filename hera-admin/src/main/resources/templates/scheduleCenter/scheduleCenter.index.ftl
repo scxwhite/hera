@@ -52,7 +52,7 @@
 
 </style>
 
-<body class="hold-transition skin-green sidebar-mini">
+<body class="hold-transition skin-blue-light sidebar-mini">
 <div class="wrapper">
     <!-- header -->
 	<@netCommon.commonHeader />
@@ -66,10 +66,10 @@
                 <div class="col-md-3 col-sm-3 col-lg-3 colStyle">
 
 
-                    <div class="box box-success">
+                    <div class="box box-primary">
                         <div class="box-body">
 
-                            <div style="overflow: auto">
+                            <div style="overflow: auto;height: 700px">
                                 <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
                                 <ul id="jobTree" class="ztree"></ul>
                             </div>
@@ -77,7 +77,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-7 col-sm-7 col-lg-7 colStyle" style="white-space:nowrap;">
+                <div class="col-md-8 col-sm-8 col-lg-8 colStyle" style="white-space:nowrap;">
 
                     <div class="box box-primary">
 
@@ -162,7 +162,7 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4"> 自动调度:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="auto"></label>
+                                                <label class="label" name="auto"></label>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -370,7 +370,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">依赖任务:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" name="dependencies">
+                                                <input class="form-control" type="text" id ="dependJob" name="dependencies">
 
                                             </div>
                                         </div>
@@ -415,7 +415,7 @@
 
                     </div>
 
-                    <div id="config" class="box box-success" style="display: none">
+                    <div id="config" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>配置项信息</label>
@@ -424,7 +424,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="script" class="box box-danger " style="display: none">
+                    <div id="script" class="box box-primary " style="display: none">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>脚本</label>
@@ -433,7 +433,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="resource" class="box box-info" style="display: none">
+                    <div id="resource" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>资源信息</label>
@@ -442,7 +442,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="inheritConfig" class="box box-success" style="display: none">
+                    <div id="inheritConfig" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>继承的配置项信息</label>
@@ -454,48 +454,48 @@
 
                 </div>
 
-                <div class="col-md-2 col-lg-2 col-sm-2 colStyle">
-                    <div id="groupOperate" class="box" style="display: none">
+                <div class="col-md-1 col-lg-1 col-sm-1 colStyle">
+                    <div id="groupOperate" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div>
                                 <ul class="list-unstyled">
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button">任务总览</button>
+                                        <button class="btn btn-xs  btn-primary btn-block" type="button">任务总览</button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button">自动任务</button>
+                                        <button class="btn btn-xs  btn-primary btn-block" type="button">自动任务</button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button">手动任务</button>
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button">手动任务</button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button" name="addGroup">
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup">
                                             添加组
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button" name="edit">编辑
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit">编辑
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button" name="addJob">
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addJob">
                                             添加任务
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button" name="delete">
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete">
                                             删除
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-primary btn-block" type="button">配置管理员</button>
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button">配置管理员</button>
 
                                     </li>
                                 </ul>
@@ -504,75 +504,75 @@
 
                     </div>
 
-                    <div id="jobOperate" class="box" style="display: none">
+                    <div id="jobOperate" class="box box-primary" style="display: none">
                         <div class="box-body" style="white-space:nowrap;">
                             <ul class="list-unstyled">
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="runningLog">运行日志
+                                    <button class="btn btn-xs btn-primary btn-block" type="button" name="runningLog">运行日志
                                     </button>
                                 </li>
                                 <br>
 
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="version">版本生成</button>
+                                    <button class="btn btn-xs btn-primary btn-block" type="button" name="version">版本生成</button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button">依赖图</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button">依赖图</button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="edit">编辑
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit">编辑
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button id="manual" class="btn btn-primary btn-block" type="button"
+                                    <button id="manual" class="btn  btn-xs btn-primary btn-block" type="button"
                                             data-toggle="modal">
                                         手动执行
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button id="manualRecovery" class="btn btn-primary btn-block" type="button">
+                                    <button id="manualRecovery" class="btn  btn-xs btn-primary btn-block" type="button">
                                         手动恢复
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="switch">开启/关闭</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="switch">开启/关闭</button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="delete">删除
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete">删除
                                     </button>
 
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button">配置管理员</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button">配置管理员</button>
 
                                 </li>
                             </ul>
                         </div>
                     </div>
 
-                    <div id="editOperator" class="box" style="display: none">
+                    <div id="editOperator" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <ul class="list-unstyled">
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="back">返回
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="back">返回
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="upload">
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="upload">
                                         上传资源文件
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-primary btn-block" type="button" name="save">保存
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="save">保存
                                     </button>
                                 </li>
                                 <br>
@@ -737,6 +737,28 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal" id="selectDepend" tabindex="-1" role="dialog" aria-labelledby="title">
+    <div class="modal-dialog" style="width: 600px" >
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"></button>
+                <div class="modal-title"><h4>选择任务依赖任务</h4></div>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
+                <ul id="dependTree" class="ztree"></ul>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="chooseDepend">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 

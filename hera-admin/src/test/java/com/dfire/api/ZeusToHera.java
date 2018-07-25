@@ -28,7 +28,7 @@ public class ZeusToHera {
     private Connection heraConnection = null;
     private Connection zeusConnection = null;
 
-    private List<Integer> jobs = Arrays.asList(6608, 6610, 6613, 6622, 6612, 6620, 6624, 4946, 6625, 6628, 971);
+    private List<Integer> jobs = Arrays.asList(971);
 
 
     @Before

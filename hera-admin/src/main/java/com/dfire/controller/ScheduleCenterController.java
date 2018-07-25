@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
@@ -92,7 +93,7 @@ public class ScheduleCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask<String> manual(String actionId, Integer triggerType) {
+    public WebAsyncTask<String> manual(String actionId, Integer triggerType, @RequestParam(required = false) String owner) {
         ExecuteKind kind = null;
         TriggerTypeEnum triggerTypeEnum = null;
         if (triggerType == 1) {
@@ -106,19 +107,20 @@ public class ScheduleCenterController extends BaseHeraController {
         HeraJob heraJob = heraJobService.findById(Integer.parseInt(heraAction.getJobId()));
 
 
-        String user = getOwner();
         //兼容zeus 的http 请求
-        if (user == null) {
-            user = heraJob.getOwner();
+        if (owner == null) {
+            owner = super.getOwner();
         }
-
+        if (owner == null) {
+            throw new IllegalArgumentException("任务执行人为空");
+        }
         String configs = heraJob.getConfigs();
         HeraJobHistory actionHistory = HeraJobHistory.builder().build();
         actionHistory.setJobId(heraAction.getJobId());
         actionHistory.setActionId(heraAction.getId());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
-        actionHistory.setOperator(user);
-        actionHistory.setIllustrate(user);
+        actionHistory.setOperator(owner);
+        actionHistory.setIllustrate(owner);
         actionHistory.setStatus(StatusEnum.RUNNING.toString());
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
         actionHistory.setHostGroupId(heraAction.getHistoryId());
@@ -134,7 +136,7 @@ public class ScheduleCenterController extends BaseHeraController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return "提交成功";
+            return actionId;
         });
     }
 
@@ -270,9 +272,9 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/execute", method = RequestMethod.GET)
     @ResponseBody
     @UnCheckLogin
-    public WebAsyncTask<String> zeusExecute(Integer id) {
+    public WebAsyncTask<String> zeusExecute(Integer id, String owner) {
         List<HeraAction> actions = heraJobActionService.findByJobId(String.valueOf(id));
-        return manual(actions.get(0).getId(), 2);
+        return manual(actions.get(0).getId(), 2, owner);
 
     }
 
