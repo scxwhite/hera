@@ -389,7 +389,7 @@ public class JobHandler extends AbstractHandler {
      */
 
     private void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
-        if (!isNow()) {
+        if (!DateUtil.isNow(actionId)) {
             return;
         }
         JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
@@ -425,7 +425,5 @@ public class JobHandler extends AbstractHandler {
         return actionId.hashCode();
     }
 
-    private boolean isNow() {
-        return DateUtil.getTodayStringForAction().compareTo(actionId) <= 0;
-    }
+
 }
