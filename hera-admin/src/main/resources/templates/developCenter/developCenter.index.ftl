@@ -68,7 +68,7 @@
                             </div>
 
                             <div class="modal-footer">
-                                <input  multiple  id="fileForm" name="fileForm" type="file" class="file-loading" data-show-preview="false" data-allowed-file-extensions='["py","jar","sql","hive","sh","js"]'>
+                                <input  multiple  id="fileForm" name="fileForm" type="file" class="file-loading"  data-allowed-file-extensions='["py","jar","sql","hive","sh","js"]'>
                                 <br>
                                 <button class="btn btn-primary" id="closeUploadModal">关闭</button>
                             </div>
