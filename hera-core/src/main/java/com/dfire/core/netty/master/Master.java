@@ -179,20 +179,26 @@ public class Master {
                 log.info("roll back action count:" + actionIdList.size());
                 //移除未生成的调度
                 List<AbstractHandler> handlers = dispatcher.getJobHandlers();
+                List<JobHandler> shouldRemove = new ArrayList<>();
                 if (handlers != null && handlers.size() > 0) {
                     handlers.forEach(handler -> {
                         JobHandler jobHandler = (JobHandler) handler;
                         String actionId = jobHandler.getActionId();
                         if (Long.parseLong(actionId) < tmp) {
                             masterContext.getQuartzSchedulerService().deleteJob(actionId);
+                            shouldRemove.add(jobHandler);
                         } else if (Long.parseLong(actionId) >= Long.parseLong(currDate) && Long.parseLong(actionId) < Long.parseLong(nextDay)) {
                             if (!actionMapNew.containsKey(Long.parseLong(actionId))) {
                                 masterContext.getQuartzSchedulerService().deleteJob(actionId);
                                 masterContext.getHeraJobActionService().delete(actionId);
+                                shouldRemove.add(jobHandler);
                             }
                         }
                     });
                 }
+                //移除 过期 失效的handler
+                shouldRemove.forEach(dispatcher::removeJobHandler);
+
             }
             log.info("clear job scheduler ok");
         }
