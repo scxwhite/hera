@@ -1,6 +1,7 @@
 package com.dfire.core.netty.worker;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
@@ -85,13 +86,13 @@ public class WorkClient {
                 });
         log.info("init work client success ");
 
-        TimerTask heartBeatTask = new TimerTask() {
+        workClientTimer.newTimeout(new TimerTask() {
 
             private WorkerHandlerHeartBeat workerHandlerHeartBeat = new WorkerHandlerHeartBeat();
             private int failCount = 0;
 
             @Override
-            public void run(Timeout timeout) throws Exception {
+            public void run(Timeout timeout) {
                 try {
                     if (workContext.getServerChannel() != null) {
                         ChannelFuture channelFuture = workerHandlerHeartBeat.send(workContext);
@@ -118,11 +119,9 @@ public class WorkClient {
                     workClientTimer.newTimeout(this, (failCount + 1) * HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
                 }
             }
-        };
-        workClientTimer.newTimeout(heartBeatTask, HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
+        }, HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
 
-        TimerTask jobLogUpdateTask = new TimerTask() {
-
+        workClientTimer.newTimeout(new TimerTask() {
             private void editLog(Job job, Exception e) {
                 try {
                     HeraJobHistoryVo his = job.getJobContext().getHeraJobHistory();
@@ -161,38 +160,44 @@ public class WorkClient {
             }
 
             @Override
-            public void run(Timeout timeout) throws Exception {
-                for (Job job : new HashSet<>(workContext.getRunning().values())) {
-                    try {
-                        HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
-                        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
-                    } catch (Exception e) {
-                        editDebugLog(job, e);
+            public void run(Timeout timeout) {
+
+                try {
+                    for (Job job : new HashSet<>(workContext.getRunning().values())) {
+                        try {
+                            HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
+                            workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+                        } catch (Exception e) {
+                            editDebugLog(job, e);
+                        }
                     }
+
+                    for (Job job : new HashSet<>(workContext.getManualRunning().values())) {
+                        try {
+                            HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
+                            workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+                        } catch (Exception e) {
+                            editLog(job, e);
+                        }
+                    }
+
+                    for (Job job : new HashSet<>(workContext.getDebugRunning().values())) {
+                        try {
+                            HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
+                            workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
+                        } catch (Exception e) {
+                            editDebugLog(job, e);
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error(JSONObject.toJSONString(e));
+                    throw new RuntimeException(e);
+                } finally {
+                    workClientTimer.newTimeout(this, 5, TimeUnit.SECONDS);
                 }
 
-                for (Job job : new HashSet<>(workContext.getManualRunning().values())) {
-                    try {
-                        HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
-                        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
-                    } catch (Exception e) {
-                        editLog(job, e);
-                    }
-                }
-
-                for (Job job : new HashSet<>(workContext.getDebugRunning().values())) {
-                    try {
-                        HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
-                        workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
-                    } catch (Exception e) {
-                        editDebugLog(job, e);
-                    }
-                }
-
-                workClientTimer.newTimeout(this, 5, TimeUnit.SECONDS);
             }
-        };
-        workClientTimer.newTimeout(jobLogUpdateTask, 5, TimeUnit.SECONDS);
+        }, 5, TimeUnit.SECONDS);
     }
 
     /**

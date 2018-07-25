@@ -25,6 +25,10 @@ spring:
                   min-evictable-idle-time-millis:  300000      #30分钟（1.0.14）        连接保持空闲而不被驱逐的最长时间
                   log-abandoned: true
                   connection-init-sqls: set names utf8mb4
+    http:
+      multipart:
+        max-file-size: 30Mb
+        max-request-size: 30Mb
 
 
 server:
@@ -58,7 +62,7 @@ hera:
    hive-conf-dir : /opt/cloudera/parcels/CDH/lib/hive/conf
    sqoop.home : /opt/cloudera/parcels/CDH/lib/sqoop
    spark-home : /home/hadoop/spark161-hadoop26
-
+   env: @env@
 logging:
   config: classpath:logback-spring.xml
   path: /opt/logs/spring-boot
@@ -67,13 +71,9 @@ logging:
 ---
 spring:
   profiles: dev
-hera:
-  env: dev
 ---
 spring:
   profiles: daily
-hera:
-  env: daily
 ---
 spring:
   profiles: pre
@@ -81,8 +81,6 @@ spring:
     url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     username: lineage
     password: lineage@552208
-hera:
-  env: pre
 ---
 spring:
   profiles: publish
@@ -90,5 +88,3 @@ spring:
     url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     username: lineage
     password: lineage@552208
-hera:
-  env: publish

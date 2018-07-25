@@ -43,7 +43,7 @@
 
 </style>
 
-<body class="hold-transition skin-green sidebar-mini">
+<body class="hold-transition skin-blue-light sidebar-mini">
 <div class="wrapper">
     <!-- header -->
 	<@netCommon.commonHeader />
@@ -68,7 +68,7 @@
                             </div>
 
                             <div class="modal-footer">
-                                <input  multiple  id="fileForm" name="fileForm" type="file" class="file-loading" data-show-preview="false" >
+                                <input  multiple  id="fileForm" name="fileForm" type="file" class="file-loading" data-show-preview="false" data-allowed-file-extensions='["py","jar","sql","hive","sh","js"]'>
                                 <br>
                                 <button class="btn btn-primary" id="closeUploadModal">关闭</button>
                             </div>
@@ -76,8 +76,8 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 panel panel-primary colStyle" style="height:10px;padding-bottom:70%">
-                    <div>
+                <div class="col-md-3 panel panel-primary colStyle" >
+                    <div style="overflow: auto;height: 800px">
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
                     <div id="rMenu">
@@ -94,8 +94,8 @@
                 </div>
 
                 <div class="col-md-9 panel panel-primary colStyle" style="white-space:nowrap;">
-                    <div id="config" class="box box-success" style="height:8px">
-                        <div class="box-header with-border">
+                    <div id="config"  style="height:22px;">
+                        <div >
                             <div class="form-group">
                                 <button id="execute" type="submit" class="btn btn-success btn-sm">执行</button>
                                 <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码</button>
@@ -110,15 +110,15 @@
 
                     </div>
 
-                    <div id="scriptEditor" class="box box-danger " >
+                    <div id="scriptEditor" class="box box-primary " style="height:600px">
                         <div class="box-body">
                             <div class="form-group">
-                                <textarea id="fileScript" name="editor" rows="70">select 1</textarea>
+                                <textarea id="fileScript" name="editor" ></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <div class="nav-tabs-custom">
+                    <div class="nav-tabs-custom" style="height: 50px;">
                         <ul class="nav nav-tabs" id="logTab">
                             <li class="active"><a href="#tab_1" data-toggle="tab">编辑</a></li>
                             <li><a href="#tab_2" data-toggle="tab">调试历史</a></li>

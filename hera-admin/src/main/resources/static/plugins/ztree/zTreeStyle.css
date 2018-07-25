@@ -73,11 +73,11 @@ website:	http://code.google.com/p/jquerytree/
 .ztree li span.button.noline_docu{ background:none;}
 
 
-.ztree li span.button.ico_open{margin-right:2px; background:url("./img/folder_open.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
-.ztree li span.button.ico_open2{margin-right:2px; background:url("./img/notepad_2.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
-.ztree li span.button.ico_docu{margin-right:2px; background:url("./img/leaf.svg") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
-.ztree li span.button.ico_close{margin-right:2px; background:url("./img/folder.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
-.ztree li span.button.ico_close2{margin-right:2px; background:url("./img/notepad.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_open{margin-right:2px; background:url("./img/root.svg") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_open2{margin-right:2px; background:url("./img/root1.svg") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_docu{margin-right:2px; background:url("./img/leaf1.svg") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_close{margin-right:2px; background:url("./img/root.svg") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_close2{margin-right:2px; background:url("./img/root1.svg") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
 
 .ztree li span.button.edit {margin-right:2px; background-position:-110px -48px; vertical-align:top; *vertical-align:middle}
 .ztree li span.button.remove {margin-right:2px; background-position:-110px -64px; vertical-align:top; *vertical-align:middle}

@@ -34,5 +34,5 @@ public interface HeraDebugHistoryService {
     int updateLog(HeraDebugHistory heraDebugHistory);
 
 
-    HeraJobHistory findLogById(Integer id);
+    HeraDebugHistory findLogById(Integer id);
 }
