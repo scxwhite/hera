@@ -53,5 +53,5 @@ public interface HeraDebugHistoryMapper {
     int updateLog(HeraDebugHistory heraDebugHistory);
 
     @Select("select * from hera_debug_history where id = #{id}")
-    HeraJobHistory findLogById(Integer id);
+    HeraDebugHistory findLogById(Integer id);
 }

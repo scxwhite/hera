@@ -370,7 +370,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">依赖任务:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" name="dependencies">
+                                                <input class="form-control" type="text" id ="dependJob" name="dependencies">
 
                                             </div>
                                         </div>
@@ -737,6 +737,28 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal" id="selectDepend" tabindex="-1" role="dialog" aria-labelledby="title">
+    <div class="modal-dialog" style="width: 600px" >
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"></button>
+                <div class="modal-title"><h4>选择任务依赖任务</h4></div>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
+                <ul id="dependTree" class="ztree"></ul>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="chooseDepend">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 

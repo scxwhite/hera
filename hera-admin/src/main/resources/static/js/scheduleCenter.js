@@ -208,6 +208,41 @@ $(function () {
         if (status == 0) {
             setJobMessageEdit(true);
         } else if (status == 1) {//依赖调度
+
+            var setting = {
+                check: {
+                    enable: true
+                },
+                data: {
+                    simpleData: {
+                        enable: true,
+                        idKey: "id",
+                        pIdKey: "parent",
+                        rootPId: 0
+                    }
+                },
+                callback: {
+                    onClick: zTreeOnClick
+                }
+            };
+            var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
+            $.fn.zTree.init($("#dependTree"), setting, dependNodes);
+            var dependTree = $.fn.zTree.getZTreeObj("dependTree");
+            $("#selectDepend").modal('show');
+
+            $("#chooseDepend").click(function () {
+                var nodes = dependTree.getCheckedNodes(true);
+                var ids = new Array();
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i]['isParent'] == false) {
+                        ids.push(nodes[i]['id']);
+                    }
+                }
+                $("#dependJob").val(ids.join(","));
+
+                $("#selectDepend").modal('hide');
+
+            });
             setJobMessageEdit(false);
         }
     });
@@ -311,6 +346,8 @@ $(function () {
                 success: function (data) {
                     if (data.success == true) {
                         leftClick();
+                        alert("保存成功")
+
                     } else {
                         alert(data.msg)
                     }
@@ -325,6 +362,8 @@ $(function () {
                 success: function (data) {
                     if (data == true) {
                         leftClick();
+                    } else {
+                        alert("保存失败")
                     }
                 }
             });
@@ -774,4 +813,8 @@ function cancelJob(historyId) {
     var parameter = {id: historyId};
     getDataByGet(url, parameter)
 
+}
+
+function zTreeOnClick() {
+    
 }

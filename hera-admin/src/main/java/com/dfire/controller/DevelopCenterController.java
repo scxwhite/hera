@@ -161,13 +161,9 @@ public class DevelopCenterController  extends BaseHeraController{
      */
     @RequestMapping(value = "findDebugHistory", method = RequestMethod.GET)
     @ResponseBody
-    public List<HeraDebugHistoryVo> findDebugHistory(String fileId) {
+    public List<HeraDebugHistory> findDebugHistory(String fileId) {
         List<HeraDebugHistory> list = debugHistoryService.findByFileId(fileId);
-        List<HeraDebugHistoryVo> result = list.stream().map(heraDebugHistory -> {
-            HeraDebugHistoryVo historyVo = BeanConvertUtils.convert(heraDebugHistory);
-            return historyVo;
-        }).collect(Collectors.toList());
-        return result;
+        return list;
     }
 
     /**
@@ -190,7 +186,7 @@ public class DevelopCenterController  extends BaseHeraController{
 
     @RequestMapping(value = "/getLog", method = RequestMethod.GET)
     @ResponseBody
-    public HeraJobHistory getJobLog(Integer id) {
+    public HeraDebugHistory getJobLog(Integer id) {
         return debugHistoryService.findLogById(id);
     }
 
