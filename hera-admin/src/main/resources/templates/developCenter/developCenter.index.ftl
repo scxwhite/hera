@@ -110,15 +110,15 @@
 
                     </div>
 
-                    <div id="scriptEditor" class="box box-primary " style="height:70%">
+                    <div id="scriptEditor" class="box box-primary " style="height:600px">
                         <div class="box-body">
                             <div class="form-group">
-                                <textarea id="fileScript" name="editor" >select 1</textarea>
+                                <textarea id="fileScript" name="editor" ></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <div class="nav-tabs-custom" style="height: 20%;">
+                    <div class="nav-tabs-custom" style="height: 50px;">
                         <ul class="nav nav-tabs" id="logTab">
                             <li class="active"><a href="#tab_1" data-toggle="tab">编辑</a></li>
                             <li><a href="#tab_2" data-toggle="tab">调试历史</a></li>

@@ -498,7 +498,7 @@ $(function () {
                     formDataLoad("jobMessage form", data);
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
                     $('#config textarea:first').val(initVal(data.configs, "jobMessage"));
-                    $('#jobMessage [name="auto"]').removeClass("label-success").removeClass("label-default").addClass(data.auto === "开启" ? "label-success" : "label-default");
+                    $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
 
 
                 }
