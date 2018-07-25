@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class DistributeLock {
 
-    public static String host = "LOCALHOST";
+    public static String host = "localhost";
 
     @Autowired
     private HeraHostRelationService hostGroupService;
@@ -89,12 +89,13 @@ public class DistributeLock {
             long lockTime = heraLock.getServerUpdate().getTime();
             long interval = currentTime - lockTime;
             if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
-                heraLock.setHost(host);
-                heraLock.setServerUpdate(new Date());
-                heraLock.setSubgroup("online");
-                heraLockService.update(heraLock);
-                log.error("master 发生切换");
-                heraSchedule.startup();
+                Integer lock = heraLockService.changeLock(host, new Date(), new Date(), heraLock.getHost());
+                if (lock != null && lock > 0) {
+                    log.error("master 发生切换,{} 抢占成功", host);
+                    heraSchedule.startup();
+                } else {
+                    log.info("master抢占失败，由其它worker抢占成功");
+                }
                 //TODO  接入通知
             } else {
                 //非主节点，调度器不执行
