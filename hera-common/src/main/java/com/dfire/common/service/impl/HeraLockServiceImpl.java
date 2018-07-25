@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 14:29 2018/1/12
@@ -36,6 +38,11 @@ public class HeraLockServiceImpl implements HeraLockService {
     @Override
     public int update(HeraLock heraLock) {
         return heraLockMapper.update(heraLock);
+    }
+
+    @Override
+    public Integer changeLock(String host, Date serverUpdate, Date gmtModified, String lastHost) {
+        return heraLockMapper.updateLock(host, serverUpdate, gmtModified, lastHost);
     }
 
 }
