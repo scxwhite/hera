@@ -66,10 +66,10 @@
                 <div class="col-md-3 col-sm-3 col-lg-3 colStyle">
 
 
-                    <div class="box box-success">
+                    <div class="box box-primary">
                         <div class="box-body">
 
-                            <div style="overflow: auto">
+                            <div style="overflow: auto;height: 700px">
                                 <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
                                 <ul id="jobTree" class="ztree"></ul>
                             </div>
@@ -415,7 +415,7 @@
 
                     </div>
 
-                    <div id="config" class="box box-success" style="display: none">
+                    <div id="config" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>配置项信息</label>
@@ -424,7 +424,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="script" class="box box-danger " style="display: none">
+                    <div id="script" class="box box-primary " style="display: none">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>脚本</label>
@@ -433,7 +433,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="resource" class="box box-info" style="display: none">
+                    <div id="resource" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>资源信息</label>
@@ -442,7 +442,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="inheritConfig" class="box box-success" style="display: none">
+                    <div id="inheritConfig" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>继承的配置项信息</label>
@@ -455,7 +455,7 @@
                 </div>
 
                 <div class="col-md-2 col-lg-2 col-sm-2 colStyle">
-                    <div id="groupOperate" class="box" style="display: none">
+                    <div id="groupOperate" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div>
                                 <ul class="list-unstyled">
@@ -504,7 +504,7 @@
 
                     </div>
 
-                    <div id="jobOperate" class="box" style="display: none">
+                    <div id="jobOperate" class="box box-primary" style="display: none">
                         <div class="box-body" style="white-space:nowrap;">
                             <ul class="list-unstyled">
                                 <li>
@@ -557,7 +557,7 @@
                         </div>
                     </div>
 
-                    <div id="editOperator" class="box" style="display: none">
+                    <div id="editOperator" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <ul class="list-unstyled">
                                 <li>
