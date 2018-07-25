@@ -81,5 +81,7 @@ public class DateUtil {
         return result;
     }
 
-
+    public static boolean isNow(String actionId) {
+        return DateUtil.getTodayStringForAction().compareTo(actionId) <= 0;
+    }
 }

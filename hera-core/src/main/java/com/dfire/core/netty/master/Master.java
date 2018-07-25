@@ -186,13 +186,14 @@ public class Master {
                         String actionId = jobHandler.getActionId();
                         if (Long.parseLong(actionId) < tmp) {
                             masterContext.getQuartzSchedulerService().deleteJob(actionId);
-                            shouldRemove.add(jobHandler);
                         } else if (Long.parseLong(actionId) >= Long.parseLong(currDate) && Long.parseLong(actionId) < Long.parseLong(nextDay)) {
                             if (!actionMapNew.containsKey(Long.parseLong(actionId))) {
                                 masterContext.getQuartzSchedulerService().deleteJob(actionId);
                                 masterContext.getHeraJobActionService().delete(actionId);
-                                shouldRemove.add(jobHandler);
                             }
+                        }
+                        if (!DateUtil.isNow(actionId)) {
+                            shouldRemove.add(jobHandler);
                         }
                     });
                 }

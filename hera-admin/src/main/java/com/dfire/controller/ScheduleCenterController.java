@@ -17,10 +17,12 @@ import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.UnCheckLogin;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
+import org.omg.CORBA.INTERNAL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -74,6 +78,8 @@ public class ScheduleCenterController extends BaseHeraController {
     public HeraJobVo getJobMessage(Integer jobId) {
         HeraJob job = heraJobService.findById(jobId);
         HeraJobVo heraJobVo = BeanConvertUtils.convert(job);
+        heraJobVo.setInheritConfig(getInheritConfig(job.getGroupId()));
+
         return heraJobVo;
     }
 
@@ -81,8 +87,9 @@ public class ScheduleCenterController extends BaseHeraController {
     @ResponseBody
     public HeraGroupVo getGroupMessage(Integer groupId) {
         HeraGroup group = heraGroupService.findById(groupId);
-        HeraGroupVo heraGroupVo = BeanConvertUtils.convert(group);
-        return heraGroupVo;
+        HeraGroupVo groupVo = BeanConvertUtils.convert(group);
+        groupVo.setInheritConfig(getInheritConfig(groupVo.getParent()));
+        return groupVo;
     }
 
     /**
@@ -252,6 +259,15 @@ public class ScheduleCenterController extends BaseHeraController {
     }
 
 
+    @RequestMapping(value = "/execute", method = RequestMethod.GET)
+    @ResponseBody
+    @UnCheckLogin
+    public WebAsyncTask<String> zeusExecute(Integer id, String owner) {
+        List<HeraAction> actions = heraJobActionService.findByJobId(String.valueOf(id));
+        return manual(actions.get(0).getId(), 2, owner);
+
+    }
+
     private void updateJobToMaster(boolean result, Integer id) {
         if (result) {
             ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(
@@ -269,13 +285,19 @@ public class ScheduleCenterController extends BaseHeraController {
         }
     }
 
-    @RequestMapping(value = "/execute", method = RequestMethod.GET)
-    @ResponseBody
-    @UnCheckLogin
-    public WebAsyncTask<String> zeusExecute(Integer id, String owner) {
-        List<HeraAction> actions = heraJobActionService.findByJobId(String.valueOf(id));
-        return manual(actions.get(0).getId(), 2, owner);
 
+
+    private Map<String, String> getInheritConfig(Integer groupId) {
+        HeraGroup group;
+        Map<String, String> configMap = new HashMap<>();
+        while (groupId != null && groupId != 0) {
+            group = heraGroupService.findConfigById(groupId);
+            if (group.getConfigs() != null) {
+                configMap.putAll(StringUtil.convertStringToMap(group.getConfigs()));
+            }
+            groupId = group.getParent();
+        }
+        return configMap;
     }
 
 }

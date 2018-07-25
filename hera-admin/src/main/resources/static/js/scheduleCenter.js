@@ -499,6 +499,7 @@ $(function () {
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
                     $('#config textarea:first').val(initVal(data.configs, "jobMessage"));
                     $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
+                    $('#inheritConfig textarea:first').val(parseJson(data.inheritConfig));
 
 
                 }
@@ -516,10 +517,12 @@ $(function () {
                 success: function (data) {
                     focusItem = data;
                     formDataLoad("groupMessage form", data);
+                    $('#inheritConfig textarea:first').val(parseJson(data.inheritConfig));
+                    $('#config textarea:first').val(parseJson(data.configs));
                 }
 
             });
-            $('#config textarea:first').val(parseJson(focusItem.configs));
+
 
         }
 
@@ -547,6 +550,10 @@ $(function () {
         $("#config").css("display", "block");
         $("#resource").css("display", "block");
         $("#inheritConfig").css("display", "block");
+
+        $.each($("textarea"), function(i, n){
+            $(n).css("height", n.scrollHeight + "px");
+        })
     }
 
     function parseJson(obj) {
