@@ -25,6 +25,10 @@ spring:
                   min-evictable-idle-time-millis:  300000      #30分钟（1.0.14）        连接保持空闲而不被驱逐的最长时间
                   log-abandoned: true
                   connection-init-sqls: set names utf8mb4
+    http:
+      multipart:
+        max-file-size: 30Mb
+        max-request-size: 30Mb
 
 
 server:
