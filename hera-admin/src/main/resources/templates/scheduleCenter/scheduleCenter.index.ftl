@@ -433,24 +433,25 @@
                             </div>
                         </div>
                     </div>
-                    <div id="resource" class="box box-primary" style="display: none">
-                        <div class="box-body">
-                            <div class="form-group">
-                                <label>资源信息</label>
-                                <textarea class="form-control" rows="5" placeholder="Enter ..."
-                                          disabled></textarea>
-                            </div>
-                        </div>
-                    </div>
                     <div id="inheritConfig" class="box box-primary" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
                                 <label>继承的配置项信息</label>
-                                <textarea class="form-control" rows="5" placeholder="Enter ..."
-                                          disabled></textarea>
+                                <textarea class="form-control"  style="resize: none"
+                                          readonly></textarea>
                             </div>
                         </div>
                     </div>
+                    <div id="resource" class="box box-primary" style="display: none">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label>资源信息</label>
+                                <textarea class="form-control" style="resize: none"
+                                          readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+
 
                 </div>
 

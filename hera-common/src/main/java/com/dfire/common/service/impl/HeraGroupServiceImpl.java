@@ -82,4 +82,9 @@ public class HeraGroupServiceImpl implements HeraGroupService {
         HeraGroup heraGroup = HeraGroup.builder().owner(owner).build();
         return heraGroupMapper.findByOwner(heraGroup);
     }
+
+    @Override
+    public HeraGroup findConfigById(Integer id) {
+        return heraGroupMapper.selectConfigById(id);
+    }
 }

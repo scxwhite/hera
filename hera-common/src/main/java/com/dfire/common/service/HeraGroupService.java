@@ -38,4 +38,6 @@ public interface HeraGroupService {
 
     List<HeraGroup> findByOwner(String owner);
 
+    HeraGroup findConfigById(Integer id);
+
 }
