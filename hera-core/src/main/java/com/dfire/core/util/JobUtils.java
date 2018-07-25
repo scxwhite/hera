@@ -115,14 +115,11 @@ public class JobUtils {
             script = replace(jobContext.getProperties().getAllProperties(), script);
         }
 
-//        script = replaceScript(history, script);
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
 
-        List<Job> pres = parseJobs(jobContext, applicationContext, jobBean,
-                jobBean.getHeraActionVo().getPreProcessors(), history, workDir);
-
-        List<Job> posts = parseJobs(jobContext, applicationContext, jobBean,
-                jobBean.getHeraActionVo().getPostProcessors(), history, workDir);
+        List<Job> pres = new ArrayList<>();
+        pres.add(new DownLoadJob(jobContext));
+        List<Job> posts = new ArrayList<>();
 
         Job core = null;
         if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Shell) {
@@ -138,7 +135,7 @@ public class JobUtils {
                                        List<Processor> processors, HeraJobHistoryVo history, String workDir) {
         List<Job> jobs = new ArrayList<>();
         Map<String, String> map = jobContext.getProperties().getAllProperties();
-        Map<String, String> varMap = new HashMap<>(1);
+        Map<String, String> varMap = new HashMap<>(16);
         try {
             for (String key : map.keySet()) {
                 String value = map.get(key);
@@ -199,17 +196,6 @@ public class JobUtils {
         return jobs;
     }
 
-    public static String replaceScript(HeraJobHistoryVo history, String script) {
-
-        script = script.replace("${j_set}", history.getStatisticsEndTime().toString());
-        try {
-            script = script.replace("${j_est}", DateUtil.string2Timestamp(history.getStatisticsEndTime().toString(),
-                    history.getTimezone()) / 1000 + "");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return script;
-    }
 
     public static String replace(Map<String, String> allProperties, String script) {
         if (script == null) {
