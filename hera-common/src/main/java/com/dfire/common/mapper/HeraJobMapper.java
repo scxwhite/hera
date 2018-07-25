@@ -52,7 +52,7 @@ public interface HeraJobMapper {
 
 
 
-    @Select("select id,dependencies from hera_job")
+    @Select("select id,dependencies from hera_job where schedule_type = 1")
     List<HeraJob> getAllJobRelation();
 
 

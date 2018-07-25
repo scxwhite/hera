@@ -266,6 +266,9 @@ $(function () {
         function search() {
             if (key == null || key == "" || key == undefined) {
                 treeObj.expandAll(false);
+                treeObj.getNodesByFilter(function (node) {
+                    treeObj.showNode(node);
+                });
                 setDefaultSelectNode(localStorage.getItem("defaultId"));
             } else {
                 var nodeShow = treeObj.getNodesByFilter(filterNodes);

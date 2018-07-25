@@ -18,6 +18,7 @@ import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.vo.RestfulResponse;
+import com.dfire.config.UnCheckLogin;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,13 +104,21 @@ public class ScheduleCenterController extends BaseHeraController {
 
         HeraAction heraAction = heraJobActionService.findById(actionId);
         HeraJob heraJob = heraJobService.findById(Integer.parseInt(heraAction.getJobId()));
+
+
+        String user = getOwner();
+        //兼容zeus 的http 请求
+        if (user == null) {
+            user = heraJob.getOwner();
+        }
+
         String configs = heraJob.getConfigs();
         HeraJobHistory actionHistory = HeraJobHistory.builder().build();
         actionHistory.setJobId(heraAction.getJobId());
         actionHistory.setActionId(heraAction.getId());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
-        actionHistory.setOperator(getOwner());
-        actionHistory.setIllustrate(getOwner());
+        actionHistory.setOperator(user);
+        actionHistory.setIllustrate(user);
         actionHistory.setStatus(StatusEnum.RUNNING.toString());
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
         actionHistory.setHostGroupId(heraAction.getHistoryId());
@@ -125,7 +134,7 @@ public class ScheduleCenterController extends BaseHeraController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return "";
+            return "提交成功";
         });
     }
 
@@ -256,6 +265,15 @@ public class ScheduleCenterController extends BaseHeraController {
             });
             poolExecutor.shutdown();
         }
+    }
+
+    @RequestMapping(value = "/execute", method = RequestMethod.GET)
+    @ResponseBody
+    @UnCheckLogin
+    public WebAsyncTask<String> zeusExecute(Integer id) {
+        List<HeraAction> actions = heraJobActionService.findByJobId(String.valueOf(id));
+        return manual(actions.get(0).getId(), 2);
+
     }
 
 }
