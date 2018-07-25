@@ -130,8 +130,9 @@ public class DevelopCenterController  extends BaseHeraController{
      */
     @RequestMapping(value = "/debugSelectCode", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<String> debugSelectCode(@RequestBody HeraFile heraFile) throws ExecutionException, InterruptedException {
+    public WebAsyncTask<String> debugSelectCode(@RequestBody HeraFile heraFile) {
 
+        String owner = getOwner();
         return new WebAsyncTask<>(3000, () -> {
             HeraFile file = heraFileService.findById(heraFile.getId());
             file.setContent(heraFile.getContent());
@@ -140,7 +141,7 @@ public class DevelopCenterController  extends BaseHeraController{
                     .fileId(file.getId())
                     .script(heraFile.getContent())
                     .startTime(new Date())
-                    .owner(getOwner())
+                    .owner(owner)
                     .build();
             if (file.getType().equals(FileTypeEnum.Hive.toString())) {
                 history.setRunType("hive");
