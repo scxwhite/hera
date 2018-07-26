@@ -27,7 +27,7 @@
         position: absolute;
         visibility: hidden;
         top: 0;
-        background-color: #3c763d;
+        background-color: #40a8e4;
         text-align: left;
         padding: 2px;
     }
@@ -49,7 +49,7 @@
         padding: 0 5px;
         cursor: pointer;
         list-style: none outside none;
-        background-color: #5d9c0a;
+        background-color: #40a8e4;
     }
 
 
