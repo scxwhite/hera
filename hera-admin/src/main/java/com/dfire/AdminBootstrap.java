@@ -4,6 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
 
 
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = "com.dfire")
 @MapperScan(basePackages = "com.dfire.common.mapper")
 @SpringBootApplication
+@ServletComponentScan(value = "com.dfire.config")
 public class AdminBootstrap {
 
 	public static void main(String[] args) {
