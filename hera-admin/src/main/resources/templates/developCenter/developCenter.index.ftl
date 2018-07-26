@@ -15,7 +15,7 @@
         position: absolute;
         visibility: hidden;
         top: 0;
-        background-color: #3c763d;
+        background-color: #40a8e4;
         text-align: left;
         padding: 2px;
     }
@@ -37,7 +37,7 @@
         padding: 0 5px;
         cursor: pointer;
         list-style: none outside none;
-        background-color: #5d9c0a;
+        background-color: #40a8e4;
     }
 
 
@@ -55,7 +55,7 @@
 
             <div class="row">
 
-                <div class="modal" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="title">
+                <div class="modal" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="title" >
                     <div class="modal-dialog" style="width: 600px" >
                         <div class="modal-content">
 
@@ -76,7 +76,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 panel panel-primary colStyle" >
+                <div class="col-md-3 panel panel-primary  commonGround " style="height:100%">
                     <div style="overflow: auto;height: 800px">
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
@@ -93,14 +93,14 @@
                     </div>
                 </div>
 
-                <div class="col-md-9 panel panel-primary colStyle" style="white-space:nowrap;">
+                <div class="col-md-9 panel panel-primary"">
                     <div id="config"  style="height:22px;">
                         <div >
                             <div class="form-group">
-                                <button id="execute" type="submit" class="btn btn-success btn-sm">执行</button>
-                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码</button>
-                                <button id="uploadResource" type="submit" class="btn btn-success btn-sm">上传资源</button>
-                                <button id="syncingTask" type="submit" class="btn btn-success btn-sm">同步任务</button>
+                                <button id="execute" type="submit" class="btn btn-primary btn-sm">执行</button>
+                                <button id="executeSelector" type="submit" class="btn btn-primary btn-sm">执行选中的代码</button>
+                                <button id="uploadResource" type="submit" class="btn btn-primary btn-sm">上传资源</button>
+                                <button id="syncingTask" type="submit" class="btn btn-primary btn-sm">同步任务</button>
                             </div>
                         </div>
                     </div>
