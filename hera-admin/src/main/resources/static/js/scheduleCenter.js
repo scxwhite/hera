@@ -5,7 +5,7 @@ $(function () {
     var treeObj;
     var selected;
     var triggerType;
-    var codeMirror;
+    var codeMirror, inheritConfigCM, selfConfigCM;
     var editor = $('#editor');
     var setting = {
         view: {
@@ -24,7 +24,11 @@ $(function () {
             onClick: leftClick
         }
     };
-
+    function refreshCm() {
+        codeMirror.refresh();
+        inheritConfigCM.refresh();
+        selfConfigCM.refresh();
+    }
     /**
      * 把当前选中的节点存入localStorage
      * 页面刷新后，会根据"defaultId"设置当前选中的节点
@@ -33,7 +37,6 @@ $(function () {
      */
     function setCurrentId(id) {
         localStorage.setItem("defaultId", id);
-
     }
 
     /**
@@ -64,14 +67,15 @@ $(function () {
             val3 = false;
         }
         codeMirror.setOption("readOnly", status != 0);
+        selfConfigCM.setOption("readOnly", status != 0);
         $('#jobMessage').css("display", val1);
         $('#jobMessageEdit').css("display", val2);
         $('#config textarea').attr('disabled', val3);
-        $('#resource textarea').attr('disabled', val3);
         $('#jobOperate').css("display", val1);
         $('#editOperator').css("display", val2);
         $('#groupMessage').css("display", "none");
         $('#groupMessageEdit').css("display", "none");
+
     }
 
     /**
@@ -339,8 +343,8 @@ $(function () {
         if (!isGroup) {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
-                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
-                "&script=" + codeMirror.getValue() + "&resource=" + $('#resource textarea').val() +
+                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + selfConfigCM.getValue() +
+                "&script=" + codeMirror.getValue()  +
                 "&id=" + focusId,
                 type: "post",
                 success: function (data) {
@@ -356,8 +360,8 @@ $(function () {
         } else {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
-                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
-                "&resource=" + $('#resource textarea').val() + "&id=" + focusId,
+                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + selfConfigCM.getValue() +
+                "&resource=" + "&id=" + focusId,
                 type: "post",
                 success: function (data) {
                     if (data == true) {
@@ -412,10 +416,6 @@ $(function () {
         $('#groupOperate').css("display", status1);
         $('#groupMessageEdit').css("display", status2);
         $('#editOperator').css("display", status2);
-        var config = $("#config textarea");
-        var resource = $("#resource textarea");
-        resource.attr("disabled", status3);
-        $("#resource").css("display", "block");
         $("#config").css("display", "block");
     }
 
@@ -490,16 +490,16 @@ $(function () {
                     if (data.script != null) {
                         codeMirror.setValue(data.script);
                     }
-                    codeMirror.refresh();
                     var isShow = data.scheduleType === 0;
                     $('#dependencies').css("display", isShow ? "none" : "");
                     $('#heraDependencyCycle').css("display", isShow ? "none" : "");
                     $('#cronExpression').css("display", isShow ? "" : "none");
                     formDataLoad("jobMessage form", data);
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
-                    $('#config textarea:first').val(initVal(data.configs, "jobMessage"));
+                    selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
                     $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
-                    $('#inheritConfig textarea:first').val(parseJson(data.inheritConfig));
+
+                    inheritConfigCM.setValue(parseJson(data.inheritConfig));
 
 
                 }
@@ -517,8 +517,9 @@ $(function () {
                 success: function (data) {
                     focusItem = data;
                     formDataLoad("groupMessage form", data);
-                    $('#inheritConfig textarea:first').val(parseJson(data.inheritConfig));
-                    $('#config textarea:first').val(parseJson(data.configs));
+                    inheritConfigCM.setValue(parseJson(data.inheritConfig));
+
+                    selfConfigCM.setValue(parseJson(data.configs));
                 }
 
             });
@@ -546,14 +547,11 @@ $(function () {
             $("#jobOperate").css("display", "block");
             $("#script").css("display", "block");
         }
-        $('#resource textarea:first').val(focusItem.resource);
         $("#config").css("display", "block");
-        $("#resource").css("display", "block");
         $("#inheritConfig").css("display", "block");
+        refreshCm();
 
-        $.each($("textarea"), function(i, n){
-            $(n).css("height", n.scrollHeight + "px");
-        })
+
     }
 
     function parseJson(obj) {
@@ -640,9 +638,12 @@ $(function () {
         $.fn.zTree.init($("#jobTree"), setting, zNodes);
         zTree = $.fn.zTree.getZTreeObj("jobTree");
         rMenu = $("#rMenu");
+        $.each($(".content .row .height-self"), function(i, n){
+            $(n).css("height", (screenHeight - 50) + "px");
+        });
         fixIcon();//调用修复图标的方法。方法如下：
         codeMirror = CodeMirror.fromTextArea(editor[0], {
-            mode: "sql",
+            mode: "text/x-sh",
             lineNumbers: true,
             theme: "paraiso-light",
             readOnly: true,
@@ -650,16 +651,33 @@ $(function () {
             smartIndent: true
         });
 
-        codeMirror.display.wrapper.style.height = "600px";
+     //   codeMirror.display.wrapper.style.height = "600px";
         codeMirror.on('keypress', function () {
             if (!codeMirror.getOption('readOnly')) {
                 codeMirror.showHint();
             }
         });
+
+        inheritConfigCM = CodeMirror.fromTextArea($('#inheritConfig textarea')[0], {
+            mode: "text/x-sh",
+            theme: "paraiso-light",
+            readOnly: true,
+            matchBrackets: true,
+            smartIndent: true
+        });
+
+        selfConfigCM = CodeMirror.fromTextArea($('#config textarea')[0], {
+            mode: "text/x-sh",
+            theme: "paraiso-light",
+            readOnly: true,
+            matchBrackets: true,
+            smartIndent: true
+        });
+        codeMirror.setSize('auto', 'auto');
+        inheritConfigCM.setSize('auto', 'auto');
+        selfConfigCM.setSize('auto', 'auto');
         setDefaultSelectNode(localStorage.getItem("defaultId"));
     });
-
-
 });
 
 
@@ -822,6 +840,3 @@ function cancelJob(historyId) {
 
 }
 
-function zTreeOnClick() {
-    
-}

@@ -433,7 +433,7 @@ $(function () {
             theme: "paraiso-light",
             readOnly: false
         });
-        codeMirror.display.wrapper.style.height = "600px";
+        codeMirror.display.wrapper.style.height = (screenHeight - 186)+ "px";
         codeMirror.on('keypress', function () {
             if (!codeMirror.getOption('readOnly')) {
                 codeMirror.showHint();
@@ -457,7 +457,13 @@ $(function () {
             var tmp = new Array();
             localStorage.setItem("tabData", JSON.stringify(tmp));
         }
+
+        $.each($(".height-self"), function(i, n){
+            $(n).css("height", (screenHeight - 50) + "px");
+        });
     });
+
+
 
 });
 

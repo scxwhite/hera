@@ -11,7 +11,12 @@
 </head>
 
 <style type="text/css">
-    div#rMenu {
+
+    .box, .content{
+        margin-bottom: 0px;
+        padding-bottom: 0px;
+    }
+    div #rMenu {
         position: absolute;
         visibility: hidden;
         top: 0;
@@ -50,6 +55,7 @@
     }
 
 
+
 </style>
 
 <body class="hold-transition skin-blue-light sidebar-mini">
@@ -63,13 +69,10 @@
 
         <section class="content">
             <div class="row">
-                <div class="col-md-3 col-sm-3 col-lg-3 colStyle">
-
-
-                    <div class="box box-primary">
+                <div class="col-md-3 col-sm-3 col-lg-3 colStyle"  >
+                    <div class="box box-primary height-self" style="overflow: auto;">
                         <div class="box-body">
-
-                            <div style="overflow: auto;height: 700px">
+                            <div>
                                 <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
                                 <ul id="jobTree" class="ztree"></ul>
                             </div>
@@ -77,7 +80,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-8 col-sm-8 col-lg-8 colStyle" style="white-space:nowrap;">
+                <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self" style="overflow: auto;">
 
                     <div class="box box-primary">
 
@@ -438,15 +441,6 @@
                             <div class="form-group">
                                 <label>继承的配置项信息</label>
                                 <textarea class="form-control"  style="resize: none"
-                                          readonly></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="resource" class="box box-primary" style="display: none">
-                        <div class="box-body">
-                            <div class="form-group">
-                                <label>资源信息</label>
-                                <textarea class="form-control" style="resize: none"
                                           readonly></textarea>
                             </div>
                         </div>

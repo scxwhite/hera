@@ -66,6 +66,8 @@
 
     <script>var base_url = '${request.contextPath}';</script>
 
+    <script>var screenHeight = document.body.clientHeight</script>
+
 </#macro>
 
 <#macro commonHeader>
@@ -92,7 +94,7 @@
 
 <#macro commonLeft pageName >
 	<!-- Left side column. contains the logo and sidebar -->
-	<aside class="main-sidebar">
+	<aside class="main-sidebar height-self">
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
             <#--<form action="#" method="get" class="sidebar-form">-->
