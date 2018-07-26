@@ -422,7 +422,7 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>配置项信息</label>
-                                <textarea class="form-control" rows="5" placeholder="Enter ..."
+                                <textarea class="form-control"
                                           disabled></textarea>
                             </div>
                         </div>
@@ -431,7 +431,7 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>脚本</label>
-                                <textarea id="editor" name="editor" rows="70"
+                                <textarea id="editor" name="editor"
                                           ></textarea>
                             </div>
                         </div>
@@ -765,6 +765,7 @@
 <script src="${request.contextPath}/plugins/codemirror/addon/hint/anyword-hint.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/addon/hint/sql-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/active-line.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/mode/python/python.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>

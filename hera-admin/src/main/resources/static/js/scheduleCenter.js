@@ -25,9 +25,9 @@ $(function () {
         }
     };
     function refreshCm() {
+        selfConfigCM.refresh();
         codeMirror.refresh();
         inheritConfigCM.refresh();
-        selfConfigCM.refresh();
     }
     /**
      * 把当前选中的节点存入localStorage
@@ -648,22 +648,16 @@ $(function () {
             theme: "paraiso-light",
             readOnly: true,
             matchBrackets: true,
-            smartIndent: true
+            smartIndent: true,
+            styleActiveLine: true,
+            nonEmpty: true
+
         });
 
-     //   codeMirror.display.wrapper.style.height = "600px";
         codeMirror.on('keypress', function () {
             if (!codeMirror.getOption('readOnly')) {
                 codeMirror.showHint();
             }
-        });
-
-        inheritConfigCM = CodeMirror.fromTextArea($('#inheritConfig textarea')[0], {
-            mode: "text/x-sh",
-            theme: "paraiso-light",
-            readOnly: true,
-            matchBrackets: true,
-            smartIndent: true
         });
 
         selfConfigCM = CodeMirror.fromTextArea($('#config textarea')[0], {
@@ -671,8 +665,23 @@ $(function () {
             theme: "paraiso-light",
             readOnly: true,
             matchBrackets: true,
-            smartIndent: true
+            smartIndent: true,
+            styleActiveLine: true,
+            nonEmpty: true
         });
+        inheritConfigCM = CodeMirror.fromTextArea($('#inheritConfig textarea')[0], {
+            mode: "text/x-sh",
+            theme: "paraiso-light",
+            readOnly: true,
+            matchBrackets: true,
+            smartIndent: true,
+            styleActiveLine: true,
+            nonEmpty: true
+
+
+        });
+
+
         codeMirror.setSize('auto', 'auto');
         inheritConfigCM.setSize('auto', 'auto');
         selfConfigCM.setSize('auto', 'auto');

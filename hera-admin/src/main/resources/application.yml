@@ -82,6 +82,7 @@ spring:
 ---
 spring:
   profiles: pre
+druid:
   datasource:
     url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     username: lineage
@@ -89,6 +90,7 @@ spring:
 ---
 spring:
   profiles: publish
+druid:
   datasource:
     url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     username: lineage
