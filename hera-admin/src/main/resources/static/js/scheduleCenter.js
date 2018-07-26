@@ -3,6 +3,7 @@ $(function () {
     var focusItem = null;
     var isGroup;
     var treeObj;
+    var dependTreeObj;
     var selected;
     var triggerType;
     var codeMirror, inheritConfigCM, selfConfigCM;
@@ -231,11 +232,14 @@ $(function () {
             };
             var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
             $.fn.zTree.init($("#dependTree"), setting, dependNodes);
-            var dependTree = $.fn.zTree.getZTreeObj("dependTree");
-            $("#selectDepend").modal('show');
+            dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
 
-            $("#chooseDepend").click(function () {
-                var nodes = dependTree.getCheckedNodes(true);
+            $("#dependJob").bind('click', function () {
+                $("#selectDepend").modal('show');
+
+            });
+            $("#chooseDepend").bind('click', function () {
+                var nodes = dependTreeObj.getCheckedNodes(true);
                 var ids = new Array();
                 for (var i = 0; i < nodes.length; i++) {
                     if (nodes[i]['isParent'] == false) {
@@ -243,22 +247,28 @@ $(function () {
                     }
                 }
                 $("#dependJob").val(ids.join(","));
-
                 $("#selectDepend").modal('hide');
 
-            });
+
+            })
+
             setJobMessageEdit(false);
         }
     });
 
     $('#keyWords').on('keyup', function () {
         var key = $.trim($(this).val());
-        searchNodeLazy(key);
+        searchNodeLazy(key, treeObj);
+
+    });
+    $('#dependKeyWords').on('keyup', function () {
+        var key = $.trim($(this).val());
+        searchNodeLazy(key, dependTreeObj);
 
     });
     var timeoutId;
 
-    function searchNodeLazy(key) {
+    function searchNodeLazy(key, tree) {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
@@ -267,15 +277,15 @@ $(function () {
             $('#keyWords').focus();//focus input field again after filtering
         }, 300);
 
-        function search() {
+        function search(key) {
             if (key == null || key == "" || key == undefined) {
-                treeObj.getNodesByFilter(function (node) {
-                    treeObj.showNode(node);
+                tree.getNodesByFilter(function (node) {
+                    tree.showNode(node);
                 });
-                treeObj.expandAll(false);
+                tree.expandAll(false);
                 setDefaultSelectNode(localStorage.getItem("defaultId"));
             } else {
-                var nodeShow = treeObj.getNodesByFilter(filterNodes);
+                var nodeShow = tree.getNodesByFilter(filterNodes);
                 if (nodeShow && nodeShow.length > 0) {
                     nodeShow.forEach(function (node) {
                         expandParent(node);
@@ -285,19 +295,16 @@ $(function () {
 
             function filterNodes(node) {
                 if (node.name && node.name.toLowerCase().indexOf(key.toLowerCase()) != -1) {
-                    treeObj.showNode(node);
+                    tree.showNode(node);
                     return true;
                 }
-                treeObj.hideNode(node);
+                tree.hideNode(node);
                 return false;
             }
 
         }
     }
 
-    function search() {
-
-    }
 
     function expandParent(node) {
         var path = node.getPath();
@@ -551,7 +558,9 @@ $(function () {
         $("#inheritConfig").css("display", "block");
         refreshCm();
 
-
+        $.each($("textarea"), function (i, n) {
+            $(n).css("height", n.scrollHeight + "px");
+        })
     }
 
     function parseJson(obj) {
@@ -849,3 +858,6 @@ function cancelJob(historyId) {
 
 }
 
+function zTreeOnClick() {
+
+}

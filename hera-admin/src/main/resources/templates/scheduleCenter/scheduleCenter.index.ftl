@@ -743,7 +743,7 @@
                 <div class="modal-title"><h4>选择任务依赖任务</h4></div>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
+                <input type="text" class="form-control" id="dependKeyWords" placeholder="请输入关键词">
                 <ul id="dependTree" class="ztree"></ul>
             </div>
 
