@@ -2,7 +2,7 @@ div#rMenu {
     position: absolute;
     visibility: hidden;
     top: 0;
-    background-color: #555;
+    background-color: #40a8e4;
     text-align: left;
     padding: 2px;
 }
@@ -24,7 +24,7 @@ div#rMenu ul li {
     padding: 0 50px;
     cursor: pointer;
     list-style: none outside none;
-    background-color: #DFDFDF;
+    background-color: #40a8e4;
 }
 
 .colStyle {
@@ -35,5 +35,4 @@ div#rMenu ul li {
     background-color: #eee;
     border: 1px solid #ddd;
 }
-
 

@@ -11,7 +11,12 @@
 </head>
 
 <style type="text/css">
-    div#rMenu {
+
+    .box, .content , .form-group{
+        margin-bottom: 0px;
+        padding-bottom: 0px;
+    }
+    div #rMenu {
         position: absolute;
         visibility: hidden;
         top: 0;
@@ -50,6 +55,7 @@
     }
 
 
+
 </style>
 
 <body class="hold-transition skin-blue-light sidebar-mini">
@@ -63,13 +69,10 @@
 
         <section class="content">
             <div class="row">
-                <div class="col-md-3 col-sm-3 col-lg-3 colStyle">
-
-
-                    <div class="box box-primary">
+                <div class="col-md-3 col-sm-3 col-lg-3 colStyle"  >
+                    <div class="box box-primary height-self" style="overflow: auto;">
                         <div class="box-body">
-
-                            <div style="overflow: auto;height: 700px">
+                            <div>
                                 <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
                                 <ul id="jobTree" class="ztree"></ul>
                             </div>
@@ -77,7 +80,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-8 col-sm-8 col-lg-8 colStyle" style="white-space:nowrap;">
+                <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self" style="overflow: auto;">
 
                     <div class="box box-primary">
 
@@ -207,13 +210,13 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">失败重试次数:</label>
+                                            <label class="control-label input-sm col-sm-4">重试次数:</label>
                                             <div class="col-sm-8">
                                                 <label class="form-control-static" name="rollBackTimes"></label>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">重试时间间隔:</label>
+                                            <label class="control-label input-sm col-sm-4">重试间隔:</label>
                                             <div class="col-sm-8">
                                                 <label class="form-control-static"
                                                        name="rollBackWaitTime"></label>
@@ -419,8 +422,8 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>配置项信息</label>
-                                <textarea class="form-control" rows="5" placeholder="Enter ..."
-                                          disabled></textarea>
+                                <textarea class="form-control"
+                                          ></textarea>
                             </div>
                         </div>
                     </div>
@@ -428,7 +431,7 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>脚本</label>
-                                <textarea id="editor" name="editor" rows="70"
+                                <textarea id="editor" name="editor"
                                           ></textarea>
                             </div>
                         </div>
@@ -438,16 +441,7 @@
                             <div class="form-group">
                                 <label>继承的配置项信息</label>
                                 <textarea class="form-control"  style="resize: none"
-                                          readonly></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="resource" class="box box-primary" style="display: none">
-                        <div class="box-body">
-                            <div class="form-group">
-                                <label>资源信息</label>
-                                <textarea class="form-control" style="resize: none"
-                                          readonly></textarea>
+                                          ></textarea>
                             </div>
                         </div>
                     </div>
@@ -749,7 +743,7 @@
                 <div class="modal-title"><h4>选择任务依赖任务</h4></div>
             </div>
             <div class="modal-body">
-                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
+                <input type="text" class="form-control" id="dependKeyWords" placeholder="请输入关键词">
                 <ul id="dependTree" class="ztree"></ul>
             </div>
 
@@ -771,6 +765,7 @@
 <script src="${request.contextPath}/plugins/codemirror/addon/hint/anyword-hint.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/addon/hint/sql-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/active-line.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/mode/python/python.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>

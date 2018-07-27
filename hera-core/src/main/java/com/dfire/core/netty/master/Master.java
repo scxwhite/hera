@@ -158,7 +158,7 @@ public class Master {
     private void lostJobCheck() {
         log.info("refresh host group success,start clear schedule");
         masterContext.refreshHostGroupCache();
-        String currDate = DateUtil.getTodayStringForAction();
+        String currDate = DateUtil.getNowStringForAction();
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, +1);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd0000000000");
@@ -192,7 +192,7 @@ public class Master {
                                 masterContext.getHeraJobActionService().delete(actionId);
                             }
                         }
-                        if (!DateUtil.isNow(actionId)) {
+                        if (!DateUtil.isToday(actionId)) {
                             shouldRemove.add(jobHandler);
                         }
                     });
@@ -231,7 +231,7 @@ public class Master {
         boolean execute = (executeHour == 0 && executeMinute == 0)
                 || (executeHour > 7 && executeHour <= 23);
         if (execute) {
-            String currString = DateUtil.getTodayStringForAction();
+            String currString = DateUtil.getNowStringForAction();
             if (executeHour == 23) {
                 Tuple<String, Date> nextDayString = DateUtil.getNextDayString();
                 //例如：今天 2018.07.17 23:50  currString = 2018.07.18 now = 2018.07.18 23:50
