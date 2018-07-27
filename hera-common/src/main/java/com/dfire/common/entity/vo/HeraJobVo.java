@@ -94,4 +94,6 @@ public class HeraJobVo {
 
     private String resource;
 
+    private Map<String, String> inheritConfig;
+
 }

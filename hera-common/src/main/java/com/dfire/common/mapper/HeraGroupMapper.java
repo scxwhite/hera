@@ -50,5 +50,6 @@ public interface HeraGroupMapper {
     List<HeraGroup> findByOwner(HeraGroup heraGroup);
 
 
-
+    @Select("select configs,parent from hera_group where id = #{id}")
+    HeraGroup selectConfigById(Integer id);
 }

@@ -43,4 +43,6 @@ public class HeraGroupVo {
     private String selfConfigs;
     private Map<String, String> configs;
     private List<Map<String,String>> resources;
+
+    private Map<String, String> inheritConfig;
 }

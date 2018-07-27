@@ -1,6 +1,7 @@
 package com.dfire.api;
 
 import com.dfire.common.entity.HeraJob;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class ZeusToHera {
     private Connection heraConnection = null;
     private Connection zeusConnection = null;
 
-    private List<Integer> jobs = Arrays.asList(971);
+    private List<Integer> jobs = Arrays.asList(6625, 6628, 971);
 
 
     @Before
@@ -55,15 +56,19 @@ public class ZeusToHera {
         List<String> fields = initFields(cacheMap);
 
         StringBuilder insertSql = new StringBuilder();
+        StringBuilder deleteSql = new StringBuilder("delete from hera_job where id in (");
         StringBuilder fieldStr = new StringBuilder();
         StringBuilder valueStr = new StringBuilder();
         PreparedStatement heraPs;
+        jobs.forEach(x -> deleteSql.append(x).append(","));
+        deleteSql.replace(deleteSql.length() - 1, deleteSql.length(), ")");
+        PreparedStatement preparedStatement = heraConnection.prepareStatement(deleteSql.toString());
+        preparedStatement.execute();
         while (resultSet.next()) {
             Map<String, String> res = new HashMap<>();
             insertSql.delete(0, insertSql.length());
             fieldStr.delete(0, fieldStr.length());
             valueStr.delete(0, valueStr.length());
-
             insertSql.append("insert into hera_job (");
             fields.forEach(x -> {
                 try {
