@@ -89,11 +89,11 @@
                     <div id="config">
                         <div>
                             <div>
-                                <button id="execute" type="submit" class="btn btn-success btn-sm">执行</button>
-                                <button id="executeSelector" type="submit" class="btn btn-success btn-sm">执行选中的代码
+                                <button id="execute" type="submit" class="btn btn-primary btn-sm">执行</button>
+                                <button id="executeSelector" type="submit" class="btn btn-primary btn-sm">执行选中的代码
                                 </button>
-                                <button id="uploadResource" type="submit" class="btn btn-success btn-sm">上传资源</button>
-                                <button id="syncingTask" type="submit" class="btn btn-success btn-sm">同步任务</button>
+                                <button id="uploadResource" type="submit" class="btn btn-primary btn-sm">上传资源</button>
+                                <button id="syncingTask" type="submit" class="btn btn-primary btn-sm">同步任务</button>
                             </div>
                         </div>
                     </div>
