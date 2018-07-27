@@ -209,6 +209,9 @@ public class JobHandler extends AbstractHandler {
         if (heraActionVo.getDependencies() == null || !heraActionVo.getDependencies().contains(jobId)) {
             return;
         }
+        if (heraActionVo.getJobId().equals("1578")) {
+            System.out.println("任务");
+        }
         JobStatus jobStatus;
         synchronized (this) {
             jobStatus = heraJobActionService.findJobStatus(actionId);
@@ -362,7 +365,7 @@ public class JobHandler extends AbstractHandler {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
 
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
-                    String currentDate = DateUtil.getTodayStringForAction();
+                    String currentDate = DateUtil.getNowStringForAction();
                     if (Long.parseLong(actionId) < Long.parseLong(currentDate)) {
                         HeraJobHistory history = HeraJobHistory.builder()
                                 .illustrate(LogConstant.LOST_JOB_LOG)

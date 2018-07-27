@@ -40,8 +40,14 @@ public class DateUtil {
     }
 
 
-    public static String getTodayStringForAction() {
+    public static String getNowStringForAction() {
         SimpleDateFormat dfDateTime = new SimpleDateFormat("yyyyMMddHHmmss0000");
+        return dfDateTime.format(new Date());
+
+    }
+
+    public static String getTodayStringForAction() {
+        SimpleDateFormat dfDateTime = new SimpleDateFormat("yyyyMMdd0000000000");
         return dfDateTime.format(new Date());
 
     }
@@ -82,6 +88,10 @@ public class DateUtil {
     }
 
     public static boolean isNow(String actionId) {
+        return DateUtil.getNowStringForAction().compareTo(actionId) <= 0;
+    }
+
+    public static boolean isToday(String actionId) {
         return DateUtil.getTodayStringForAction().compareTo(actionId) <= 0;
     }
 }
