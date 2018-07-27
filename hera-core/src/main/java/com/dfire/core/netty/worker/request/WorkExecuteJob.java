@@ -178,7 +178,16 @@ public class WorkExecuteJob {
                 exception = e;
                 history.getLog().appendHeraException(e);
             } finally {
-                String res = exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString();
+                String res;
+                if (exitCode == 0) {
+                    res = StatusEnum.SUCCESS.toString();
+                    workContext.getHeraJobActionService().updateStatusAndReadDependency(HeraAction.builder().id(history.getActionId()).status(res).readyDependency("{}").build());
+                } else {
+                    res = StatusEnum.FAILED.toString();
+
+                    workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
+
+                }
                 //更新状态和日志
                 workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
                         HeraJobHistory.builder().
@@ -186,8 +195,6 @@ public class WorkExecuteJob {
                                 log(history.getLog().getContent()).status(res).
                                 endTime(new Date())
                                 .build());
-
-                workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
                 workContext.getRunning().remove(jobId);
             }
 

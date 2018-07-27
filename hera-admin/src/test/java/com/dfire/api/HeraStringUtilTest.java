@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -64,7 +63,7 @@ public class HeraStringUtilTest {
         System.out.println( LocalDate.parse("2018-09-23", formatter));
         System.out.println( LocalDate.parse("09-23-2018", formatter));
         System.out.println( LocalDate.parse("23/09/2018", formatter));
-        System.out.println(DateUtil.getTodayStringForAction());
+        System.out.println(DateUtil.getNowStringForAction());
     }
 
     @Test
@@ -76,7 +75,7 @@ public class HeraStringUtilTest {
 
     @Test
     public void testDateUtil() {
-        System.out.println(DateUtil.getTodayStringForAction());
+        System.out.println(DateUtil.getNowStringForAction());
 
         String currString = DateUtil.getNextDayString().getSource();
         Date nextDay = DateUtil.getNextDayString().getTarget();

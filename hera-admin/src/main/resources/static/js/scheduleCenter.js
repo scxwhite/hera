@@ -60,18 +60,16 @@ $(function () {
      */
     function changeEditStyle(status) {
         //默认 展示状态
-        var val1 = "block", val2 = "none", val3 = true;
+        var val1 = "block", val2 = "none";
         //编辑状态
         if (status == 0) {
             val1 = "none";
             val2 = "block";
-            val3 = false;
         }
         codeMirror.setOption("readOnly", status != 0);
         selfConfigCM.setOption("readOnly", status != 0);
         $('#jobMessage').css("display", val1);
         $('#jobMessageEdit').css("display", val2);
-        $('#config textarea').attr('disabled', val3);
         $('#jobOperate').css("display", val1);
         $('#editOperator').css("display", val2);
         $('#groupMessage').css("display", "none");
@@ -675,7 +673,6 @@ $(function () {
             readOnly: true,
             matchBrackets: true,
             smartIndent: true,
-            styleActiveLine: true,
             nonEmpty: true
         });
         inheritConfigCM = CodeMirror.fromTextArea($('#inheritConfig textarea')[0], {
@@ -684,12 +681,8 @@ $(function () {
             readOnly: true,
             matchBrackets: true,
             smartIndent: true,
-            styleActiveLine: true,
             nonEmpty: true
-
-
         });
-
 
         codeMirror.setSize('auto', 'auto');
         inheritConfigCM.setSize('auto', 'auto');
