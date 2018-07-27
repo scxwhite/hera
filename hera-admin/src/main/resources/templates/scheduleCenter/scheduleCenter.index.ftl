@@ -12,7 +12,7 @@
 
 <style type="text/css">
 
-    .box, .content{
+    .box, .content , .form-group{
         margin-bottom: 0px;
         padding-bottom: 0px;
     }
@@ -210,13 +210,13 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">失败重试次数:</label>
+                                            <label class="control-label input-sm col-sm-4">重试次数:</label>
                                             <div class="col-sm-8">
                                                 <label class="form-control-static" name="rollBackTimes"></label>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">重试时间间隔:</label>
+                                            <label class="control-label input-sm col-sm-4">重试间隔:</label>
                                             <div class="col-sm-8">
                                                 <label class="form-control-static"
                                                        name="rollBackWaitTime"></label>
@@ -423,7 +423,7 @@
                             <div class="form-group">
                                 <label>配置项信息</label>
                                 <textarea class="form-control"
-                                          disabled></textarea>
+                                          ></textarea>
                             </div>
                         </div>
                     </div>
@@ -441,7 +441,7 @@
                             <div class="form-group">
                                 <label>继承的配置项信息</label>
                                 <textarea class="form-control"  style="resize: none"
-                                          readonly></textarea>
+                                          ></textarea>
                             </div>
                         </div>
                     </div>
