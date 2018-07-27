@@ -47,5 +47,8 @@ public interface HeraJobActionService {
 
     Integer updateStatus(HeraAction heraAction);
 
+    Integer updateStatusAndReadDependency(HeraAction heraAction);
+
+
 
 }

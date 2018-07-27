@@ -41,4 +41,7 @@ public interface HeraJobActionMapper {
 
     @Update("update hera_action set status = #{status} where id = #{id}")
     Integer updateStatus(HeraAction heraAction);
+
+    @Update("update hera_action set status = #{status},ready_dependency=#{readyDependency} where id = #{id}")
+    Integer updateStatusAndReadDependency(HeraAction heraAction);
 }
