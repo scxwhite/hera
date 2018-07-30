@@ -13,8 +13,10 @@
 <style type="text/css">
 
     .box, .content , .form-group{
-        margin-bottom: 0px;
-        padding-bottom: 0px;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        padding-top: 0;
     }
     div #rMenu {
         position: absolute;
@@ -55,7 +57,6 @@
     }
 
 
-
 </style>
 
 <body class="hold-transition skin-blue-light sidebar-mini">
@@ -73,7 +74,7 @@
                     <div class="box box-primary height-self" style="overflow: auto;">
                         <div class="box-body">
                             <div>
-                                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
+                                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词(空格分割)">
                                 <ul id="jobTree" class="ztree"></ul>
                             </div>
                         </div>

@@ -2,11 +2,13 @@ package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.entity.vo.PageHelper;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.common.vo.LogContent;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -43,4 +45,6 @@ public interface HeraJobHistoryService {
     List<HeraJobHistory> findByJobId(String jobId);
 
     HeraJobHistory findLogById(Integer id);
+
+    Map<String, Object> findLogByPage(PageHelper pageHelper);
 }
