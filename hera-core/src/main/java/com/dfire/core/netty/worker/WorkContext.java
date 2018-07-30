@@ -8,14 +8,15 @@ import com.dfire.core.job.Job;
 import io.netty.channel.Channel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -35,7 +36,9 @@ public class WorkContext {
     private Map<String, Job> debugRunning = new ConcurrentHashMap<String, Job>();
     private WorkHandler handler;
     private WorkClient workClient;
-    private ExecutorService workThreadPool = Executors.newCachedThreadPool();
+    private ScheduledExecutorService workThreadPool = new ScheduledThreadPoolExecutor(8,
+            new BasicThreadFactory.Builder().namingPattern("WorkContext-schedule-pool-%d").daemon(true).build());
+
     private ApplicationContext applicationContext;
 
     static {
