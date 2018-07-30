@@ -3,9 +3,10 @@ $(function () {
     var focusItem = null;
     var isGroup;
     var treeObj;
+    var dependTreeObj;
     var selected;
     var triggerType;
-    var codeMirror;
+    var codeMirror, inheritConfigCM, selfConfigCM;
     var editor = $('#editor');
     var setting = {
         view: {
@@ -24,7 +25,11 @@ $(function () {
             onClick: leftClick
         }
     };
-
+    function refreshCm() {
+        selfConfigCM.refresh();
+        codeMirror.refresh();
+        inheritConfigCM.refresh();
+    }
     /**
      * 把当前选中的节点存入localStorage
      * 页面刷新后，会根据"defaultId"设置当前选中的节点
@@ -33,7 +38,6 @@ $(function () {
      */
     function setCurrentId(id) {
         localStorage.setItem("defaultId", id);
-
     }
 
     /**
@@ -56,22 +60,21 @@ $(function () {
      */
     function changeEditStyle(status) {
         //默认 展示状态
-        var val1 = "block", val2 = "none", val3 = true;
+        var val1 = "block", val2 = "none";
         //编辑状态
         if (status == 0) {
             val1 = "none";
             val2 = "block";
-            val3 = false;
         }
         codeMirror.setOption("readOnly", status != 0);
+        selfConfigCM.setOption("readOnly", status != 0);
         $('#jobMessage').css("display", val1);
         $('#jobMessageEdit').css("display", val2);
-        $('#config textarea').attr('disabled', val3);
-        $('#resource textarea').attr('disabled', val3);
         $('#jobOperate').css("display", val1);
         $('#editOperator').css("display", val2);
         $('#groupMessage').css("display", "none");
         $('#groupMessageEdit').css("display", "none");
+
     }
 
     /**
@@ -227,11 +230,14 @@ $(function () {
             };
             var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
             $.fn.zTree.init($("#dependTree"), setting, dependNodes);
-            var dependTree = $.fn.zTree.getZTreeObj("dependTree");
-            $("#selectDepend").modal('show');
+            dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
 
-            $("#chooseDepend").click(function () {
-                var nodes = dependTree.getCheckedNodes(true);
+            $("#dependJob").bind('click', function () {
+                $("#selectDepend").modal('show');
+
+            });
+            $("#chooseDepend").bind('click', function () {
+                var nodes = dependTreeObj.getCheckedNodes(true);
                 var ids = new Array();
                 for (var i = 0; i < nodes.length; i++) {
                     if (nodes[i]['isParent'] == false) {
@@ -239,22 +245,28 @@ $(function () {
                     }
                 }
                 $("#dependJob").val(ids.join(","));
-
                 $("#selectDepend").modal('hide');
 
-            });
+
+            })
+
             setJobMessageEdit(false);
         }
     });
 
     $('#keyWords').on('keyup', function () {
         var key = $.trim($(this).val());
-        searchNodeLazy(key);
+        searchNodeLazy(key, treeObj);
+
+    });
+    $('#dependKeyWords').on('keyup', function () {
+        var key = $.trim($(this).val());
+        searchNodeLazy(key, dependTreeObj);
 
     });
     var timeoutId;
 
-    function searchNodeLazy(key) {
+    function searchNodeLazy(key, tree) {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
@@ -263,15 +275,15 @@ $(function () {
             $('#keyWords').focus();//focus input field again after filtering
         }, 300);
 
-        function search() {
+        function search(key) {
             if (key == null || key == "" || key == undefined) {
-                treeObj.expandAll(false);
-                treeObj.getNodesByFilter(function (node) {
-                    treeObj.showNode(node);
+                tree.getNodesByFilter(function (node) {
+                    tree.showNode(node);
                 });
+                tree.expandAll(false);
                 setDefaultSelectNode(localStorage.getItem("defaultId"));
             } else {
-                var nodeShow = treeObj.getNodesByFilter(filterNodes);
+                var nodeShow = tree.getNodesByFilter(filterNodes);
                 if (nodeShow && nodeShow.length > 0) {
                     nodeShow.forEach(function (node) {
                         expandParent(node);
@@ -281,19 +293,16 @@ $(function () {
 
             function filterNodes(node) {
                 if (node.name && node.name.toLowerCase().indexOf(key.toLowerCase()) != -1) {
-                    treeObj.showNode(node);
+                    tree.showNode(node);
                     return true;
                 }
-                treeObj.hideNode(node);
+                tree.hideNode(node);
                 return false;
             }
 
         }
     }
 
-    function search() {
-
-    }
 
     function expandParent(node) {
         var path = node.getPath();
@@ -339,8 +348,8 @@ $(function () {
         if (!isGroup) {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
-                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
-                "&script=" + codeMirror.getValue() + "&resource=" + $('#resource textarea').val() +
+                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + selfConfigCM.getValue() +
+                "&script=" + codeMirror.getValue()  +
                 "&id=" + focusId,
                 type: "post",
                 success: function (data) {
@@ -356,8 +365,8 @@ $(function () {
         } else {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
-                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + $('#config textarea').val() +
-                "&resource=" + $('#resource textarea').val() + "&id=" + focusId,
+                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + selfConfigCM.getValue() +
+                "&resource=" + "&id=" + focusId,
                 type: "post",
                 success: function (data) {
                     if (data == true) {
@@ -412,10 +421,6 @@ $(function () {
         $('#groupOperate').css("display", status1);
         $('#groupMessageEdit').css("display", status2);
         $('#editOperator').css("display", status2);
-        var config = $("#config textarea");
-        var resource = $("#resource textarea");
-        resource.attr("disabled", status3);
-        $("#resource").css("display", "block");
         $("#config").css("display", "block");
     }
 
@@ -490,16 +495,16 @@ $(function () {
                     if (data.script != null) {
                         codeMirror.setValue(data.script);
                     }
-                    codeMirror.refresh();
                     var isShow = data.scheduleType === 0;
                     $('#dependencies').css("display", isShow ? "none" : "");
                     $('#heraDependencyCycle').css("display", isShow ? "none" : "");
                     $('#cronExpression').css("display", isShow ? "" : "none");
                     formDataLoad("jobMessage form", data);
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
-                    $('#config textarea:first').val(initVal(data.configs, "jobMessage"));
+                    selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
                     $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
-                    $('#inheritConfig textarea:first').val(parseJson(data.inheritConfig));
+
+                    inheritConfigCM.setValue(parseJson(data.inheritConfig));
 
 
                 }
@@ -517,8 +522,9 @@ $(function () {
                 success: function (data) {
                     focusItem = data;
                     formDataLoad("groupMessage form", data);
-                    $('#inheritConfig textarea:first').val(parseJson(data.inheritConfig));
-                    $('#config textarea:first').val(parseJson(data.configs));
+                    inheritConfigCM.setValue(parseJson(data.inheritConfig));
+
+                    selfConfigCM.setValue(parseJson(data.configs));
                 }
 
             });
@@ -546,12 +552,11 @@ $(function () {
             $("#jobOperate").css("display", "block");
             $("#script").css("display", "block");
         }
-        $('#resource textarea:first').val(focusItem.resource);
         $("#config").css("display", "block");
-        $("#resource").css("display", "block");
         $("#inheritConfig").css("display", "block");
+        refreshCm();
 
-        $.each($("textarea"), function(i, n){
+        $.each($("textarea"), function (i, n) {
             $(n).css("height", n.scrollHeight + "px");
         })
     }
@@ -640,26 +645,50 @@ $(function () {
         $.fn.zTree.init($("#jobTree"), setting, zNodes);
         zTree = $.fn.zTree.getZTreeObj("jobTree");
         rMenu = $("#rMenu");
+        $.each($(".content .row .height-self"), function(i, n){
+            $(n).css("height", (screenHeight - 50) + "px");
+        });
         fixIcon();//调用修复图标的方法。方法如下：
         codeMirror = CodeMirror.fromTextArea(editor[0], {
-            mode: "sql",
+            mode: "text/x-sh",
             lineNumbers: true,
             theme: "paraiso-light",
             readOnly: true,
             matchBrackets: true,
-            smartIndent: true
+            smartIndent: true,
+            styleActiveLine: true,
+            nonEmpty: true
+
         });
 
-        codeMirror.display.wrapper.style.height = "600px";
         codeMirror.on('keypress', function () {
             if (!codeMirror.getOption('readOnly')) {
                 codeMirror.showHint();
             }
         });
+
+        selfConfigCM = CodeMirror.fromTextArea($('#config textarea')[0], {
+            mode: "text/x-sh",
+            theme: "paraiso-light",
+            readOnly: true,
+            matchBrackets: true,
+            smartIndent: true,
+            nonEmpty: true
+        });
+        inheritConfigCM = CodeMirror.fromTextArea($('#inheritConfig textarea')[0], {
+            mode: "text/x-sh",
+            theme: "paraiso-light",
+            readOnly: true,
+            matchBrackets: true,
+            smartIndent: true,
+            nonEmpty: true
+        });
+
+        codeMirror.setSize('auto', 'auto');
+        inheritConfigCM.setSize('auto', 'auto');
+        selfConfigCM.setSize('auto', 'auto');
         setDefaultSelectNode(localStorage.getItem("defaultId"));
     });
-
-
 });
 
 
@@ -823,5 +852,5 @@ function cancelJob(historyId) {
 }
 
 function zTreeOnClick() {
-    
+
 }
