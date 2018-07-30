@@ -61,7 +61,6 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         this.masterContext = masterContext;
         Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-
                     while (true) {
                         try {
                             Future<ChannelResponse> future = completionService.take();
@@ -91,7 +90,6 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 break;
             case WEB_REQUEST:
                 final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                System.out.println(webRequest.getOperate());
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
                         completionService.submit(() ->

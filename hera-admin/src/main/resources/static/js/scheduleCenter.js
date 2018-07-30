@@ -748,6 +748,18 @@ var JobLogTable = function (jobId) {
             search: false,
             cache: false,
             pageNumber: 1,
+            showRefresh: true,           //是否显示刷新按钮
+            showPaginationSwitch: true,  //是否显示选择分页数按钮
+            sidePagination: "server",
+            queryParamsType: "limit",
+            queryParams: function (params) {
+                var tmp = {
+                    pageSize: params.limit,
+                    offset: params.offset,
+                    jobId: jobId
+                };
+                return tmp;
+            },
             pageList: [10, 25, 40, 60],
             columns: [
                 {

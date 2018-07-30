@@ -1,6 +1,7 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.PageHelper;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
@@ -78,5 +79,11 @@ public interface HeraJobHistoryMapper {
      */
     @Select("select log,status from hera_action_history where id = #{id}")
     HeraJobHistory selectLogById(Integer id);
+
+    @Select("select count(1) from hera_action_history where job_id = #{id}")
+    Integer selectCountById(Integer id);
+
+    @Select("select * from hera_action_history where job_id = #{jobId} order by id desc limit #{offset,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER} ")
+    List<HeraJobHistory> selectByPage(PageHelper pageHelper);
 }
 

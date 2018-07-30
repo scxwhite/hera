@@ -7,6 +7,7 @@ import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
+import com.dfire.common.entity.vo.PageHelper;
 import com.dfire.common.enums.HttpCode;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
@@ -219,15 +220,13 @@ public class ScheduleCenterController extends BaseHeraController {
     /**
      * 获取任务历史版本
      *
-     * @param jobId
+     * @param pageHelper
      * @return
      */
     @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
     @ResponseBody
-    public List<HeraJobHistory> getJobHistory(String jobId) {
-        List<HeraJobHistory> list = heraJobHistoryService.findByJobId(jobId);
-        return list;
-
+    public Map<String, Object> getJobHistory(PageHelper pageHelper) {
+        return  heraJobHistoryService.findLogByPage(pageHelper);
     }
 
     /**
