@@ -74,7 +74,7 @@
                     <div class="box box-primary height-self" style="overflow: auto;">
                         <div class="box-body">
                             <div>
-                                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词">
+                                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词(空格分割)">
                                 <ul id="jobTree" class="ztree"></ul>
                             </div>
                         </div>
