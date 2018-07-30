@@ -49,7 +49,7 @@ public class Master {
 
     private MasterContext masterContext;
     private Map<Long, HeraAction> heraActionMap;
-    private ExecutorService executeJobPool;
+    private ThreadPoolExecutor executeJobPool;
 
     public Master(final MasterContext masterContext) {
 
@@ -57,6 +57,7 @@ public class Master {
         heraActionMap = new HashMap<>();
         executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 60L, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
+        executeJobPool.allowCoreThreadTimeOut(true);
         String exeEnvironment = "pre";
         if (HeraGlobalEnvironment.env.equalsIgnoreCase(exeEnvironment)) {
             masterContext.getDispatcher().addDispatcherListener(new HeraStopScheduleJobListener());
@@ -490,15 +491,16 @@ public class Master {
      * 扫描任务等待队列，取出任务去执行
      */
     public void scan() {
-
         if (!masterContext.getScheduleQueue().isEmpty()) {
             log.warn("队列任务：{}", masterContext.getScheduleQueue());
+            printThreadPoolLog();
             final JobElement element = masterContext.getScheduleQueue().poll();
             runScheduleJobAction(element);
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
             log.warn("队列任务：{}", masterContext.getManualQueue());
+            printThreadPoolLog();
             final JobElement element = masterContext.getManualQueue().poll();
             MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
             if (selectWork == null) {
@@ -510,6 +512,7 @@ public class Master {
 
         if (!masterContext.getDebugQueue().isEmpty()) {
             log.warn("队列任务：{}", masterContext.getDebugQueue());
+            printThreadPoolLog();
             final JobElement element = masterContext.getDebugQueue().poll();
             MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
             if (selectWork == null) {
@@ -519,6 +522,14 @@ public class Master {
             }
         }
 
+    }
+
+    private void printThreadPoolLog() {
+        StringBuilder sb = new StringBuilder("当前线程池信息");
+        sb.append("[ActiveCount: ").append(executeJobPool.getActiveCount()).append(",");
+        sb.append("CompletedTaskCount：").append(executeJobPool.getCompletedTaskCount()).append(",");
+        sb.append("TaskCount").append(executeJobPool.getTaskCount()).append("]");
+        log.warn(sb.toString());
     }
 
     /**
