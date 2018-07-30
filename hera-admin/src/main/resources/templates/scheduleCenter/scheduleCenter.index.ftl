@@ -13,8 +13,10 @@
 <style type="text/css">
 
     .box, .content , .form-group{
-        margin-bottom: 0px;
-        padding-bottom: 0px;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        margin-top: 0;
+        padding-top: 0;
     }
     div #rMenu {
         position: absolute;
@@ -53,7 +55,6 @@
         background-color: #eee;
         border: 1px solid #ddd;
     }
-
 
 
 </style>
