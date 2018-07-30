@@ -37,7 +37,10 @@ import org.springframework.beans.BeanUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -223,7 +226,7 @@ public class Master {
         return generateAction(true, jobId);
     }
 
-    private boolean generateAction(boolean isSingle, Integer jobId) {
+    private synchronized boolean generateAction(boolean isSingle, Integer jobId) {
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
         int executeHour = DateUtil.getCurrentHour(calendar);
@@ -528,7 +531,9 @@ public class Master {
         StringBuilder sb = new StringBuilder("当前线程池信息");
         sb.append("[ActiveCount: ").append(executeJobPool.getActiveCount()).append(",");
         sb.append("CompletedTaskCount：").append(executeJobPool.getCompletedTaskCount()).append(",");
-        sb.append("TaskCount").append(executeJobPool.getTaskCount()).append("]");
+        sb.append("poolSize").append(executeJobPool.getPoolSize()).append(",");
+        sb.append("largestPoolSize").append(executeJobPool.getLargestPoolSize()).append(",");
+        sb.append("TaskCount:").append(executeJobPool.getTaskCount()).append("]");
         log.warn(sb.toString());
     }
 
