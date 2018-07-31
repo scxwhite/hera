@@ -83,7 +83,6 @@ public class QuartzSchedulerService {
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
             if(jobDetail != null) {
                 scheduler.deleteJob(jobKey);
-                log.error("schedule remove job with actionId:" + actionId);
             }
 
         } catch (SchedulerException e) {

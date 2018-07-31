@@ -271,9 +271,9 @@ public class BeanConvertUtils {
         str = str.trim();
         String[] split = str.split("\\s");
         Arrays.stream(split).forEach(x -> {
-            String[] pair = x.split("=");
-            if (pair.length == 2) {
-                configs.put(pair[0], pair[1]);
+            int index = x.indexOf("=");
+            if (index != -1) {
+                configs.put(x.substring(0, index).trim(), x.substring(index + 1, x.length()).trim());
             }
         });
     }
