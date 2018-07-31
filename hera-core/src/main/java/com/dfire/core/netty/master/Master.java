@@ -150,10 +150,10 @@ public class Master {
                     }
                 }
                 removeChannel.forEach(workMap::remove);
-                masterContext.masterTimer.newTimeout(this, 4, TimeUnit.SECONDS);
+                masterContext.masterTimer.newTimeout(this, 1, TimeUnit.MINUTES);
             }
         };
-        masterContext.masterTimer.newTimeout(checkHeartBeatTask, 4, TimeUnit.SECONDS);
+        masterContext.masterTimer.newTimeout(checkHeartBeatTask, 20, TimeUnit.SECONDS);
     }
 
     /**
