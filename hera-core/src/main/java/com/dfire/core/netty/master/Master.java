@@ -150,10 +150,10 @@ public class Master {
                     }
                 }
                 removeChannel.forEach(workMap::remove);
-                masterContext.masterTimer.newTimeout(this, 4, TimeUnit.SECONDS);
+                masterContext.masterTimer.newTimeout(this, 1, TimeUnit.MINUTES);
             }
         };
-        masterContext.masterTimer.newTimeout(checkHeartBeatTask, 4, TimeUnit.SECONDS);
+        masterContext.masterTimer.newTimeout(checkHeartBeatTask, 20, TimeUnit.SECONDS);
     }
 
     /**
@@ -531,8 +531,8 @@ public class Master {
         StringBuilder sb = new StringBuilder("当前线程池信息");
         sb.append("[ActiveCount: ").append(executeJobPool.getActiveCount()).append(",");
         sb.append("CompletedTaskCount：").append(executeJobPool.getCompletedTaskCount()).append(",");
-        sb.append("poolSize").append(executeJobPool.getPoolSize()).append(",");
-        sb.append("largestPoolSize").append(executeJobPool.getLargestPoolSize()).append(",");
+        sb.append("PoolSize:").append(executeJobPool.getPoolSize()).append(",");
+        sb.append("LargestPoolSize:").append(executeJobPool.getLargestPoolSize()).append(",");
         sb.append("TaskCount:").append(executeJobPool.getTaskCount()).append("]");
         log.warn(sb.toString());
     }
