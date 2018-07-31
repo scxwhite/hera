@@ -50,5 +50,6 @@ public interface HeraJobActionService {
     Integer updateStatusAndReadDependency(HeraAction heraAction);
 
 
+    List<HeraAction> getTodayAction();
 
 }

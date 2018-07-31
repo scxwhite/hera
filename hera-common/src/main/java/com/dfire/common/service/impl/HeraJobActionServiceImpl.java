@@ -135,4 +135,9 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public Integer updateStatusAndReadDependency(HeraAction heraAction) {
         return heraJobActionMapper.updateStatusAndReadDependency(heraAction);
     }
+
+    @Override
+    public List<HeraAction> getTodayAction() {
+        return heraJobActionMapper.selectTodayAction(DateUtil.getTodayStringForAction());
+    }
 }

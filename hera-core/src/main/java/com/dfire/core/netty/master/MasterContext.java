@@ -135,6 +135,9 @@ public class MasterContext {
     public HeraJobActionService getHeraJobActionService() {
         return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
     }
+    public EmailService getEmailService() {
+        return (EmailService) applicationContext.getBean("emailServiceImpl");
+    }
 
     public synchronized void refreshHostGroupCache() {
         try {
@@ -143,4 +146,6 @@ public class MasterContext {
             log.info("refresh host group error");
         }
     }
+
+
 }

@@ -71,7 +71,7 @@ public class Master {
         masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
         masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
 
-        List<HeraAction> allJobList = masterContext.getHeraJobActionService().getAll();
+        List<HeraAction> allJobList = masterContext.getHeraJobActionService().getTodayAction();
         allJobList.forEach(heraAction -> masterContext.getDispatcher().
                 addJobHandler(new JobHandler(String.valueOf(heraAction.getId()), this, masterContext)));
 
