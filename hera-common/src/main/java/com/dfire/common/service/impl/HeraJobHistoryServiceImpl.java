@@ -1,12 +1,15 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.PageHelper;
 import com.dfire.common.mapper.HeraJobHistoryMapper;
 import com.dfire.common.service.HeraJobHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -72,5 +75,15 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     @Override
     public HeraJobHistory findLogById(Integer id) {
         return heraJobHistoryMapper.selectLogById(id);
+    }
+
+    @Override
+    public Map<String, Object> findLogByPage(PageHelper pageHelper) {
+        Map<String, Object> res = new HashMap<>(2);
+        Integer size = heraJobHistoryMapper.selectCountById(pageHelper.getJobId());
+        List<HeraJobHistory> histories = heraJobHistoryMapper.selectByPage(pageHelper);
+        res.put("rows", histories);
+        res.put("total", size);
+        return res;
     }
 }

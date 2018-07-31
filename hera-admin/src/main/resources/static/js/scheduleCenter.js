@@ -276,6 +276,7 @@ $(function () {
         }, 300);
 
         function search(key) {
+            var keys,length;
             if (key == null || key == "" || key == undefined) {
                 tree.getNodesByFilter(function (node) {
                     tree.showNode(node);
@@ -283,6 +284,8 @@ $(function () {
                 tree.expandAll(false);
                 setDefaultSelectNode(localStorage.getItem("defaultId"));
             } else {
+                keys = key.split(" ");
+                length = keys.length;
                 var nodeShow = tree.getNodesByFilter(filterNodes);
                 if (nodeShow && nodeShow.length > 0) {
                     nodeShow.forEach(function (node) {
@@ -292,10 +295,13 @@ $(function () {
             }
 
             function filterNodes(node) {
-                if (node.name && node.name.toLowerCase().indexOf(key.toLowerCase()) != -1) {
-                    tree.showNode(node);
-                    return true;
+                for (var i = 0; i < length; i++) {
+                    if (node.name && node.name.toLowerCase().indexOf(keys[i].toLowerCase()) != -1) {
+                        tree.showNode(node);
+                        return true;
+                    }
                 }
+
                 tree.hideNode(node);
                 return false;
             }
@@ -742,6 +748,18 @@ var JobLogTable = function (jobId) {
             search: false,
             cache: false,
             pageNumber: 1,
+            showRefresh: true,           //是否显示刷新按钮
+            showPaginationSwitch: true,  //是否显示选择分页数按钮
+            sidePagination: "server",
+            queryParamsType: "limit",
+            queryParams: function (params) {
+                var tmp = {
+                    pageSize: params.limit,
+                    offset: params.offset,
+                    jobId: jobId
+                };
+                return tmp;
+            },
             pageList: [10, 25, 40, 60],
             columns: [
                 {
