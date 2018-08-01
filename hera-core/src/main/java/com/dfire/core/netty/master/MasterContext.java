@@ -124,6 +124,10 @@ public class MasterContext {
         return (HeraUserService) applicationContext.getBean("heraUserService");
     }
 
+    public HeraJobMonitorService getHeraMonitorService() {
+        return (HeraJobMonitorService) applicationContext.getBean("heraJobMonitorServiceImpl");
+    }
+
     public HeraJobService getHeraJobService() {
         return (HeraJobService) applicationContext.getBean("heraJobService");
     }

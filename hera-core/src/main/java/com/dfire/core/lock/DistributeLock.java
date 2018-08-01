@@ -92,6 +92,7 @@ public class DistributeLock {
                 if (lock != null && lock > 0) {
                     log.error("master 发生切换,{} 抢占成功", host);
                     heraSchedule.startup();
+                    heraLock.setHost(host);
                 } else {
                     log.info("master抢占失败，由其它worker抢占成功");
                 }

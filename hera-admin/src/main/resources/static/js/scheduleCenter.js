@@ -163,6 +163,42 @@ $(function () {
             }
         })
     });
+
+    /**
+     * 任务开启关闭按钮
+     */
+    $('#jobOperate [name="monitor"]').on('click', function () {
+        if (focusItem.focus) {
+            $.ajax({
+                url: base_url + "/scheduleCenter/delMonitor",
+                data: {
+                    id: focusId
+                },
+                type: "post",
+                success: function (data) {
+                    alert(data.msg);
+                    if (data.success) {
+                        leftClick()
+                    }
+                }
+            })
+        } else {
+            $.ajax({
+                url: base_url + "/scheduleCenter/addMonitor",
+                data: {
+                    id: focusId
+                },
+                type: "post",
+                success: function (data) {
+                    alert(data.msg);
+                    if (data.success) {
+                        leftClick()
+                    }
+                }
+            })
+        }
+
+    });
     /**
      * 添加任务按钮的初始化操作
      */
@@ -509,7 +545,7 @@ $(function () {
                     $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
                     selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
                     $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
-
+                    $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
                     inheritConfigCM.setValue(parseJson(data.inheritConfig));
 
 

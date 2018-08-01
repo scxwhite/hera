@@ -1,9 +1,6 @@
 package com.dfire.controller;
 
-import com.dfire.common.entity.HeraAction;
-import com.dfire.common.entity.HeraGroup;
-import com.dfire.common.entity.HeraJob;
-import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
@@ -12,10 +9,7 @@ import com.dfire.common.enums.HttpCode;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
-import com.dfire.common.service.HeraGroupService;
-import com.dfire.common.service.HeraJobActionService;
-import com.dfire.common.service.HeraJobHistoryService;
-import com.dfire.common.service.HeraJobService;
+import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.util.StringUtil;
@@ -50,15 +44,17 @@ import java.util.concurrent.TimeUnit;
 public class ScheduleCenterController extends BaseHeraController {
 
     @Autowired
-    HeraJobService heraJobService;
+    private HeraJobService heraJobService;
     @Autowired
-    HeraJobActionService heraJobActionService;
+    private HeraJobActionService heraJobActionService;
     @Autowired
-    HeraGroupService heraGroupService;
+    private HeraGroupService heraGroupService;
     @Autowired
-    HeraJobHistoryService heraJobHistoryService;
+    private HeraJobHistoryService heraJobHistoryService;
     @Autowired
-    WorkClient workClient;
+    private HeraJobMonitorService heraJobMonitorService;
+    @Autowired
+    private WorkClient workClient;
 
 
     @RequestMapping()
@@ -79,7 +75,10 @@ public class ScheduleCenterController extends BaseHeraController {
         HeraJob job = heraJobService.findById(jobId);
         HeraJobVo heraJobVo = BeanConvertUtils.convert(job);
         heraJobVo.setInheritConfig(getInheritConfig(job.getGroupId()));
-
+        HeraJobMonitor monitor = heraJobMonitorService.findByJobId(jobId);
+        if (monitor != null) {
+            heraJobVo.setFocus(monitor.getUserIds().contains(getOwnerId()));
+        }
         return heraJobVo;
     }
 
@@ -191,6 +190,19 @@ public class ScheduleCenterController extends BaseHeraController {
         return new RestfulResponse(heraJobService.insert(heraJob) > 0, String.valueOf(heraJob.getId()));
     }
 
+    @RequestMapping(value = "/addMonitor", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse addMonitor(Integer id) {
+        boolean res = heraJobMonitorService.addMonitor(getOwnerId(), id);
+        return new RestfulResponse(res, res ? "关注成功" : "系统异常，请联系管理员");
+    }
+    @RequestMapping(value = "/delMonitor", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse delMonitor(Integer id) {
+        boolean res = heraJobMonitorService.removeMonitor(getOwnerId(), id);
+        return new RestfulResponse(res, res ? "取关成功" : "系统异常，请联系管理员");
+    }
+
     @RequestMapping(value = "/addGroup", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse addJob(HeraGroup heraGroup) {
@@ -226,7 +238,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> getJobHistory(PageHelper pageHelper) {
-        return  heraJobHistoryService.findLogByPage(pageHelper);
+        return heraJobHistoryService.findLogByPage(pageHelper);
     }
 
     /**
@@ -282,7 +294,6 @@ public class ScheduleCenterController extends BaseHeraController {
             poolExecutor.shutdown();
         }
     }
-
 
 
     private Map<String, String> getInheritConfig(Integer groupId) {

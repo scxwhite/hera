@@ -17,14 +17,14 @@ import java.util.Objects;
 public class HeraJobFailedEvent extends ApplicationEvent {
 
     private final HeraJobHistoryVo heraJobHistory;
-    private final String jobId;
+    private final String actionId;
     private final TriggerTypeEnum triggerType;
     private int runCount = 0;
     private int rollBackTime = 0;
 
     public HeraJobFailedEvent(String jobId, TriggerTypeEnum triggerType, HeraJobHistoryVo heraJobHistory) {
         super(Events.JobFailed);
-        this.jobId = jobId;
+        this.actionId = jobId;
         this.triggerType = triggerType;
         this.heraJobHistory = heraJobHistory;
     }

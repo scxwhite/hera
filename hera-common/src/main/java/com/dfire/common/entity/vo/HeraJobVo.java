@@ -96,4 +96,6 @@ public class HeraJobVo {
 
     private Map<String, String> inheritConfig;
 
+    private boolean focus;
+
 }

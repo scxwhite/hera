@@ -19,7 +19,8 @@ public class HeraGlobalEnvironment {
 
     public static String preemptionMasterGroup;
 
-    public static String env;
+    @Getter
+    private static String env;
 
     @Getter
     private static Float maxMemRate = 0.8F;

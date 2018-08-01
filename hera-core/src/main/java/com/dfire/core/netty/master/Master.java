@@ -62,7 +62,7 @@ public class Master {
                 new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
         executeJobPool.allowCoreThreadTimeOut(true);
         String exeEnvironment = "pre";
-        if (HeraGlobalEnvironment.env.equalsIgnoreCase(exeEnvironment)) {
+        if (HeraGlobalEnvironment.getEnv().equalsIgnoreCase(exeEnvironment)) {
             masterContext.getDispatcher().addDispatcherListener(new HeraStopScheduleJobListener());
         }
 

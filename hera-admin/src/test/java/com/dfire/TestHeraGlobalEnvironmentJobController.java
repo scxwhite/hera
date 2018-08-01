@@ -1,6 +1,8 @@
 package com.dfire;
 
+import com.dfire.common.entity.HeraJobMonitor;
 import com.dfire.common.service.EmailService;
+import com.dfire.common.service.impl.HeraJobMonitorServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +42,10 @@ public class TestHeraGlobalEnvironmentJobController {
     @Autowired
     private EmailService emailService;
 
+
+    @Autowired
+    private HeraJobMonitorServiceImpl monitorService;
+
     @Before
     public void setUp() throws Exception {
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationConnect).build();
@@ -76,5 +82,10 @@ public class TestHeraGlobalEnvironmentJobController {
 
     }
 
+
+    @Test
+    public void testMonitor() {
+        Assert.assertTrue(monitorService.removeMonitor("1", 6));
+    }
 
 }
