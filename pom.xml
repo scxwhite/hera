@@ -16,6 +16,7 @@
         <module>hera-core</module>
         <module>hera-admin</module>
         <module>hera-common</module>
+        <module>hera-monitor</module>
     </modules>
 
     <parent>
