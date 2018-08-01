@@ -12,6 +12,7 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
+import com.dfire.common.service.EmailService;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobHistoryService;
@@ -33,7 +34,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -57,7 +60,7 @@ public class JobHandler extends AbstractHandler {
     private HeraJobHistoryService jobHistoryService;
     private HeraGroupService heraGroupService;
     private HeraJobActionService heraJobActionService;
-
+    private EmailService emailService;
     private Master master;
     private MasterContext masterContext;
 
@@ -66,6 +69,7 @@ public class JobHandler extends AbstractHandler {
         this.jobHistoryService = masterContext.getHeraJobHistoryService();
         this.heraGroupService = masterContext.getHeraGroupService();
         this.heraJobActionService = masterContext.getHeraJobActionService();
+        this.emailService = masterContext.getEmailService();
         this.cache = JobGroupCache.builder().actionId(actionId).heraJobActionService(heraJobActionService).build();
         this.master = master;
         this.masterContext = masterContext;
@@ -95,7 +99,7 @@ public class JobHandler extends AbstractHandler {
         if (event instanceof HeraJobSuccessEvent) {
             handleSuccessEvent((HeraJobSuccessEvent) event);
         } else if (event instanceof HeraJobFailedEvent) {
-            handleFailedEvent();
+            handleFailedEvent((HeraJobFailedEvent) event);
         } else if (event instanceof HeraScheduleTriggerEvent) {
             handleTriggerEvent((HeraScheduleTriggerEvent) event);
         } else if (event instanceof HeraJobMaintenanceEvent) {
@@ -269,7 +273,7 @@ public class JobHandler extends AbstractHandler {
     }
 
 
-    private void handleFailedEvent() {
+    private void handleFailedEvent(HeraJobFailedEvent event) {
         HeraActionVo heraActionVo = cache.getHeraActionVo();
         if (heraActionVo == null) {
             autoRecovery();
@@ -278,7 +282,14 @@ public class JobHandler extends AbstractHandler {
         if (!heraActionVo.getAuto()) {
             return;
         }
-
+        if (event.getJobId().equals(actionId)) {
+            try {
+                emailService.sendEmail("hera任务失败了", "任务Id :" + actionId, "xiaosuda@2dfire.com");
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                log.error("发送邮件失败");
+            }
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.dfire;
 
+import com.dfire.common.service.EmailService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import javax.mail.MessagingException;
 
 
 /**
@@ -34,13 +37,15 @@ public class TestHeraGlobalEnvironmentJobController {
 
     @Autowired
     WebApplicationContext webApplicationConnect;
+    @Autowired
+    private EmailService emailService;
 
     @Before
     public void setUp() throws Exception {
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationConnect).build();
     }
 
-    public void testGet() throws Exception{
+    public void testGet() throws Exception {
         String expectedResult = "hello world!";
         String uri = "/jobs/";
         MvcResult mvcResult = mvc.perform(MockMvcRequestBuilders.get(uri).accept(MediaType.APPLICATION_JSON))
@@ -54,13 +59,22 @@ public class TestHeraGlobalEnvironmentJobController {
     }
 
     @Test
-    public void testSuite() throws Exception{
+    public void testSuite() throws Exception {
         this.testGet();//获取用户
 //        this.testPost();//创建一本书籍
 //        this.testPut();//更新一本书籍
 //        this.testDelete();//删除一本书籍
     }
 
+    @Test
+    public void sendEmail() {
+        try {
+            emailService.sendEmail("hera任务失败了", "任务Id :", "xiaosuda@2dfire.com");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
 }
