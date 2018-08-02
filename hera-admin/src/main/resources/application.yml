@@ -68,6 +68,13 @@ hera:
    sqoop.home : /opt/cloudera/parcels/CDH/lib/sqoop
    spark-home : /home/hadoop/spark161-hadoop26
    env: @env@
+mail:
+  host: smtp.aliyun.com
+  protocol: smtp
+  port: 465
+  user: scx_white@aliyun.com
+  password: aaascx521
+
 logging:
   config: classpath:logback-spring.xml
   path: /opt/logs/spring-boot

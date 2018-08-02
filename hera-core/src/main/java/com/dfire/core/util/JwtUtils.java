@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.jcraft.jsch.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.Cookie;
@@ -34,7 +35,7 @@ public class JwtUtils {
         }
     }
 
-    public static String createToken(String username) {
+    public static String createToken(String username, String userId) {
         Map<String, Object> header = new HashMap<>(2);
         header.put("alg", "HS256");
         header.put("typ", "JWT");
@@ -46,6 +47,7 @@ public class JwtUtils {
                 .withClaim("iss", "hera")
                 .withClaim("aud", "2dfire")
                 .withClaim("username", username)
+                .withClaim("userId", userId)
                 .withIssuedAt(now)
                 .withExpiresAt(expireDate)
                 .sign(algorithm);
@@ -68,21 +70,17 @@ public class JwtUtils {
         return jwt.getClaims();
     }
 
-    public static String getObjectFromToken(String token, String name) {
+    public static String getObjectFromToken(String token, String key) {
         Map<String, Claim> claimMap = getClaims(token);
-        if (claimMap != null && claimMap.get(name) != null) {
-            return claimMap.get(name).asString();
+        if (claimMap != null && claimMap.get(key) != null) {
+            return claimMap.get(key).asString();
         }
         return null;
     }
 
     public static String getObjectFromToken(String tokenName,HttpServletRequest request, String key) {
         String token = getValFromCookies(tokenName, request);
-        Map<String, Claim> claimMap = getClaims(token);
-        if (claimMap != null && claimMap.get(key) != null) {
-            return claimMap.get(key).asString();
-        }
-        return null;
+        return getObjectFromToken(token, key);
     }
 
     public static String getValFromCookies(String tokenName, HttpServletRequest request) {

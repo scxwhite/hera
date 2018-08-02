@@ -44,7 +44,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
         });
     }
 
-    private List<ResponseListener> listeners = new CopyOnWriteArrayList<ResponseListener>();
+    private List<ResponseListener> listeners = new CopyOnWriteArrayList<>();
 
     public void addListener(ResponseListener listener) {
         listeners.add(listener);

@@ -25,7 +25,8 @@ import javax.servlet.http.HttpSession;
 @Configuration
 public class WebSecurityConfig extends WebMvcConfigurerAdapter {
 
-    public final static String SESSION_KEY = "username";
+    public final static String SESSION_USERNAME = "username";
+    public final static String SESSION_USER_ID = "userId";
     public final static String TOKEN_NAME = "HERA_Token";
 
     @Bean

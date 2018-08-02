@@ -4,15 +4,18 @@ import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.message.Protocol.*;
+import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.util.AtomicIncrease;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.sound.midi.Soundbank;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -54,31 +57,19 @@ public class MasterExecuteJob {
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
-        Future<Response> future = context.getThreadPool().submit(new Callable<Response>() {
-            private Response result;
-
-            @Override
-            public Response call() throws Exception {
+        Future<Response> future = context.getThreadPool().submit(() -> {
                 final CountDownLatch latch = new CountDownLatch(1);
-                context.getHandler().addListener(new ResponseListener() {
-                    @Override
-                    public void onWebResponse(WebResponse webResponse) {
+                MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+                context.getHandler().addListener(responseListener);
+                try {
+                    latch.await(3, TimeUnit.HOURS);
+                    if (!responseListener.getReceiveResult()) {
+                        log.error("手动任务信号丢失，三小时未收到work返回：{}", jobId);
                     }
-
-                    @Override
-                    public void onResponse(Response response) {
-                        if (response.getRid() == request.getRid()) {
-                            context.getHandler().removeListener(this);
-                            result = response;
-                            latch.countDown();
-                        }
-
-                    }
-                });
-                latch.await();
-                holder.getRunning().remove(jobId);
-                return result;
-            }
+                } finally {
+                    holder.getRunning().remove(jobId);
+                }
+                return responseListener.getResponse();
         });
         holder.getChannel().writeAndFlush(socketMessage);
         return future;
@@ -107,30 +98,20 @@ public class MasterExecuteJob {
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
-        Future<Response> future = context.getThreadPool().submit(new Callable<Response>() {
-            private Response result;
-
-            @Override
-            public Response call() throws Exception {
+        Future<Response> future = context.getThreadPool().submit(() -> {
                 final CountDownLatch latch = new CountDownLatch(1);
-                context.getHandler().addListener(new ResponseListener() {
-                    @Override
-                    public void onResponse(Response response) {
-                        if (response.getRid() == request.getRid()) {
-                            context.getHandler().removeListener(this);
-                            result = response;
-                            latch.countDown();
-                        }
+                MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+                context.getHandler().addListener(responseListener);
+                try {
+                    latch.await(3, TimeUnit.HOURS);
+                    if (!responseListener.getReceiveResult()) {
+                        log.error("自动调度任务信号丢失，三小时未收到work返回：{}", actionHistoryId);
+                        //TODO 可以做一些处理
                     }
-
-                    @Override
-                    public void onWebResponse(WebResponse webResponse) {
-                    }
-                });
-                latch.await();
-                holder.getRunning().remove(actionId);
-                return result;
-            }
+                } finally {
+                    holder.getRunning().remove(actionId);
+                }
+                return responseListener.getResponse();
         });
         holder.getChannel().writeAndFlush(socketMessage);
         return future;
@@ -161,34 +142,19 @@ public class MasterExecuteJob {
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
-        Future<Response> future = context.getThreadPool().submit(new Callable<Response>() {
-            private Response response;
-
-            @Override
-            public Response call() throws Exception {
+        Future<Response> future = context.getThreadPool().submit(() -> {
                 final CountDownLatch latch = new CountDownLatch(1);
-                context.getHandler().addListener(new ResponseListener() {
-                    @Override
-                    public void onResponse(Response resp) {
-                        if (resp.getRid() == request.getRid()) {
-                            context.getHandler().removeListener(this);
-                            response = resp;
-                            latch.countDown();
-                        }
-                    }
-
-                    @Override
-                    public void onWebResponse(WebResponse resp) {
-                        System.out.println(response.getRid());
-                    }
-                });
+                MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+                context.getHandler().addListener(responseListener);
                 try {
-                    latch.await();
+                    latch.await(3, TimeUnit.HOURS);
+                    if (!responseListener.getReceiveResult()) {
+                        log.error("debug任务信号丢失，3小时未收到work返回：{}", id);
+                    }
                 } finally {
                     holder.getDebugRunning().remove(id);
                 }
-                return response;
-            }
+                return responseListener.getResponse();
         });
 
         /**

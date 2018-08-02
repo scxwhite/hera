@@ -494,6 +494,10 @@
                                         <button class="btn  btn-xs btn-primary btn-block" type="button">配置管理员</button>
 
                                     </li>
+                                <#--     <br>
+                                     <li>
+                                         <button class="btn  btn-xs btn-primary btn-block" type="button">关注组下任务</button>
+                                     </li>-->
                                 </ul>
                             </div>
                         </div>
@@ -548,6 +552,10 @@
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button">配置管理员</button>
 
+                                </li>
+                                <br>
+                                <li>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="monitor">关注该任务</button>
                                 </li>
                             </ul>
                         </div>
