@@ -328,7 +328,7 @@ public class WorkClient {
         }
     }
 
-    public String generateActionFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException, TimeoutException {
+    public String generateActionFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         WebResponse response = new WorkerHandleWebAction().handleWebAction(workContext, kind, id).get();
         if (response.getStatus() == Status.ERROR) {
             log.error("generate action error");

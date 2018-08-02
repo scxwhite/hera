@@ -286,7 +286,7 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         HeraJobHistory history = heraJobHistoryService.findById(id);
-        ExecuteKind kind = null;
+        ExecuteKind kind;
         if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
             kind = ExecuteKind.ManualKind;
         } else {

@@ -8,6 +8,18 @@ spring:
         multipart:
           max-file-size: 30Mb
           max-request-size: 30Mb
+    freemarker:
+      allow-request-override: true
+      cache: false
+      check-template-location: true
+      charset: utf-8
+      content-type: text/html
+      expose-request-attributes: false
+      expose-session-attributes: false
+      expose-spring-macro-helpers: false
+      suffix: .ftl
+      template-loader-path: classpath:/templates/
+      request-context-attribute: request
 
 druid:
   datasource:
@@ -78,7 +90,12 @@ mail:
 logging:
   config: classpath:logback-spring.xml
   path: /opt/logs/spring-boot
-  level: info
+  allLevel: info
+  level:
+      com.dfire.common.mapper: error
+mybatis:
+  configuration:
+    mapUnderscoreToCamelCase: true
 
 ---
 spring:

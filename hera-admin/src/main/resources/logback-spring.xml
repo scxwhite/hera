@@ -6,7 +6,7 @@
 
     <!--application.yml 传递参数，不能使用logback 自带的<property>标签 -->
     <springProperty scope="context" name="logPath" source="logging.path"/>
-    <springProperty scope="context" name="logLevel" source="logging.level"/>
+    <springProperty scope="context" name="logLevel" source="logging.allLevel"/>
     <springProperty scope="context" name="immediateFlush" source="logging.immediate.flush"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
