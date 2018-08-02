@@ -5,6 +5,8 @@ import com.dfire.common.constants.LogConstant;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.HeraJobMonitor;
+import com.dfire.common.entity.HeraUser;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.model.JobGroupCache;
 import com.dfire.common.entity.vo.HeraActionVo;
@@ -12,13 +14,12 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
-import com.dfire.common.service.HeraGroupService;
-import com.dfire.common.service.HeraJobActionService;
-import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -34,11 +35,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.*;
 
+import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -57,15 +56,20 @@ public class JobHandler extends AbstractHandler {
     private HeraJobHistoryService jobHistoryService;
     private HeraGroupService heraGroupService;
     private HeraJobActionService heraJobActionService;
-
+    private EmailService emailService;
     private Master master;
     private MasterContext masterContext;
+    private HeraUserService heraUserService;
+    private HeraJobMonitorService heraJobMonitorService;
 
     public JobHandler(String actionId, Master master, MasterContext masterContext) {
         this.actionId = actionId;
         this.jobHistoryService = masterContext.getHeraJobHistoryService();
         this.heraGroupService = masterContext.getHeraGroupService();
         this.heraJobActionService = masterContext.getHeraJobActionService();
+        this.heraUserService = masterContext.getHeraUserService();
+        this.emailService = masterContext.getEmailService();
+        this.heraJobMonitorService = masterContext.getHeraMonitorService();
         this.cache = JobGroupCache.builder().actionId(actionId).heraJobActionService(heraJobActionService).build();
         this.master = master;
         this.masterContext = masterContext;
@@ -95,7 +99,7 @@ public class JobHandler extends AbstractHandler {
         if (event instanceof HeraJobSuccessEvent) {
             handleSuccessEvent((HeraJobSuccessEvent) event);
         } else if (event instanceof HeraJobFailedEvent) {
-            handleFailedEvent();
+            handleFailedEvent((HeraJobFailedEvent) event);
         } else if (event instanceof HeraScheduleTriggerEvent) {
             handleTriggerEvent((HeraScheduleTriggerEvent) event);
         } else if (event instanceof HeraJobMaintenanceEvent) {
@@ -209,9 +213,6 @@ public class JobHandler extends AbstractHandler {
         if (heraActionVo.getDependencies() == null || !heraActionVo.getDependencies().contains(jobId)) {
             return;
         }
-        if (heraActionVo.getJobId().equals("1578")) {
-            System.out.println("任务");
-        }
         JobStatus jobStatus;
         synchronized (this) {
             jobStatus = heraJobActionService.findJobStatus(actionId);
@@ -269,7 +270,7 @@ public class JobHandler extends AbstractHandler {
     }
 
 
-    private void handleFailedEvent() {
+    private void handleFailedEvent(HeraJobFailedEvent event) {
         HeraActionVo heraActionVo = cache.getHeraActionVo();
         if (heraActionVo == null) {
             autoRecovery();
@@ -278,7 +279,36 @@ public class JobHandler extends AbstractHandler {
         if (!heraActionVo.getAuto()) {
             return;
         }
+        if (heraActionVo.getAuto() && event.getActionId().equals(actionId)) {
+            try {
+                HeraJobMonitor monitor = heraJobMonitorService.findByJobId(Integer.parseInt(heraActionVo.getJobId()));
+                if (monitor == null) {
+                    log.info("任务无监控人：{}", heraActionVo.getJobId());
+                } else {
 
+                    String ids = monitor.getUserIds();
+                    String[] id = ids.split(",");
+
+                    String[] emails = new String[id.length];
+                    int index = 0;
+                    for (int i = 0; i < id.length; i++) {
+                        if (StringUtils.isBlank(id[i])) {
+                            continue;
+                        }
+                        HeraUser user = heraUserService.findById(HeraUser.builder().id(Integer.parseInt(id[i])).build());
+                        if (user != null && user.getEmail() != null) {
+                            emails[index++] = user.getEmail();
+                        }
+                    }
+                    emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
+
+                }
+
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                log.error("发送邮件失败");
+            }
+        }
     }
 
     /**

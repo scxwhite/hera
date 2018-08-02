@@ -62,7 +62,7 @@ public class Master {
                 new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("EXECUTE_JOB"), new ThreadPoolExecutor.AbortPolicy());
         executeJobPool.allowCoreThreadTimeOut(true);
         String exeEnvironment = "pre";
-        if (HeraGlobalEnvironment.env.equalsIgnoreCase(exeEnvironment)) {
+        if (HeraGlobalEnvironment.getEnv().equalsIgnoreCase(exeEnvironment)) {
             masterContext.getDispatcher().addDispatcherListener(new HeraStopScheduleJobListener());
         }
 
@@ -71,7 +71,7 @@ public class Master {
         masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
         masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
 
-        List<HeraAction> allJobList = masterContext.getHeraJobActionService().getAll();
+        List<HeraAction> allJobList = masterContext.getHeraJobActionService().getTodayAction();
         allJobList.forEach(heraAction -> masterContext.getDispatcher().
                 addJobHandler(new JobHandler(String.valueOf(heraAction.getId()), this, masterContext)));
 

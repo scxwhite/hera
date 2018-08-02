@@ -60,7 +60,7 @@ public class LoginController {
             password = StringUtil.EncoderByMd5(password);
             if (pwd.equals(password)) {
                 restfulResponse.setHttpCode(HttpCode.REQUEST_SUCCESS);
-                Cookie cookie = new Cookie(WebSecurityConfig.TOKEN_NAME, JwtUtils.createToken(userName));
+                Cookie cookie = new Cookie(WebSecurityConfig.TOKEN_NAME, JwtUtils.createToken(userName, String.valueOf(user.getId())));
                 cookie.setMaxAge(3 * 60 * 60 * 24);
                 response.addCookie(cookie);
             } else {
