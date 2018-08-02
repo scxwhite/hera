@@ -1,7 +1,7 @@
 package com.dfire.api;
 
+import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.HeraJob;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,15 +19,20 @@ import java.util.*;
 public class ZeusToHera {
 
 
-    private final String hera_username = "lineage";
-    private final String hera_password = "lineage@552208";
-    private final String hera_url = "jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage";
-    private final String zeus_username = "scm_zeusdb";
-    private final String zeus_password = "scm_zeusdb@552208";
-    private final String zeus_url = "jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/scm_zeusdb";
-    private final String driver = "com.mysql.jdbc.Driver";
+    private String hera_username = "lineage";
+    private String hera_password = "lineage@552208";
+    private String hera_url = "jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage";
+    private String zeus_username = "scm_zeusdb";
+    private String zeus_password = "scm_zeusdb@552208";
+    private String zeus_url = "jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/scm_zeusdb";
+    private String driver = "com.mysql.jdbc.Driver";
     private Connection heraConnection = null;
     private Connection zeusConnection = null;
+    private final String env = "daily";
+    private final boolean isAll = true;
+
+    private String tableName = "hera_group";
+    private Class<?> clazz = HeraGroup.class;
 
     private List<Integer> jobs = Arrays.asList(6625, 6628, 971);
 
@@ -35,41 +40,63 @@ public class ZeusToHera {
     @Before
     public void init() throws SQLException, ClassNotFoundException {
         Class.forName(driver);
+        if (env.equals("daily")) {
+
+            hera_url = "jdbc:mysql://common101.my.2dfire-daily.com:3306/hera";
+            hera_username = "twodfire";
+            hera_password = "123456";
+
+            zeus_url = "jdbc:mysql://common101.my.2dfire-daily.com:3306/zeus";
+            zeus_username = hera_username;
+            zeus_password = hera_password;
+        }
+        if (clazz == HeraGroup.class) {
+            tableName = "_group";
+        } else if (clazz == HeraJob.class) {
+            tableName = "_job";
+        }
+
+
         heraConnection = DriverManager.getConnection(hera_url, hera_username, hera_password);
         zeusConnection = DriverManager.getConnection(zeus_url, zeus_username, zeus_password);
     }
 
     @Test
     public void moveJob() throws SQLException {
-        StringBuilder selectSql = new StringBuilder("select * from zeus_job where id in (");
-        selectSql.append(jobs.get(0));
-        int size = jobs.size();
-        for (int index = 1; index < size; index++) {
-            selectSql.append(",").append(jobs.get(index));
+        StringBuilder selectSql = new StringBuilder();
+        StringBuilder deleteSql = new StringBuilder();
+        if (isAll) {
+            selectSql.append("select * from zeus").append(tableName);
+            deleteSql.append("truncate table hera").append(tableName);
+        } else {
+            selectSql.append("select * from zeus").append(tableName).append(" where id in (");
+            selectSql.append(jobs.get(0));
+            int size = jobs.size();
+            for (int index = 1; index < size; index++) {
+                selectSql.append(",").append(jobs.get(index));
+                deleteSql.append(jobs.get(index)).append(",");
+            }
+            selectSql.append(")");
+            deleteSql.replace(deleteSql.length() - 1, deleteSql.length(), ")");
         }
-        selectSql.append(")");
 
         PreparedStatement statement = zeusConnection.prepareStatement(selectSql.toString());
-
         ResultSet resultSet = statement.executeQuery();
         Map<String, String> cacheMap = new HashMap<>();
         List<String> fields = initFields(cacheMap);
 
         StringBuilder insertSql = new StringBuilder();
-        StringBuilder deleteSql = new StringBuilder("delete from hera_job where id in (");
         StringBuilder fieldStr = new StringBuilder();
         StringBuilder valueStr = new StringBuilder();
         PreparedStatement heraPs;
-        jobs.forEach(x -> deleteSql.append(x).append(","));
-        deleteSql.replace(deleteSql.length() - 1, deleteSql.length(), ")");
         PreparedStatement preparedStatement = heraConnection.prepareStatement(deleteSql.toString());
-        preparedStatement.execute();
+        preparedStatement.executeUpdate();
         while (resultSet.next()) {
             Map<String, String> res = new HashMap<>();
             insertSql.delete(0, insertSql.length());
             fieldStr.delete(0, fieldStr.length());
             valueStr.delete(0, valueStr.length());
-            insertSql.append("insert into hera_job (");
+            insertSql.append("insert into hera").append(tableName).append(" ( ");
             fields.forEach(x -> {
                 try {
                     if (resultSet.getString(x) != null) {
@@ -90,7 +117,7 @@ public class ZeusToHera {
     }
 
     public List initFields(Map<String, String> cacheMap) {
-        Field[] declaredFields = HeraJob.class.getDeclaredFields();
+        Field[] declaredFields = clazz.getDeclaredFields();
         String name;
         Integer size;
         char ch;
