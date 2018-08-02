@@ -56,6 +56,10 @@ public class ScheduleCenterController extends BaseHeraController {
     @Autowired
     private WorkClient workClient;
 
+    private final String JOB = "job";
+    private final String GROUP = "group";
+    private final String ERROR_MSG = "抱歉，您没有权限进行此操作";
+
 
     @RequestMapping()
     public String login() {
@@ -99,21 +103,21 @@ public class ScheduleCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask<String> manual(String actionId, Integer triggerType, @RequestParam(required = false) String owner) {
-        ExecuteKind kind = null;
+    public WebAsyncTask<String> execute(String actionId, Integer triggerType, @RequestParam(required = false) String owner) {
+        if (!hasPermission(Integer.parseInt(actionId.substring(actionId.length() - 4)), JOB)) {
+            return new WebAsyncTask<>(() -> ERROR_MSG);
+        }
+
         TriggerTypeEnum triggerTypeEnum = null;
         if (triggerType == 1) {
             triggerTypeEnum = TriggerTypeEnum.MANUAL;
         } else if (triggerType == 2) {
             triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
         }
-        //todo 权限判定
 
         HeraAction heraAction = heraJobActionService.findById(actionId);
         HeraJob heraJob = heraJobService.findById(Integer.parseInt(heraAction.getJobId()));
 
-
-        //兼容zeus 的http 请求
         if (owner == null) {
             owner = super.getOwner();
         }
@@ -158,6 +162,9 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse updateJobMessage(HeraJobVo heraJobVo) {
+        if (!hasPermission(heraJobVo.getId(), JOB)) {
+            return new RestfulResponse(false, ERROR_MSG);
+        }
         HeraJob heraJob = BeanConvertUtils.convertToHeraJob(heraJobVo);
         RestfulResponse response = heraJobService.checkAndUpdate(heraJob);
         updateJobToMaster(response.isSuccess(), heraJob.getId());
@@ -166,25 +173,38 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
     @ResponseBody
-    public boolean updateGroupMessage(HeraGroupVo groupVo) {
+    public RestfulResponse updateGroupMessage(HeraGroupVo groupVo) {
+        if (!hasPermission(groupVo.getId(), GROUP)) {
+            return new RestfulResponse(false, ERROR_MSG);
+        }
         HeraGroup heraGroup = BeanConvertUtils.convert(groupVo);
-        return heraGroupService.update(heraGroup) > 0;
+        boolean res = heraGroupService.update(heraGroup) > 0;
+        return new RestfulResponse(res, res ? "更新成功" : "系统异常,请联系管理员");
     }
 
     @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
     @ResponseBody
-    public boolean deleteJob(Integer id, Boolean isGroup) {
-        if (isGroup) {
-            return heraGroupService.delete(id) > 0;
+    public RestfulResponse deleteJob(Integer id, Boolean isGroup) {
+        if (!hasPermission(id, isGroup ? GROUP : JOB)) {
+            return new RestfulResponse(false, ERROR_MSG);
         }
-        boolean res = heraJobService.delete(id) > 0;
+        boolean res;
+        if (isGroup) {
+            res = heraGroupService.delete(id) > 0;
+            return new RestfulResponse(res, res ? "删除成功" : "系统异常,请联系管理员");
+        }
+        res = heraJobService.delete(id) > 0;
         updateJobToMaster(res, id);
-        return res;
+        return new RestfulResponse(res, res ? "删除成功" : "系统异常,请联系管理员");
     }
 
     @RequestMapping(value = "/addJob", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse addJob(HeraJob heraJob) {
+        if (!hasPermission(heraJob.getGroupId(), GROUP)) {
+            return new RestfulResponse(false, ERROR_MSG);
+        }
+
         heraJob.setOwner(getOwner());
         heraJob.setScheduleType(JobScheduleTypeEnum.Independent.getType());
         return new RestfulResponse(heraJobService.insert(heraJob) > 0, String.valueOf(heraJob.getId()));
@@ -192,13 +212,14 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/addMonitor", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse addMonitor(Integer id) {
+    public RestfulResponse updateMonitor(Integer id) {
         boolean res = heraJobMonitorService.addMonitor(getOwnerId(), id);
         return new RestfulResponse(res, res ? "关注成功" : "系统异常，请联系管理员");
     }
+
     @RequestMapping(value = "/delMonitor", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse delMonitor(Integer id) {
+    public RestfulResponse deleteMonitor(Integer id) {
         boolean res = heraJobMonitorService.removeMonitor(getOwnerId(), id);
         return new RestfulResponse(res, res ? "取关成功" : "系统异常，请联系管理员");
     }
@@ -206,6 +227,10 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/addGroup", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse addJob(HeraGroup heraGroup) {
+        if (!hasPermission(heraGroup.getParent(), GROUP)) {
+            return new RestfulResponse(false, ERROR_MSG);
+        }
+
         Date date = new Date();
         heraGroup.setGmtModified(date);
         heraGroup.setGmtCreate(date);
@@ -214,17 +239,23 @@ public class ScheduleCenterController extends BaseHeraController {
         return new RestfulResponse(heraGroupService.insert(heraGroup) > 0, String.valueOf(heraGroup.getId() == null ? -1 : heraGroup.getId()));
     }
 
-    @RequestMapping(value = "/changeSwitch", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateSwitch", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse changeSwitch(Integer id) {
+    public RestfulResponse updateSwitch(Integer id) {
+        if (!hasPermission(id, JOB)) {
+            return new RestfulResponse(false, ERROR_MSG);
+        }
         boolean result = heraJobService.changeSwitch(id);
         updateJobToMaster(result, id);
-        return new RestfulResponse(result ? HttpCode.REQUEST_SUCCESS : HttpCode.REQUEST_FAIL);
+        return new RestfulResponse(result, result ? "开启成功" : "开启失败");
     }
 
     @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)
     @ResponseBody
     public WebAsyncTask<String> generateVersion(String jobId) {
+        if (!hasPermission(Integer.parseInt(jobId), JOB)) {
+            return new WebAsyncTask<>(() -> ERROR_MSG);
+        }
         return new WebAsyncTask<>(3000, () ->
                 workClient.generateActionFromWeb(ExecuteKind.ManualKind, jobId));
     }
@@ -250,6 +281,10 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
     @ResponseBody
     public WebAsyncTask<String> cancelJob(String id) {
+        if (!hasPermission(Integer.parseInt(id), JOB)) {
+            return new WebAsyncTask<>(() -> ERROR_MSG);
+        }
+
         HeraJobHistory history = heraJobHistoryService.findById(id);
         ExecuteKind kind = null;
         if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
@@ -274,7 +309,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @UnCheckLogin
     public WebAsyncTask<String> zeusExecute(Integer id, String owner) {
         List<HeraAction> actions = heraJobActionService.findByJobId(String.valueOf(id));
-        return manual(actions.get(0).getId(), 2, owner);
+        return execute(actions.get(0).getId(), 2, owner);
 
     }
 
@@ -308,5 +343,22 @@ public class ScheduleCenterController extends BaseHeraController {
         }
         return configMap;
     }
+
+    private boolean hasPermission(Integer id, String type) {
+        String owner = getOwner();
+        if (owner == null || id == null || type == null) {
+            return false;
+        }
+        if (JOB.equals(type)) {
+            HeraJob job = heraJobService.findById(id);
+            return job != null && owner.equals(job.getOwner());
+        } else if (GROUP.equals(type)) {
+            HeraGroup group = heraGroupService.findById(id);
+            return group != null && owner.equals(group.getOwner());
+        }
+
+        return false;
+    }
+
 
 }

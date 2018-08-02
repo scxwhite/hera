@@ -1,6 +1,5 @@
 package com.dfire;
 
-import com.dfire.common.entity.HeraJobMonitor;
 import com.dfire.common.service.EmailService;
 import com.dfire.common.service.impl.HeraJobMonitorServiceImpl;
 import org.junit.Assert;
@@ -75,7 +74,12 @@ public class TestHeraGlobalEnvironmentJobController {
     @Test
     public void sendEmail() {
         try {
-            emailService.sendEmail("hera任务失败了", "任务Id :", "xiaosuda@2dfire.com");
+
+            String [] emails = new String[3];
+            emails[0] = "suchengxiang1241@dingtalk.com";
+            emails[1] = "xiaosuda@2dfire.com";
+            emails[2] = "1142819049@qq.com";
+            emailService.sendEmail("hera任务失败了", "任务Id :", emails);
         } catch (MessagingException e) {
             e.printStackTrace();
         }

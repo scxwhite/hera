@@ -53,9 +53,9 @@ public class EmailServiceImpl implements EmailService {
 
         session.setDebug(false);
 
-        Transport transport = session.getTransport("smtp");
+        Transport transport = session.getTransport(mailProtocol);
 
-        transport.connect("smtp.aliyun.com", "scx_white@aliyun.com", "aaascx521");
+        transport.connect(mailHost, mailUser, mailPassword);
 
         Message message = createSimpleMessage(session, title, content, addresses);
 

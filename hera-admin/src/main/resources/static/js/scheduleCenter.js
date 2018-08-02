@@ -25,11 +25,13 @@ $(function () {
             onClick: leftClick
         }
     };
+
     function refreshCm() {
         selfConfigCM.refresh();
         codeMirror.refresh();
         inheritConfigCM.refresh();
     }
+
     /**
      * 把当前选中的节点存入localStorage
      * 页面刷新后，会根据"defaultId"设置当前选中的节点
@@ -121,7 +123,8 @@ $(function () {
                 if (data.success == true) {
                     localStorage.setItem("defaultId", data.msg);
                     location.reload(false);
-
+                } else {
+                    alert(data.msg);
                 }
             }
         })
@@ -149,17 +152,17 @@ $(function () {
     $('#jobOperate [name="switch"]').on('click', function () {
         //回显
         $.ajax({
-            url: base_url + "/scheduleCenter/changeSwitch",
+            url: base_url + "/scheduleCenter/updateSwitch",
             data: {
                 id: focusId
             },
             type: "post",
             success: function (data) {
-                if (data.code === 200) {
-                    leftClick();
-                } else {
-                    dealCode(data);
+                leftClick();
+                if (data.success == false) {
+                    alert(data.msg);
                 }
+
             }
         })
     });
@@ -176,9 +179,9 @@ $(function () {
                 },
                 type: "post",
                 success: function (data) {
-                    alert(data.msg);
-                    if (data.success) {
-                        leftClick()
+                    leftClick();
+                    if (data.success == false) {
+                        alert(data.msg);
                     }
                 }
             })
@@ -190,9 +193,10 @@ $(function () {
                 },
                 type: "post",
                 success: function (data) {
-                    alert(data.msg);
-                    if (data.success) {
-                        leftClick()
+                    leftClick();
+                    if (data.success == false) {
+                        alert(data.msg);
+
                     }
                 }
             })
@@ -231,7 +235,7 @@ $(function () {
                     localStorage.setItem("defaultId", data.msg)
                     location.reload(false);
                 } else {
-                    alert("发生错误，请联系管理员")
+                    alert(data.msg);
                 }
 
             }
@@ -312,7 +316,7 @@ $(function () {
         }, 300);
 
         function search(key) {
-            var keys,length;
+            var keys, length;
             if (key == null || key == "" || key == undefined) {
                 tree.getNodesByFilter(function (node) {
                     tree.showNode(node);
@@ -391,15 +395,12 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + selfConfigCM.getValue() +
-                "&script=" + codeMirror.getValue()  +
+                "&script=" + codeMirror.getValue() +
                 "&id=" + focusId,
                 type: "post",
                 success: function (data) {
-                    if (data.success == true) {
-                        leftClick();
-                        alert("保存成功")
-
-                    } else {
+                    leftClick();
+                    if (data.success == false) {
                         alert(data.msg)
                     }
                 }
@@ -411,11 +412,11 @@ $(function () {
                 "&resource=" + "&id=" + focusId,
                 type: "post",
                 success: function (data) {
-                    if (data == true) {
-                        leftClick();
-                    } else {
-                        alert("保存失败")
+                    leftClick();
+                    if (data.success == false) {
+                        alert(data.msg);
                     }
+
                 }
             });
         }
@@ -439,14 +440,13 @@ $(function () {
                 },
                 type: "post",
                 success: function (data) {
-                    if (data == true) {
+                    if (data.success == true) {
                         treeObj.removeNode(selected);
                         setDefaultSelectNode(focusItem.groupId);
                         leftClick();
-                        alert("删除成功");
-                    } else {
-                        alert("删除失败");
                     }
+                    alert(data.msg);
+
                 }
             });
         }
@@ -631,7 +631,7 @@ $(function () {
                 triggerType: triggerType
             },
             success: function (data) {
-
+                alert(data);
             }
         });
         $('#myModal').modal('hide');
@@ -687,7 +687,7 @@ $(function () {
         $.fn.zTree.init($("#jobTree"), setting, zNodes);
         zTree = $.fn.zTree.getZTreeObj("jobTree");
         rMenu = $("#rMenu");
-        $.each($(".content .row .height-self"), function(i, n){
+        $.each($(".content .row .height-self"), function (i, n) {
             $(n).css("height", (screenHeight - 50) + "px");
         });
         fixIcon();//调用修复图标的方法。方法如下：
