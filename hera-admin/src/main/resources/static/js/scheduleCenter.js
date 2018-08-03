@@ -631,7 +631,6 @@ $(function () {
                 triggerType: triggerType
             },
             success: function (data) {
-                alert(data);
             }
         });
         $('#myModal').modal('hide');
