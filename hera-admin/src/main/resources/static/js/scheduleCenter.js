@@ -453,12 +453,12 @@ $(function () {
     });
 
     function changeGroupStyle(status) {
-        var status1 = "none", status2 = "block", status3 = false;
+        var status1 = "none", status2 = "block";
         if (status != 0) {
             status1 = "block";
             status2 = "none";
-            status3 = true;
         }
+        selfConfigCM.setOption("readOnly", status != 0);
         $('#groupMessage').css("display", status1);
         $('#groupOperate').css("display", status1);
         $('#groupMessageEdit').css("display", status2);
