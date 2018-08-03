@@ -53,8 +53,8 @@ public class Master {
     private MasterContext masterContext;
     private Map<Long, HeraAction> heraActionMap;
     private ThreadPoolExecutor executeJobPool;
-    private final Integer DELAY_TIME = 5;
-    private final Integer MAX_DELAY_TIME = 60;
+    private final Integer DELAY_TIME = 1;
+    private final Integer MAX_DELAY_TIME = 10;
 
     public Master(final MasterContext masterContext) {
 
