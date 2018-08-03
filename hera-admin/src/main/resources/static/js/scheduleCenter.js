@@ -631,6 +631,10 @@ $(function () {
                 triggerType: triggerType
             },
             success: function (data) {
+                if (data.success == false) {
+                    alert(data.msg)
+                }
+
             }
         });
         $('#myModal').modal('hide');

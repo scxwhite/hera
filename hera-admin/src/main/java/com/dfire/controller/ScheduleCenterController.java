@@ -103,9 +103,9 @@ public class ScheduleCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask<String> execute(String actionId, Integer triggerType, @RequestParam(required = false) String owner) {
+    public WebAsyncTask<RestfulResponse> execute(String actionId, Integer triggerType, @RequestParam(required = false) String owner) {
         if (!hasPermission(Integer.parseInt(actionId.substring(actionId.length() - 4)), JOB)) {
-            return new WebAsyncTask<>(() -> ERROR_MSG);
+            return new WebAsyncTask<>(() -> new RestfulResponse(false, ERROR_MSG));
         }
 
         TriggerTypeEnum triggerTypeEnum = null;
@@ -146,7 +146,7 @@ public class ScheduleCenterController extends BaseHeraController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return actionId;
+            return new RestfulResponse(true, actionId);
         });
     }
 
@@ -307,7 +307,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/execute", method = RequestMethod.GET)
     @ResponseBody
     @UnCheckLogin
-    public WebAsyncTask<String> zeusExecute(Integer id, String owner) {
+    public WebAsyncTask<RestfulResponse> zeusExecute(Integer id, String owner) {
         List<HeraAction> actions = heraJobActionService.findByJobId(String.valueOf(id));
         return execute(actions.get(0).getId(), 2, owner);
 
