@@ -631,7 +631,6 @@ $(function () {
                 triggerType: triggerType
             },
             success: function (data) {
-                alert(data);
             }
         });
         $('#myModal').modal('hide');
@@ -875,7 +874,7 @@ var JobLogTable = function (jobId) {
             detailView: true,
             detailFormatter: function (index, row) {
                 var log = row["log"];
-                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
+                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; word-break: break-all; word-wrap:break-word; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
                     + log +
                     '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;

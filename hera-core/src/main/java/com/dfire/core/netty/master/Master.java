@@ -53,6 +53,8 @@ public class Master {
     private MasterContext masterContext;
     private Map<Long, HeraAction> heraActionMap;
     private ThreadPoolExecutor executeJobPool;
+    private final Integer DELAY_TIME = 1;
+    private final Integer MAX_DELAY_TIME = 10;
 
     public Master(final MasterContext masterContext) {
 
@@ -97,15 +99,20 @@ public class Master {
          *
          */
         TimerTask scanWaitingQueueTask = new TimerTask() {
+            Integer nextTime = 1;
             @Override
             public void run(Timeout timeout) {
                 try {
-                    scan();
+                    if (scan()) {
+                        nextTime = 1;
+                    } else {
+                        nextTime = (nextTime + DELAY_TIME) > MAX_DELAY_TIME ? MAX_DELAY_TIME : nextTime + DELAY_TIME;
+                    }
                     log.info("scan waiting queueTask run");
                 } catch (Exception e) {
                     log.error("scan waiting queueTask exception");
                 } finally {
-                    masterContext.masterTimer.newTimeout(this, 1, TimeUnit.SECONDS);
+                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.SECONDS);
                 }
             }
         };
@@ -117,15 +124,20 @@ public class Master {
          *
          */
         TimerTask scanExceptionQueueTask = new TimerTask() {
+            Integer nextTime = 1;
             @Override
             public void run(Timeout timeout) {
                 try {
-                    scanExceptionQueue();
+                    if (scanExceptionQueue()) {
+                        nextTime = 1;
+                    } else {
+                        nextTime = (nextTime + DELAY_TIME) > MAX_DELAY_TIME ? MAX_DELAY_TIME : nextTime + DELAY_TIME;
+                    }
                     log.info("scan exception queueTask run");
                 } catch (Exception e) {
                     log.error("scan exception queueTask exception");
                 } finally {
-                    masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
+                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.SECONDS);
                 }
             }
         };
@@ -209,11 +221,14 @@ public class Master {
         }
     }
 
-    private void scanExceptionQueue() {
+    private boolean scanExceptionQueue() {
+        boolean hasTask = false;
         if (!masterContext.getExceptionQueue().isEmpty()) {
             final JobElement element = masterContext.getExceptionQueue().poll();
             runScheduleJobAction(element);
+            hasTask = true;
         }
+        return hasTask;
 
     }
 
@@ -493,12 +508,14 @@ public class Master {
     /**
      * 扫描任务等待队列，取出任务去执行
      */
-    public void scan() {
+    public boolean scan() {
+        boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
             log.warn("队列任务：{}", masterContext.getScheduleQueue());
             printThreadPoolLog();
             final JobElement element = masterContext.getScheduleQueue().poll();
             runScheduleJobAction(element);
+            hasTask = true;
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
@@ -511,6 +528,7 @@ public class Master {
             } else {
                 runManualJob(selectWork, element.getJobId());
             }
+            hasTask = true;
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
@@ -523,7 +541,9 @@ public class Master {
             } else {
                 runDebugJob(selectWork, element.getJobId());
             }
+            hasTask = true;
         }
+        return hasTask;
 
     }
 

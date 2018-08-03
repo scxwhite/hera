@@ -2,7 +2,6 @@ package com.dfire.core.config;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -38,6 +37,8 @@ public class HeraGlobalEnvironment {
     private static Integer maxParallelNum;
     @Getter
     private static Integer heartBeat = 5;
+    @Getter
+    private static String admin;
 
 
     @Value("${hera.dos2unix-exclude-file}")
@@ -93,6 +94,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.max-parallel-num}")
     public void setMaxParallelNum(Integer maxParallelNum) {
         HeraGlobalEnvironment.maxParallelNum = maxParallelNum;
+    }
+
+    @Value("${hera.admin}")
+    public void setAdmin(String admin) {
+        HeraGlobalEnvironment.admin = admin;
     }
 
     /**

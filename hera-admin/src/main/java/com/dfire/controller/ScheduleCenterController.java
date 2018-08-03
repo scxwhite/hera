@@ -15,6 +15,7 @@ import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.UnCheckLogin;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +70,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
     public List<HeraJobTreeNodeVo> initJobTree() {
-        List<HeraJobTreeNodeVo> list = heraJobService.buildJobTree();
-        return list;
+        return heraJobService.buildJobTree();
     }
 
     @RequestMapping(value = "/getJobMessage", method = RequestMethod.GET)
@@ -348,6 +348,9 @@ public class ScheduleCenterController extends BaseHeraController {
         String owner = getOwner();
         if (owner == null || id == null || type == null) {
             return false;
+        }
+        if (HeraGlobalEnvironment.getAdmin().equals(owner)) {
+            return true;
         }
         if (JOB.equals(type)) {
             HeraJob job = heraJobService.findById(id);

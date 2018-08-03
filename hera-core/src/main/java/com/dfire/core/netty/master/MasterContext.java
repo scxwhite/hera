@@ -55,7 +55,7 @@ public class MasterContext {
      * todo 参数可配置
      *
      */
-    final Timer masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 5, TimeUnit.SECONDS);
+    final Timer masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
 
     public MasterContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
