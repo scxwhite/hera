@@ -59,7 +59,7 @@ public class WorkClient {
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext = new WorkContext();
     private ScheduledExecutorService service;
-    public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 5, TimeUnit.SECONDS);
+    public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
 
     /**
      * ProtobufVarint32LengthFieldPrepender: 对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
