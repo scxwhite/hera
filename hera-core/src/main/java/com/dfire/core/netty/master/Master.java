@@ -99,12 +99,12 @@ public class Master {
          *
          */
         TimerTask scanWaitingQueueTask = new TimerTask() {
-            Integer nextTime = 1;
+            Integer nextTime = HeraGlobalEnvironment.getScanRate();
             @Override
             public void run(Timeout timeout) {
                 try {
                     if (scan()) {
-                        nextTime = 1;
+                        nextTime = HeraGlobalEnvironment.getScanRate();
                     } else {
                         nextTime = (nextTime + DELAY_TIME) > MAX_DELAY_TIME ? MAX_DELAY_TIME : nextTime + DELAY_TIME;
                     }
@@ -112,7 +112,7 @@ public class Master {
                 } catch (Exception e) {
                     log.error("scan waiting queueTask exception");
                 } finally {
-                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.SECONDS);
+                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.MILLISECONDS);
                 }
             }
         };
@@ -124,12 +124,12 @@ public class Master {
          *
          */
         TimerTask scanExceptionQueueTask = new TimerTask() {
-            Integer nextTime = 1;
+            Integer nextTime = HeraGlobalEnvironment.getScanRate();
             @Override
             public void run(Timeout timeout) {
                 try {
                     if (scanExceptionQueue()) {
-                        nextTime = 1;
+                        nextTime = HeraGlobalEnvironment.getScanRate();
                     } else {
                         nextTime = (nextTime + DELAY_TIME) > MAX_DELAY_TIME ? MAX_DELAY_TIME : nextTime + DELAY_TIME;
                     }
@@ -137,7 +137,7 @@ public class Master {
                 } catch (Exception e) {
                     log.error("scan exception queueTask exception");
                 } finally {
-                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.SECONDS);
+                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.MILLISECONDS);
                 }
             }
         };
@@ -823,7 +823,7 @@ public class Master {
                             if (heartBeatInfo.getMemRate() != null && heartBeatInfo.getCpuLoadPerCore() != null
                                     && heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate() && heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()) {
 
-                                Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getMaxCpuLoadPerCore()) / HeraGlobalEnvironment.getMaxCpuLoadPerCore();
+                                Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getSystemMemUsed()) / HeraGlobalEnvironment.getPerTaskUseMem();
                                 int sum = heartBeatInfo.getDebugRunning().size() + heartBeatInfo.getManualRunning().size() + heartBeatInfo.getRunning().size();
                                 if (assignTaskNum.intValue() > sum) {
                                     workHolder = worker;

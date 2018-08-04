@@ -26,6 +26,10 @@ public class HeraGlobalEnvironment {
     @Getter
     private static Float maxCpuLoadPerCore = 3F;
     @Getter
+    private static Float perTaskUseMem = 400F;
+    @Getter
+    private static Float systemMemUsed = 2000F;
+    @Getter
     private static Integer scanRate = 3000;
     @Getter
     private static Integer scanExceptionRate = 3000;
