@@ -36,7 +36,7 @@ public class HeraGlobalEnvironment {
     @Getter
     private static Integer maxParallelNum;
     @Getter
-    private static Integer heartBeat = 5;
+    private static Integer heartBeat = 2;
     @Getter
     private static String admin;
 

@@ -634,7 +634,6 @@ $(function () {
                 if (data.success == false) {
                     alert(data.msg)
                 }
-
             }
         });
         $('#myModal').modal('hide');
