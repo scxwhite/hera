@@ -30,7 +30,7 @@ public class HeraGlobalEnvironment {
     @Getter
     private static Float systemMemUsed = 2000F;
     @Getter
-    private static Integer scanRate = 3000;
+    private static Integer scanRate = 3;
     @Getter
     private static Integer scanExceptionRate = 3000;
     @Getter
