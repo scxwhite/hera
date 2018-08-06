@@ -1,6 +1,7 @@
 package com.dfire.core.netty.worker.request;
 
-import com.dfire.core.bo.MemUseRateJob;
+import com.dfire.core.tool.CpuLoadPerCoreJob;
+import com.dfire.core.tool.MemUseRateJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.Protocol.HeartBeatMessage;
@@ -24,13 +25,15 @@ public class WorkerHandlerHeartBeat {
         JobContext jobContext = JobContext.getTempJobContext(JobContext.SYSTEM_RUN);
         MemUseRateJob memUseRateJob = new MemUseRateJob(1);
         memUseRateJob.readMemUsed();
+        CpuLoadPerCoreJob loadPerCoreJob = new CpuLoadPerCoreJob();
+        loadPerCoreJob.run();
         jobContext.putData("memTotal", memUseRateJob.getMemTotal());
         jobContext.putData("rate", memUseRateJob.getRate());
         HeartBeatMessage hbm = HeartBeatMessage.newBuilder()
                 .setHost(DistributeLock.host)
                 .setMemTotal(memUseRateJob.getMemTotal())
                 .setMemRate(memUseRateJob.getRate())
-                .setCpuLoadPerCore(1.5f)
+                .setCpuLoadPerCore(loadPerCoreJob.getLoadPerCore())
                 .setTimestamp(System.currentTimeMillis())
                 .addAllDebugRunnings(context.getDebugRunning().keySet())
                 .addAllManualRunnings(context.getManualRunning().keySet())
