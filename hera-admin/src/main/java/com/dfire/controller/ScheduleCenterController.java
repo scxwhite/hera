@@ -104,7 +104,8 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
     public WebAsyncTask<RestfulResponse> execute(String actionId, Integer triggerType, @RequestParam(required = false) String owner) {
-        if (!hasPermission(Integer.parseInt(actionId.substring(actionId.length() - 4)), JOB)) {
+
+        if (owner == null && !hasPermission(Integer.parseInt(actionId.substring(actionId.length() - 4)), JOB)) {
             return new WebAsyncTask<>(() -> new RestfulResponse(false, ERROR_MSG));
         }
 

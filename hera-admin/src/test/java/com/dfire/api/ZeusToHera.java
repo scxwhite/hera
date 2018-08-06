@@ -2,9 +2,16 @@ package com.dfire.api;
 
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.HeraJob;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -60,6 +67,34 @@ public class ZeusToHera {
         heraConnection = DriverManager.getConnection(hera_url, hera_username, hera_password);
         zeusConnection = DriverManager.getConnection(zeus_url, zeus_username, zeus_password);
     }
+
+
+    @Test
+    public void postExecute() throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        HttpGet httpGet = new HttpGet("http://localhost:8080/hera/scheduleCenter/execute?id=1245&owner=biadmin");
+        httpClient.execute(httpGet);
+
+    }
+
+    @Test
+    public void parallelTest() throws SQLException {
+        PreparedStatement statement = heraConnection.prepareStatement("select * from hera_job");
+
+        ResultSet resultSet = statement.executeQuery();
+
+
+        while (resultSet.next()) {
+            String id = resultSet.getString("id");
+            String owner = resultSet.getString("owner");
+
+
+        }
+
+
+    }
+
 
     @Test
     public void moveJob() throws SQLException {
