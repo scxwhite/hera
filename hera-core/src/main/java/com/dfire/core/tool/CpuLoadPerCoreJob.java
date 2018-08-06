@@ -2,6 +2,7 @@ package com.dfire.core.tool;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkContext;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
@@ -9,7 +10,7 @@ import java.io.IOException;
  * @author xiaosuda
  * @date 2018/8/6
  */
-
+@Slf4j
 public class CpuLoadPerCoreJob {
 
     private float loadPerCore = 100f;
@@ -30,6 +31,7 @@ public class CpuLoadPerCoreJob {
             try {
                 String result = runShell.getResult();
                 loadPerCore = getCpuLoad(result) / WorkContext.cpuCoreNum;
+                log.info("机器load:{},cpuload:{}, 核数:{}", result, getCpuLoad(result), WorkContext.cpuCoreNum);
             } catch (IOException e) {
                 e.printStackTrace();
             }

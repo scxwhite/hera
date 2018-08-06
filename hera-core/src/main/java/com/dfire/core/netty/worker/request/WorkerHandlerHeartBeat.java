@@ -22,13 +22,10 @@ public class WorkerHandlerHeartBeat {
 
 
     public ChannelFuture send(WorkContext context) {
-        JobContext jobContext = JobContext.getTempJobContext(JobContext.SYSTEM_RUN);
         MemUseRateJob memUseRateJob = new MemUseRateJob(1);
         memUseRateJob.readMemUsed();
         CpuLoadPerCoreJob loadPerCoreJob = new CpuLoadPerCoreJob();
         loadPerCoreJob.run();
-        jobContext.putData("memTotal", memUseRateJob.getMemTotal());
-        jobContext.putData("rate", memUseRateJob.getRate());
         HeartBeatMessage hbm = HeartBeatMessage.newBuilder()
                 .setHost(DistributeLock.host)
                 .setMemTotal(memUseRateJob.getMemTotal())
