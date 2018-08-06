@@ -2,12 +2,9 @@ package com.dfire.controller;
 
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
-import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
-import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -34,7 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Controller
 @RequestMapping("/developCenter")
-public class DevelopCenterController  extends BaseHeraController{
+public class DevelopCenterController extends BaseHeraController {
 
     @Autowired
     HeraFileService heraFileService;
@@ -42,6 +38,7 @@ public class DevelopCenterController  extends BaseHeraController{
     HeraDebugHistoryService debugHistoryService;
     @Autowired
     WorkClient workClient;
+
 
     @RequestMapping
     public String dev() {
@@ -59,15 +56,15 @@ public class DevelopCenterController  extends BaseHeraController{
     @RequestMapping(value = "/addFile", method = RequestMethod.GET)
     @ResponseBody
     public String addFileAndFolder(HeraFile heraFile) {
-        heraFile.setOwner("biadmin");
-        heraFileService.insert(heraFile);
-        return "success";
+        heraFile.setOwner(getOwner());
+        String id = heraFileService.insert(heraFile);
+        return id;
     }
 
     @RequestMapping(value = "/find", method = RequestMethod.GET)
     @ResponseBody
     public HeraFile getHeraFile(HeraFile heraFile) {
-        heraFile.setOwner("biadmin");
+        heraFile.setOwner(getOwner());
         HeraFile file = heraFileService.findById(heraFile.getId());
         return file;
     }
@@ -77,12 +74,8 @@ public class DevelopCenterController  extends BaseHeraController{
     public String delete(HeraFile heraFile) {
         HeraFile file = heraFileService.findById(heraFile.getId());
         String response = "";
-        if (file.getType().equals("1")) {
-            response = "文件夹不能删除";
-        } else if (file.getType().equals("2")) {
-            heraFileService.delete(heraFile.getId());
-            response = "删除成功";
-        }
+        heraFileService.delete(heraFile.getId());
+        response = "删除成功";
         return response;
     }
 
@@ -100,6 +93,8 @@ public class DevelopCenterController  extends BaseHeraController{
 
         return new WebAsyncTask<>(3000, () -> {
             HeraFile file = heraFileService.findById(heraFile.getId());
+            String name = file.getName();
+            String runType = "1";
             file.setContent(heraFile.getContent());
             heraFileService.updateContent(heraFile);
 
@@ -109,11 +104,13 @@ public class DevelopCenterController  extends BaseHeraController{
                     .startTime(new Date())
                     .owner(file.getOwner())
                     .build();
-            if (file.getType().equals(FileTypeEnum.Hive.toString())) {
-                history.setRunType("hive");
-            } else if (file.getType().equals(FileTypeEnum.Shell.toString())) {
-                history.setRunType("shell");
+            String postfix = name.substring(name.lastIndexOf("."));
+            if (".hive".equalsIgnoreCase(postfix)) {
+                runType = "2";
+            } else if (".sh".equalsIgnoreCase(postfix)) {
+                runType = "1";
             }
+            history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
             workClient.executeJobFromWeb(ExecuteKind.DebugKind, newId);
             return file.getId();

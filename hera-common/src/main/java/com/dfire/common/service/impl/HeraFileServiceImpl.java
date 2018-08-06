@@ -29,8 +29,9 @@ public class HeraFileServiceImpl implements HeraFileService {
     private HeraFileMapper heraFileMapper;
 
     @Override
-    public int insert(HeraFile heraFile) {
-        return heraFileMapper.insert(heraFile);
+    public String insert(HeraFile heraFile) {
+         heraFileMapper.insert(heraFile);
+         return heraFile.getId();
     }
 
     @Override
@@ -82,7 +83,7 @@ public class HeraFileServiceImpl implements HeraFileService {
         List<HeraFileTreeNodeVo> list = fileVoList.stream().map(file -> {
             HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
             if (file.getParent() == null || StringUtils.isBlank(file.getParent())) {
-                vo.setParent(null);
+                vo.setParent("root");
             } else {
                 vo.setParent(file.getParent());
             }
