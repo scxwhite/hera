@@ -55,7 +55,6 @@ public class WorkContext {
             if (exitCode == 0) {
                 try {
                     cpuCoreNum = Integer.parseInt(shell.getResult());
-                    System.out.println("机器核数：" + cpuCoreNum);
                 } catch (IOException e) {
                     e.printStackTrace();
                     cpuCoreNum = 4;

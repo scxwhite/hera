@@ -16,7 +16,7 @@ public class CpuLoadPerCoreJob {
     private float loadPerCore = 100f;
 
     private final String loadCommand = "uptime";
-    private final String keys = "load averages:";
+    private final String keys = "load average:";
     private final Integer keysLen = keys.length();
 
     public void run() {
@@ -26,12 +26,10 @@ public class CpuLoadPerCoreJob {
         RunShell runShell = new RunShell(loadCommand);
 
         Integer exitCode = runShell.run();
-        System.out.println(exitCode);
         if (exitCode == 0) {
             try {
                 String result = runShell.getResult();
                 loadPerCore = getCpuLoad(result) / WorkContext.cpuCoreNum;
-                log.info("机器load:{},cpuload:{}, 核数:{}", result, getCpuLoad(result), WorkContext.cpuCoreNum);
             } catch (IOException e) {
                 e.printStackTrace();
             }
