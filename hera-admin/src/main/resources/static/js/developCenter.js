@@ -127,11 +127,12 @@ $(function () {
      * @constructor
      */
     function OnRightClick(event, treeId, treeNode) {
-        if (!treeNode && event.target.tagName.toLowerCase() != "button" && $(event.target).parents("a").length == 0) {
-            zTree.cancelSelectedNode();
+        zTree.selectNode(treeNode);
+        var selected = zTree.getSelectedNodes()[0];
+        var isParent = selected['isParent'];//true false
+        if (isParent == true) {
             showRMenu("root", event.clientX, event.clientY);
-        } else if (treeNode && !treeNode.noR) {
-            zTree.selectNode(treeNode);
+        } else if (isParent == false) {
             showRMenu("node", event.clientX, event.clientY);
         }
     }
@@ -145,16 +146,15 @@ $(function () {
     function showRMenu(type, x, y) {
         $("#rMenu ul").show();
         if (type == "root") {
-            $("#removeFile").hide();
-        } else {
             $("#addFolder").show();
             $("#addHiveFile").show();
             $("#addShellFile").show();
             $("#rename").show();
-            $("#openFile").show();
             $("#removeFile").show();
-            $("#copyFile").show();
-            $("#resetTree").show();
+        } else if (type == "node") {
+            $("#addFolder").hide();
+            $("#addHiveFile").hide();
+            $("#addShellFile").hide();
         }
 
         y += document.body.scrollTop;
@@ -169,6 +169,7 @@ $(function () {
      * 隐藏菜单
      */
     function hideRMenu() {
+        if (rMenu) rMenu.css({"visibility": "hidden"});
         $("body").unbind("mousedown", onBodyMouseDown);
     }
 
@@ -186,13 +187,12 @@ $(function () {
         hideRMenu();
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
-        var parent = selected['parent'];
         var name = "文件夹" + addCount;
 
-        var newNode = {name: "文件夹" + addCount, isParent: true};
+        var newNode = {name: name, isParent: true, parent: id};
         addCount++;
 
-        var parameter = "parent=" + parent + "&type=" + "1" + "&name=" + name;
+        var parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
 
         $.ajax({
             url: base_url + "/developCenter/addFile.do",
@@ -200,16 +200,17 @@ $(function () {
             async: false,
             data: parameter,
             success: function (data) {
-                alert(data);
+                newNode['id'] = data;
             }
         });
-
         if (zTree.getSelectedNodes()[0]) {
             newNode.checked = zTree.getSelectedNodes()[0].checked;
             zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
         }
 
         fixIcon();//调用修复图标的方法。方法如下：
+        location.reload();
+
 
     });
 
@@ -221,13 +222,11 @@ $(function () {
         var parent = selected['parent'];
         var name = selected['name'];
 
-        var newNode = {
-            name: +addCount + name,
-            isParent: true
-        };
+        var newNode = {name: +addCount + name, isParent: true};
         addCount++;
+        var name = addCount + ".hive";
 
-        var parameter = "parent=" + parent + "&type=" + "2" + "&name=" + "copy_" + name;
+        var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
 
         $.ajax({
             url: base_url + "/developCenter/addFile.do",
@@ -235,7 +234,6 @@ $(function () {
             async: false,
             data: parameter,
             success: function (data) {
-                alert(data);
             }
         });
 
@@ -245,6 +243,8 @@ $(function () {
         }
 
         fixIcon();//调用修复图标的方法。方法如下：
+        location.reload();
+
 
     });
 
@@ -258,8 +258,9 @@ $(function () {
 
         var newNode = {name: +addCount + name, isParent: true};
         addCount++;
+        var name = addCount + ".sh";
 
-        var parameter = "parent=" + parent + "&type=" + "2" + "&name=" + "copy_" + name;
+        var parameter = "parent=" + id + "&type=" + "2" + "&name=" +  name;
 
         $.ajax({
             url: base_url + "/developCenter/addFile.do",
@@ -267,7 +268,7 @@ $(function () {
             async: false,
             data: parameter,
             success: function (data) {
-                alert(data);
+
             }
         });
 
@@ -276,6 +277,8 @@ $(function () {
             zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
         }
         fixIcon();//调用修复图标的方法。方法如下：
+        location.reload();
+
 
     });
 
@@ -289,14 +292,6 @@ $(function () {
     });
 
 
-    $("#openFile").click(function () {
-        hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var parent = selected['parent'];
-
-    });
-
     $("#removeFile").click(function () {
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
@@ -308,25 +303,13 @@ $(function () {
             async: false,
             data: parameter,
             success: function (data) {
-                alert(data);
+                alert(data)
             }
         });
 
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
-        }
-
         fixIcon();//调用修复图标的方法。方法如下：
+        location.reload();
 
-    });
-
-
-    $("#copyFile").click(function () {
-        hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var parent = selected['parent'];
 
     });
 
@@ -337,7 +320,7 @@ $(function () {
     function fixIcon() {
         $.fn.zTree.init($("#documentTree"), setting, zNodes);
         var treeObj = $.fn.zTree.getZTreeObj("documentTree");
-        //过滤出sou属性为true的节点（也可用你自己定义的其他字段来区分，这里通过sou保存的true或false来区分）
+        //过滤出属性为true的节点（也可用你自己定义的其他字段来区分，这里通过保存的true或false来区分）
         var folderNode = treeObj.getNodesByFilter(function (node) {
             return node.isParent
         });
@@ -433,7 +416,7 @@ $(function () {
             theme: "paraiso-light",
             readOnly: false
         });
-        codeMirror.display.wrapper.style.height = (screenHeight - 186)+ "px";
+        codeMirror.display.wrapper.style.height = (screenHeight - 186) + "px";
         codeMirror.on('keypress', function () {
             if (!codeMirror.getOption('readOnly')) {
                 codeMirror.showHint();
@@ -458,11 +441,10 @@ $(function () {
             localStorage.setItem("tabData", JSON.stringify(tmp));
         }
 
-        $.each($(".height-self"), function(i, n){
+        $.each($(".height-self"), function (i, n) {
             $(n).css("height", (screenHeight - 50) + "px");
         });
     });
-
 
 
 });
@@ -485,7 +467,7 @@ var TableInit = function (targetId) {
                 id: actionRow.id,
             },
             success: function (data) {
-                console.log("data.status " + data.status )
+                console.log("data.status " + data.status)
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }

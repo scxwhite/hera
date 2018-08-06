@@ -1,7 +1,6 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;

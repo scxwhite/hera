@@ -13,7 +13,7 @@ import java.util.List;
 public interface HeraFileService {
 
 
-    int insert(HeraFile heraFile);
+    String insert(HeraFile heraFile);
 
     int delete(String id);
 
