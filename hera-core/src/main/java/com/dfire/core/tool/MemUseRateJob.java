@@ -1,4 +1,4 @@
-package com.dfire.core.bo;
+package com.dfire.core.tool;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.Data;

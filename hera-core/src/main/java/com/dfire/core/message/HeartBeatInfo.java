@@ -43,4 +43,9 @@ public class HeartBeatInfo {
      *
      */
     private Float memTotal;
+
+    /**
+     * 逻辑cpu核数
+     */
+    private Integer cores;
 }
