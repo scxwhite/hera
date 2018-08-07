@@ -106,9 +106,9 @@ public class DevelopCenterController extends BaseHeraController {
                     .build();
             String postfix = name.substring(name.lastIndexOf("."));
             if (".hive".equalsIgnoreCase(postfix)) {
-                runType = "2";
+                runType = "hive";
             } else if (".sh".equalsIgnoreCase(postfix)) {
-                runType = "1";
+                runType = "shell";
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
