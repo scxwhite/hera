@@ -22,7 +22,7 @@ public class HeraGlobalEnvironment {
     private static String env;
 
     @Getter
-    private static Float maxMemRate = 0.8F;
+    private static Float maxMemRate = 0.75F;
     @Getter
     private static Float maxCpuLoadPerCore = 3F;
     @Getter

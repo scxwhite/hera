@@ -119,29 +119,6 @@ public class Master {
         masterContext.masterTimer.newTimeout(scanWaitingQueueTask, 3, TimeUnit.SECONDS);
 
 
-        /**
-         * 扫描exception队列去执行
-         *
-         */
-        TimerTask scanExceptionQueueTask = new TimerTask() {
-            Integer nextTime = HeraGlobalEnvironment.getScanRate();
-            @Override
-            public void run(Timeout timeout) {
-                try {
-                    if (scanExceptionQueue()) {
-                        nextTime = HeraGlobalEnvironment.getScanRate();
-                    } else {
-                        nextTime = (nextTime + DELAY_TIME) > MAX_DELAY_TIME ? MAX_DELAY_TIME : nextTime + DELAY_TIME;
-                    }
-                    log.info("scan exception queueTask run");
-                } catch (Exception e) {
-                    log.error("scan exception queueTask exception");
-                } finally {
-                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.SECONDS);
-                }
-            }
-        };
-        masterContext.masterTimer.newTimeout(scanExceptionQueueTask, 3, TimeUnit.SECONDS);
 
         //定时检测work心跳是否超时
         TimerTask checkHeartBeatTask = new TimerTask() {
@@ -221,16 +198,6 @@ public class Master {
         }
     }
 
-    private boolean scanExceptionQueue() {
-        boolean hasTask = false;
-        if (!masterContext.getExceptionQueue().isEmpty()) {
-            final JobElement element = masterContext.getExceptionQueue().poll();
-            runScheduleJobAction(element);
-            hasTask = true;
-        }
-        return hasTask;
-
-    }
 
     public void generateBatchAction() {
         generateAction(false, null);
@@ -511,37 +478,42 @@ public class Master {
     public boolean scan() {
         boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
-            log.warn("队列任务：{}", masterContext.getScheduleQueue());
+            log.warn("schedule队列任务：{}", masterContext.getScheduleQueue());
             printThreadPoolLog();
-            final JobElement element = masterContext.getScheduleQueue().poll();
-            runScheduleJobAction(element);
-            hasTask = true;
+            MasterWorkHolder workHolder = getRunnableWork(0);
+            if (workHolder == null) {
+                log.warn("can not get work to execute job in master");
+            } else {
+                final JobElement jobElement = masterContext.getScheduleQueue().poll();
+                runScheduleJob(workHolder, jobElement.getJobId());
+                hasTask = true;
+            }
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
-            log.warn("队列任务：{}", masterContext.getManualQueue());
+            log.warn("manual队列任务：{}", masterContext.getManualQueue());
             printThreadPoolLog();
-            final JobElement element = masterContext.getManualQueue().poll();
-            MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
+            MasterWorkHolder selectWork = getRunnableWork(0);
             if (selectWork == null) {
-                masterContext.getManualQueue().offer(element);
+                log.warn("can not get work to execute job in master");
             } else {
+                final JobElement element = masterContext.getManualQueue().poll();
                 runManualJob(selectWork, element.getJobId());
+                hasTask = true;
             }
-            hasTask = true;
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
-            log.warn("队列任务：{}", masterContext.getDebugQueue());
+            log.warn("debug队列任务：{}", masterContext.getDebugQueue());
             printThreadPoolLog();
-            final JobElement element = masterContext.getDebugQueue().poll();
-            MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
+            MasterWorkHolder selectWork = getRunnableWork(0);
             if (selectWork == null) {
-                masterContext.getDebugQueue().offer(element);
+                log.warn("can not get work to execute job in master");
             } else {
+                final JobElement element = masterContext.getDebugQueue().poll();
                 runDebugJob(selectWork, element.getJobId());
+                hasTask = true;
             }
-            hasTask = true;
         }
         return hasTask;
 
@@ -621,16 +593,10 @@ public class Master {
     /**
      * 自动调度任务执行入口，当出队列的任务获取不到执行worker的情况下，任务先进入exceptionQueue进行等待
      *
-     * @param element
+     * @param queue
      */
-    private void runScheduleJobAction(JobElement element) {
-        MasterWorkHolder workHolder = getRunnableWork(element.getHostGroupId());
-        if (workHolder == null) {
-            log.warn("no work in master");
-            masterContext.getExceptionQueue().offer(element);
-        } else {
-            runScheduleJob(workHolder, element.getJobId());
-        }
+    private void runScheduleJobAction(Queue<JobElement> queue) {
+
 
     }
 
@@ -830,12 +796,6 @@ public class Master {
                                     break;
                                 }
                             }
-                        } else {
-                            if (worker == null) {
-                                log.error("worker is null");
-                            } else if (worker.getHeartBeatInfo() == null && worker.getChannel() != null) {
-                                log.error("worker " + worker.getChannel().remoteAddress() + "heart is null");
-                            }
                         }
                     }
                 }
@@ -843,8 +803,6 @@ public class Master {
         }
         if (workHolder != null) {
             log.warn("select work is :{}", workHolder.getChannel().remoteAddress());
-        } else {
-            log.warn("worker is null");
         }
         return workHolder;
     }

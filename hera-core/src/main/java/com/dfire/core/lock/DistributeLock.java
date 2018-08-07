@@ -65,7 +65,7 @@ public class DistributeLock {
                 }
             }
         };
-        workClient.workClientTimer.newTimeout(checkLockTask, 20, TimeUnit.SECONDS);
+        workClient.workClientTimer.newTimeout(checkLockTask, 5, TimeUnit.SECONDS);
     }
 
     public void checkLock() {

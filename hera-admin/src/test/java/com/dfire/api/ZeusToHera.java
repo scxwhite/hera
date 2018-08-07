@@ -48,7 +48,6 @@ public class ZeusToHera {
     public void init() throws SQLException, ClassNotFoundException {
         Class.forName(driver);
         if (env.equals("daily")) {
-
             hera_url = "jdbc:mysql://common101.my.2dfire-daily.com:3306/hera";
             hera_username = "twodfire";
             hera_password = "123456";
@@ -73,26 +72,24 @@ public class ZeusToHera {
     public void postExecute() throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
-        HttpGet httpGet = new HttpGet("http://localhost:8080/hera/scheduleCenter/execute?id=1245&owner=biadmin");
+        HttpGet httpGet = new HttpGet("http://10.1.28.81:8080/hera/scheduleCenter/execute?id=1245&owner=biadmin");
         httpClient.execute(httpGet);
 
     }
 
     @Test
-    public void parallelTest() throws SQLException {
-        PreparedStatement statement = heraConnection.prepareStatement("select * from hera_job");
+    public void parallelTest() throws SQLException, IOException {
+        PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job where auto = 1");
 
         ResultSet resultSet = statement.executeQuery();
 
-
         while (resultSet.next()) {
             String id = resultSet.getString("id");
-            String owner = resultSet.getString("owner");
-
-
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet("http://10.1.28.81:8080/hera/scheduleCenter/execute?id=" + id +"&owner=biadmin");
+            httpClient.execute(httpGet);
+            System.out.println(id + ": ok");
         }
-
-
     }
 
 
