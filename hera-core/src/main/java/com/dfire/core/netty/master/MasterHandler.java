@@ -1,5 +1,6 @@
 package com.dfire.core.netty.master;
 
+import com.dfire.common.service.EmailService;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.*;
@@ -148,7 +149,18 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         log.info("worker miss connection !!!");
         // work断开  不再分发任务
         masterContext.getWorkMap().remove(ctx.channel());
-        //TODO 解决work正在执行任务，却无法回写任务状态
+        //TODO 解决work正在执行任务，却无法回写任务状态 or work宕机 任务状态消失
+
+        EmailService emailService = masterContext.getEmailService();
+
+        StringBuilder content = new StringBuilder();
+        content.append("不幸的消息，work宕机了").append("\n");
+        content.append("自动调度队列任务：").append(masterContext.getScheduleQueue()).append("\n");
+        content.append("手动队列任务：").append(masterContext.getManualQueue()).append("\n");
+        content.append("开发中心队列任务：").append(masterContext.getDebugQueue()).append("\n");
+        emailService.sendEmail("work断开连接：", content.toString(), new String[] {
+            "lingxiao@2dfire.com", "xiaosuda@2dfire.com"
+        });
     }
 
     @Override
