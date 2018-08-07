@@ -392,10 +392,11 @@ $(function () {
      */
     $('#editOperator [name="save"]').on('click', function () {
         if (!isGroup) {
+            console.log(codeMirror.getValue());
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
-                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + selfConfigCM.getValue() +
-                "&script=" + codeMirror.getValue() +
+                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" +encodeURIComponent(selfConfigCM.getValue()) +
+                "&script=" + encodeURIComponent(codeMirror.getValue()) +
                 "&id=" + focusId,
                 type: "post",
                 success: function (data) {
@@ -408,7 +409,7 @@ $(function () {
         } else {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
-                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + selfConfigCM.getValue() +
+                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
                 "&resource=" + "&id=" + focusId,
                 type: "post",
                 success: function (data) {
