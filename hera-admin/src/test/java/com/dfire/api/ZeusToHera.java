@@ -79,7 +79,7 @@ public class ZeusToHera {
 
     @Test
     public void parallelTest() throws SQLException, IOException {
-        PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job where auto = 1");
+        PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job");
 
         ResultSet resultSet = statement.executeQuery();
 
@@ -88,7 +88,7 @@ public class ZeusToHera {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpGet httpGet = new HttpGet("http://10.1.28.81:8080/hera/scheduleCenter/execute?id=" + id +"&owner=biadmin");
             httpClient.execute(httpGet);
-            System.out.println(id + ": ok");
+            System.out.println("--------------------------" + id + ": ok--------------------------");
         }
     }
 

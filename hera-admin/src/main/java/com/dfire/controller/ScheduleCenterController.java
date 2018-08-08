@@ -310,7 +310,10 @@ public class ScheduleCenterController extends BaseHeraController {
     @UnCheckLogin
     public WebAsyncTask<RestfulResponse> zeusExecute(Integer id, String owner) {
         List<HeraAction> actions = heraJobActionService.findByJobId(String.valueOf(id));
-        return execute(actions.get(0).getId(), 2, owner);
+        if (actions == null) {
+            return new WebAsyncTask<>(() -> new RestfulResponse(false, "action为空"));
+        }
+        return execute(actions.get(actions.size() - 1).getId(), 2, owner);
 
     }
 
