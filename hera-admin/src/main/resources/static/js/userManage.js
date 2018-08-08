@@ -28,7 +28,7 @@ $(function () {
 
         jQuery.ajax({
             type: "post",
-            url: base_url + "userManage/editUser",
+            url: base_url + "/userManage/editUser",
             data: JSON.stringify(user),
             contentType: "application/json",
             dataType: "json",
@@ -51,7 +51,7 @@ $(function () {
         }
         jQuery.ajax({
             type: "post",
-            url: base_url + "userManage/operateUser.do",
+            url: base_url + "/userManage/operateUser.do",
             data: JSON.stringify(parameter),
             contentType: "application/json",
             dataType: "json",
@@ -141,7 +141,7 @@ $(function () {
 });
 
 function edit(index) {
-    var user = userList[index];
+    var user = userList[index];tinyInt1isBit=false
 
     $('#editUser #title').text("编辑用户信息");
     $('#editUser #id').text(user.id);
