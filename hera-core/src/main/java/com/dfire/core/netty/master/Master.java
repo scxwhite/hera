@@ -100,6 +100,7 @@ public class Master {
          */
         TimerTask scanWaitingQueueTask = new TimerTask() {
             Integer nextTime = HeraGlobalEnvironment.getScanRate();
+
             @Override
             public void run(Timeout timeout) {
                 try {
@@ -117,7 +118,6 @@ public class Master {
             }
         };
         masterContext.masterTimer.newTimeout(scanWaitingQueueTask, 3, TimeUnit.SECONDS);
-
 
 
         //定时检测work心跳是否超时
@@ -552,19 +552,22 @@ public class Master {
 
             Exception exception = null;
             Response response = null;
+            Future<Response> future = null;
             try {
-                Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder,
+                future = new MasterExecuteJob().executeJob(masterContext, workHolder,
                         ExecuteKind.ManualKind, history.getId());
                 response = future.get();
             } catch (Exception e) {
                 exception = e;
+                future.cancel(true);
+                response = null;
                 log.error("manual job run error" + historyId, e);
                 jobStatus.setStatus(StatusEnum.FAILED);
                 history.setStatus(jobStatus.getStatus().toString());
                 masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
 
             }
-            boolean success = response.getStatusEnum() != null && response.getStatusEnum() == Protocol.Status.OK;
+            boolean success = response != null && response.getStatusEnum() != null && response.getStatusEnum() == Protocol.Status.OK;
             log.info("historyId 执行结果" + historyId + "---->" + response.getStatusEnum());
 
             if (!success) {
@@ -676,17 +679,20 @@ public class Master {
         heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
         Response response = null;
+        Future<Response> future = null;
         try {
-            Future<Response> future = new MasterExecuteJob().executeJob(masterContext, work,
+            future = new MasterExecuteJob().executeJob(masterContext, work,
                     ExecuteKind.ScheduleKind, heraJobHistory.getId());
-            response = future.get();
+            response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.SECONDS);
         } catch (Exception e) {
+            response = null;
             log.error("schedule job run error :" + actionId, e);
+            future.cancel(true);
             jobStatus.setStatus(StatusEnum.FAILED);
             heraJobHistoryVo.setStatusEnum(jobStatus.getStatus());
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
         }
-        boolean success = response.getStatusEnum() == Protocol.Status.OK;
+        boolean success = response != null && response.getStatusEnum() == Protocol.Status.OK;
         log.debug("job_id 执行结果" + actionId + "---->" + response.getStatusEnum());
 
         if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
@@ -732,14 +738,17 @@ public class Master {
             masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
             Exception exception = null;
             Response response = null;
+            Future<Response> future = null;
             try {
-                Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder, ExecuteKind.DebugKind, jobId);
-                response = future.get();
+                future = new MasterExecuteJob().executeJob(masterContext, workHolder, ExecuteKind.DebugKind, jobId);
+                response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
             } catch (Exception e) {
                 exception = e;
+                future.cancel(true);
+                response = null;
                 log.error(String.format("debugId:%s run failed", jobId), e);
             }
-            boolean success = response.getStatusEnum() == Protocol.Status.OK;
+            boolean success = response != null && response.getStatusEnum() == Protocol.Status.OK;
             if (!success) {
                 exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
                 log.info("debug job error");

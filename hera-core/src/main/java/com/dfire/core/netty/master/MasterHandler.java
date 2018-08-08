@@ -158,7 +158,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         content.append("手动队列任务：").append(workHolder.getHeartBeatInfo().getManualRunning()).append("<br>");
         content.append("开发中心队列任务：").append(workHolder.getHeartBeatInfo().getDebugRunning()).append("<br>");
         emailService.sendEmail("work断开连接：", content.toString(), new String[] {
-            "lingxiao@2dfire.com", "xiaosuda@2dfire.com"
+             "xiaosuda@2dfire.com"
         });
 
         // work断开  不再分发任务
