@@ -22,17 +22,15 @@ public class HeraGlobalEnvironment {
     private static String env;
 
     @Getter
-    private static Float maxMemRate = 0.75F;
+    private static Float maxMemRate;
     @Getter
-    private static Float maxCpuLoadPerCore = 3F;
+    private static Float maxCpuLoadPerCore;
     @Getter
-    private static Float perTaskUseMem = 400F;
+    private static Float perTaskUseMem;
     @Getter
-    private static Float systemMemUsed = 2000F;
+    private static Float systemMemUsed;
     @Getter
-    private static Integer scanRate = 3;
-    @Getter
-    private static Integer scanExceptionRate = 3000;
+    private static Integer scanRate;
     @Getter
     private static Integer connectPort;
     @Getter
@@ -40,22 +38,23 @@ public class HeraGlobalEnvironment {
     @Getter
     private static Integer maxParallelNum;
     @Getter
-    private static Integer heartBeat = 2;
+    private static Integer heartBeat;
     @Getter
     private static String admin;
+    @Getter
+    private static Integer taskTimeout;
 
-
-    @Value("${hera.dos2unix-exclude-file}")
+    @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
         HeraGlobalEnvironment.excludeFile = excludeFile;
     }
 
-    @Value("${hera.default-worker-group-id}")
+    @Value("${hera.defaultWorkerGroup}")
     public void setDefaultWorkerGroup(int defaultWorkerGroup) {
         HeraGlobalEnvironment.defaultWorkerGroup = defaultWorkerGroup;
     }
 
-    @Value("${hera.preemption-master-group-id}")
+    @Value("${hera.preemptionMasterGroup}")
     public void setPreemptionMasterGroup(String preemptionMasterGroup) {
         HeraGlobalEnvironment.preemptionMasterGroup = preemptionMasterGroup;
     }
@@ -65,44 +64,58 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.env = env;
     }
 
-    @Value("${hera.scanExceptionRate}")
-    public void setScanExceptionRate(Integer scanExceptionRate) {
-        HeraGlobalEnvironment.scanExceptionRate = scanExceptionRate;
-    }
-
     @Value("${hera.maxMemRate}")
     public void setMaxMemRate(Float maxMemRate) {
         HeraGlobalEnvironment.maxMemRate = maxMemRate;
     }
 
-    @Value("${hera.cpuLoadPerCore}")
-    public void setCpuLoadPerCore(Float cpuLoadPerCore) {
-        HeraGlobalEnvironment.maxCpuLoadPerCore = cpuLoadPerCore;
+    @Value("${hera.maxCpuLoadPerCore}")
+    public void setCpuLoadPerCore(Float maxCpuLoadPerCore) {
+        HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
     }
 
     @Value("${hera.scanRate}")
     public void setScanRate(Integer scanRate) {
-        HeraGlobalEnvironment.scanExceptionRate = scanRate;
+        HeraGlobalEnvironment.scanRate = scanRate;
     }
 
-    @Value("${hera.connect.port}")
-    public void setConnectPort(Integer port) {
-        HeraGlobalEnvironment.connectPort = port;
+    @Value("${hera.connectPort}")
+    public void setConnectPort(Integer connectPort) {
+        HeraGlobalEnvironment.connectPort = connectPort;
     }
 
-    @Value("${hera.download-dir}")
-    public void setDownloadDir(String dir) {
-        HeraGlobalEnvironment.downloadDir = dir;
+    @Value("${hera.downloadDir}")
+    public void setDownloadDir(String downloadDir) {
+        HeraGlobalEnvironment.downloadDir = downloadDir;
     }
 
-    @Value("${hera.max-parallel-num}")
+    @Value("${hera.maxParallelNum}")
     public void setMaxParallelNum(Integer maxParallelNum) {
         HeraGlobalEnvironment.maxParallelNum = maxParallelNum;
     }
-
     @Value("${hera.admin}")
     public void setAdmin(String admin) {
         HeraGlobalEnvironment.admin = admin;
+    }
+    @Value("${hera.taskTimeout}")
+    public void setTaskTimeout(Integer taskTimeout) {
+        HeraGlobalEnvironment.taskTimeout = taskTimeout;
+    }
+    @Value("${hera.heartBeat}")
+    public void setHeartBeat(Integer heartBeat) {
+        HeraGlobalEnvironment.heartBeat = heartBeat;
+    }
+    @Value("${hera.perTaskUseMem}")
+    public void setPerTaskUseMem(Float perTaskUseMem) {
+        HeraGlobalEnvironment.perTaskUseMem = perTaskUseMem;
+    }
+    @Value("${hera.systemMemUsed}")
+    public void setSystemMemUsed(Float systemMemUsed) {
+        HeraGlobalEnvironment.systemMemUsed = systemMemUsed;
+    }
+    @Value("${hera.maxCpuLoadPerCore}")
+    public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
+        HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
     }
 
     /**

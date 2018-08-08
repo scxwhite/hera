@@ -43,6 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -60,13 +61,15 @@ public class WorkClient {
     private WorkContext workContext = new WorkContext();
     private ScheduledExecutorService service;
     public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
-
+    private AtomicBoolean clientSwitch = new AtomicBoolean(false);
     /**
      * ProtobufVarint32LengthFieldPrepender: 对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
      * ProtobufVarint32FrameDecoder:  针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
      */
-    @Autowired
-    public void WorkClient(ApplicationContext applicationContext) {
+    public void init(ApplicationContext applicationContext) {
+        if (!clientSwitch.compareAndSet(false, true)) {
+            return ;
+        }
         workContext.setWorkClient(this);
         workContext.setApplicationContext(applicationContext);
         eventLoopGroup = new NioEventLoopGroup();

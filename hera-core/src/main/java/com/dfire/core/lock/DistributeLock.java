@@ -100,6 +100,7 @@ public class DistributeLock {
             } else {
                 //非主节点，调度器不执行
                 heraSchedule.shutdown();
+                workClient.init(applicationContext);
             }
         }
         try {
