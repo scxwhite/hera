@@ -269,7 +269,7 @@ public class BeanConvertUtils {
 
     public static void stringToMap(String str, Map<String, String> configs) {
         str = str.trim();
-        String[] split = str.split("\\s");
+        String[] split = str.split("\n");
         Arrays.stream(split).forEach(x -> {
             int index = x.indexOf("=");
             if (index != -1) {

@@ -76,7 +76,7 @@ public class StringUtil {
         }
         JSONObject jsonObject = new JSONObject();
         for (Map.Entry<String, String> entry : config.entrySet()) {
-            jsonObject.put(entry.getKey().toLowerCase(), entry.getValue().toLowerCase());
+            jsonObject.put(entry.getKey(), entry.getValue());
         }
         return jsonObject.toString();
     }

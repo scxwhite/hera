@@ -28,7 +28,7 @@ public class MasterHandleHeartBeat {
             heartBeatInfo.setHost(heartBeatMessage.getHost());
             heartBeatInfo.setMemRate(heartBeatMessage.getMemRate());
             heartBeatInfo.setMemTotal(heartBeatMessage.getMemTotal());
-            heartBeatInfo.setCpuLoadPerCore(1.5f);
+            heartBeatInfo.setCpuLoadPerCore(heartBeatMessage.getCpuLoadPerCore());
             heartBeatInfo.setRunning(heartBeatMessage.getRunningsList());
             heartBeatInfo.setDebugRunning(heartBeatMessage.getDebugRunningsList());
             heartBeatInfo.setManualRunning(heartBeatMessage.getManualRunningsList());

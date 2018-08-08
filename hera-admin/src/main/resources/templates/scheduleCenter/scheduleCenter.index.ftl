@@ -56,7 +56,6 @@
         border: 1px solid #ddd;
     }
 
-
 </style>
 
 <body class="hold-transition skin-blue-light sidebar-mini">

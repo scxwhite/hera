@@ -15,6 +15,7 @@ import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.UnCheckLogin;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +70,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
     public List<HeraJobTreeNodeVo> initJobTree() {
-        List<HeraJobTreeNodeVo> list = heraJobService.buildJobTree();
-        return list;
+        return heraJobService.buildJobTree();
     }
 
     @RequestMapping(value = "/getJobMessage", method = RequestMethod.GET)
@@ -103,9 +103,10 @@ public class ScheduleCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/manual", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask<String> execute(String actionId, Integer triggerType, @RequestParam(required = false) String owner) {
-        if (!hasPermission(Integer.parseInt(actionId.substring(actionId.length() - 4)), JOB)) {
-            return new WebAsyncTask<>(() -> ERROR_MSG);
+    public WebAsyncTask<RestfulResponse> execute(String actionId, Integer triggerType, @RequestParam(required = false) String owner) {
+
+        if (owner == null && !hasPermission(Integer.parseInt(actionId.substring(actionId.length() - 4)), JOB)) {
+            return new WebAsyncTask<>(() -> new RestfulResponse(false, ERROR_MSG));
         }
 
         TriggerTypeEnum triggerTypeEnum = null;
@@ -146,7 +147,7 @@ public class ScheduleCenterController extends BaseHeraController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return actionId;
+            return new RestfulResponse(true, actionId);
         });
     }
 
@@ -286,7 +287,7 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         HeraJobHistory history = heraJobHistoryService.findById(id);
-        ExecuteKind kind = null;
+        ExecuteKind kind;
         if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
             kind = ExecuteKind.ManualKind;
         } else {
@@ -307,9 +308,12 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/execute", method = RequestMethod.GET)
     @ResponseBody
     @UnCheckLogin
-    public WebAsyncTask<String> zeusExecute(Integer id, String owner) {
+    public WebAsyncTask<RestfulResponse> zeusExecute(Integer id, String owner) {
         List<HeraAction> actions = heraJobActionService.findByJobId(String.valueOf(id));
-        return execute(actions.get(0).getId(), 2, owner);
+        if (actions == null) {
+            return new WebAsyncTask<>(() -> new RestfulResponse(false, "action为空"));
+        }
+        return execute(actions.get(actions.size() - 1).getId(), 2, owner);
 
     }
 
@@ -348,6 +352,9 @@ public class ScheduleCenterController extends BaseHeraController {
         String owner = getOwner();
         if (owner == null || id == null || type == null) {
             return false;
+        }
+        if (HeraGlobalEnvironment.getAdmin().equals(owner)) {
+            return true;
         }
         if (JOB.equals(type)) {
             HeraJob job = heraJobService.findById(id);
