@@ -141,7 +141,8 @@ $(function () {
 });
 
 function edit(index) {
-    var user = userList[index];tinyInt1isBit=false
+    var user = userList[index];
+    tinyInt1isBit = false
 
     $('#editUser #title').text("编辑用户信息");
     $('#editUser #id').text(user.id);
