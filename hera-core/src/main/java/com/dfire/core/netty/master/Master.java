@@ -556,7 +556,7 @@ public class Master {
             try {
                 future = new MasterExecuteJob().executeJob(masterContext, workHolder,
                         ExecuteKind.ManualKind, history.getId());
-                response = future.get();
+                response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
             } catch (Exception e) {
                 exception = e;
                 future.cancel(true);
