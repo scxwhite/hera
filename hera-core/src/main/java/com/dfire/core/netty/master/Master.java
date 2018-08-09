@@ -85,9 +85,14 @@ public class Master {
 
         TimerTask generateActionTask = new TimerTask() {
             @Override
-            public void run(Timeout timeout) throws Exception {
-                generateBatchAction();
-                masterContext.masterTimer.newTimeout(this, 1, TimeUnit.HOURS);
+            public void run(Timeout timeout) {
+                try {
+                    generateBatchAction();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    masterContext.masterTimer.newTimeout(this, 1, TimeUnit.HOURS);
+                }
             }
         };
         //延迟加载  避免定时调度未启动
@@ -200,6 +205,7 @@ public class Master {
 
 
     public void generateBatchAction() {
+        log.info("全量任务版本生成");
         generateAction(false, null);
     }
 
@@ -286,6 +292,7 @@ public class Master {
                     boolean isCronExp = CronParse.Parser(cron, cronDate, list);
                     if (!isCronExp) {
                         log.error("cron parse error,cron = " + cron);
+                        continue;
                     }
                     list.forEach(str -> {
                         String actionDate = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "yyyyMMddHHmm");
@@ -358,7 +365,7 @@ public class Master {
                     String actionMostDeps = "";
 
                     for (String dependency : dependencies) {
-                        if (dependenciesMap.get(dependency).size() == 0) {
+                        if (dependenciesMap.get(dependency) == null && dependenciesMap.get(dependency).size() == 0) {
                             isComplete = false;
                             break;
                         }
@@ -369,7 +376,7 @@ public class Master {
 
                         if (dependenciesMap.get(actionMostDeps).size() < dependenciesMap.get(dependency).size()) {
                             actionMostDeps = dependency;
-                        } else if (dependenciesMap.get(actionMostDeps).size() == dependenciesMap.get(dependency).size() &&
+                        } else if (dependenciesMap.get(dependency).size() > 0 && dependenciesMap.get(actionMostDeps).size() == dependenciesMap.get(dependency).size() &&
                                 Long.parseLong(dependenciesMap.get(actionMostDeps).get(0).getId()) > Long.parseLong(dependenciesMap.get(dependency).get(0).getId())) {
                             actionMostDeps = dependency;
                         }
@@ -380,7 +387,6 @@ public class Master {
                         continue;
                     } else {
                         List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
-
                         if (actionMostList != null && actionMostList.size() > 0) {
                             for (HeraAction action : actionMostList) {
                                 StringBuilder actionDependencies = new StringBuilder(action.getId());
@@ -388,6 +394,9 @@ public class Master {
                                 for (String dependency : dependencies) {
                                     if (!dependency.equals(actionMostDeps)) {
                                         List<HeraAction> otherAction = dependenciesMap.get(dependency);
+                                        if (otherAction == null || otherAction.size() == 0) {
+                                            continue;
+                                        }
                                         String otherActionId = otherAction.get(0).getId();
                                         for (HeraAction o : otherAction) {
                                             if (Math.abs(Long.parseLong(o.getId()) - longActionId) < Math.abs(Long.parseLong(otherActionId) - longActionId)) {
