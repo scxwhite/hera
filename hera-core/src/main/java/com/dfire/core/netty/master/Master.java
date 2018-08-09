@@ -598,15 +598,6 @@ public class Master {
         });
     }
 
-    /**
-     * 自动调度任务执行入口，当出队列的任务获取不到执行worker的情况下，任务先进入exceptionQueue进行等待
-     *
-     * @param queue
-     */
-    private void runScheduleJobAction(Queue<JobElement> queue) {
-
-
-    }
 
     /**
      * 调度任务执行前，先获取任务的执行重试时间间隔和重试次数
@@ -688,7 +679,7 @@ public class Master {
         try {
             future = new MasterExecuteJob().executeJob(masterContext, work,
                     ExecuteKind.ScheduleKind, heraJobHistory.getId());
-            response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.SECONDS);
+            response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
         } catch (Exception e) {
             response = null;
             log.error("schedule job run error :" + actionId, e);

@@ -79,7 +79,7 @@ public class ZeusToHera {
 
     @Test
     public void parallelTest() throws SQLException, IOException {
-        PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job");
+        PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job where auto = 0");
 
         ResultSet resultSet = statement.executeQuery();
 
