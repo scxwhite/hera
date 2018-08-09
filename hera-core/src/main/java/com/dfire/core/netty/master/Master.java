@@ -358,7 +358,7 @@ public class Master {
                     String actionMostDeps = "";
 
                     for (String dependency : dependencies) {
-                        if (dependenciesMap.get(dependency).size() == 0) {
+                        if (dependenciesMap.get(dependency) != null && dependenciesMap.get(dependency).size() == 0) {
                             isComplete = false;
                             break;
                         }
