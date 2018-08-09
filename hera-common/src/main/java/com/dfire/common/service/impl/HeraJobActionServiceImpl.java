@@ -78,7 +78,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     @Override
     public HeraAction findLatestByJobId(String jobId) {
-        HeraAction heraAction = HeraAction.builder().id(jobId).build();
+        HeraAction heraAction = HeraAction.builder().jobId(jobId).build();
         return heraJobActionMapper.findLatestByJobId(heraAction);
     }
 
