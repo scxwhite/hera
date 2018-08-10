@@ -159,6 +159,9 @@ function getDataByGet(url, parameter) {
  * @returns {string}
  */
 function getLocalTime(timestamp) {
+    if(timestamp == null) {
+        return "";
+    }
     var date = new Date(timestamp);
     var newDate = date.toLocaleDateString().replace(/\//g, "-") + " " + date.toTimeString().substr(0, 8);
     return newDate;
