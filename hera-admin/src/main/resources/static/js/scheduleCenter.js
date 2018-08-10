@@ -866,11 +866,8 @@ var JobLogTable = function (jobId) {
                     width: "20%",
                     formatter: function (index, row) {
                         var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
-                        var html2 = '<a href="javascript:getLog(\'' + index + ')">查看日志</a>';
                         if (row['status'] == 'running') {
                             return html;
-                        } else {
-                            return html2;
                         }
                     }
                 }
