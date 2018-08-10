@@ -309,7 +309,6 @@ $(function () {
             async: false,
             data: parameter,
             success: function (data) {
-                alert(data)
             }
         });
 
