@@ -435,7 +435,6 @@ public class JobHandler extends AbstractHandler {
             masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
             log.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
         }
-
     }
 
 

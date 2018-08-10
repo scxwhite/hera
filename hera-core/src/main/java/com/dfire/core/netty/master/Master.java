@@ -205,6 +205,7 @@ public class Master {
 
 
     public void generateBatchAction() {
+        log.info("全量任务版本生成");
         generateAction(false, null);
     }
 
@@ -291,6 +292,7 @@ public class Master {
                     boolean isCronExp = CronParse.Parser(cron, cronDate, list);
                     if (!isCronExp) {
                         log.error("cron parse error,cron = " + cron);
+                        continue;
                     }
                     list.forEach(str -> {
                         String actionDate = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "yyyyMMddHHmm");
@@ -363,7 +365,7 @@ public class Master {
                     String actionMostDeps = "";
 
                     for (String dependency : dependencies) {
-                        if (dependenciesMap.get(dependency).size() == 0) {
+                        if (dependenciesMap.get(dependency) == null && dependenciesMap.get(dependency).size() == 0) {
                             isComplete = false;
                             break;
                         }
@@ -374,7 +376,7 @@ public class Master {
 
                         if (dependenciesMap.get(actionMostDeps).size() < dependenciesMap.get(dependency).size()) {
                             actionMostDeps = dependency;
-                        } else if (dependenciesMap.get(actionMostDeps).size() == dependenciesMap.get(dependency).size() &&
+                        } else if (dependenciesMap.get(dependency).size() > 0 && dependenciesMap.get(actionMostDeps).size() == dependenciesMap.get(dependency).size() &&
                                 Long.parseLong(dependenciesMap.get(actionMostDeps).get(0).getId()) > Long.parseLong(dependenciesMap.get(dependency).get(0).getId())) {
                             actionMostDeps = dependency;
                         }
@@ -385,7 +387,6 @@ public class Master {
                         continue;
                     } else {
                         List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
-
                         if (actionMostList != null && actionMostList.size() > 0) {
                             for (HeraAction action : actionMostList) {
                                 StringBuilder actionDependencies = new StringBuilder(action.getId());
@@ -393,6 +394,9 @@ public class Master {
                                 for (String dependency : dependencies) {
                                     if (!dependency.equals(actionMostDeps)) {
                                         List<HeraAction> otherAction = dependenciesMap.get(dependency);
+                                        if (otherAction == null || otherAction.size() == 0) {
+                                            continue;
+                                        }
                                         String otherActionId = otherAction.get(0).getId();
                                         for (HeraAction o : otherAction) {
                                             if (Math.abs(Long.parseLong(o.getId()) - longActionId) < Math.abs(Long.parseLong(otherActionId) - longActionId)) {
@@ -561,7 +565,7 @@ public class Master {
             try {
                 future = new MasterExecuteJob().executeJob(masterContext, workHolder,
                         ExecuteKind.ManualKind, history.getId());
-                response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
+                response = future.get();
             } catch (Exception e) {
                 exception = e;
                 future.cancel(true);
@@ -598,6 +602,15 @@ public class Master {
         });
     }
 
+    /**
+     * 自动调度任务执行入口，当出队列的任务获取不到执行worker的情况下，任务先进入exceptionQueue进行等待
+     *
+     * @param queue
+     */
+    private void runScheduleJobAction(Queue<JobElement> queue) {
+
+
+    }
 
     /**
      * 调度任务执行前，先获取任务的执行重试时间间隔和重试次数
@@ -679,7 +692,7 @@ public class Master {
         try {
             future = new MasterExecuteJob().executeJob(masterContext, work,
                     ExecuteKind.ScheduleKind, heraJobHistory.getId());
-            response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
+            response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.SECONDS);
         } catch (Exception e) {
             response = null;
             log.error("schedule job run error :" + actionId, e);
