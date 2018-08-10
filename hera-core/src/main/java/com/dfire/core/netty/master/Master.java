@@ -692,7 +692,7 @@ public class Master {
         try {
             future = new MasterExecuteJob().executeJob(masterContext, work,
                     ExecuteKind.ScheduleKind, heraJobHistory.getId());
-            response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.SECONDS);
+            response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
         } catch (Exception e) {
             response = null;
             log.error("schedule job run error :" + actionId, e);
