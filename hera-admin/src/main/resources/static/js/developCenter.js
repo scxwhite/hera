@@ -260,7 +260,7 @@ $(function () {
         addCount++;
         var name = addCount + ".sh";
 
-        var parameter = "parent=" + id + "&type=" + "2" + "&name=" +  name;
+        var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
 
         $.ajax({
             url: base_url + "/developCenter/addFile.do",
@@ -296,6 +296,12 @@ $(function () {
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
         var parameter = "id=" + id;
+
+        var tabData = JSON.parse(localStorage.getItem('tabData'));
+        tabData = tabData.filter(function (item) {
+            return item['id'] != id;
+        });
+        localStorage.setItem("tabData", JSON.stringify(tabData));
 
         $.ajax({
             url: base_url + "/developCenter/delete.do",
