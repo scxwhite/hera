@@ -4,7 +4,6 @@
     <title>用户管理中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
 </head>
 
 <style type="text/css">
@@ -119,9 +118,6 @@
 <#--content-wrapper-->
 
 <@netCommon.commonScript />
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
 <script src="${request.contextPath}/js/userManage.js"></script>
 
 </body>

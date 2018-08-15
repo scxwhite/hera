@@ -15,7 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @EnableAutoConfiguration
 @ComponentScan(basePackages = "com.dfire")
-@MapperScan(basePackages = "com.dfire.common.mapper")
+@MapperScan(basePackages = "com.dfire.*.mapper")
 @SpringBootApplication
 @ServletComponentScan(value = "com.dfire.config")
 public class AdminBootstrap {

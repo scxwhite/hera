@@ -97,16 +97,6 @@
 	<aside class="main-sidebar height-self">
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-            <#--<form action="#" method="get" class="sidebar-form">-->
-                <#--<div class="input-group">-->
-                    <#--<input type="text" name="q" class="form-control" placeholder="Search...">-->
-                    <#--<span class="input-group-btn">-->
-                        <#--<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i-->
-                                <#--class="fa fa-search"></i></button>-->
-                   <#--</span>-->
-                <#--</div>-->
-            <#--</form>-->
-            <!-- sidebar menu: : style can be found in sidebar.less -->
             <ul class="sidebar-menu">
 
                 <li class="active treeview menu-open">
@@ -130,6 +120,19 @@
                         <li><a href="${request.contextPath}/hostGroupManage"><i class="fa fa-circle-o"></i>机器组管理</a></li>
                     </ul>
                 </li>
+
+                <li class="active treeview">
+                    <a href="#">
+                        <i class="fa fa-folder"></i> <span>任务管理</span>
+                        <span class="pull-right-container">
+                          <i class="fa fa-angle-left pull-right"></i>
+                        </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="active"><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a></li>
+                    </ul>
+                </li>
+
 
 
                 <li class="nav-click <#if pageName == "developCenter">active</#if>" ><a href="${request.contextPath}/developCenter"><i class="fa fa-book"></i> <span>开发中心</span></a></li>

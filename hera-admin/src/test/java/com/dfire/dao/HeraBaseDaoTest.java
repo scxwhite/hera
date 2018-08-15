@@ -12,6 +12,9 @@ import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.schedule.HeraSchedule;
+import com.dfire.monitor.domain.JsonResponse;
+import com.dfire.monitor.mapper.JobManagerMapper;
+import com.dfire.monitor.service.JobManageService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +57,9 @@ public class HeraBaseDaoTest {
     HeraHostGroupService heraHostGroupService;
     @Autowired
     HeraJobService heraJobService;
+
+    @Autowired
+    JobManageService jobManageService;
 
     HeraAction heraAction;
     HeraPermission heraPermission;
@@ -245,6 +251,15 @@ public class HeraBaseDaoTest {
         String s = "91";
         String[] a = s.split(",");
         System.out.println(a.length);
+    }
+
+    @Test
+    public void jobManageTest() {
+//        JsonResponse jsonResponse = jobManageService.findJobHistoryByStatus("failed");
+//        System.out.println(jsonResponse.getData());
+
+        JsonResponse top10 = jobManageService.findJobRunTimeTop10();
+        System.out.println(top10.getData());
     }
 
     @Test
