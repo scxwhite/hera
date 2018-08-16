@@ -12,12 +12,13 @@
 
 <style type="text/css">
 
-    .box, .content , .form-group{
+    .box, .content, .form-group {
         margin-bottom: 0;
         padding-bottom: 0;
         margin-top: 0;
         padding-top: 0;
     }
+
     div #rMenu {
         position: absolute;
         visibility: hidden;
@@ -58,6 +59,71 @@
 
 </style>
 
+<style>
+    #timeline {
+        position: relative;
+        margin-top: 10px;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border: 1px solid dimgray;
+        box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.75);
+    }
+
+    #timeline .selected {
+        font-weight: bold;
+        box-shadow: 0px 0px 3px 1px gray;
+    }
+
+    #timeline-collapse {
+        top: 100px
+    }
+
+    .styleA {
+        color: darkgreen;
+        background-color: lightgreen;
+    }
+
+    .styleB {
+        color: darkred;
+        background-color: mistyrose;
+    }
+
+    .styleC {
+        color: darkblue;
+        background-color: lightblue;
+    }
+
+    .timeline-unused-phase {
+        background: repeating-linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.85),
+                rgba(255, 255, 255, 0.85) 10px,
+                rgba(235, 235, 235, 0.85) 10px,
+                rgba(235, 235, 235, 0.85) 20px
+        );
+    }
+
+
+</style>
+
+<style id="css">
+    body {
+        font: 300 14px 'Helvetica Neue', Helvetica;
+    }
+
+    .node rect {
+        stroke: #333;
+        fill: #fff;
+    }
+
+    .edgePath path {
+        stroke: #333;
+        fill: #333;
+        stroke-width: 1.5px;
+    }
+</style>
+
 <body class="hold-transition skin-blue-light sidebar-mini">
 <div class="wrapper">
     <!-- header -->
@@ -69,7 +135,7 @@
 
         <section class="content">
             <div class="row">
-                <div class="col-md-3 col-sm-3 col-lg-3 colStyle"  >
+                <div class="col-md-3 col-sm-3 col-lg-3 colStyle">
                     <div class="box box-primary height-self" style="overflow: auto;">
                         <div class="box-body">
                             <div>
@@ -373,7 +439,8 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">依赖任务:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" id ="dependJob" name="dependencies">
+                                                <input class="form-control" type="text" id="dependJob"
+                                                       name="dependencies">
 
                                             </div>
                                         </div>
@@ -423,7 +490,7 @@
                             <div class="form-group">
                                 <label>配置项信息</label>
                                 <textarea class="form-control"
-                                          ></textarea>
+                                ></textarea>
                             </div>
                         </div>
                     </div>
@@ -432,7 +499,7 @@
                             <div class="form-group">
                                 <label>脚本</label>
                                 <textarea id="editor" name="editor"
-                                          ></textarea>
+                                ></textarea>
                             </div>
                         </div>
                     </div>
@@ -440,8 +507,8 @@
                         <div class="box-body">
                             <div class="form-group">
                                 <label>继承的配置项信息</label>
-                                <textarea class="form-control"  style="resize: none"
-                                          ></textarea>
+                                <textarea class="form-control" style="resize: none"
+                                ></textarea>
                             </div>
                         </div>
                     </div>
@@ -507,17 +574,19 @@
                         <div class="box-body" style="white-space:nowrap;">
                             <ul class="list-unstyled">
                                 <li>
-                                    <button class="btn btn-xs btn-primary btn-block" type="button" name="runningLog">运行日志
+                                    <button class="btn btn-xs btn-primary btn-block" type="button" name="runningLog">
+                                        运行日志
                                     </button>
                                 </li>
                                 <br>
 
                                 <li>
-                                    <button class="btn btn-xs btn-primary btn-block" type="button" name="version">版本生成</button>
+                                    <button class="btn btn-xs btn-primary btn-block" type="button" name="version">版本生成
+                                    </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button">依赖图</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="jobDag">依赖图</button>
                                 </li>
                                 <br>
                                 <li>
@@ -539,7 +608,9 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="switch">开启/关闭</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="switch">
+                                        开启/关闭
+                                    </button>
                                 </li>
                                 <br>
                                 <li>
@@ -554,7 +625,9 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="monitor">关注该任务</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="monitor">
+                                        关注该任务
+                                    </button>
                                 </li>
                             </ul>
                         </div>
@@ -721,7 +794,7 @@
 </div>
 
 <div class="modal" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="title">
-    <div class="modal-dialog" style="width: 600px" >
+    <div class="modal-dialog" style="width: 600px">
         <div class="modal-content">
 
             <div class="modal-header">
@@ -733,7 +806,8 @@
             </div>
 
             <div class="modal-footer">
-                <input  multiple  id="fileForm" name="fileForm" type="file" class="file-loading" data-show-preview="false" >
+                <input multiple id="fileForm" name="fileForm" type="file" class="file-loading"
+                       data-show-preview="false">
                 <br>
                 <button class="btn btn-primary" id="closeUploadModal">关闭</button>
             </div>
@@ -743,7 +817,7 @@
 
 
 <div class="modal" id="selectDepend" tabindex="-1" role="dialog" aria-labelledby="title">
-    <div class="modal-dialog" style="width: 600px" >
+    <div class="modal-dialog" style="width: 600px">
         <div class="modal-content">
 
             <div class="modal-header">
@@ -764,7 +838,6 @@
 
 
 
-
 <@netCommon.commonScript />
 
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
@@ -779,8 +852,12 @@
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exhide.min.js"></script>
+
+
+
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
+
 
 </body>
 

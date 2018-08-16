@@ -102,6 +102,13 @@ $(function () {
         $('#jobLog').modal('show');
 
     });
+
+    $('#jobOperate [name="jobDag"]').on('click', function () {
+
+        location.href = base_url + "/jobDag";
+
+    });
+
     $("#groupOperate [name='addGroup']").on('click', function () {
         $('#addGroupModal [name="groupName"]').val("");
         $('#addGroupModal [name="groupType"]').val("0");

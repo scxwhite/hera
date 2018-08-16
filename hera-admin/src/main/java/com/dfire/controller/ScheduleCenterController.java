@@ -1,6 +1,7 @@
 package com.dfire.controller;
 
 import com.dfire.common.entity.*;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.entity.vo.HeraJobVo;
@@ -367,5 +368,11 @@ public class ScheduleCenterController extends BaseHeraController {
         return false;
     }
 
+
+    @RequestMapping(value = "/getJobImpactOrProgress", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse getJobImpactOrProgress(Integer jobId, Integer type) {
+        return heraJobService.findCurrentJobGraph(jobId, type);
+    }
 
 }

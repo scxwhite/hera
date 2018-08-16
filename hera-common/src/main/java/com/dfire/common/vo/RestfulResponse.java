@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 18:15 2018/1/7
@@ -32,6 +34,9 @@ public class RestfulResponse {
     public RestfulResponse(boolean success, String msg) {
         this.success = success;
         this.msg = msg;
+    }
+
+    public RestfulResponse(String msg, boolean b, Map<String,Object> stringObjectMap) {
     }
 
 

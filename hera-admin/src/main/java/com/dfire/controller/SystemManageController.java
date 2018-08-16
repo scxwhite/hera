@@ -3,7 +3,7 @@ package com.dfire.controller;
 import com.dfire.common.service.HeraUserService;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.queue.JobElement;
-import com.dfire.monitor.domain.JsonResponse;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.monitor.service.JobManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,6 +46,11 @@ public class SystemManageController {
     @RequestMapping("jobDetail")
     public String jobManage() {
         return "jobManage/jobDetail.index";
+    }
+
+    @RequestMapping("jobDag")
+    public String jobDag() {
+        return "jobManage/jobDag.index";
     }
 
     @RequestMapping("/getTaskQueueStatus")

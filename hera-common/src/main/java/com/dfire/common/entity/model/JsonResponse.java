@@ -1,4 +1,4 @@
-package com.dfire.monitor.domain;
+package com.dfire.common.entity.model;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.dfire.monitor.service;
 
 
-import com.dfire.monitor.domain.JsonResponse;
+import com.dfire.common.entity.model.JsonResponse;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

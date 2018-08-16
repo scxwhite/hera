@@ -8,12 +8,12 @@ import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
+import com.dfire.common.vo.RestfulResponse;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.schedule.HeraSchedule;
-import com.dfire.monitor.domain.JsonResponse;
-import com.dfire.monitor.mapper.JobManagerMapper;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.monitor.service.JobManageService;
 import org.junit.Before;
 import org.junit.Test;
@@ -260,6 +260,12 @@ public class HeraBaseDaoTest {
 
         JsonResponse top10 = jobManageService.findJobRunTimeTop10();
         System.out.println(top10.getData());
+    }
+
+    @Test
+    public void dagTest() {
+        JsonResponse restfulResponse = heraJobService.findCurrentJobGraph(119,0);
+        System.out.println(restfulResponse.getData());
     }
 
     @Test

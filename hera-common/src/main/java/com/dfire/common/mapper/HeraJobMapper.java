@@ -5,6 +5,7 @@ import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
+import graph.JobRelation;
 import org.apache.ibatis.annotations.*;
 import org.omg.CORBA.INTERNAL;
 
@@ -58,4 +59,7 @@ public interface HeraJobMapper {
 
     @Select("select max(id) from hera_job")
     Integer selectMaxId();
+
+    @Select("select `name`,id,dependencies from hera_job where auto=1")
+    List<JobRelation> getJobRelations();
 }
