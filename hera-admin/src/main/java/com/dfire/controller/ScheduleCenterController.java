@@ -106,7 +106,9 @@ public class ScheduleCenterController extends BaseHeraController {
                                          @RequestParam("type") boolean type,
                                          @RequestParam("uIdS") String names) {
 
-
+        if (!hasPermission(id, type ? GROUP : JOB)) {
+            return new JsonResponse(false, ERROR_MSG);
+        }
         JSONArray uIdS = JSONArray.parseArray(names);
         Integer integer = heraPermissionService.deleteByTargetId(id);
 
@@ -118,7 +120,7 @@ public class ScheduleCenterController extends BaseHeraController {
             Date date = new Date();
             Long targetId = Long.parseLong(String.valueOf(id));
             List<HeraPermission> permissions = new ArrayList<>(uIdS.size());
-            for(int i = 0; i < uIdS.size(); i++) {
+            for (int i = 0; i < uIdS.size(); i++) {
                 HeraPermission heraPermission = new HeraPermission();
                 heraPermission.setType(typeStr);
                 heraPermission.setGmtModified(date);
