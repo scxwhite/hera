@@ -99,10 +99,8 @@
 </div>
 <!-- ./wrapper -->
 <@netCommon.commonScript />
-<script src="${request.contextPath}/adminlte/plugins/daterangepicker/moment.min.js"></script>
-<script src="${request.contextPath}/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
-<script src="${request.contextPath}/plugins/echarts/echarts.common.min.js"></script>
-<script src="${request.contextPath}/plugins/echarts/echarts.js"></script>
+
+<#--<script src="${request.contextPath}/plugins/echarts/echarts.js"></script>-->
 <script type="text/javascript">
     $(function () {
         var option = {
@@ -244,7 +242,7 @@
             option.series[4] = new lineRow('失败任务数', failedJobs);
             option.series[5] = new lineRow('总任务数', allJob);
 
-            var myChart = echarts.init(document.getElementById('lineJobStatus'), 'macarons');
+            var myChart = echarts.init(document.getElementById('lineJobStatus'));
             myChart.setOption(option)
         }
 
@@ -283,7 +281,7 @@
             option.legend.orient = "vertical";
             option.legend.x = "left";
 
-            var myChart = echarts.init(document.getElementById('jobStatus'), 'macarons');
+            var myChart = echarts.init(document.getElementById('jobStatus'));
             myChart.setOption(option)
 
             myChart.on('click', function (param) {
@@ -295,7 +293,7 @@
 
         function initJobTopTen(jobs) {
             initOption();
-            var myChart = echarts.init(document.getElementById('jobTop'), 'macarons');
+            var myChart = echarts.init(document.getElementById('jobTop'));
             option.title.text = '任务时长TOP10';
             option.title.subtext = getNowFormatDate(0);
             option.title.x = 'center';

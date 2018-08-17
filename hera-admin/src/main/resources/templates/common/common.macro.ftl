@@ -63,12 +63,16 @@
 
     <script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.js"></script>
 
-<script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
-<script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
-<script src="${request.contextPath}/plugins/d3/resize.js"></script>
-<script src="${request.contextPath}/plugins/d3/simpleTimeline.js"></script>
-<script src="${request.contextPath}/plugins/d3/macarons.js"></script>
-<script src="${request.contextPath}/plugins/d3/echarts.js"></script>
+    <script src="${request.contextPath}/adminlte/plugins/daterangepicker/moment.min.js"></script>
+    <script src="${request.contextPath}/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="${request.contextPath}/plugins/echarts/echarts.common.min.js"></script>
+    <script src="${request.contextPath}/plugins/echarts/macarons.js"></script>
+    <script src="${request.contextPath}/plugins/echarts/shine.js"></script>
+
+    <script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
+    <script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
+    <script src="${request.contextPath}/plugins/d3/resize.js"></script>
+    <script src="${request.contextPath}/plugins/d3/simpleTimeline.js"></script>
 
 <#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>
