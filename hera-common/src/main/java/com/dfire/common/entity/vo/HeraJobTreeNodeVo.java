@@ -17,10 +17,11 @@ public class HeraJobTreeNodeVo {
     Integer directory;
     boolean isParent;
 
-    public boolean getIsParent(){
+    public boolean getIsParent() {
         return isParent;
     }
-    public void setIsParent(boolean isParent){
+
+    public void setIsParent(boolean isParent) {
         this.isParent = isParent;
     }
 }

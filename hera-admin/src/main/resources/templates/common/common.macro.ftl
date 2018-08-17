@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-tab.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-    <#--<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/font-awesome-4.5.0/css/font-awesome.min.css">-->
+<#--<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/font-awesome-4.5.0/css/font-awesome.min.css">-->
     <!-- Ionicons -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css"> -->
     <link rel="stylesheet" href="${request.contextPath}/plugins/ionicons-2.0.1/css/ionicons.min.css">
@@ -19,10 +19,12 @@
     <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/_all-skins.css">
 
-	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
+	<link rel="stylesheet"
+          href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
 
 	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.css"></link>
-	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput-rtl.min.css"></link>
+	<link rel="stylesheet"
+          href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput-rtl.min.css"></link>
 
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -60,6 +62,11 @@
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 
     <script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.js"></script>
+
+<script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
+<script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
+<script src="${request.contextPath}/plugins/d3/resize.js"></script>
+<script src="${request.contextPath}/plugins/d3/simpleTimeline.js"></script>
 
 <#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>
@@ -115,9 +122,11 @@
                           <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
-                    <ul class="treeview-menu" style="display: none">
-                        <li class=""><a href="${request.contextPath}/userManage"><i class="fa fa-circle-o"></i> 用户管理</a></li>
-                        <li><a href="${request.contextPath}/hostGroupManage"><i class="fa fa-circle-o"></i>机器组管理</a></li>
+                    <ul class="treeview-menu">
+                        <li class="active"><a href="${request.contextPath}/userManage"><i class="fa fa-circle-o"></i>
+                            用户管理</a></li>
+                        <li><a href="${request.contextPath}/hostGroupManage"><i class="fa fa-circle-o"></i>机器组管理</a>
+                        </li>
                     </ul>
                 </li>
 
@@ -128,16 +137,21 @@
                           <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
-                    <ul class="treeview-menu" style="display: none">
-                        <li class=""><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a></li>
+                    <ul class="treeview-menu">
+                        <li class="active"><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a>
+                        </li>
+                        <li class="active"><a href="${request.contextPath}/jobDag"><i
+                                class="fa fa-circle-o"></i>任务依赖图</a></li>
                     </ul>
                 </li>
 
 
-
-                <li class="nav-click <#if pageName == "developCenter">active</#if>" ><a href="${request.contextPath}/developCenter"><i class="fa fa-book"></i> <span>开发中心</span></a></li>
-                <li class="nav-click <#if pageName == "scheduleCenter">active</#if>" ><a href="${request.contextPath}/scheduleCenter"><i class="fa fa-edit"></i> <span>调度中心</span></a></li>
-
+                <li class="nav-click <#if pageName == "developCenter">active</#if>"><a
+                        href="${request.contextPath}/developCenter"><i class="fa fa-book"></i> <span>开发中心</span></a>
+                </li>
+                <li class="nav-click <#if pageName == "scheduleCenter">active</#if>"><a
+                        href="${request.contextPath}/scheduleCenter"><i class="fa fa-edit"></i> <span>调度中心</span></a>
+                </li>
 
 
             </ul>

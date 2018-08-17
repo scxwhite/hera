@@ -4,7 +4,7 @@ import com.dfire.common.util.DateUtil;
 import com.dfire.monitor.domain.ActionTime;
 import com.dfire.monitor.domain.JobHistoryVo;
 import com.dfire.monitor.domain.JobStatusNum;
-import com.dfire.monitor.domain.JsonResponse;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.monitor.mapper.JobManagerMapper;
 import com.dfire.monitor.service.JobManageService;
 import org.springframework.beans.factory.annotation.Autowired;

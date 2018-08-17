@@ -428,8 +428,6 @@ $(function () {
             }
         });
 
-        codeMirror.onChange(codeMirror, changeObjectN)
-
 
         var storeData = JSON.parse(localStorage.getItem('tabData'));
         if (storeData != null) {

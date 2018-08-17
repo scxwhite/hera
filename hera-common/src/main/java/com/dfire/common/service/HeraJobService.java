@@ -1,9 +1,10 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraJob;
-import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.vo.RestfulResponse;
+import graph.JobRelation;
 
 import java.util.List;
 
@@ -38,5 +39,15 @@ public interface HeraJobService {
     boolean changeSwitch(Integer id);
 
     RestfulResponse checkAndUpdate(HeraJob heraJob);
+
+    JsonResponse findCurrentJobGraph(int jobId, Integer type);
+
+    /**
+     * 构建依赖图边
+     *
+     * @return
+     */
+    List<JobRelation> getJobRelations();
+
 
 }
