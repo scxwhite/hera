@@ -102,6 +102,67 @@ $(function () {
         $('#jobLog').modal('show');
 
     });
+
+    $('#jobOperate [name="addAdmin"]').on('click', function () {
+        addAdmin();
+    });
+
+
+    $('#groupOperate [name="addAdmin"]').on('click', function () {
+        addAdmin();
+    });
+
+    function addAdmin() {
+        $.ajax({
+            url: base_url + "/scheduleCenter/getJobOperator",
+            type: "get",
+            data: {
+                jobId: focusId,
+                type: isGroup
+            },
+            success: function (data) {
+                if (data.success) {
+                    var html = '';
+                    data.data['allUser'].forEach(function (val) {
+                        html = html + '<option value= "' + val.name + '">' + val.name + '</option>';
+                    });
+                    $('#userList').empty();
+                    $('#userList').append(html);
+                    var admins = new Array();
+                    data.data['admin'].forEach(function (val) {
+                        admins.push(val.uid);
+
+                    });
+                    $('#userList').selectpicker('val', admins);
+
+                    $('#userList').selectpicker('refresh');
+                    $('#addAdminModal').modal('show');
+                } else {
+                    alert(data.message);
+                }
+            }
+        });
+    }
+
+    $('#addAdminModal [name="submit"]').on('click', function () {
+        var uids = $('#userList').val();
+        $.ajax({
+            url: base_url + "/scheduleCenter/updatePermission",
+            type: "post",
+            data: {
+                uIdS: JSON.stringify(uids),
+                id: focusId,
+                type: isGroup
+            },
+            success: function (data) {
+                alert(data.message);
+            }
+
+        })
+    });
+
+
+
     $("#groupOperate [name='addGroup']").on('click', function () {
         $('#addGroupModal [name="groupName"]').val("");
         $('#addGroupModal [name="groupType"]').val("0");
@@ -288,7 +349,7 @@ $(function () {
                 $("#selectDepend").modal('hide');
 
 
-            })
+            });
 
             setJobMessageEdit(false);
         }
@@ -395,7 +456,7 @@ $(function () {
             console.log(codeMirror.getValue());
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
-                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" +encodeURIComponent(selfConfigCM.getValue()) +
+                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
                 "&script=" + encodeURIComponent(codeMirror.getValue()) +
                 "&id=" + focusId,
                 type: "post",
@@ -865,7 +926,7 @@ var JobLogTable = function (jobId) {
                     title: "操作",
                     width: "20%",
                     formatter: function (index, row) {
-                        var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
+                        var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消任务</a>';
                         if (row['status'] == 'running') {
                             return html;
                         }
@@ -898,9 +959,9 @@ var JobLogTable = function (jobId) {
     return oTableInit;
 };
 
-function cancelJob(historyId) {
+function cancelJob(historyId, jobId) {
     var url = base_url + "/scheduleCenter/cancelJob.do";
-    var parameter = {id: historyId};
+    var parameter = {historyId: historyId, jobId: jobId};
     getDataByGet(url, parameter)
 
 }

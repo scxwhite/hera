@@ -33,6 +33,10 @@ public interface HeraUserMapper {
     @Lang(HeraSelectLangDriver.class)
     List<HeraUser> getAll();
 
+    @Select("select name from hera_user")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraUser> getAllName();
+
     @Select("select * from hera_user where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
     HeraUser findById(HeraUser heraUser);

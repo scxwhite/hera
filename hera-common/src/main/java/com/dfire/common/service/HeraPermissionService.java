@@ -24,5 +24,11 @@ public interface HeraPermissionService {
 
     List<HeraPermission> findByIds(List<Integer> list);
 
+    List<HeraPermission> findByTargetId(Integer targetId);
 
+    HeraPermission findByCond(Integer id, String owner);
+
+    Integer deleteByTargetId(Integer id);
+
+    Integer insertList(List<HeraPermission> permissions);
 }

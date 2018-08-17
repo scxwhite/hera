@@ -115,8 +115,8 @@
                           <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
-                    <ul class="treeview-menu">
-                        <li class="active"><a href="${request.contextPath}/userManage"><i class="fa fa-circle-o"></i> 用户管理</a></li>
+                    <ul class="treeview-menu" style="display: none">
+                        <li class=""><a href="${request.contextPath}/userManage"><i class="fa fa-circle-o"></i> 用户管理</a></li>
                         <li><a href="${request.contextPath}/hostGroupManage"><i class="fa fa-circle-o"></i>机器组管理</a></li>
                     </ul>
                 </li>
@@ -128,8 +128,8 @@
                           <i class="fa fa-angle-left pull-right"></i>
                         </span>
                     </a>
-                    <ul class="treeview-menu">
-                        <li class="active"><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a></li>
+                    <ul class="treeview-menu" style="display: none">
+                        <li class=""><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a></li>
                     </ul>
                 </li>
 

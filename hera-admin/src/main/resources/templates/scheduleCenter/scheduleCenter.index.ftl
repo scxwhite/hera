@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/paraiso-light.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
+
 </head>
 
 <style type="text/css">
@@ -490,7 +492,7 @@
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button">配置管理员</button>
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addAdmin">配置管理员</button>
 
                                     </li>
                                 <#--     <br>
@@ -549,7 +551,7 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button">配置管理员</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="addAdmin">配置管理员</button>
 
                                 </li>
                                 <br>
@@ -761,7 +763,26 @@
         </div>
     </div>
 </div>
+<div class="modal" id="addAdminModal" tabindex="-1" role="dialog" aria-labelledby="title">
+    <div class="modal-dialog" style="width: 600px" >
+        <div class="modal-content">
 
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"></button>
+                <div class="modal-title"><h4>配置管理员</h4></div>
+            </div>
+            <div class="modal-body">
+                <select id="userList" class="selectpicker form-control" multiple data-done-button="true">
+
+                </select>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" name="submit" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -779,6 +800,7 @@
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exhide.min.js"></script>
+<script src="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
 

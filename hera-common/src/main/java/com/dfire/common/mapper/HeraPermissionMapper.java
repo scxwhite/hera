@@ -42,4 +42,21 @@ public interface HeraPermissionMapper {
     List<HeraPermission> findByIds(@Param("list") List<Integer> list);
 
 
+    @Select("select * from hera_permission where target_id =#{targetId}")
+    List<HeraPermission> findByTargetId(Integer targetId);
+
+    @Select("select * from hera_permission where target_id = #{id} and uid = #{owner}")
+    HeraPermission findByCond(@Param("id") Integer id, @Param("owner") String owner);
+
+    @Delete("delete from hera_permission where target_id = #{id}")
+    Integer deleteByTargetId(Integer id);
+
+    @Insert({"<script> " +
+            " insert into hera_permission (gmt_create,gmt_modified,target_id,type,uid) " +
+            "values " +
+            "<foreach collection=\"list\"  separator=\",\" item=\"item\" > " +
+            " (#{item.gmtCreate},#{item.gmtModified},#{item.targetId},#{item.type},#{item.uid}) " +
+            " </foreach>" +
+            " </script>"})
+    Integer insertList(@Param("list") List<HeraPermission> permissions);
 }

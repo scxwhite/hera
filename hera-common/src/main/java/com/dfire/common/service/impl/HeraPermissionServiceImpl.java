@@ -1,6 +1,5 @@
 package com.dfire.common.service.impl;
 
-import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraPermission;
 import com.dfire.common.mapper.HeraPermissionMapper;
 import com.dfire.common.service.HeraPermissionService;
@@ -19,10 +18,11 @@ public class HeraPermissionServiceImpl implements HeraPermissionService {
 
     @Autowired
     private HeraPermissionMapper permissionMapper;
+
     @Override
     public int insert(HeraPermission heraPermission) {
-         permissionMapper.insert(heraPermission);
-         return heraPermission.getId();
+        permissionMapper.insert(heraPermission);
+        return heraPermission.getId();
     }
 
     @Override
@@ -49,4 +49,26 @@ public class HeraPermissionServiceImpl implements HeraPermissionService {
     public List<HeraPermission> findByIds(List<Integer> list) {
         return permissionMapper.findByIds(list);
     }
+
+    @Override
+    public List<HeraPermission> findByTargetId(Integer targetId) {
+        return permissionMapper.findByTargetId(targetId);
+    }
+
+    @Override
+    public HeraPermission findByCond(Integer id, String owner) {
+        return permissionMapper.findByCond(id, owner);
+    }
+
+    @Override
+    public Integer deleteByTargetId(Integer id) {
+        return permissionMapper.deleteByTargetId(id);
+    }
+
+    @Override
+    public Integer insertList(List<HeraPermission> permissions) {
+
+        return permissionMapper.insertList(permissions);
+    }
+
 }

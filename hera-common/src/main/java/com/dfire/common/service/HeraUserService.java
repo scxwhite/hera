@@ -27,4 +27,6 @@ public interface HeraUserService {
     List<HeraUser> findByIds(List<Integer> list);
 
     int updateEffective(String id, String effective);
+
+    List<HeraUser> findAllName();
 }

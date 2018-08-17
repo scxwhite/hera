@@ -61,4 +61,9 @@ public class HeraUserServiceImpl implements HeraUserService {
     public int updateEffective(String id, String effective) {
         return heraUserMapper.updateEffective(id, effective);
     }
+
+    @Override
+    public List<HeraUser> findAllName() {
+        return heraUserMapper.getAllName();
+    }
 }

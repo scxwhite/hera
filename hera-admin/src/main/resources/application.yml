@@ -92,7 +92,7 @@ logging:
   path: /opt/logs/spring-boot
   allLevel: info
   level:
-      com.dfire.common.mapper: error
+      com.dfire.common.mapper: debug
 mybatis:
   configuration:
     mapUnderscoreToCamelCase: true

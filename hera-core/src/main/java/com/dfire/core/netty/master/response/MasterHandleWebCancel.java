@@ -119,14 +119,14 @@ public class MasterHandleWebCancel {
         if (history.getTriggerType() == TriggerTypeEnum.MANUAL) {
             for (Channel key : new HashSet<>(context.getWorkMap().keySet())) {
                 MasterWorkHolder workHolder = context.getWorkMap().get(key);
-                if (workHolder.getManningRunning().containsKey(jobId)) {
+                if (workHolder.getManningRunning().containsKey(historyId)) {
                     Future<Response> future = new MasterHandleCancelJob().cancel(context,
                             workHolder.getChannel(), ExecuteKind.ManualKind, historyId);
                     workHolder.getManningRunning().remove(jobId);
                     try {
                         future.get(10, TimeUnit.SECONDS);
                     } catch (Exception e) {
-
+                        e.printStackTrace();
                     }
                     webResponse = WebResponse.newBuilder()
                             .setRid(request.getRid())
