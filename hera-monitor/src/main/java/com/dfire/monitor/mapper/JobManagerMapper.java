@@ -22,28 +22,20 @@ public interface JobManagerMapper {
      * @param status
      * @return
      */
-    @Select(" select\n" +
-            "                m.job_id job_id,hera_job.name job_name,hera_job.description description,  m.start_time start_time,m.end_time end_time,m.execute_host execute_host,m.status status,m.operator\n" +
+
+    @Select(" \n" +
+            "select \n" +
+            "his.job_id,job.name as job_name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator,count(*) as times\n" +
+            "from \n" +
+            "(select job_id,start_time start_time,end_time,execute_host,status,operator from hera_action_history \n" +
             "\n" +
-            "        from (\n" +
-            "            select\n" +
-            "                job_id,action_id,start_time,end_time,execute_host,status,operator\n" +
-            "                from hera_action_history where job_id in\n" +
-            "                (\n" +
-            "                        select job_id\n" +
-            "                        from\n" +
-            "                        (\n" +
-            "                                select job_id,substring_index(group_concat(status order by start_time desc),\",\",1) as status\n" +
-            "                                from hera_action_history\n" +
-            "                                where left(start_time,10) = CURRENT_DATE()\n" +
-            "                                group by job_id\n" +
-            "                        ) a\n" +
-            "                        where status = #{status,jdbcType=VARCHAR}\n" +
-            "                )\n" +
-            "                and left(start_time,10) = CURRENT_DATE() and status = #{status,jdbcType=VARCHAR}\n" +
-            "                order by job_id,start_time\n" +
-            "            ) m left join hera_job on m.job_id = hera_job.id")
-    List<JobHistoryVo> findJobHistoryByStatus(String status);
+            "where left(start_time,10) = CURRENT_DATE() and status = #{status,jdbcType=VARCHAR}) his\n" +
+            "      \n" +
+            "left join hera_job job on his.job_id = job.id\n" +
+            "\n" +
+            "group by job_id\n" +
+            "order by job_id")
+    List<JobHistoryVo> findAllJobHistoryByStatus(String status);
 
 
     /**
@@ -53,12 +45,12 @@ public interface JobManagerMapper {
      * @param map
      * @return
      */
-    @Select("select a.job_id,a.action_id,a.job_time,b.run_type from\n" +
-            "        (select job_id,action_id,timestampdiff(SECOND,start_time,end_time)/60 as job_time from hera_action_history where start_time>#{startDate}\n" +
+    @Select("select a.job_id,a.action_id,a.job_time,b.run_type from" +
+            "        (select job_id,action_id,timestampdiff(SECOND,start_time,end_time)/60 as job_time from hera_action_history where start_time>#{startDate}" +
             "        " +
-            "        and end_time<#{endDate} ) a\n" +
+            "        and end_time<#{endDate} ) a" +
             "        " +
-            "        inner join (select id,run_type from hera_job ) b\n" +
+            "        inner join (select id,run_type from hera_job ) b" +
             "        on a.job_id = b.id order by a.job_time desc limit #{limitNum};")
     List<ActionTime> findJobRunTimeTop10(Map<String, Object> map);
 
@@ -69,8 +61,8 @@ public interface JobManagerMapper {
      * @param startDate
      * @return
      */
-    @Select(" select max(timestampdiff(SECOND,start_time,end_time)/60) from hera_action_history\n" +
-            "        WHERE  job_id = #{jobId}\n" +
+    @Select(" select max(timestampdiff(SECOND,start_time,end_time)/60) from hera_action_history" +
+            "        WHERE  job_id = #{jobId}" +
             "        AND DATE_FORMAT(start_time, '%Y-%m-%d') =  DATE_FORMAT(#{startDate}, '%Y-%m-%d')")
     Integer getYesterdayRunTime(@Param("jobId") Integer jobId, @Param("startDate") String startDate);
 
@@ -79,16 +71,17 @@ public interface JobManagerMapper {
      *
      * @return
      */
-    @Select(" select status,count(1) as num\n" +
-            "        from\n" +
-            "        (\n" +
-            "        select job_id,substring_index(group_concat(status order by start_time desc),\",\",1) as status\n" +
-            "        from hera_action_history\n" +
-            "        where left(start_time,10)=CURRENT_DATE()\n" +
-            "        group by job_id\n" +
-            "        ) t\n" +
+    @Select(" select status,count(1) as num" +
+            "        from" +
+            "        (" +
+            "        select job_id,substring_index(group_concat(status order by start_time desc),\",\",1) as status" +
+            "        from hera_action_history" +
+            "        where left(start_time,10)=CURRENT_DATE()" +
+            "        group by job_id" +
+            "        ) t" +
             "        group by status")
     List<JobStatusNum> findAllJobStatus();
+
 
     /**
      * 按照日期查询任务明细
@@ -96,7 +89,7 @@ public interface JobManagerMapper {
      * @param curDate
      * @return
      */
-    @Select(" select status,count(1) as num\n" +
+    @Select("select status,count(1) as num\n" +
             "        from\n" +
             "        (\n" +
             "        select job_id,substring_index(group_concat(status order by start_time desc),\",\",1) as status\n" +
@@ -106,4 +99,20 @@ public interface JobManagerMapper {
             "        ) t\n" +
             "        group by status")
     List<JobStatusNum> findJobDetailByDate(String curDate);
+
+    /**
+     * 按照status查询任务明细
+     *
+     * @param status
+     * @return
+     */
+    @Select(" select count(1) num ,status, LEFT(start_time,10) curDate\n" +
+            "        from  hera_action_history\n" +
+            "        where\n" +
+
+            "        DATE_SUB(CURDATE(), INTERVAL 5 DAY) <= start_time\n" +
+
+            "        and status = #{status,jdbcType=VARCHAR}\n" +
+            "        GROUP BY LEFT(start_time,10)")
+    List<JobStatusNum> findJobDetailByStatus(String status);
 }

@@ -37,7 +37,8 @@
                         <div class="icon">
                             <i class="ion ion-stats-bars"></i>
                         </div>
-                        <a href= "${request.contextPath}/jobDetail" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                        <a href="${request.contextPath}/jobDetail" class="small-box-footer">More info <i
+                                class="fa fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
                 <!-- ./col -->
@@ -51,7 +52,8 @@
                         <div class="icon">
                             <i class="ion ion-stats-bars"></i>
                         </div>
-                        <a href="${request.contextPath}/jobDetail" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                        <a href="${request.contextPath}/jobDetail" class="small-box-footer">More info <i
+                                class="fa fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
 
@@ -63,34 +65,35 @@
                             <p>任务队列详情</p>
                         </div>
                         <div class="icon"
-                            <i class="ion ion-stats-bars"></i>
-                        </div>
-                        <a href="${request.contextPath}/jobDetail" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                        <i class="ion ion-stats-bars"></i>
                     </div>
+                    <a href="${request.contextPath}/jobDetail" class="small-box-footer">More info <i
+                            class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-lg-4">
-                    <div id="jobStatus" style="height: 500px"></div>
-                </div>
-                <div class="col-lg-8">
-                    <div id="lineJobStatus" style="height: 500px"></div>
-                </div>
-
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div id="jobTop" style="height: 500px"></div>
-                </div>
-            </div>
-
-        </section>
-        <!-- /.content -->
     </div>
-    <!-- /.content-wrapper -->
 
-    <!-- footer -->
+    <div class="row">
+        <div class="col-lg-4">
+            <div id="jobStatus" style="height: 500px"></div>
+        </div>
+        <div class="col-lg-8">
+            <div id="lineJobStatus" style="height: 500px"></div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="jobTop" style="height: 500px"></div>
+        </div>
+    </div>
+
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<!-- footer -->
 	<@netCommon.commonFooter />
 
 </div>
@@ -139,7 +142,6 @@
             type: "get",
             success: function (data) {
                 if (data.success == false) {
-                    alert(data.message);
                     return;
                 }
                 initJobTopTen(data.data);
@@ -151,7 +153,6 @@
             type: "get",
             success: function (data) {
                 if (data.success == false) {
-                    alert(data.message);
                     return;
                 }
                 initPieJobStatus(data.data)
@@ -190,16 +191,17 @@
                     formatter: '{value}'
                 }
             };
-            var failedJobs = new Array(),   //成功任务数
-                    successJob = new Array(),   //失败任务数
-                    allJob = new Array(),       //总任务数
-                    runSuccess = new Array(),   //运行成功次数
-                    runFailed = new Array(),    //运行失败次数
-                    allRun = new Array();       //运行总次数
+            var failedJobs = new Array();   //成功任务数
+            var successJob = new Array();   //失败任务数
+            var allJob = new Array();       //总任务数
+            var runSuccess = new Array();   //运行成功次数
+            var runFailed = new Array();   //运行失败次数
+            var allRun = new Array();       //运行总次数
             var find;
             data['xAxis'].forEach(function (xAxis, index) {
                 find = false
                 data['runFailed'].forEach(function (job, jobIndex) {
+                    debugger
                     if (job.curDate == xAxis) {
                         find = true;
                         runFailed[index] = job.num;
@@ -208,6 +210,7 @@
                 if (find == false) runFailed[index] = 0;
                 else find = false;
                 data['runSuccess'].forEach(function (job, jobIndex) {
+                    debugger
                     if (job.curDate == xAxis) {
                         find = true;
                         runSuccess[index] = job.num;
@@ -345,10 +348,10 @@
         this.data = data;
         this.type = type;
         this.stack = stack;
-        this.itemStyle = { normal: {label : {show: false, position: 'insideRight'}}};
+        this.itemStyle = {normal: {label: {show: false, position: 'insideRight'}}};
     }
 
-    function pieRow(name,value) {
+    function pieRow(name, value) {
         this.value = value;
         this.name = name;
     }
@@ -363,9 +366,9 @@
         this.type = 'line';
         this.data = data;
         this.markPoint = {
-            data : [
-                {type : 'max', name: '最大值'},
-                {type : 'min', name: '最小值'}
+            data: [
+                {type: 'max', name: '最大值'},
+                {type: 'min', name: '最小值'}
             ]
         };
     }

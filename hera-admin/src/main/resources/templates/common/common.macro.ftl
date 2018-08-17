@@ -67,6 +67,8 @@
 <script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
 <script src="${request.contextPath}/plugins/d3/resize.js"></script>
 <script src="${request.contextPath}/plugins/d3/simpleTimeline.js"></script>
+<script src="${request.contextPath}/plugins/d3/macarons.js"></script>
+<script src="${request.contextPath}/plugins/d3/echarts.js"></script>
 
 <#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>
