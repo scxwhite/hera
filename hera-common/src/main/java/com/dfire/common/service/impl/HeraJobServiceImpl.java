@@ -193,6 +193,11 @@ public class HeraJobServiceImpl implements HeraJobService {
         return res;
     }
 
+    @Override
+    public List<HeraJob> findAllDependencies() {
+        return heraJobMapper.findAllDependencies();
+    }
+
     /**
      * 建立今日任务执行 Map映射 便于获取
      *

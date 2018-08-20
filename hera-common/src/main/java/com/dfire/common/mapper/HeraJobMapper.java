@@ -62,4 +62,8 @@ public interface HeraJobMapper {
 
     @Select("select `name`,id,dependencies from hera_job ")
     List<JobRelation> getJobRelations();
+
+    @Select("select id,dependencies from hera_job")
+    List<HeraJob> findAllDependencies();
+
 }

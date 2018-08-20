@@ -157,10 +157,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         content.append("自动调度队列任务：").append(workHolder.getHeartBeatInfo().getRunning()).append("<br>");
         content.append("手动队列任务：").append(workHolder.getHeartBeatInfo().getManualRunning()).append("<br>");
         content.append("开发中心队列任务：").append(workHolder.getHeartBeatInfo().getDebugRunning()).append("<br>");
-        emailService.sendEmail("work断开连接：", content.toString(), new String[] {
-             "xiaosuda@2dfire.com"
-        });
-
+        log.error(content.toString());
         // work断开  不再分发任务
         masterContext.getWorkMap().remove(ctx.channel());
     }

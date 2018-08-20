@@ -98,4 +98,8 @@ public class HeraJobVo {
 
     private boolean focus;
 
+    private String uIdS;
+
+    private String focusUser;
+
 }

@@ -57,58 +57,10 @@
         background-color: #eee;
         border: 1px solid #ddd;
     }
-
-</style>
-
-<style>
-    #timeline {
-        position: relative;
-        margin-top: 10px;
-        max-width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        border: 1px solid dimgray;
-        box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.75);
+    .form-control-static {
+        overflow: hidden;
     }
 
-    #timeline .selected {
-        font-weight: bold;
-        box-shadow: 0px 0px 3px 1px gray;
-    }
-
-    #timeline-collapse {
-        top: 100px
-    }
-
-    .styleA {
-        color: darkgreen;
-        background-color: lightgreen;
-    }
-
-    .styleB {
-        color: darkred;
-        background-color: mistyrose;
-    }
-
-    .styleC {
-        color: darkblue;
-        background-color: lightblue;
-    }
-
-    .timeline-unused-phase {
-        background: repeating-linear-gradient(
-                -45deg,
-                rgba(255, 255, 255, 0.85),
-                rgba(255, 255, 255, 0.85) 10px,
-                rgba(235, 235, 235, 0.85) 10px,
-                rgba(235, 235, 235, 0.85) 20px
-        );
-    }
-
-
-</style>
-
-<style id="css">
     body {
         font: 300 14px 'Helvetica Neue', Helvetica;
     }
@@ -186,13 +138,13 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">关注人员:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static">凌霄</label>
+                                                <label class="form-control-static" name="focusUser"></label>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">管理员:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static">凌霄</label>
+                                                <label class="form-control-static" name="uidS"></label>
                                             </div>
                                         </div>
 
@@ -312,13 +264,13 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">关注人员:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static"></label>
+                                                <label class="form-control-static" name="focusUser"></label>
                                             </div>
                                         </div>
                                         <div class="form-group ">
                                             <label class="control-label input-sm col-sm-4">管理员:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static"></label>
+                                                <label class="form-control-static" name="uidS"></label>
                                             </div>
                                         </div>
                                         <div class="form-group ">

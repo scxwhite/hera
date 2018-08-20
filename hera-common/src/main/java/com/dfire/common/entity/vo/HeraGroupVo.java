@@ -37,6 +37,7 @@ public class HeraGroupVo {
 
     private Integer parent;
 
+    private String uIdS;
 
     private boolean existed;
 

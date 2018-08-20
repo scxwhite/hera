@@ -50,7 +50,7 @@ $(function () {
 
         if (id != undefined && id != null) {
             var node = treeObj.getNodeByParam("id", id);
-            expandParent(node);
+            expandParent(node, treeObj);
             treeObj.selectNode(node);
             leftClick();
         }
@@ -156,8 +156,8 @@ $(function () {
             },
             success: function (data) {
                 alert(data.message);
+                window.setTimeout(leftClick,100);
             }
-
         })
     });
 
@@ -342,7 +342,6 @@ $(function () {
 
             $("#dependJob").bind('click', function () {
                 $("#selectDepend").modal('show');
-
             });
             $("#chooseDepend").bind('click', function () {
                 var nodes = dependTreeObj.getCheckedNodes(true);
@@ -355,36 +354,35 @@ $(function () {
                 $("#dependJob").val(ids.join(","));
                 $("#selectDepend").modal('hide');
 
-
             });
-
             setJobMessageEdit(false);
         }
     });
 
     $('#keyWords').on('keyup', function () {
         var key = $.trim($(this).val());
-        searchNodeLazy(key, treeObj);
+        searchNodeLazy(key, treeObj, "keyWords");
 
     });
     $('#dependKeyWords').on('keyup', function () {
         var key = $.trim($(this).val());
-        searchNodeLazy(key, dependTreeObj);
+        searchNodeLazy(key, dependTreeObj, "dependKeyWords");
 
     });
     var timeoutId;
 
-    function searchNodeLazy(key, tree) {
+    function searchNodeLazy(key, tree, keyId) {
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
         timeoutId = setTimeout(function () {
             search(key); //lazy load ztreeFilter function
-            $('#keyWords').focus();//focus input field again after filtering
+            $('#' + keyId).focus();
         }, 300);
 
         function search(key) {
             var keys, length;
+            console.log(key);
             if (key == null || key == "" || key == undefined) {
                 tree.getNodesByFilter(function (node) {
                     tree.showNode(node);
@@ -397,7 +395,7 @@ $(function () {
                 var nodeShow = tree.getNodesByFilter(filterNodes);
                 if (nodeShow && nodeShow.length > 0) {
                     nodeShow.forEach(function (node) {
-                        expandParent(node);
+                        expandParent(node, tree);
                     })
                 }
             }
@@ -418,12 +416,12 @@ $(function () {
     }
 
 
-    function expandParent(node) {
+    function expandParent(node, obj) {
         var path = node.getPath();
         if (path && path.length > 0) {
             for (var i = 0; i < path.length - 1; i++) {
-                treeObj.showNode(path[i]);
-                treeObj.expandNode(path[i], true);
+                obj.showNode(path[i]);
+                obj.expandNode(path[i], true);
             }
         }
     }
