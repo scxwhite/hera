@@ -269,11 +269,16 @@ public class ScheduleCenterController extends BaseHeraController {
         if (!hasPermission(id, isGroup ? GROUP : JOB)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
-        //TODO 判断任务依赖
         boolean res;
+        String check = checkDependencies(id, isGroup);
+        if (StringUtils.isNotBlank(check)) {
+            return new RestfulResponse(false, check);
+        }
+
         if (isGroup) {
             res = heraGroupService.delete(id) > 0;
             return new RestfulResponse(res, res ? "删除成功" : "系统异常,请联系管理员");
+
         }
         res = heraJobService.delete(id) > 0;
         updateJobToMaster(res, id);
@@ -471,6 +476,60 @@ public class ScheduleCenterController extends BaseHeraController {
         uids.append("]");
 
         return uids.toString();
+    }
+
+    private String checkDependencies(Integer id, boolean isGroup) {
+        List<HeraJob> allJobs = heraJobService.findAllDependencies();
+        List<HeraJob> jobList = new ArrayList<>();
+
+        if (isGroup) {
+            jobList = heraJobService.findByPid(id);
+        } else {
+            jobList.add(heraJobService.findById(id));
+        }
+        StringBuilder openJob = new StringBuilder("任务处于开启状态:[ ");
+        boolean canDelete = true;
+        for (HeraJob job : jobList) {
+            if (job.getAuto() == 1) {
+                openJob.append(job.getId()).append(" ");
+                if (canDelete) {
+                    canDelete = false;
+                }
+            }
+        }
+        openJob.append("]");
+        if (!canDelete) {
+            return openJob.toString();
+        }
+        canDelete = true;
+        boolean isFirst;
+        StringBuilder dependenceJob = new StringBuilder("任务依赖: ");
+        for (HeraJob job : jobList) {
+            isFirst = true;
+            for (HeraJob allJob : allJobs) {
+                if (StringUtils.isNotBlank(allJob.getDependencies())) {
+                    if (allJob.getDependencies().contains(String.valueOf(job.getId())) || allJob.getDependencies().contains("," + job.getId()) || allJob.getDependencies().contains(job.getId() + ",")) {
+                        if (canDelete) {
+                            canDelete = false;
+                        }
+                        if (isFirst) {
+                            isFirst = false;
+                            dependenceJob.append("[").append(job.getId()).append(" -> ").append(allJob.getId()).append(" ");
+                        } else {
+                            dependenceJob.append(allJob.getId()).append(" ");
+                        }
+                    }
+                }
+            }
+            if (!isFirst) {
+                dependenceJob.append("]").append("\n");
+            }
+        }
+
+        if (!canDelete) {
+            return dependenceJob.toString();
+        }
+        return null;
     }
 
 

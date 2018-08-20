@@ -50,4 +50,6 @@ public interface HeraJobService {
     List<JobRelation> getJobRelations();
 
 
+    List<HeraJob> findAllDependencies();
+
 }
