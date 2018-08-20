@@ -4,12 +4,16 @@ import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
+import com.dfire.core.job.ShellJob;
+import com.dfire.core.tool.RunShell;
 import io.netty.channel.Channel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.context.ApplicationContext;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -30,13 +34,14 @@ public class WorkContext {
     public static Integer cpuCoreNum;
     public String serverHost;
     private Channel serverChannel;
-    private Map<String, Job> running = new ConcurrentHashMap<String, Job>();
-    private Map<String, Job> manualRunning = new ConcurrentHashMap<String, Job>();
-    private Map<String, Job> debugRunning = new ConcurrentHashMap<String, Job>();
+    private Map<String, Job> running = new ConcurrentHashMap<>();
+    private Map<String, Job> manualRunning = new ConcurrentHashMap<>();
+    private Map<String, Job> debugRunning = new ConcurrentHashMap<>();
     private WorkHandler handler;
     private WorkClient workClient;
     private ExecutorService workThreadPool = Executors.newCachedThreadPool();
     private ApplicationContext applicationContext;
+    private static final String loadStr = "cat /proc/cpuinfo |grep processor | wc -l";
 
     static {
         try {
@@ -44,7 +49,21 @@ public class WorkContext {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        cpuCoreNum = Runtime.getRuntime().availableProcessors();
+        if (HeraGlobalEnvironment.isLinuxSystem()) {
+            RunShell shell = new RunShell(loadStr);
+            Integer exitCode = shell.run();
+            if (exitCode == 0) {
+                try {
+                    cpuCoreNum = Integer.parseInt(shell.getResult());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    cpuCoreNum = 4;
+                }
+            }
+        } else {
+            cpuCoreNum = 4;
+        }
+
     }
 
     public HeraDebugHistoryService getDebugHistoryService() {

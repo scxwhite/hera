@@ -78,9 +78,7 @@
                             <li id="addHiveFile">新建Hive</li>
                             <li id="addShellFile">新建Shell</li>
                             <li id="rename">重命名</li>
-                            <li id="openFile">打开</li>
-                            <li id="removeFile"> 删除</li>
-                            <li id="copyFile">复制文件</li>
+                            <li id="removeFile">删除</li>
                         </ul>
                     </div>
                 </div>

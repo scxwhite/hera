@@ -392,10 +392,11 @@ $(function () {
      */
     $('#editOperator [name="save"]').on('click', function () {
         if (!isGroup) {
+            console.log(codeMirror.getValue());
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
-                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + selfConfigCM.getValue() +
-                "&script=" + codeMirror.getValue() +
+                data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" +encodeURIComponent(selfConfigCM.getValue()) +
+                "&script=" + encodeURIComponent(codeMirror.getValue()) +
                 "&id=" + focusId,
                 type: "post",
                 success: function (data) {
@@ -408,7 +409,7 @@ $(function () {
         } else {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
-                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + selfConfigCM.getValue() +
+                data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
                 "&resource=" + "&id=" + focusId,
                 type: "post",
                 success: function (data) {
@@ -453,12 +454,12 @@ $(function () {
     });
 
     function changeGroupStyle(status) {
-        var status1 = "none", status2 = "block", status3 = false;
+        var status1 = "none", status2 = "block";
         if (status != 0) {
             status1 = "block";
             status2 = "none";
-            status3 = true;
         }
+        selfConfigCM.setOption("readOnly", status != 0);
         $('#groupMessage').css("display", status1);
         $('#groupOperate').css("display", status1);
         $('#groupMessageEdit').css("display", status2);
@@ -631,7 +632,9 @@ $(function () {
                 triggerType: triggerType
             },
             success: function (data) {
-                alert(data);
+                if (data.success == false) {
+                    alert(data.msg)
+                }
             }
         });
         $('#myModal').modal('hide');
@@ -875,7 +878,7 @@ var JobLogTable = function (jobId) {
             detailView: true,
             detailFormatter: function (index, row) {
                 var log = row["log"];
-                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
+                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; word-break: break-all; word-wrap:break-word; height:600px; white-space:pre-line;font-family:Microsoft YaHei" id="log_' + row.id + '">'
                     + log +
                     '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;

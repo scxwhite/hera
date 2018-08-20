@@ -43,7 +43,6 @@ public class MasterContext {
     private Dispatcher dispatcher;
     private Map<Integer, HeraHostGroupVo> hostGroupCache;
     private Queue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, Comparator.comparing(JobElement::getPriorityLevel));
-    private Queue<JobElement> exceptionQueue = new LinkedBlockingQueue<>();
     private Queue<JobElement> debugQueue = new ArrayBlockingQueue<>(1000);
     private Queue<JobElement> manualQueue = new ArrayBlockingQueue<>(1000);
 
@@ -55,7 +54,7 @@ public class MasterContext {
      * todo 参数可配置
      *
      */
-    final Timer masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 5, TimeUnit.SECONDS);
+    final Timer masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
 
     public MasterContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;

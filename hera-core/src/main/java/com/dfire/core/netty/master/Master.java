@@ -53,6 +53,8 @@ public class Master {
     private MasterContext masterContext;
     private Map<Long, HeraAction> heraActionMap;
     private ThreadPoolExecutor executeJobPool;
+    private final Integer DELAY_TIME = 1;
+    private final Integer MAX_DELAY_TIME = 10;
 
     public Master(final MasterContext masterContext) {
 
@@ -97,39 +99,26 @@ public class Master {
          *
          */
         TimerTask scanWaitingQueueTask = new TimerTask() {
+            Integer nextTime = HeraGlobalEnvironment.getScanRate();
+
             @Override
             public void run(Timeout timeout) {
                 try {
-                    scan();
+                    if (scan()) {
+                        nextTime = HeraGlobalEnvironment.getScanRate();
+                    } else {
+                        nextTime = (nextTime + DELAY_TIME) > MAX_DELAY_TIME ? MAX_DELAY_TIME : nextTime + DELAY_TIME;
+                    }
                     log.info("scan waiting queueTask run");
                 } catch (Exception e) {
                     log.error("scan waiting queueTask exception");
                 } finally {
-                    masterContext.masterTimer.newTimeout(this, 1, TimeUnit.SECONDS);
+                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.SECONDS);
                 }
             }
         };
         masterContext.masterTimer.newTimeout(scanWaitingQueueTask, 3, TimeUnit.SECONDS);
 
-
-        /**
-         * 扫描exception队列去执行
-         *
-         */
-        TimerTask scanExceptionQueueTask = new TimerTask() {
-            @Override
-            public void run(Timeout timeout) {
-                try {
-                    scanExceptionQueue();
-                    log.info("scan exception queueTask run");
-                } catch (Exception e) {
-                    log.error("scan exception queueTask exception");
-                } finally {
-                    masterContext.masterTimer.newTimeout(this, 2, TimeUnit.SECONDS);
-                }
-            }
-        };
-        masterContext.masterTimer.newTimeout(scanExceptionQueueTask, 3, TimeUnit.SECONDS);
 
         //定时检测work心跳是否超时
         TimerTask checkHeartBeatTask = new TimerTask() {
@@ -209,13 +198,6 @@ public class Master {
         }
     }
 
-    private void scanExceptionQueue() {
-        if (!masterContext.getExceptionQueue().isEmpty()) {
-            final JobElement element = masterContext.getExceptionQueue().poll();
-            runScheduleJobAction(element);
-        }
-
-    }
 
     public void generateBatchAction() {
         generateAction(false, null);
@@ -493,37 +475,47 @@ public class Master {
     /**
      * 扫描任务等待队列，取出任务去执行
      */
-    public void scan() {
+    public boolean scan() {
+        boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
-            log.warn("队列任务：{}", masterContext.getScheduleQueue());
+            log.warn("schedule队列任务：{}", masterContext.getScheduleQueue());
             printThreadPoolLog();
-            final JobElement element = masterContext.getScheduleQueue().poll();
-            runScheduleJobAction(element);
+            MasterWorkHolder workHolder = getRunnableWork(0);
+            if (workHolder == null) {
+                log.warn("can not get work to execute job in master");
+            } else {
+                final JobElement jobElement = masterContext.getScheduleQueue().poll();
+                runScheduleJob(workHolder, jobElement.getJobId());
+                hasTask = true;
+            }
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
-            log.warn("队列任务：{}", masterContext.getManualQueue());
+            log.warn("manual队列任务：{}", masterContext.getManualQueue());
             printThreadPoolLog();
-            final JobElement element = masterContext.getManualQueue().poll();
-            MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
+            MasterWorkHolder selectWork = getRunnableWork(0);
             if (selectWork == null) {
-                masterContext.getManualQueue().offer(element);
+                log.warn("can not get work to execute job in master");
             } else {
+                final JobElement element = masterContext.getManualQueue().poll();
                 runManualJob(selectWork, element.getJobId());
+                hasTask = true;
             }
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
-            log.warn("队列任务：{}", masterContext.getDebugQueue());
+            log.warn("debug队列任务：{}", masterContext.getDebugQueue());
             printThreadPoolLog();
-            final JobElement element = masterContext.getDebugQueue().poll();
-            MasterWorkHolder selectWork = getRunnableWork(element.getHostGroupId());
+            MasterWorkHolder selectWork = getRunnableWork(0);
             if (selectWork == null) {
-                masterContext.getDebugQueue().offer(element);
+                log.warn("can not get work to execute job in master");
             } else {
+                final JobElement element = masterContext.getDebugQueue().poll();
                 runDebugJob(selectWork, element.getJobId());
+                hasTask = true;
             }
         }
+        return hasTask;
 
     }
 
@@ -560,19 +552,22 @@ public class Master {
 
             Exception exception = null;
             Response response = null;
+            Future<Response> future = null;
             try {
-                Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder,
+                future = new MasterExecuteJob().executeJob(masterContext, workHolder,
                         ExecuteKind.ManualKind, history.getId());
                 response = future.get();
             } catch (Exception e) {
                 exception = e;
+                future.cancel(true);
+                response = null;
                 log.error("manual job run error" + historyId, e);
                 jobStatus.setStatus(StatusEnum.FAILED);
                 history.setStatus(jobStatus.getStatus().toString());
                 masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
 
             }
-            boolean success = response.getStatusEnum() != null && response.getStatusEnum() == Protocol.Status.OK;
+            boolean success = response != null && response.getStatusEnum() != null && response.getStatusEnum() == Protocol.Status.OK;
             log.info("historyId 执行结果" + historyId + "---->" + response.getStatusEnum());
 
             if (!success) {
@@ -601,16 +596,10 @@ public class Master {
     /**
      * 自动调度任务执行入口，当出队列的任务获取不到执行worker的情况下，任务先进入exceptionQueue进行等待
      *
-     * @param element
+     * @param queue
      */
-    private void runScheduleJobAction(JobElement element) {
-        MasterWorkHolder workHolder = getRunnableWork(element.getHostGroupId());
-        if (workHolder == null) {
-            log.warn("no work in master");
-            masterContext.getExceptionQueue().offer(element);
-        } else {
-            runScheduleJob(workHolder, element.getJobId());
-        }
+    private void runScheduleJobAction(Queue<JobElement> queue) {
+
 
     }
 
@@ -690,17 +679,20 @@ public class Master {
         heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
         Response response = null;
+        Future<Response> future = null;
         try {
-            Future<Response> future = new MasterExecuteJob().executeJob(masterContext, work,
+            future = new MasterExecuteJob().executeJob(masterContext, work,
                     ExecuteKind.ScheduleKind, heraJobHistory.getId());
-            response = future.get();
+            response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.SECONDS);
         } catch (Exception e) {
+            response = null;
             log.error("schedule job run error :" + actionId, e);
+            future.cancel(true);
             jobStatus.setStatus(StatusEnum.FAILED);
             heraJobHistoryVo.setStatusEnum(jobStatus.getStatus());
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
         }
-        boolean success = response.getStatusEnum() == Protocol.Status.OK;
+        boolean success = response != null && response.getStatusEnum() == Protocol.Status.OK;
         log.debug("job_id 执行结果" + actionId + "---->" + response.getStatusEnum());
 
         if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
@@ -746,14 +738,17 @@ public class Master {
             masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
             Exception exception = null;
             Response response = null;
+            Future<Response> future = null;
             try {
-                Future<Response> future = new MasterExecuteJob().executeJob(masterContext, workHolder, ExecuteKind.DebugKind, jobId);
-                response = future.get();
+                future = new MasterExecuteJob().executeJob(masterContext, workHolder, ExecuteKind.DebugKind, jobId);
+                response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
             } catch (Exception e) {
                 exception = e;
+                future.cancel(true);
+                response = null;
                 log.error(String.format("debugId:%s run failed", jobId), e);
             }
-            boolean success = response.getStatusEnum() == Protocol.Status.OK;
+            boolean success = response != null && response.getStatusEnum() == Protocol.Status.OK;
             if (!success) {
                 exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
                 log.info("debug job error");
@@ -803,18 +798,12 @@ public class Master {
                             if (heartBeatInfo.getMemRate() != null && heartBeatInfo.getCpuLoadPerCore() != null
                                     && heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate() && heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()) {
 
-                                Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getMaxCpuLoadPerCore()) / HeraGlobalEnvironment.getMaxCpuLoadPerCore();
+                                Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getSystemMemUsed()) / HeraGlobalEnvironment.getPerTaskUseMem();
                                 int sum = heartBeatInfo.getDebugRunning().size() + heartBeatInfo.getManualRunning().size() + heartBeatInfo.getRunning().size();
                                 if (assignTaskNum.intValue() > sum) {
                                     workHolder = worker;
                                     break;
                                 }
-                            }
-                        } else {
-                            if (worker == null) {
-                                log.error("worker is null");
-                            } else if (worker.getHeartBeatInfo() == null && worker.getChannel() != null) {
-                                log.error("worker " + worker.getChannel().remoteAddress() + "heart is null");
                             }
                         }
                     }
@@ -823,8 +812,6 @@ public class Master {
         }
         if (workHolder != null) {
             log.warn("select work is :{}", workHolder.getChannel().remoteAddress());
-        } else {
-            log.warn("worker is null");
         }
         return workHolder;
     }

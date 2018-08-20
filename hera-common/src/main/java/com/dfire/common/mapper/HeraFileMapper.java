@@ -20,7 +20,7 @@ public interface HeraFileMapper {
 
     @Insert("insert into hera_file (#{heraFile})")
     @Lang(HeraInsertLangDriver.class)
-    @Options(useGeneratedKeys = true, keyProperty = "heraFile.id", keyColumn = "id")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insert(HeraFile heraFile);
 
     @Delete("delete from hera_file where id = #{id}")
