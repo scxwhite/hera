@@ -60,6 +60,6 @@ public interface HeraJobMapper {
     @Select("select max(id) from hera_job")
     Integer selectMaxId();
 
-    @Select("select `name`,id,dependencies from hera_job where auto=1")
+    @Select("select `name`,id,dependencies from hera_job ")
     List<JobRelation> getJobRelations();
 }
