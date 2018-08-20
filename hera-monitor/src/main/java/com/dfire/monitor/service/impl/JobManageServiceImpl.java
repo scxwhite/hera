@@ -30,7 +30,7 @@ public class JobManageServiceImpl implements JobManageService {
     @Override
     public JsonResponse findJobHistoryByStatus(String status) {
 
-        List<JobHistoryVo> failedJobs = jobManagerMapper.findJobHistoryByStatus(status);
+        List<JobHistoryVo> failedJobs = jobManagerMapper.findAllJobHistoryByStatus(status);
         if (failedJobs == null) {
             return new JsonResponse(false, "失败任务查询数据为空");
         }
@@ -95,11 +95,16 @@ public class JobManageServiceImpl implements JobManageService {
         return new JsonResponse("查询成功", true, currDayStatusNum);
     }
 
+    /**
+     * 任务执行状态
+     *
+     * @return
+     */
     @Override
     public JsonResponse findAllJobStatusDetail() {
         Map<String, Object> res = new HashMap<>(9);
-        res.put("runFailed", jobManagerMapper.findJobHistoryByStatus("failed"));
-        res.put("runSuccess", jobManagerMapper.findJobHistoryByStatus("success"));
+        res.put("runFailed", jobManagerMapper.findJobDetailByStatus("failed"));
+        res.put("runSuccess", jobManagerMapper.findJobDetailByStatus("success"));
 
         String curDate;
         Integer day = 6;
