@@ -7,7 +7,10 @@ package com.dfire.common.enums;
  */
 public enum JobRunTypeEnum {
 
-    Shell("shell"), Hive("hive");
+    Shell("shell"),
+    Hive("hive"),
+    Spark("spark");
+
     private final String id;
 
     JobRunTypeEnum(String s) {
