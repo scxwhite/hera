@@ -19,6 +19,7 @@ import com.dfire.config.UnCheckLogin;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,9 +84,21 @@ public class ScheduleCenterController extends BaseHeraController {
         HeraJobVo heraJobVo = BeanConvertUtils.convert(job);
         heraJobVo.setInheritConfig(getInheritConfig(job.getGroupId()));
         HeraJobMonitor monitor = heraJobMonitorService.findByJobId(jobId);
-        if (monitor != null) {
-            heraJobVo.setFocus(monitor.getUserIds().contains(getOwnerId()));
+        StringBuilder focusUsers = new StringBuilder("[ ");
+        if (monitor != null && StringUtils.isNotBlank(monitor.getUserIds())) {
+            String ownerId = getOwnerId();
+            String[] ids = monitor.getUserIds().split(",");
+            Arrays.stream(ids).forEach(id -> {
+                if (ownerId.equals(id)) {
+                    heraJobVo.setFocus(true);
+                }
+                HeraUser heraUser = heraUserService.findById(HeraUser.builder().id(Integer.valueOf(id)).build());
+                focusUsers.append(heraUser.getName());
+            });
         }
+        focusUsers.append("]");
+        heraJobVo.setUIdS(getuIds(jobId));
+        heraJobVo.setFocusUser(focusUsers.toString());
         return heraJobVo;
     }
 
@@ -95,6 +108,7 @@ public class ScheduleCenterController extends BaseHeraController {
         HeraGroup group = heraGroupService.findById(groupId);
         HeraGroupVo groupVo = BeanConvertUtils.convert(group);
         groupVo.setInheritConfig(getInheritConfig(groupVo.getParent()));
+        groupVo.setUIdS(getuIds(groupId));
         return groupVo;
     }
 
@@ -255,6 +269,7 @@ public class ScheduleCenterController extends BaseHeraController {
         if (!hasPermission(id, isGroup ? GROUP : JOB)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
+        //TODO 判断任务依赖
         boolean res;
         if (isGroup) {
             res = heraGroupService.delete(id) > 0;
@@ -445,6 +460,17 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         return true;
+    }
+
+    private String getuIds(Integer id) {
+        List<HeraPermission> permissions = heraPermissionService.findByTargetId(id);
+        StringBuilder uids = new StringBuilder("[ ");
+        if (permissions != null && permissions.size() > 0) {
+            permissions.forEach(x -> uids.append(x.getUid()).append(" "));
+        }
+        uids.append("]");
+
+        return uids.toString();
     }
 
 

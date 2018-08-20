@@ -156,7 +156,9 @@ $(function () {
             },
             success: function (data) {
                 alert(data.message);
+                window.setTimeout(leftClick,100);
             }
+
 
         })
     });
