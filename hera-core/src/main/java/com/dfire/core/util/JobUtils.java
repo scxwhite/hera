@@ -2,7 +2,6 @@ package com.dfire.core.util;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.entity.vo.HeraProfileVo;
@@ -75,16 +74,19 @@ public class JobUtils {
         } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Hive.toString())) {
             jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Hive.toString());
             core = new HiveJob(jobContext, applicationContext);
+        } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Spark.toString())) {
+            jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Spark.toString());
+            core = new SparkJob(jobContext, applicationContext);
         }
         Job job = new ProcessJobContainer(jobContext, pres, new ArrayList<>(), core, applicationContext);
         return job;
     }
 
     public static Job createScheduleJob(JobContext jobContext, HeraJobBean jobBean,
-                                HeraJobHistoryVo history, String workDir, ApplicationContext applicationContext) {
+                                        HeraJobHistoryVo history, String workDir, ApplicationContext applicationContext) {
         jobContext.setHeraJobHistory(history);
         jobContext.setWorkDir(workDir);
-        jobContext.getProperties().setProperty("hera.encode","utf-8");
+        jobContext.getProperties().setProperty("hera.encode", "utf-8");
         HierarchyProperties hierarchyProperties = jobBean.getHierarchyProperties();
         Map<String, String> configs = history.getProperties();
         if (configs != null && !configs.isEmpty()) {
@@ -105,11 +107,12 @@ public class JobUtils {
             script = RenderHierarchyProperties.render(script, actionDate);
         }
         if (jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Shell)
-                || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Hive)) {
+                || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Hive)
+                || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Spark)) {
             script = resolveScriptResource(resource, script, applicationContext);
         }
         jobContext.setResources(resource);
-        if(actionDate != null && actionDate.length() == 14) {
+        if (actionDate != null && actionDate.length() == 14) {
             script = replace(jobContext.getProperties().getAllProperties(actionDate), script);
         } else {
             script = replace(jobContext.getProperties().getAllProperties(), script);
@@ -126,6 +129,8 @@ public class JobUtils {
             core = new HadoopShellJob(jobContext);
         } else if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Hive) {
             core = new HiveJob(jobContext, applicationContext);
+        } else if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Spark) {
+            core = new SparkJob(jobContext, applicationContext);
         }
         return new ProcessJobContainer(jobContext, pres, posts, core, applicationContext);
 
@@ -219,6 +224,7 @@ public class JobUtils {
 
     /**
      * 解析脚本中download开头的脚本，解析后存储在jobContext的resources中，在生成ProcessJobContainer时，根据属性生成preProcess,postProcess
+     *
      * @param resources
      * @param script
      * @param applicationContext

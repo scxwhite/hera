@@ -11,10 +11,16 @@ public class RunningJobKeyConstant {
      * 需要执行的shell文件路径
      */
     public static final String RUN_SHELL_PATH = "shell.localfile";
+
     /**
      * 需要执行的hive文件路径
      */
     public static final String RUN_HIVE_PATH = "hive.localfile";
+
+    /**
+     * 需要执行的spark文件路径
+     */
+    public static final String RUN_SPARK_PATH = "spark.localfile";
 
     /**
      * 任务类型
@@ -32,7 +38,6 @@ public class RunningJobKeyConstant {
      * 依赖周期value
      */
     public static final String DEPENDENCY_CYCLE_VALUE = "sameday";
-
 
 
 }
