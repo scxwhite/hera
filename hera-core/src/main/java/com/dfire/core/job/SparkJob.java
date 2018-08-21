@@ -107,7 +107,7 @@ public class SparkJob extends ProcessJob {
             log("dos2unix file" + sparkFilePath);
         }
 
-        sb.append(" -f ").append(sparkFilePath);
+        sb.append(" -f ").append(sparkFilePath).append("--master yarn --driver-memory 1g --driver-cores 1 --executor-memory 4g --executor-cores 2");
 
         if (shellPrefix.trim().length() > 0) {
 
