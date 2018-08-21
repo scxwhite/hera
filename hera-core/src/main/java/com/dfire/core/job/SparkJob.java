@@ -119,7 +119,7 @@ public class SparkJob extends ProcessJob {
                     tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write("spark-sql " + sb.toString());
+                    tmpWriter.write("/opt/app/spark231/bin/spark-sql " + sb.toString());
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
@@ -129,11 +129,11 @@ public class SparkJob extends ProcessJob {
                 list.add(shellPrefix + " sh " + tmpFilePath);
             } else {
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + " spark-sql " + sb.toString());
+                list.add(shellPrefix + " /opt/app/spark231/bin/spark-sql " + sb.toString());
             }
 
         } else {
-            list.add("spark-sql" + sb.toString());
+            list.add("/opt/app/spark231/bin/spark-sql " + sb.toString());
         }
         return list;
     }
