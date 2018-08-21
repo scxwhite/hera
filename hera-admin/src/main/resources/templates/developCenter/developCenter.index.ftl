@@ -20,9 +20,10 @@
         padding-top: 0px;
     }
 
-    .nav-tabs-custom > .tab-content{
+    .nav-tabs-custom > .tab-content {
         padding: 0px;
     }
+
     div#rMenu {
         position: absolute;
         visibility: hidden;
@@ -68,7 +69,7 @@
             <div class="row">
 
 
-                <div class="col-md-3 panel panel-primary colStyle height-self">
+                <div class="col-md-3 panel panel-primary">
                     <div style="overflow: auto;" class="height-self">
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
@@ -85,27 +86,18 @@
 
                 <div class="col-md-9 panel panel-primary colStyle height-self" style="white-space:nowrap;">
                     <div id="config">
-                        <div>
-                            <div>
-                                <button id="execute" type="submit" class="btn btn-primary btn-sm">执行</button>
-                                <button id="executeSelector" type="submit" class="btn btn-primary btn-sm">执行选中的代码
-                                </button>
-                                <button id="uploadResource" type="submit" class="btn btn-primary btn-sm">上传资源</button>
-                                <button id="syncingTask" type="submit" class="btn btn-primary btn-sm">同步任务</button>
-                            </div>
-                        </div>
+                        <button id="execute" type="submit" class="btn btn-primary btn-sm">执行</button>
+                        <button id="executeSelector" type="submit" class="btn btn-primary btn-sm">执行选中的代码</button>
+                        <button id="uploadResource" type="submit" class="btn btn-primary btn-sm">上传资源</button>
+                        <button id="syncingTask" type="submit" class="btn btn-primary btn-sm">同步任务</button>
                     </div>
                 <#--tab框-->
-                    <div id="tabContainer">
-
-                    </div>
-
+                    <div id="tabContainer"></div>
                     <div id="scriptEditor" class="box box-primary">
-
                         <textarea id="fileScript" name="editor"></textarea>
                     </div>
 
-                    <div class="nav-tabs-custom center-block" style="height: 40px;padding-top: 10px">
+                    <div class="nav-tabs-custom center-block" ">
                         <ul class="nav nav-tabs" id="logTab">
                             <li class="active"><a href="#tab_1" data-toggle="tab">编辑</a></li>
                             <li><a href="#tab_2" data-toggle="tab">调试历史</a></li>
@@ -129,11 +121,8 @@
                                             </div>
 
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">返回
-                                                </button>
-                                                <button type="button" class="btn btn-info add-btn" name="refreshLog">
-                                                    刷新
-                                                </button>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                                                <button type="button" class="btn btn-info add-btn" name="refreshLog">刷新</button>
                                             </div>
 
                                         </div>

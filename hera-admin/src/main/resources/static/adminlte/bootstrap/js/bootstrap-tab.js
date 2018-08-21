@@ -54,7 +54,7 @@
      */
 
     BaseTab.prototype.template = {
-        ul_nav: '<ul id="myTab"  class="nav nav-tabs"></ul>',
+        ul_nav: '<ul id="myTab"   class=" nav-my-tab nav nav-tabs"></ul>',
         ul_li: '<li><a href="#{0}" data-toggle="tab"><span>{1}</span></a></li>',
         ul_li_close: '<i class="fa fa-remove closeable" title="关闭"></i>',
         div_content: '<div  class="tab-content" ></div>',
@@ -232,6 +232,7 @@
             s = s.replace(new RegExp("\\{" + i + "\\}", "g"), arguments[i]);
         return s;
     };
+
 
 
 })(jQuery, window, document)

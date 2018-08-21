@@ -8,10 +8,10 @@
 /*修改tab高度样式*/
 
 .nav-tabs li a{
-    line-height:1
+    line-height:1px;
 }
 .nav-tabs .active a{
-    border-top: solid 2px #3498db !important;
+    border-top: solid 1px #3498db !important;
 }
 
 
@@ -38,4 +38,22 @@
     border-top: solid 1px #3498db !important;
     background: #3498db !important;
     color:#fff !important;
+}
+
+.nav-my-tab{
+    padding-left: 0px;
+    margin-bottom: 0px;
+}
+.nav-my-tab .middletab{
+    height: 36px;
+    overflow: hidden;
+    border-bottom: 3px #3498db solid;
+    position: relative;
+    background: #fafafa;
+}
+.nav-my-tab li{
+    list-style-type: none;
+}
+.nav-my-tab li a{
+    padding:5px 10px;
 }
