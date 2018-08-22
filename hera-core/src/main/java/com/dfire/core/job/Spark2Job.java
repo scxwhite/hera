@@ -41,24 +41,16 @@ public class Spark2Job extends ProcessJob {
         int last = 0;
         for (int now = 0; now < script.length() && last < script.length(); now++) {
             if (last <= now - 1) {
-                if (";".equals(script.substring(now))) {
-                    executeAndPrint(script, last, now - 1);
+                if (";".equals(script.substring(now, now + 1))) {
+                    executeAndPrint(script, last, now);
                     last = now + 1;
                 } else if (now == script.length() - 1) {
-                    executeAndPrint(script, last, now);
+                    executeAndPrint(script, last, now + 1);
                     break;
                 }
             }
         }
-        int exitCode = -999;
-        try {
-            exitCode = process.waitFor();
-        } catch (InterruptedException e) {
-            log(e);
-        } finally {
-            process = null;
-        }
-        return exitCode;
+        return 0;
     }
 
     private void executeAndPrint(String script, int startPoint, int endPoint) {
@@ -82,7 +74,7 @@ public class Spark2Job extends ProcessJob {
             resultSet.close();
         } catch (Exception e) {
             e.printStackTrace();
-            log("执行打印结果错误");
+            log("执行或打印结果错误");
         }
     }
 

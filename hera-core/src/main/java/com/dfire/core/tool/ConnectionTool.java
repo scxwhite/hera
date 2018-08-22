@@ -27,7 +27,7 @@ public class ConnectionTool {
                         HeraGlobalEnvironment.getSparkUser(),
                         HeraGlobalEnvironment.getSparkPassword());
                 stmt = conn.createStatement();
-                log.info("hive建立连接成功");
+                log.info("ThriftServer建立连接成功");
             } catch (Exception e) {
                 e.printStackTrace();
             }
