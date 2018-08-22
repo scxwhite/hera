@@ -44,10 +44,6 @@ druid:
     filters: stat,wall,log4j
     connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
 
-
-
-
-
 server:
   port: 8080
   context-path: /hera
@@ -138,3 +134,11 @@ druid:
     url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     username: lineage
     password: lineage@552208
+#spark 配置
+spark :
+  address : jdbc:hive2://10.10.18.215:10000
+  master : --master yarn
+  driver-memory : --driver-memory 1g
+  driver-cores : --driver-cores 1
+  executor-memory : -- executor-memory 4g
+  executor-cores : --executor-cores 2
