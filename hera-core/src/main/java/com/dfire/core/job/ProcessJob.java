@@ -1,12 +1,14 @@
 package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
+import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.core.exception.HeraCaughtExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +23,8 @@ import java.util.concurrent.CountDownLatch;
 @Slf4j
 public abstract class ProcessJob extends AbstractJob implements Job {
 
-    protected volatile Process process;
-    protected final Map<String, String> envMap;
+    protected volatile Process             process;
+    protected final    Map<String, String> envMap;
 
     public ProcessJob(JobContext jobContext) {
         super(jobContext);
@@ -44,6 +46,9 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 .forEach(k -> envMap.put(k, jobContext.getProperties().getProperty(k)));
         envMap.put("instance.workDir", jobContext.getWorkDir());
         log.info("获取命令");
+
+        //TODO 逐sql解析、执行
+        SparkJob.executeJob(getProperties().getLocalProperty(RunningJobKeyConstant.JOB_SCRIPT).replaceAll("^--.*", "--"));
 
         List<String> commands = getCommandList();
 
@@ -211,8 +216,8 @@ public abstract class ProcessJob extends AbstractJob implements Job {
      * @desc job输出流日志接收线程
      */
     private class StreamThread extends Thread {
-        private InputStream inputStream;
-        private String threadName;
+        private InputStream    inputStream;
+        private String         threadName;
         private CountDownLatch latch;
 
         public StreamThread(InputStream inputStream, String threadName, CountDownLatch latch) {

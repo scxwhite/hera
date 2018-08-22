@@ -43,6 +43,14 @@ public class HeraGlobalEnvironment {
     private static String admin;
     @Getter
     private static Integer taskTimeout;
+    @Getter
+    private static String sparkAddress;
+    @Getter
+    private static String sparkUser;
+    @Getter
+    private static String sparkPassword;
+    @Getter
+    private static String sparkConfig;
 
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
@@ -116,6 +124,22 @@ public class HeraGlobalEnvironment {
     @Value("${hera.maxCpuLoadPerCore}")
     public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
         HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+    }
+    @Value("${hera.spark.address")
+    public void setSparkAddress(String sparkAddress) {
+        HeraGlobalEnvironment.sparkAddress = sparkAddress;
+    }
+    @Value("${hera.spark.username")
+    public void setSparkUser(String sparkUser) {
+        HeraGlobalEnvironment.sparkUser = sparkUser;
+    }
+    @Value("${hera.spark.password")
+    public void setSparkPassword(String sparkPassword) {
+        HeraGlobalEnvironment.sparkPassword = sparkPassword;
+    }
+    @Value("${hera.spark.config")
+    public void setSparkConfig(String sparkConfig) {
+        HeraGlobalEnvironment.sparkConfig = sparkConfig;
     }
 
     /**
