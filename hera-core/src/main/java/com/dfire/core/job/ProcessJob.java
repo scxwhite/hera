@@ -47,9 +47,6 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         envMap.put("instance.workDir", jobContext.getWorkDir());
         log.info("获取命令");
 
-        //TODO 逐sql解析、执行
-        SparkJob.executeJob(getProperties().getLocalProperty(RunningJobKeyConstant.JOB_SCRIPT).replaceAll("^--.*", "--"));
-
         List<String> commands = getCommandList();
 
         for (String command : commands) {
@@ -215,7 +212,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
      * @time: Created in 11:01 2018/3/26
      * @desc job输出流日志接收线程
      */
-    private class StreamThread extends Thread {
+    public class StreamThread extends Thread {
         private InputStream    inputStream;
         private String         threadName;
         private CountDownLatch latch;

@@ -1,5 +1,6 @@
 package com.dfire.core.tool;
 
+import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -20,8 +21,11 @@ public class ConnectionTool {
     public static Statement getConnection() {
         if (stmt == null) {
             try {
-                Class.forName("org.apache.hive.jdbc.HiveDriver");
-                Connection conn = DriverManager.getConnection("jdbc:hive2://10.10.18.215:10000", "heguozi", "123456");
+                Class.forName(HeraGlobalEnvironment.getSparkDriver());
+                Connection conn = DriverManager.getConnection(
+                        HeraGlobalEnvironment.getSparkAddress(),
+                        HeraGlobalEnvironment.getSparkUser(),
+                        HeraGlobalEnvironment.getSparkPassword());
                 stmt = conn.createStatement();
                 log.info("hive建立连接成功");
             } catch (Exception e) {

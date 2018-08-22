@@ -30,4 +30,22 @@ public class ThriftServerTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void executeSql2() {
+
+        String url = "jdbc:hive2://10.1.21.141:10000";
+        try {
+            Class.forName("org.apache.hive.jdbc.HiveDriver");
+            Connection conn = DriverManager.getConnection(url, "heguozi", "123456");
+            Statement stmt = conn.createStatement();
+            String sql = "show databases";
+            ResultSet res = stmt.executeQuery(sql);
+            while (res.next()) {
+                System.out.println("1");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

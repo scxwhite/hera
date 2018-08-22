@@ -96,16 +96,21 @@ logging:
 mybatis:
   configuration:
     mapUnderscoreToCamelCase: true
+#spark 配置
+spark :
+  address : jdbc:hive2://10.1.21.141:10000
+  driver : org.apache.hive.jdbc.HiveDriver
+  username : heguozi
+  password : 123456
+  master : --master yarn
+  driver-memory : --driver-memory 1g
+  driver-cores : --driver-cores 1
+  executor-memory : -- executor-memory 1g
+  executor-cores : --executor-cores 1
 
 ---
 spring:
   profiles: dev
-#spark 配置
-spark :
-  address : jdbc:hive2://10.1.21.141:10000
-  username : heguozi
-  password : 123456
-  config : --master yarn --driver-memory 1g --driver-cores 1 --executor-memory 1g --executor-cores 1
 ---
 spring:
   profiles: daily
@@ -120,7 +125,11 @@ druid:
 #spark 配置
 spark :
   address : jdbc:hive2://10.10.18.215:10000
-  config : --master yarn --driver-memory 1g --driver-cores 1 --executor-memory 4g --executor-cores 2
+  master : --master yarn
+  driver-memory : --driver-memory 1g
+  driver-cores : --driver-cores 1
+  executor-memory : -- executor-memory 4g
+  executor-cores : --executor-cores 2
 ---
 spring:
   profiles: publish

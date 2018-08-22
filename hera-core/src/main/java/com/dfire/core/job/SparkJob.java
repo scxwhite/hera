@@ -42,8 +42,7 @@ public class SparkJob extends ProcessJob {
 
     @Override
     public int run() throws Exception {
-        Integer exitCode = runInner();
-        return exitCode;
+        return runInner();
     }
 
     private Integer runInner() throws Exception {
@@ -62,7 +61,6 @@ public class SparkJob extends ProcessJob {
             writer = new OutputStreamWriter(new FileOutputStream(file),
                     Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
             writer.write(script.replaceAll("^--.*", "--"));
-
         } catch (Exception e) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         } finally {
@@ -71,20 +69,6 @@ public class SparkJob extends ProcessJob {
 
         getProperties().setProperty(RunningJobKeyConstant.RUN_SPARK_PATH, file.getAbsolutePath());
         return super.run();
-    }
-
-    public static void executeJob(String context) {
-        Statement stmt = ConnectionTool.getConnection();
-        int last = 0;
-        for (int now = 0; now < context.length(); now++) {
-            if(";".equals(context.substring(now))){
-                try {
-                    ResultSet resultSet = stmt.executeQuery(context.substring(last, now));
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     @Override
@@ -124,7 +108,12 @@ public class SparkJob extends ProcessJob {
             log("dos2unix file" + sparkFilePath);
         }
 
-        sb.append(" -f " + sparkFilePath + " " + HeraGlobalEnvironment.getSparkConfig());
+        sb.append(" -f " + sparkFilePath + " " +
+                HeraGlobalEnvironment.getSparkMaster() + " " +
+                HeraGlobalEnvironment.getSparkDriverCores() + " " +
+                HeraGlobalEnvironment.getSparkDriverMemory() + " " +
+                HeraGlobalEnvironment.getSparkExecutorCores() + " " +
+                HeraGlobalEnvironment.getSparkExecutorMemory());
 
         if (shellPrefix.trim().length() > 0) {
 
