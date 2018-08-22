@@ -1,5 +1,6 @@
 package com.dfire.core.netty.master;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.service.EmailService;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.ResponseListener;
@@ -91,6 +92,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 break;
             case WEB_REQUEST:
                 final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                log.debug("info:{}", JSONObject.toJSONString(webRequest));
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
                         completionService.submit(() ->
@@ -190,7 +192,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
 
     private class ChannelResponse {
-        Channel channel;
+        Channel     channel;
         WebResponse webResponse;
 
         public ChannelResponse(Channel channel, WebResponse webResponse) {
