@@ -96,6 +96,17 @@ logging:
 mybatis:
   configuration:
     mapUnderscoreToCamelCase: true
+#spark 配置
+spark :
+  address : jdbc:hive2://10.1.21.141:10000
+  driver : org.apache.hive.jdbc.HiveDriver
+  username : heguozi
+  password : 123456
+  master : --master yarn
+  driver-memory : --driver-memory 1g
+  driver-cores : --driver-cores 1
+  executor-memory : -- executor-memory 1g
+  executor-cores : --executor-cores 1
 
 ---
 spring:
@@ -111,6 +122,14 @@ druid:
     url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     username: lineage
     password: lineage@552208
+#spark 配置
+spark :
+  address : jdbc:hive2://10.10.18.215:10000
+  master : --master yarn
+  driver-memory : --driver-memory 1g
+  driver-cores : --driver-cores 1
+  executor-memory : -- executor-memory 4g
+  executor-cores : --executor-cores 2
 ---
 spring:
   profiles: publish

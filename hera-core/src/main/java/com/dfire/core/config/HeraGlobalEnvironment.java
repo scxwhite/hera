@@ -22,27 +22,45 @@ public class HeraGlobalEnvironment {
     private static String env;
 
     @Getter
-    private static Float maxMemRate;
+    private static Float   maxMemRate;
     @Getter
-    private static Float maxCpuLoadPerCore;
+    private static Float   maxCpuLoadPerCore;
     @Getter
-    private static Float perTaskUseMem;
+    private static Float   perTaskUseMem;
     @Getter
-    private static Float systemMemUsed;
+    private static Float   systemMemUsed;
     @Getter
     private static Integer scanRate;
     @Getter
     private static Integer connectPort;
     @Getter
-    private static String downloadDir;
+    private static String  downloadDir;
     @Getter
     private static Integer maxParallelNum;
     @Getter
     private static Integer heartBeat;
     @Getter
-    private static String admin;
+    private static String  admin;
     @Getter
     private static Integer taskTimeout;
+    @Getter
+    private static String  sparkAddress;
+    @Getter
+    private static String  sparkDriver;
+    @Getter
+    private static String  sparkUser;
+    @Getter
+    private static String  sparkPassword;
+    @Getter
+    private static String  sparkMaster;
+    @Getter
+    private static String  sparkDriverMemory;
+    @Getter
+    private static String  sparkDriverCores;
+    @Getter
+    private static String  sparkExecutorMemory;
+    @Getter
+    private static String  sparkExecutorCores;
 
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
@@ -93,29 +111,80 @@ public class HeraGlobalEnvironment {
     public void setMaxParallelNum(Integer maxParallelNum) {
         HeraGlobalEnvironment.maxParallelNum = maxParallelNum;
     }
+
     @Value("${hera.admin}")
     public void setAdmin(String admin) {
         HeraGlobalEnvironment.admin = admin;
     }
+
     @Value("${hera.taskTimeout}")
     public void setTaskTimeout(Integer taskTimeout) {
         HeraGlobalEnvironment.taskTimeout = taskTimeout;
     }
+
     @Value("${hera.heartBeat}")
     public void setHeartBeat(Integer heartBeat) {
         HeraGlobalEnvironment.heartBeat = heartBeat;
     }
+
     @Value("${hera.perTaskUseMem}")
     public void setPerTaskUseMem(Float perTaskUseMem) {
         HeraGlobalEnvironment.perTaskUseMem = perTaskUseMem;
     }
+
     @Value("${hera.systemMemUsed}")
     public void setSystemMemUsed(Float systemMemUsed) {
         HeraGlobalEnvironment.systemMemUsed = systemMemUsed;
     }
+
     @Value("${hera.maxCpuLoadPerCore}")
     public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
         HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+    }
+
+    @Value("${spark.address}")
+    public void setSparkAddress(String sparkAddress) {
+        HeraGlobalEnvironment.sparkAddress = sparkAddress;
+    }
+
+    @Value("${spark.driver}")
+    public void setSparkDriver(String sparkDriver) {
+        HeraGlobalEnvironment.sparkDriver = sparkDriver;
+    }
+
+    @Value("${spark.username}")
+    public void setSparkUser(String sparkUser) {
+        HeraGlobalEnvironment.sparkUser = sparkUser;
+    }
+
+    @Value("${spark.password}")
+    public void setSparkPassword(String sparkPassword) {
+        HeraGlobalEnvironment.sparkPassword = sparkPassword;
+    }
+
+    @Value("${spark.master}")
+    public void setSparkMaster(String sparkMaster) {
+        HeraGlobalEnvironment.sparkMaster = sparkMaster;
+    }
+
+    @Value("${spark.driver-memory}")
+    public void setSparkDriverMemory(String sparkDriverMemory) {
+        HeraGlobalEnvironment.sparkDriverMemory = sparkDriverMemory;
+    }
+
+    @Value("${spark.driver-cores}")
+    public void setSparkDriverCores(String sparkDriverCores) {
+        HeraGlobalEnvironment.sparkDriverCores = sparkDriverCores;
+    }
+
+    @Value("${spark.executor-memory}")
+    public void setSparkExecutorMemory(String sparkExecutorMemory) {
+        HeraGlobalEnvironment.sparkExecutorMemory = sparkExecutorMemory;
+    }
+
+    @Value("${spark.executor-cores}")
+    public void setSparkExecutorCores(String sparkExecutorCores) {
+        HeraGlobalEnvironment.sparkExecutorCores = sparkExecutorCores;
     }
 
     /**

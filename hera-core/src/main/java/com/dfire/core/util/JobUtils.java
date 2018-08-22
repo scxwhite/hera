@@ -77,6 +77,9 @@ public class JobUtils {
         } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Spark.toString())) {
             jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Spark.toString());
             core = new SparkJob(jobContext, applicationContext);
+        } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Spark2.toString())) {
+            jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Spark2.toString());
+            core = new Spark2Job(jobContext, applicationContext);
         }
         Job job = new ProcessJobContainer(jobContext, pres, new ArrayList<>(), core, applicationContext);
         return job;
@@ -131,6 +134,8 @@ public class JobUtils {
             core = new HiveJob(jobContext, applicationContext);
         } else if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Spark) {
             core = new SparkJob(jobContext, applicationContext);
+        } else if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Spark2) {
+            core = new Spark2Job(jobContext, applicationContext);
         }
         return new ProcessJobContainer(jobContext, pres, posts, core, applicationContext);
 

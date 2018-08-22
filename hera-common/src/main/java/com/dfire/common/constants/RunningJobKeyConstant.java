@@ -23,6 +23,11 @@ public class RunningJobKeyConstant {
     public static final String RUN_SPARK_PATH = "spark.localfile";
 
     /**
+     * 需要执行的spark2文件路径
+     */
+    public static final String RUN_SPARK2_PATH = "spark2.localfile";
+
+    /**
      * 任务类型
      */
     public static final String JOB_RUN_TYPE = "job.jobtype";

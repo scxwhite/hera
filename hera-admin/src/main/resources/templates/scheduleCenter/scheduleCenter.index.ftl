@@ -669,6 +669,7 @@
                                         <option value="shell" selected>shell脚本</option>
                                         <option value="hive">hive脚本</option>
                                         <option value="spark">spark脚本</option>
+                                        <option value="spark2">spark2脚本</option>
                                     </select>
                                 </div>
                             </div>

@@ -92,7 +92,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 break;
             case WEB_REQUEST:
                 final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                log.debug("info:{}", JSONObject.toJSONString(webRequest));
+                log.info("master receive message :{}", webRequest.getOperate().getNumber());
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
                         completionService.submit(() ->
