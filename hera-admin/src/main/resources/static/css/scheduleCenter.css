@@ -27,10 +27,11 @@ div#rMenu ul li {
     background-color: #40a8e4;
 }
 
-.colStyle {
-    margin-right: 0px;
-    margin-left: 0px;
+.devStyle {
     margin-top: 0px;
+    margin-buttom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
     padding: 0px;
     background-color: #eee;
     border: 1px solid #ddd;

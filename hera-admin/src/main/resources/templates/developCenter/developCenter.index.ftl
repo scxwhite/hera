@@ -12,18 +12,6 @@
 
 <style type="text/css">
 
-    .box, .content, .panel {
-        margin-bottom: 0px;
-        padding-bottom: 0px;
-
-        margin-top: 0px;
-        padding-top: 0px;
-    }
-
-    .nav-tabs-custom > .tab-content {
-        padding: 0px;
-    }
-
     div#rMenu {
         position: absolute;
         visibility: hidden;
@@ -69,7 +57,7 @@
             <div class="row">
 
 
-                <div class="col-md-3 panel panel-primary">
+                <div class="col-md-2 panel panel-primary">
                     <div style="overflow: auto;" class="height-self">
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
@@ -84,64 +72,48 @@
                     </div>
                 </div>
 
-                <div class="col-md-9 panel panel-primary colStyle height-self" style="white-space:nowrap;">
-                    <div id="config">
+                <div class="col-md-10 panel panel-primary">
+                    <div id="config" class="devStyle">
                         <button id="execute" type="submit" class="btn btn-primary btn-sm">执行</button>
                         <button id="executeSelector" type="submit" class="btn btn-primary btn-sm">执行选中的代码</button>
                         <button id="uploadResource" type="submit" class="btn btn-primary btn-sm">上传资源</button>
                         <button id="syncingTask" type="submit" class="btn btn-primary btn-sm">同步任务</button>
                     </div>
                 <#--tab框-->
-                    <div id="tabContainer"></div>
-                    <div id="scriptEditor" class="box box-primary">
+                    <div id="tabContainer" class="devStyle"></div>
+                    <div id="scriptEditor" class="box box-primary" class="devStyle">
                         <textarea id="fileScript" name="editor"></textarea>
                     </div>
 
-                    <div class="nav-tabs-custom center-block" ">
-                        <ul class="nav nav-tabs" id="logTab">
-                            <li class="active"><a href="#tab_1" data-toggle="tab">编辑</a></li>
-                            <li><a href="#tab_2" data-toggle="tab">调试历史</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="tab_1">
-                            <#--<textarea id="logDetail" class="form-control" rows="35" placeholder="运行日志 "></textarea>-->
-                            </div>
-                            <!-- /.tab-pane -->
-                            <div class="tab-pane" id="tab_2">
-                                <div class="modal fade" id="debugLogDetail" tabindex="-1" role="dialog"
-                                     aria-labelledby="title">
-                                    <div id="debugLog" class="modal-dialog" style="width: 1300px">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal"></button>
-                                                <div class="modal-title">详细日志</div>
-                                            </div>
-                                            <div class="modal-body">
-                                                <table class="table " id="debugLogDetailTable"></table>
-                                            </div>
-
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
-                                                <button type="button" class="btn btn-info add-btn" name="refreshLog">刷新</button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- /.tab-pane -->
-                        </div>
-                        <!-- /.tab-content -->
+                    <div class="devStyle">
+                        <button id="saveScript" class="btn btn-primary btn-sm">保存脚本</button>
+                        <button id="logButton" class="btn btn-primary btn-sm">查看日志</button>
                     </div>
-                    <!-- nav-tabs-custom -->
+
+                    <div class="modal fade" id="debugLogDetail" tabindex="-1" role="dialog"
+                         aria-labelledby="title">
+                        <div id="debugLog" class="modal-dialog" style="width: 1300px">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"></button>
+                                    <div class="modal-title">详细日志</div>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table " id="debugLogDetailTable"></table>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                                    <button type="button" class="btn btn-info add-btn" name="refreshLog">刷新</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
             </div>
-        <#--row-->
-
         </section>
     </div>
-<#--content-wrapper-->
 </div>
 
 <div class="modal" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="title">
@@ -165,6 +137,14 @@
         </div>
     </div>
 </div>
+
+<div id="alertSuccess" z-index="1001" class="alert alert-success text-center fade in" style="position: fixed; right: 0px;top: 0px;display: none; height: 50px;" >
+    <strong id="successText"></strong>
+</div>
+<div id="alertFailure" z-index="1001" class="alert alert-danger text-center fade in" style="position: fixed; right: 0px;top: 0px;display: none;height: 50px;" >
+    <strong id="failureText" ></strong>
+</div>
+
 <@netCommon.commonScript />
 <script src="${request.contextPath}/plugins/codemirror/lib/codemirror.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/mode/shell/shell.js"></script>

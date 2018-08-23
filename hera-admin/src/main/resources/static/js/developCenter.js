@@ -106,18 +106,41 @@ $(function () {
     /**
      * 查看脚本运行日志
      */
-    $("ul#logTab").on("click", "li", function () {
 
-        var num = $(this).find("a").attr("href");
-        if (num == "#tab_2") {
-            var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
-            $('#debugLogDetailTable').bootstrapTable("destroy");
-            var tableObject = new TableInit(targetId);
-            tableObject.init();
-            $("#debugLogDetail").modal('show');
-        }
-
+    $("#logButton").click(function () {
+        debugger
+        var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
+        $('#debugLogDetailTable').bootstrapTable("destroy");
+        var tableObject = new TableInit(targetId);
+        tableObject.init();
+        $("#debugLogDetail").modal('show');
     });
+
+
+    /**
+     *
+     */
+    $("#saveScript").click(function () {
+        var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+        var fileScript = codeMirror.getValue();
+        var parameter = {
+            id: fileId,
+            content: fileScript
+        };
+        var url = base_url + "/developCenter/saveScript.do";
+
+        $.ajax({
+            url: url,
+            type: "post",
+            data: JSON.stringify(parameter),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                successMsg(data);
+            }
+        });
+
+     });
 
     /**
      * 树形菜单右击事件

@@ -5,6 +5,7 @@ import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
+import com.dfire.common.vo.RestfulResponse;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import lombok.extern.slf4j.Slf4j;
@@ -186,6 +187,13 @@ public class DevelopCenterController extends BaseHeraController {
     @ResponseBody
     public HeraDebugHistory getJobLog(Integer id) {
         return debugHistoryService.findLogById(id);
+    }
+
+    @RequestMapping(value = "saveScript", method = RequestMethod.POST)
+    @ResponseBody
+    public RestfulResponse saveScript(@RequestBody HeraFile heraFile) {
+        int result = heraFileService.updateContent(heraFile);
+        return RestfulResponse.builder().success(true).msg("保存成功").results(result).build();
     }
 
 

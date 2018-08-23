@@ -39,4 +39,9 @@ public class StringUtilTest {
                 .peek(e -> System.out.println("Mapped value: " + e))
                 .collect(Collectors.toList());
     }
+
+    @Test
+    public void md5Test() {
+        System.out.println(StringUtil.EncoderByMd5("baseimport"));
+    }
 }
