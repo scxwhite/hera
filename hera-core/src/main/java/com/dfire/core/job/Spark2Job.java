@@ -34,24 +34,27 @@ public class Spark2Job extends ProcessJob {
         return runInner();
     }
 
-    private Integer runInner() throws Exception {
+    private Integer runInner() {
         String script = getProperties().getLocalProperty(RunningJobKeyConstant.JOB_SCRIPT);
         int last = 0;
         for (int now = 0; now < script.length() && last < script.length(); now++) {
             if (last <= now - 1) {
                 if (";".equals(script.substring(now, now + 1))) {
-                    executeAndPrint(script, last, now);
+                    if (!executeAndPrint(script, last, now)) {
+                        return -999;
+                    }
                     last = now + 1;
                 } else if (now == script.length() - 1) {
-                    executeAndPrint(script, last, now + 1);
-                    break;
+                    if (!executeAndPrint(script, last, now + 1)) {
+                        return -999;
+                    }
                 }
             }
         }
         return 0;
     }
 
-    private void executeAndPrint(String script, int startPoint, int endPoint) {
+    private boolean executeAndPrint(String script, int startPoint, int endPoint) {
         try {
             Statement stmt = ConnectionTool.getConnection();
             ResultSet resultSet = stmt.executeQuery(script.substring(startPoint, endPoint));
@@ -73,7 +76,9 @@ public class Spark2Job extends ProcessJob {
         } catch (Exception e) {
             e.printStackTrace();
             log("执行或打印结果错误");
+            return false;
         }
+        return true;
     }
 
     @Override
