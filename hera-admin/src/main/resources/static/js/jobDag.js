@@ -22,11 +22,12 @@ $(document).ready(function () {
 
 function keypath(type) {
     graphType = type;
+    debugger
     var node = $("#item")[0].value;
     if (node == "")
         return;
     var url = base_url + "/scheduleCenter/getJobImpactOrProgress";
-    var data = {node: node, type: type};
+    var data = {jobId: node, type: type};
 
     var success = function (data) {
         // Create a new directed graph
