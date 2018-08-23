@@ -173,7 +173,7 @@ public class DevelopCenterController extends BaseHeraController {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    @RequestMapping(value = "/cancelJob", method = RequestMethod.POST)
+    @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
     @ResponseBody
     public WebAsyncTask<String> cancelJob(String id) throws ExecutionException, InterruptedException {
         ExecuteKind kind = ExecuteKind.DebugKind;

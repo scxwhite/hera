@@ -24,13 +24,25 @@ import java.util.Map;
 public class JobContext {
 
     private static final String runPath = "/tmp/hera";
-    //调度执行
+
+    /**
+     * 调度执行
+     */
     public static final int SCHEDULE_RUN = 1;
-    //手动执行
+
+    /**
+     * 手动执行
+     */
     public static final int MANUAL_RUN = 2;
-    //DEBUG执行
+
+    /**
+     * DEBUG执行
+     */
     public static final int DEBUG_RUN = 3;
-    //系统命令执行
+
+    /**
+     * 系统命令执行
+     */
     public static final int SYSTEM_RUN = 4;
 
     private final int runType;
@@ -61,7 +73,7 @@ public class JobContext {
 
     public static JobContext getTempJobContext(int runType) {
         JobContext jobContext = new JobContext(runType);
-        HeraJobHistoryVo jobHistory =  HeraJobHistoryVo.builder().build();
+        HeraJobHistoryVo jobHistory = HeraJobHistoryVo.builder().build();
         jobContext.setHeraJobHistory(jobHistory);
         File baseFile = new File(runPath);
         if (!baseFile.exists()) {

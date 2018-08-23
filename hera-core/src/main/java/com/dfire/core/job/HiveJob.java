@@ -25,15 +25,11 @@ import java.util.List;
 @Slf4j
 public class HiveJob extends ProcessJob {
 
-    public final String UDF_SQL_NAME = "hera_udf.sql";
-
-    private HeraFileService heraFileService;
     private ApplicationContext applicationContext;
 
     public HiveJob(JobContext jobContext, ApplicationContext applicationContext) {
         super(jobContext);
         this.applicationContext = applicationContext;
-        this.heraFileService = (HeraFileService) this.applicationContext.getBean("heraFileService");
         jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "HiveJob");
     }
 

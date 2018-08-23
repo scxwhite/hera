@@ -562,7 +562,7 @@ var TableInit = function (targetId) {
                     width: "20%",
                     formatter: function (index, row) {
                         var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
-                        if (row['status'] == 'RUNNING') {
+                        if (row['status'] == 'running') {
                             return html;
                         }
                     }

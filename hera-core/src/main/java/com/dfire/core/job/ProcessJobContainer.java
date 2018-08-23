@@ -19,8 +19,6 @@ public class ProcessJobContainer extends AbstractJob {
     private List<Job> pres;
     private List<Job> posts;
     private Job job;
-    private HeraFileService fileService;
-    private HeraDebugHistoryService heraDebugHistoryService;
 
     private Job running;
 
@@ -29,8 +27,6 @@ public class ProcessJobContainer extends AbstractJob {
         this.pres = pres;
         this.job = core;
         this.posts = posts;
-        this.fileService = (HeraFileService) applicationContext.getBean("heraFileService");
-        this.heraDebugHistoryService = (HeraDebugHistoryService) applicationContext.getBean("heraDebugHistoryService");
     }
 
 
