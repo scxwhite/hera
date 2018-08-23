@@ -92,9 +92,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="expand">&nbsp;&nbsp;&nbsp;展示个数:</label>
-                    <input id="expand" class="input-sm" style="width:80px;" value="1"/>
-                    <input class="btn btn-info" type="button" id="nextNode" value="展示">
+                    <#--<label for="expand">&nbsp;&nbsp;&nbsp;展示个数:</label>-->
+                    <#--<input id="expand" class="input-sm" style="width:80px;" value="1"/>-->
+                    <#--<input class="btn btn-info" type="button" id="nextNode" value="展示">-->
                     <input class="btn btn-info" type="button" id="expandAll" value="展示全部">
                 </div>
             </form>
