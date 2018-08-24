@@ -34,7 +34,7 @@ druid:
     time-between-connect-error-millis: 60000  # Destroy线程会检测连接的间隔时间，如果连接空闲时间大于等于minEvictableIdleTimeMillis则关闭物理连接，单位是毫秒
     min-evictable-idle-time-millis: 300000  # 连接保持空闲而不被驱逐的最长时间，单位是毫秒
     test-while-idle: true    #申请连接的时候,如果检测到连接空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效
-    test-on-borrow: false    #申请连接时执行validationQuery检测连接是否有效
+    test-on-borrow: true    #申请连接时执行validationQuery检测连接是否有效
     test-on-return: false   # 归还连接时执行validationQuery检测连接是否有效
     connection-init-sqls: set names utf8mb4
     validation-query: select 1                #用来检测连接是否有效的sql，要求是一个查询语句。如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会其作用。
