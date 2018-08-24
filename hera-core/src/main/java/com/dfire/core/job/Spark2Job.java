@@ -19,7 +19,6 @@ import java.util.List;
 @Slf4j
 public class Spark2Job extends ProcessJob {
 
-    private HeraFileService    heraFileService;
     private ApplicationContext applicationContext;
 
     private JdbcDataSourcePool jdbcDataSourcePool = new JdbcDataSourcePool();
@@ -29,7 +28,6 @@ public class Spark2Job extends ProcessJob {
     public Spark2Job(JobContext jobContext, ApplicationContext applicationContext) {
         super(jobContext);
         this.applicationContext = applicationContext;
-        this.heraFileService = (HeraFileService) this.applicationContext.getBean("heraFileService");
         jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "Spark2Job");
     }
 

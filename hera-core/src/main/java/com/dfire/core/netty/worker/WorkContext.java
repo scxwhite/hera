@@ -6,7 +6,6 @@ import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
-import com.dfire.core.job.ShellJob;
 import com.dfire.core.tool.RunShell;
 import io.netty.channel.Channel;
 import lombok.Data;

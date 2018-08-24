@@ -246,6 +246,11 @@ public class WorkClient {
         ScheduleInfoLog.info("connect server success");
     }
 
+    /**
+     * 取消执行开发中心任务
+     *
+     * @param debugId
+     */
     public void cancelDebugJob(String debugId) {
         Job job = workContext.getDebugRunning().get(debugId);
         job.cancel();
@@ -261,6 +266,11 @@ public class WorkClient {
 
     }
 
+    /**
+     * 取消手动执行的任务
+     *
+     * @param historyId
+     */
     public void cancelManualJob(String historyId) {
         Job job = workContext.getManualRunning().get(historyId);
         workContext.getManualRunning().remove(historyId);
@@ -280,6 +290,11 @@ public class WorkClient {
 
     }
 
+    /**
+     * 取消自动调度执行的任务
+     *
+     * @param jobId
+     */
     public void cancelScheduleJob(String jobId) {
         Job job = workContext.getRunning().get(jobId);
         workContext.getRunning().remove(jobId);
