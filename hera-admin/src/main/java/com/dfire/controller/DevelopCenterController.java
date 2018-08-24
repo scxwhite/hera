@@ -134,18 +134,21 @@ public class DevelopCenterController extends BaseHeraController {
         return new WebAsyncTask<>(3000, () -> {
             HeraFile file = heraFileService.findById(heraFile.getId());
             file.setContent(heraFile.getContent());
-
+            String name = file.getName();
+            String runType = "1";
             HeraDebugHistory history = HeraDebugHistory.builder()
                     .fileId(file.getId())
                     .script(heraFile.getContent())
                     .startTime(new Date())
                     .owner(owner)
                     .build();
-            if (file.getType().equals(FileTypeEnum.Hive.toString())) {
-                history.setRunType("hive");
-            } else if (file.getType().equals(FileTypeEnum.Shell.toString())) {
-                history.setRunType("shell");
+            String postfix = name.substring(name.lastIndexOf("."));
+            if (".hive".equalsIgnoreCase(postfix)) {
+                runType = "hive";
+            } else if (".sh".equalsIgnoreCase(postfix)) {
+                runType = "shell";
             }
+            history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
             workClient.executeJobFromWeb(ExecuteKind.DebugKind, newId);
             return file.getId();
