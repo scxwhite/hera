@@ -2,7 +2,7 @@ package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.service.HeraFileService;
-import com.dfire.core.tool.ConnectionTool;
+import com.dfire.core.tool.pool.JdbcDataSourcePool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
@@ -21,6 +21,8 @@ public class Spark2Job extends ProcessJob {
 
     private HeraFileService    heraFileService;
     private ApplicationContext applicationContext;
+
+    private JdbcDataSourcePool jdbcDataSourcePool = new JdbcDataSourcePool();
 
     private final int maxOutputNum = 2000;
 
@@ -58,7 +60,7 @@ public class Spark2Job extends ProcessJob {
 
     private boolean executeAndPrint(String script, int startPoint, int endPoint) {
         try {
-            Statement stmt = ConnectionTool.getConnection();
+            Statement stmt = jdbcDataSourcePool.getConnection();
             ResultSet resultSet = stmt.executeQuery(script.substring(startPoint, endPoint));
             int columnCount = resultSet.getMetaData().getColumnCount();
             int rowNum = 0;
