@@ -6,6 +6,7 @@ import com.dfire.core.tool.pool.JdbcDataSourcePool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
@@ -57,8 +58,9 @@ public class Spark2Job extends ProcessJob {
     }
 
     private boolean executeAndPrint(String script, int startPoint, int endPoint) {
+        Connection connection = jdbcDataSourcePool.getConnection();
         try {
-            Statement stmt = jdbcDataSourcePool.getConnection();
+            Statement stmt = connection.createStatement();
             ResultSet resultSet = stmt.executeQuery(script.substring(startPoint, endPoint));
             int columnCount = resultSet.getMetaData().getColumnCount();
             int rowNum = 0;
@@ -74,11 +76,19 @@ public class Spark2Job extends ProcessJob {
                     break;
                 }
             }
+            stmt.close();
             resultSet.close();
         } catch (Exception e) {
             e.printStackTrace();
             log("执行或打印结果错误");
             return false;
+        } finally {
+            try {
+                connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("连接归还失败");
+            }
         }
         return true;
     }

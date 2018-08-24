@@ -4,7 +4,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Statement;
+import java.sql.Connection;
 
 /**
  * @Description : Druid连接池
@@ -25,9 +25,9 @@ public abstract class AbstractDataSourcePool {
         dataSource.setUrl(HeraGlobalEnvironment.getSparkAddress());
         dataSource.setUsername(HeraGlobalEnvironment.getSparkUser());
         dataSource.setPassword(HeraGlobalEnvironment.getSparkPassword());
-        dataSource.setInitialSize(1);
-        dataSource.setMaxActive(2);
-        dataSource.setMinIdle(2);
+        dataSource.setInitialSize(10);
+        dataSource.setMaxActive(20);
+        dataSource.setMinIdle(20);
         dataSource.setTestOnBorrow(true);
         dataSource.setTestOnReturn(false);
         dataSource.setTestWhileIdle(true);
@@ -35,13 +35,13 @@ public abstract class AbstractDataSourcePool {
         isClose = false;
     }
 
-    public Statement getConnection() {
+    public Connection getConnection() {
         if (isClose || dataSource == null) {
             log.error("空连接池或连接池已关闭");
             return null;
         }
         try {
-            return dataSource.getConnection().createStatement();
+            return dataSource.getConnection();
         } catch (Exception e) {
             e.printStackTrace();
             log.error("获取连接失败");
