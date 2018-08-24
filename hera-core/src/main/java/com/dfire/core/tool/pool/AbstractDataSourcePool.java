@@ -4,6 +4,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.Connection;
 import java.sql.Statement;
 
 /**
@@ -35,13 +36,13 @@ public abstract class AbstractDataSourcePool {
         isClose = false;
     }
 
-    public Statement getConnection() {
+    public Connection getConnection() {
         if (isClose || dataSource == null) {
             log.error("空连接池或连接池已关闭");
             return null;
         }
         try {
-            return dataSource.getConnection().createStatement();
+            return dataSource.getConnection();
         } catch (Exception e) {
             e.printStackTrace();
             log.error("获取连接失败");
