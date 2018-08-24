@@ -5,7 +5,6 @@ import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
-import java.sql.Statement;
 
 /**
  * @Description : Druid连接池
@@ -26,9 +25,9 @@ public abstract class AbstractDataSourcePool {
         dataSource.setUrl(HeraGlobalEnvironment.getSparkAddress());
         dataSource.setUsername(HeraGlobalEnvironment.getSparkUser());
         dataSource.setPassword(HeraGlobalEnvironment.getSparkPassword());
-        dataSource.setInitialSize(1);
-        dataSource.setMaxActive(2);
-        dataSource.setMinIdle(2);
+        dataSource.setInitialSize(10);
+        dataSource.setMaxActive(20);
+        dataSource.setMinIdle(20);
         dataSource.setTestOnBorrow(true);
         dataSource.setTestOnReturn(false);
         dataSource.setTestWhileIdle(true);
