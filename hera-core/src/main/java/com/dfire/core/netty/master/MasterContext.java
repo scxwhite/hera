@@ -95,16 +95,8 @@ public class MasterContext {
         return (HeraHostGroupService) applicationContext.getBean("heraHostGroupService");
     }
 
-    public HeraHostRelationService getHeraHostRelationService() {
-        return (HeraHostRelationService) applicationContext.getBean("heraHostRelationService");
-    }
-
     public HeraFileService getHeraFileService() {
         return (HeraFileService) applicationContext.getBean("heraFileService");
-    }
-
-    public HeraProfileService getHeraProfileService() {
-        return (HeraProfileService) applicationContext.getBean("heraProfileService");
     }
 
     public QuartzSchedulerService getQuartzSchedulerService() {
