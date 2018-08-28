@@ -6,6 +6,12 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
+ * @time: Created in 下午10:37 2018/5/6
+ * @desc http请求返回结果
+ */
+
 @Data
 @Builder
 @NoArgsConstructor

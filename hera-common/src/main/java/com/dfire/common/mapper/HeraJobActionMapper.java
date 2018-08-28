@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 上午11:03 2018/5/16
- * @desc
+ * @desc 版本运行历史查询
  */
 public interface HeraJobActionMapper {
 

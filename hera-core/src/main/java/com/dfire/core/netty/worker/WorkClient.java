@@ -63,8 +63,23 @@ public class WorkClient {
     public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
     private AtomicBoolean clientSwitch = new AtomicBoolean(false);
     /**
-     * ProtobufVarint32LengthFieldPrepender: 对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
      * ProtobufVarint32FrameDecoder:  针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
+     * <pre>
+     *  * BEFORE DECODE (302 bytes)       AFTER DECODE (300 bytes)
+     *  * +--------+---------------+      +---------------+
+     *  * | Length | Protobuf Data |----->| Protobuf Data |
+     *  * | 0xAC02 |  (300 bytes)  |      |  (300 bytes)  |
+     *  * +--------+---------------+      +---------------+
+     * </pre>
+     *
+     * ProtobufVarint32LengthFieldPrepender: 对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
+     * <pre>
+     * * BEFORE DECODE (300 bytes)       AFTER DECODE (302 bytes)
+     *  * +---------------+               +--------+---------------+
+     *  * | Protobuf Data |-------------->| Length | Protobuf Data |
+     *  * |  (300 bytes)  |               | 0xAC02 |  (300 bytes)  |
+     *  * +---------------+               +--------+---------------+
+     * </pre>
      */
     public void init(ApplicationContext applicationContext) {
         if (!clientSwitch.compareAndSet(false, true)) {

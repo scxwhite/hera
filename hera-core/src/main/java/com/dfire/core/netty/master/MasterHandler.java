@@ -1,6 +1,5 @@
 package com.dfire.core.netty.master;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.service.EmailService;
 import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.ResponseListener;

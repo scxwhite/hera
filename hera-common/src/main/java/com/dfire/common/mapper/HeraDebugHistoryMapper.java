@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 下午7:25 2018/4/16
- * @desc
+ * @desc 开发中心脚本运行记录dao
  */
 public interface HeraDebugHistoryMapper {
 

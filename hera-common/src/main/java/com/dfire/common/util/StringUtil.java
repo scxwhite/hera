@@ -84,7 +84,7 @@ public class StringUtil {
     public static List<Processor> convertProcessorToList(String processor) {
         List<Processor> list = new ArrayList<>();
         Processor result = null;
-        if( processor == null || processor.equals("") || processor.equals("[]")) {
+        if (processor == null || processor.equals("") || processor.equals("[]")) {
             return list;
         }
         JSONObject jsonObject = JSONObject.parseObject(processor);
@@ -155,7 +155,6 @@ public class StringUtil {
         }
         return resource;
     }
-
 
 
 }

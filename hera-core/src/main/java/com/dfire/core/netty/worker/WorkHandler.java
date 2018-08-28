@@ -110,6 +110,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        log.info("worker complete read message ");
     }
 
     @Override
