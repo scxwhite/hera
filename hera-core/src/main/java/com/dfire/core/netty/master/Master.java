@@ -489,11 +489,13 @@ public class Master {
         if (!masterContext.getScheduleQueue().isEmpty()) {
             log.warn("schedule队列任务：{}", masterContext.getScheduleQueue());
             printThreadPoolLog();
-            MasterWorkHolder workHolder = getRunnableWork(0);
+            JobElement jobElement = masterContext.getScheduleQueue().peek();
+
+            MasterWorkHolder workHolder = getRunnableWork(jobElement);
             if (workHolder == null) {
                 log.warn("can not get work to execute job in master");
             } else {
-                final JobElement jobElement = masterContext.getScheduleQueue().poll();
+                jobElement = masterContext.getScheduleQueue().poll();
                 runScheduleJob(workHolder, jobElement.getJobId());
                 hasTask = true;
             }
@@ -502,11 +504,12 @@ public class Master {
         if (!masterContext.getManualQueue().isEmpty()) {
             log.warn("manual队列任务：{}", masterContext.getManualQueue());
             printThreadPoolLog();
-            MasterWorkHolder selectWork = getRunnableWork(0);
+            JobElement element = masterContext.getScheduleQueue().peek();
+            MasterWorkHolder selectWork = getRunnableWork(element);
             if (selectWork == null) {
                 log.warn("can not get work to execute job in master");
             } else {
-                final JobElement element = masterContext.getManualQueue().poll();
+                 element = masterContext.getManualQueue().poll();
                 runManualJob(selectWork, element.getJobId());
                 hasTask = true;
             }
@@ -515,11 +518,12 @@ public class Master {
         if (!masterContext.getDebugQueue().isEmpty()) {
             log.warn("debug队列任务：{}", masterContext.getDebugQueue());
             printThreadPoolLog();
-            MasterWorkHolder selectWork = getRunnableWork(0);
+            JobElement element = masterContext.getScheduleQueue().peek();
+            MasterWorkHolder selectWork = getRunnableWork(element);
             if (selectWork == null) {
                 log.warn("can not get work to execute job in master");
             } else {
-                final JobElement element = masterContext.getDebugQueue().poll();
+                element = masterContext.getDebugQueue().poll();
                 runDebugJob(selectWork, element.getJobId());
                 hasTask = true;
             }
@@ -782,13 +786,12 @@ public class Master {
     /**
      * 获取hostGroupId中可以分发任务的worker
      *
-     * @param hostGroupId
+     * @param jobElement
      * @return
      */
-    private MasterWorkHolder getRunnableWork(int hostGroupId) {
-        if (hostGroupId == 0) {
-            hostGroupId = HeraGlobalEnvironment.defaultWorkerGroup;
-        }
+    private MasterWorkHolder getRunnableWork(JobElement jobElement) {
+
+        int hostGroupId = jobElement == null ? HeraGlobalEnvironment.defaultWorkerGroup : jobElement.getHostGroupId();
 
         MasterWorkHolder workHolder = null;
         if (masterContext.getHostGroupCache() != null) {
@@ -805,7 +808,8 @@ public class Master {
                         if (worker != null && worker.getHeartBeatInfo() != null && worker.getHeartBeatInfo().getHost().trim().equals(host.trim())) {
                             HeartBeatInfo heartBeatInfo = worker.getHeartBeatInfo();
                             if (heartBeatInfo.getMemRate() != null && heartBeatInfo.getCpuLoadPerCore() != null
-                                    && heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate() && heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()) {
+                                    && heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate()
+                                    && heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()) {
 
                                 Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getSystemMemUsed()) / HeraGlobalEnvironment.getPerTaskUseMem();
                                 int sum = heartBeatInfo.getDebugRunning().size() + heartBeatInfo.getManualRunning().size() + heartBeatInfo.getRunning().size();
