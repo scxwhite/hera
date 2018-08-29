@@ -10,7 +10,6 @@ import com.dfire.core.event.listenter.AbstractListener;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,6 @@ import java.util.List;
  * @desc hera中的任务事件observer,接受事件，全局广播dispatch
  */
 @Slf4j
-@Component
 public class Dispatcher extends AbstractObservable {
 
     public static final EventType beforeDispatch = new EventType();
