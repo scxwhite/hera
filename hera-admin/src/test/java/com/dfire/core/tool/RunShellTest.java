@@ -1,5 +1,6 @@
 package com.dfire.core.tool;
 
+import com.dfire.core.netty.worker.WorkContext;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -14,9 +15,10 @@ public class RunShellTest {
     @Test
     public void runShell() throws IOException {
 
-        RunShell shell = new RunShell("ls /");
+        RunShell shell = new RunShell("uptime");
 
         shell.run();
+
 
         System.out.println(shell.getResult());
 

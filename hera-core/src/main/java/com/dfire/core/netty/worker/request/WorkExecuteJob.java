@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 /**
@@ -154,7 +153,6 @@ public class WorkExecuteJob {
         final HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(jobStatus.getHistoryId());
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         return workContext.getWorkThreadPool().submit(() -> {
-            //开始执行
             history.setExecuteHost(WorkContext.host);
             history.setStartTime(new Date());
             workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
@@ -252,7 +250,6 @@ public class WorkExecuteJob {
             Exception exception = null;
             try {
                 exitCode = job.run();
-                System.out.println("debug-thread: " + Thread.currentThread().getName());
             } catch (Exception e) {
                 exception = e;
                 history.getLog().appendHeraException(e);
