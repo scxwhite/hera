@@ -46,7 +46,7 @@ public class HeraJobHistory {
 
     private String cycle;
 
-    private String hostGroupId;
+    private int hostGroupId;
 
     String properties ;
 }

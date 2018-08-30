@@ -162,6 +162,7 @@ public class JobHandler extends AbstractHandler {
                             .illustrate(LogConstant.SERVER_START_JOB_LOG)
                             .log(LogConstant.SERVER_START_JOB_LOG)
                             .operator(heraAction.getOwner())
+                            .hostGroupId(heraAction.getHostGroupId())
                             .build();
                     masterContext.getHeraJobHistoryService().insert(heraJobHistory);
                     master.run(BeanConvertUtils.convert(heraJobHistory));
@@ -337,6 +338,7 @@ public class JobHandler extends AbstractHandler {
                 triggerType(TriggerTypeEnum.SCHEDULE.getId()).
                 actionId(heraActionVo.getId()).
                 operator(heraActionVo.getOwner()).
+                hostGroupId(heraActionVo.getHostGroupId()).
                 build();
         masterContext.getHeraJobHistoryService().insert(history);
         master.run(BeanConvertUtils.convert(history));
@@ -404,6 +406,7 @@ public class JobHandler extends AbstractHandler {
                                 .triggerType(Integer.parseInt(TriggerTypeEnum.SCHEDULE.toString()))
                                 .statisticEndTime(heraActionVo.getStatisticStartTime())
                                 .operator(heraActionVo.getOwner())
+                                .hostGroupId(heraAction.getHostGroupId())
                                 .build();
                         masterContext.getHeraJobHistoryService().insert(history);
                         master.run(BeanConvertUtils.convert(history));

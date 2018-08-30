@@ -25,7 +25,7 @@ public class HeraFileVo {
     private String content;
     private String owner;
     private boolean admin;
-    private String hostGroupId;
+    private int hostGroupId;
 
     @Override
     public String toString() {
