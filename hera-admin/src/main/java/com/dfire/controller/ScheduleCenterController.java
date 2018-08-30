@@ -98,7 +98,10 @@ public class ScheduleCenterController extends BaseHeraController {
                 focusUsers.append(heraUser.getName());
             });
         }
+
+        HeraHostGroup hostGroup = heraHostGroupService.findById(job.getHostGroupId());
         focusUsers.append("]");
+        heraJobVo.setHostGroupName(hostGroup.getName());
         heraJobVo.setUIdS(getuIds(jobId));
         heraJobVo.setFocusUser(focusUsers.toString());
         return heraJobVo;
@@ -293,7 +296,7 @@ public class ScheduleCenterController extends BaseHeraController {
         if (!hasPermission(heraJob.getGroupId(), GROUP)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
-
+        heraJob.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
         heraJob.setOwner(getOwner());
         heraJob.setScheduleType(JobScheduleTypeEnum.Independent.getType());
         return new RestfulResponse(heraJobService.insert(heraJob) > 0, String.valueOf(heraJob.getId()));
@@ -363,15 +366,10 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/getHostGroupIds", method = RequestMethod.GET)
     @ResponseBody
-    public List<Integer> getHostGroupIds() {
+    public List<HeraHostGroup> getHostGroupIds() {
         List<HeraHostGroup> all = heraHostGroupService.getAll();
 
-        List<Integer> res = new ArrayList<>();
-
-        for (HeraHostGroup hostGroup : all) {
-            res.add(hostGroup.getId());
-        }
-        return res;
+        return all;
     }
 
     /**

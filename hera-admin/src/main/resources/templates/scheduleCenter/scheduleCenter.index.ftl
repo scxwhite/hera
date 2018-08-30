@@ -276,7 +276,7 @@
                                         <div class="form-group ">
                                             <label class="control-label input-sm col-sm-4">host组id:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="hostGroupId"></label>
+                                                <label class="form-control-static" name="hostGroupName"></label>
                                             </div>
                                         </div>
                                         <div class="form-group ">

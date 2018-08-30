@@ -82,6 +82,8 @@ public class HeraJobVo {
 
     private int hostGroupId;
 
+    private String hostGroupName;
+
     private Long mustEndMinute;
 
     private String rollBackTimes;

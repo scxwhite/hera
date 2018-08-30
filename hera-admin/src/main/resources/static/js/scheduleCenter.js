@@ -803,12 +803,10 @@ $(function () {
             type: "get",
             success: function (data) {
                 var hostGroup = $('#jobMessageEdit [name="hostGroupId"]');
-
-
                 var option = '';
-                for (var key in data) {
-                    option = option + '"<option value="' + data[key] + '">' + data[key] + '</option>';
-                }
+                data.forEach(function (val) {
+                    option = option + '"<option value="' + val.id + '">' + val.name + '</option>';
+                });
                 hostGroup.empty();
                 hostGroup.append(option);
             }
