@@ -104,6 +104,7 @@ public class DevelopCenterController extends BaseHeraController {
                     .script(heraFile.getContent())
                     .startTime(new Date())
                     .owner(file.getOwner())
+                    .hostGroupId(file.getHostGroupId())
                     .build();
             String postfix = name.substring(name.lastIndexOf("."));
             if (".hive".equalsIgnoreCase(postfix)) {
@@ -141,6 +142,7 @@ public class DevelopCenterController extends BaseHeraController {
                     .script(heraFile.getContent())
                     .startTime(new Date())
                     .owner(owner)
+                    .hostGroupId(file.getHostGroupId())
                     .build();
             String postfix = name.substring(name.lastIndexOf("."));
             if (".hive".equalsIgnoreCase(postfix)) {
