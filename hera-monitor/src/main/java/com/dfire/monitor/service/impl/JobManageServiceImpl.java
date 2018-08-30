@@ -61,7 +61,7 @@ public class JobManageServiceImpl implements JobManageService {
         Date date = calendar.getTime();
         Map<String, Object> map = new HashMap<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd 9:00:00");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd 23:00:00");
         String start = sdf.format(date);
         String end = sdf2.format(date);
         map.put("startDate", start);
