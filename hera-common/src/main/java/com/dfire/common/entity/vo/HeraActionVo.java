@@ -83,6 +83,6 @@ public class HeraActionVo {
 
     private String timezone;
 
-    private Integer hostGroupId;
+    private int hostGroupId;
 
 }

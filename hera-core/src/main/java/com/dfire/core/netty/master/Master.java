@@ -310,6 +310,7 @@ public class Master {
                         heraAction.setJobDependencies(null);
                         heraAction.setDependencies(null);
                         heraAction.setReadyDependency(null);
+                        heraAction.setHostGroupId(heraJob.getHostGroupId());
                         masterContext.getHeraJobActionService().insert(heraAction);
                         actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
                     });
@@ -417,6 +418,7 @@ public class Master {
                                 actionNew.setJobId(String.valueOf(heraJob.getId()));
                                 actionNew.setAuto(heraJob.getAuto());
                                 actionNew.setGmtModified(new Date());
+                                actionNew.setHostGroupId(heraJob.getHostGroupId());
                                 if (!actionMap.containsKey(actionId)) {
                                     masterContext.getHeraJobActionService().insert(actionNew);
                                     actionMap.put(Long.parseLong(actionNew.getId()), actionNew);
