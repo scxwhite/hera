@@ -276,7 +276,7 @@
                                         <div class="form-group ">
                                             <label class="control-label input-sm col-sm-4">host组id:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="groupId"></label>
+                                                <label class="form-control-static" name="hostGroupId"></label>
                                             </div>
                                         </div>
                                         <div class="form-group ">
@@ -407,8 +407,9 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">host组id:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" name="groupId">
+                                                <select class="form-control" name="hostGroupId">
 
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="form-group">

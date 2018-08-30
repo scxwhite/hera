@@ -156,12 +156,10 @@ $(function () {
             },
             success: function (data) {
                 alert(data.message);
-                window.setTimeout(leftClick,100);
+                window.setTimeout(leftClick, 100);
             }
         })
     });
-
-
 
 
     $('#jobOperate [name="jobDag"]').on('click', function () {
@@ -799,6 +797,23 @@ $(function () {
         inheritConfigCM.setSize('auto', 'auto');
         selfConfigCM.setSize('auto', 'auto');
         setDefaultSelectNode(localStorage.getItem("defaultId"));
+
+        $.ajax({
+            url: base_url + "/scheduleCenter/getHostGroupIds",
+            type: "get",
+            success: function (data) {
+                var hostGroup = $('#jobMessageEdit [name="hostGroupId"]');
+
+
+                var option = '';
+                for (var key in data) {
+                    option = option + '"<option value="' + data[key] + '">' + data[key] + '</option>';
+                }
+                hostGroup.empty();
+                hostGroup.append(option);
+            }
+
+        })
     });
 });
 

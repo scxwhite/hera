@@ -60,6 +60,8 @@ public class ScheduleCenterController extends BaseHeraController {
     private HeraPermissionService heraPermissionService;
     @Autowired
     private WorkClient workClient;
+    @Autowired
+    private HeraHostGroupService heraHostGroupService;
 
     private final String JOB = "job";
     private final String GROUP = "group";
@@ -359,6 +361,19 @@ public class ScheduleCenterController extends BaseHeraController {
         return heraJobHistoryService.findLogByPage(pageHelper);
     }
 
+    @RequestMapping(value = "/getHostGroupIds", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Integer> getHostGroupIds() {
+        List<HeraHostGroup> all = heraHostGroupService.getAll();
+
+        List<Integer> res = new ArrayList<>();
+
+        for (HeraHostGroup hostGroup : all) {
+            res.add(hostGroup.getId());
+        }
+        return res;
+    }
+
     /**
      * 取消正在执行的任务
      *
@@ -466,6 +481,7 @@ public class ScheduleCenterController extends BaseHeraController {
 
         return true;
     }
+
 
     private String getuIds(Integer id) {
         List<HeraPermission> permissions = heraPermissionService.findByTargetId(id);

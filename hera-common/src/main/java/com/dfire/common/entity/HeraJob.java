@@ -80,7 +80,7 @@ public class HeraJob {
 
     private String timezone;
 
-    private String hostGroupId;
+    private int hostGroupId;
 
     private Long mustEndMinute;
 
