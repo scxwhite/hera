@@ -259,6 +259,7 @@ public class JobHandler extends AbstractHandler {
                 jobId(heraActionVo.getJobId()).
                 triggerType(TriggerTypeEnum.SCHEDULE.getId()).
                 operator(heraActionVo.getOwner()).
+                hostGroupId(heraActionVo.getHostGroupId()).
                 log(LogConstant.DEPENDENT_READY_LOG).build();
         masterContext.getHeraJobHistoryService().insert(history);
         HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
