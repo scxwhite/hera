@@ -202,30 +202,4 @@ public class DevelopCenterController extends BaseHeraController {
     }
 
 
-    /**
-     * 文件类型
-     */
-    public enum FileTypeEnum {
-        Shell("1"), Hive("2");
-        private String fileType;
-
-        @Override
-        public String toString() {
-            return fileType;
-        }
-
-        FileTypeEnum(String type) {
-            this.fileType = type;
-        }
-
-        public static FileTypeEnum parse(String fileType) {
-            Optional<FileTypeEnum> option = Arrays.asList(FileTypeEnum.values())
-                    .stream()
-                    .filter(operate -> operate.toString().equals(fileType))
-                    .findAny();
-            return option.get();
-        }
-    }
-
-
 }
