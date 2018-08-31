@@ -328,7 +328,7 @@ public class Master {
      */
     public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount) {
         retryCount++;
-        int noCompleteCount = 0;
+        int noCompleteCount = 0, retryId = -1;
         for (HeraJob heraJob : jobList) {
             //依赖任务生成版本
             if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 1) {
@@ -366,7 +366,7 @@ public class Master {
                     String actionMostDeps = "";
 
                     for (String dependency : dependencies) {
-                        if (dependenciesMap.get(dependency) == null && dependenciesMap.get(dependency).size() == 0) {
+                        if (dependenciesMap.get(dependency) == null || dependenciesMap.get(dependency).size() == 0) {
                             isComplete = false;
                             break;
                         }
@@ -385,6 +385,7 @@ public class Master {
                     //新加任务 可能无版本
                     if (!isComplete) {
                         noCompleteCount++;
+                        retryId = heraJob.getId();
                         continue;
                     } else {
                         List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
@@ -434,6 +435,8 @@ public class Master {
         }
         if (noCompleteCount > 0 && retryCount < 40) {
             generateDependJobAction(jobList, actionMap, retryCount);
+        } else if (retryCount == 40 && noCompleteCount > 0){
+            log.warn("重试ID:{}, 未找到版本个数:{} , 重试次数:{}", retryId, noCompleteCount, retryCount);
         }
     }
 
@@ -511,7 +514,7 @@ public class Master {
             if (selectWork == null) {
                 log.warn("can not get work to execute job in master");
             } else {
-                 element = masterContext.getManualQueue().poll();
+                element = masterContext.getManualQueue().poll();
                 runManualJob(selectWork, element.getJobId());
                 hasTask = true;
             }
