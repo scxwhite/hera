@@ -609,16 +609,6 @@ public class Master {
     }
 
     /**
-     * 自动调度任务执行入口，当出队列的任务获取不到执行worker的情况下，任务先进入exceptionQueue进行等待
-     *
-     * @param queue
-     */
-    private void runScheduleJobAction(Queue<JobElement> queue) {
-
-
-    }
-
-    /**
      * 调度任务执行前，先获取任务的执行重试时间间隔和重试次数
      *
      * @param workHolder
@@ -866,6 +856,11 @@ public class Master {
                 .build();
         heraJobHistory.setStatusEnum(StatusEnum.RUNNING);
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER) {
+
+            /**
+             *  check调度器等待队列是否有此任务在排队
+             *
+             */
             for (JobElement jobElement : new ArrayList<>(masterContext.getScheduleQueue())) {
                 if (jobElement.getJobId().equals(actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
@@ -875,16 +870,46 @@ public class Master {
                     break;
                 }
             }
-            for (Channel key : masterContext.getWorkMap().keySet()) {
-                MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
-                if (workHolder.getRunning().containsKey(actionId)) {
-                    heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
+            for (JobElement jobElement : new ArrayList<>(masterContext.getManualQueue())) {
+                if (jobElement.getJobId().equals(actionId)) {
+                    heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
                     break;
                 }
             }
+
+            /**
+             *  check所有的worker中是否有此任务的id在执行，如果有，不进入队列等待
+             *
+             */
+            for (Channel key : masterContext.getWorkMap().keySet()) {
+                MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
+                if (workHolder.getRunning().containsKey(actionId)) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(LogConstant.CHECK_QUEUE_LOG).append("执行worker ip " + workHolder.getChannel().localAddress());
+                    heraJobHistory.getLog().append(sb.toString());
+                    heraJobHistory.setStartTime(new Date());
+                    heraJobHistory.setEndTime(new Date());
+                    heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                    break;
+                }
+            }
+
+            for (Channel key : masterContext.getWorkMap().keySet()) {
+                MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
+                if (workHolder.getManningRunning().containsKey(actionId)) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(LogConstant.CHECK_MANUAL_QUEUE_LOG).append("执行worker ip " + workHolder.getChannel().localAddress());
+                    heraJobHistory.getLog().append(sb.toString());
+                    heraJobHistory.setStartTime(new Date());
+                    heraJobHistory.setEndTime(new Date());
+                    heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                    break;
+                }
+            }
+
         }
 
         if (heraJobHistory.getStatusEnum() == StatusEnum.RUNNING) {

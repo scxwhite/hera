@@ -1,6 +1,6 @@
 package com.dfire.core.netty.listener;
 
-import com.dfire.core.message.Protocol;
+import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.WorkContext;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,21 +19,21 @@ import java.util.concurrent.CountDownLatch;
 public class WorkResponseListener implements ResponseListener{
 
 
-    private Protocol.WebRequest request;
+    private WebRequest request;
     private WorkContext workContext;
     private Boolean receiveResult;
     private CountDownLatch latch;
-    private Protocol.WebResponse webResponse;
+    private WebResponse webResponse;
 
 
 
     @Override
-    public void onResponse(Protocol.Response response) {
+    public void onResponse(Response response) {
 
     }
 
     @Override
-    public void onWebResponse(Protocol.WebResponse response) {
+    public void onWebResponse(WebResponse response) {
         if (request.getRid() == response.getRid()) {
             workContext.getHandler().removeListener(this);
             webResponse = response;
