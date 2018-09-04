@@ -5,6 +5,7 @@ import com.dfire.common.enums.HttpCode;
 import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
+import com.dfire.config.UnCheckLogin;
 import com.dfire.config.WebSecurityConfig;
 import com.dfire.core.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,7 @@ public class LoginController {
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
+    @UnCheckLogin
     public RestfulResponse register(HeraUser user) {
         HeraUser check = heraUserService.findByName(user.getName());
         check.setIsEffective(0);
