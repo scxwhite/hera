@@ -15,7 +15,9 @@ public class LogConstant {
 
     public static final String LOST_JOB_LOG = "漏跑任务,自动恢复执行\n";
 
-    public static final String CHECK_QUEUE_LOG = "已经在队列中，无法再次运行\n";
+    public static final String CHECK_QUEUE_LOG = "已经在Schedule队列中，无法再次运行\n";
+
+    public static final String CHECK_MANUAL_QUEUE_LOG = "已经在Manual队列中，无法再次运行\n";
 
     public static final String CANCEL_JOB_LOG = "已经在队列中，无法再次运行\n";
 

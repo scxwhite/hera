@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -199,32 +197,6 @@ public class DevelopCenterController extends BaseHeraController {
     public RestfulResponse saveScript(@RequestBody HeraFile heraFile) {
         int result = heraFileService.updateContent(heraFile);
         return RestfulResponse.builder().success(true).msg("保存成功").results(result).build();
-    }
-
-
-    /**
-     * 文件类型
-     */
-    public enum FileTypeEnum {
-        Shell("1"), Hive("2");
-        private String fileType;
-
-        @Override
-        public String toString() {
-            return fileType;
-        }
-
-        FileTypeEnum(String type) {
-            this.fileType = type;
-        }
-
-        public static FileTypeEnum parse(String fileType) {
-            Optional<FileTypeEnum> option = Arrays.asList(FileTypeEnum.values())
-                    .stream()
-                    .filter(operate -> operate.toString().equals(fileType))
-                    .findAny();
-            return option.get();
-        }
     }
 
 
