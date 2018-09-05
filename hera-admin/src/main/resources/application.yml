@@ -6,8 +6,8 @@ spring:
         port: 8088
     http:
         multipart:
-          max-file-size: 30Mb
-          max-request-size: 30Mb
+          max-file-size: 100Mb
+          max-request-size: 100Mb
     freemarker:
       allow-request-override: true
       cache: false
