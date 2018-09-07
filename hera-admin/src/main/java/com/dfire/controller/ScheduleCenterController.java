@@ -85,7 +85,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @ResponseBody
     public HeraJobVo getJobMessage(Integer jobId) {
         HeraJob job = heraJobService.findById(jobId);
-        log.info("job 明细", job.toString());
+        log.info("job 明细 {}", job.getId());
         HeraJobVo heraJobVo = BeanConvertUtils.convert(job);
         heraJobVo.setInheritConfig(getInheritConfig(job.getGroupId()));
         HeraJobMonitor monitor = heraJobMonitorService.findByJobId(jobId);
