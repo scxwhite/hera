@@ -19,6 +19,7 @@ import com.dfire.config.UnCheckLogin;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,6 +43,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Controller
 @RequestMapping("/scheduleCenter")
+@Slf4j
 public class ScheduleCenterController extends BaseHeraController {
 
     @Autowired
@@ -83,6 +85,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @ResponseBody
     public HeraJobVo getJobMessage(Integer jobId) {
         HeraJob job = heraJobService.findById(jobId);
+        log.info("job 明细", job.toString());
         HeraJobVo heraJobVo = BeanConvertUtils.convert(job);
         heraJobVo.setInheritConfig(getInheritConfig(job.getGroupId()));
         HeraJobMonitor monitor = heraJobMonitorService.findByJobId(jobId);
@@ -436,6 +439,7 @@ public class ScheduleCenterController extends BaseHeraController {
 
 
     private Map<String, String> getInheritConfig(Integer groupId) {
+        log.info("group_id = {}", groupId);
         HeraGroup group;
         Map<String, String> configMap = new HashMap<>();
         while (groupId != null && groupId != 0) {
