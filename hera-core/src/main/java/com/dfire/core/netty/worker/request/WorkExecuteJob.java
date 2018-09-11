@@ -255,7 +255,7 @@ public class WorkExecuteJob {
                 history.getLog().appendHeraException(e);
             } finally {
                 HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
-                heraDebugHistoryVo.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) );
+                heraDebugHistoryVo.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                 if (exitCode == 0) {
                     heraDebugHistoryVo.setStatus(StatusEnum.SUCCESS);
                 } else {

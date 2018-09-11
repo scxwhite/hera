@@ -444,6 +444,7 @@ public class ScheduleCenterController extends BaseHeraController {
         Map<String, String> configMap = new HashMap<>();
         while (groupId != null && groupId != 0) {
             group = heraGroupService.findConfigById(groupId);
+            log.info("组信息{}}", group.getId());
             if (group.getConfigs() != null) {
                 configMap.putAll(StringUtil.convertStringToMap(group.getConfigs()));
             }

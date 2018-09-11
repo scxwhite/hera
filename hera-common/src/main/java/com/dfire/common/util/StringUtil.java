@@ -21,6 +21,7 @@ import java.util.Map;
  * @time: Created in 18:06 2018/1/7
  * @desc 字符串处理工具类
  */
+
 @Slf4j
 public class StringUtil {
 
@@ -29,6 +30,7 @@ public class StringUtil {
      * @return
      * @desc 登陆密码md5加密
      */
+
     public static String EncoderByMd5(String sourceStr) {
         String result = "";
         int i;
@@ -54,6 +56,12 @@ public class StringUtil {
         return buf.toString();
     }
 
+    /**
+     * job中的config解析成map
+     *
+     * @param config
+     * @return
+     */
     public static Map<String, String> convertStringToMap(String config) {
         if (config == null || "{}".equals(config)) {
             return new HashMap<>(0);
@@ -70,6 +78,12 @@ public class StringUtil {
         return map;
     }
 
+    /**
+     * config转成json
+     *
+     * @param config
+     * @return
+     */
     public static String convertMapToString(Map<String, String> config) {
         if (config == null) {
             return null;
@@ -90,7 +104,7 @@ public class StringUtil {
         JSONObject jsonObject = JSONObject.parseObject(processor);
         String id = jsonObject.getString("id");
         if (StringUtils.isNotBlank(id)) {
-            if (id.equals("download")) {
+            if (("download").equals(id)) {
                 result = new DownProcessor();
                 list.add(result);
             }
@@ -117,6 +131,12 @@ public class StringUtil {
         return id1.equals(id2);
     }
 
+    /**
+     * job resource转换为List
+     *
+     * @param resource
+     * @return
+     */
     public static List<Map<String, String>> convertResources(String resource) {
         List<Map<String, String>> tempRes = new ArrayList<>();
         JSONArray resArray = new JSONArray();

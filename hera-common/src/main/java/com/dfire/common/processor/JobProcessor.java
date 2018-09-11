@@ -21,10 +21,12 @@ public class JobProcessor implements Processor {
     private String jobId;
     private Map<String, String> kvConfig = new HashMap<>();
 
+    @Override
     public String getId() {
         return "JobProcessor";
     }
 
+    @Override
     public String getConfig() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("actionId", jobId);
@@ -36,6 +38,7 @@ public class JobProcessor implements Processor {
         return jsonObject.toString();
     }
 
+    @Override
     public void parse(String config) {
         JSONObject jsonObject = JSONObject.parseObject(config);
         jobId = jsonObject.getString("actionId");
