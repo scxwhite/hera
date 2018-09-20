@@ -32,7 +32,6 @@ public class StringUtil {
      */
 
     public static String EncoderByMd5(String sourceStr) {
-        String result = "";
         int i;
         StringBuffer buf = new StringBuffer("");
         MessageDigest md = null;
