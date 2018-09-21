@@ -88,10 +88,10 @@ public class HeraJobServiceImpl implements HeraJobService {
         jobs.sort(Comparator.comparing(x -> x.getName().trim()));
         List<HeraJobTreeNodeVo> list = groups.stream()
                 .filter(group -> group.getExisted() == 1)
-                .map(g -> HeraJobTreeNodeVo.builder().id(g.getId() + "-p").parent(g.getParent() + "-p").directory(g.getDirectory()).isParent(true).name(g.getName() + "(" + g.getId() + ")").build()
+                .map(g -> HeraJobTreeNodeVo.builder().id(g.getId() + "").parent(g.getParent() + "").directory(g.getDirectory()).isParent(true).name(g.getName() + "(" + g.getId() + ")").build()
                 ).collect(Collectors.toList());
         List<HeraJobTreeNodeVo> jobList = jobs.stream()
-                .map(job -> HeraJobTreeNodeVo.builder().id(job.getId() + "").parent(job.getGroupId() + "-p").isParent(false).name(job.getName() + "(" + job.getId() + ")").build()).collect(Collectors.toList());
+                .map(job -> HeraJobTreeNodeVo.builder().id(job.getId() + "").parent(job.getGroupId() + "").isParent(false).name(job.getName() + "(" + job.getId() + ")").build()).collect(Collectors.toList());
         list.addAll(jobList);
         return list;
     }
@@ -132,9 +132,7 @@ public class HeraJobServiceImpl implements HeraJobService {
                     return new RestfulResponse(false, "出现环形依赖，请检测依赖关系:" + dagLoopUtil.getLoop());
                 }
             }
-
         }
-
 
         Integer line = this.update(heraJob);
         if (line == null || line == 0) {
@@ -176,12 +174,14 @@ public class HeraJobServiceImpl implements HeraJobService {
         for (JobRelation r : list) {
             String id = r.getId();
             String dependencies = r.getDependencies();
-            if (dependencies == null || dependencies.equals(""))
+            if (dependencies == null || dependencies.equals("")) {
                 continue;
+            }
             String[] ds = dependencies.split(",");
             for (int i = 0; i < ds.length; i++) {
-                if (map.get(ds[i]) == null)
+                if (map.get(ds[i]) == null) {
                     continue;
+                }
                 JobRelation jr = new JobRelation();
                 jr.setId(id);
                 jr.setName(map.get(id));
@@ -243,7 +243,7 @@ public class HeraJobServiceImpl implements HeraJobService {
      * @param node       当前头节点
      * @param graph      所有任务的关系图
      * @param type       展示类型  0:任务进度分析   1：影响分析
-     * @return Map<String       ,       Object>
+     * @return Map<String               ,               Object>
      */
     private Map<String, Object> buildCurrJobGraph(Map<String, GraphNode> historyMap, GraphNode node, DirectionGraph graph, Integer type) {
         String start = "2dfire_task_start_signal";
