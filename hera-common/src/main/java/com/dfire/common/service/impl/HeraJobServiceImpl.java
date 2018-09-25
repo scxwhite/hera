@@ -88,10 +88,22 @@ public class HeraJobServiceImpl implements HeraJobService {
         jobs.sort(Comparator.comparing(x -> x.getName().trim()));
         List<HeraJobTreeNodeVo> list = groups.stream()
                 .filter(group -> group.getExisted() == 1)
-                .map(g -> HeraJobTreeNodeVo.builder().id(g.getId() + "").parent(g.getParent() + "").directory(g.getDirectory()).isParent(true).name(g.getName() + "(" + g.getId() + ")").build()
-                ).collect(Collectors.toList());
+                .map(g -> HeraJobTreeNodeVo.builder()
+                        .id(g.getId() + "")
+                        .parent(g.getParent() + "")
+                        .directory(g.getDirectory())
+                        .isParent(true)
+                        .name(g.getName() + "(" + g.getId() + ")")
+                        .build())
+                .collect(Collectors.toList());
         List<HeraJobTreeNodeVo> jobList = jobs.stream()
-                .map(job -> HeraJobTreeNodeVo.builder().id(job.getId() + "").parent(job.getGroupId() + "").isParent(false).name(job.getName() + "(" + job.getId() + ")").build()).collect(Collectors.toList());
+                .map(job -> HeraJobTreeNodeVo.builder()
+                        .id(job.getId() + "")
+                        .parent(job.getGroupId() + "")
+                        .isParent(false)
+                        .name(job.getName() + "(" + job.getId() + ")")
+                        .build())
+                .collect(Collectors.toList());
         list.addAll(jobList);
         return list;
     }

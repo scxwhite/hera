@@ -119,7 +119,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
 
     @Override
     public Set<String> getPropertyKeys() {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (String s : properties.getPropertyKeys()) {
             String render = render(s);
             if (render != null) {
