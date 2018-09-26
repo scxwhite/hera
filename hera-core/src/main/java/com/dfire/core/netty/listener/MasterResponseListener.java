@@ -1,6 +1,7 @@
 package com.dfire.core.netty.listener;
 
-import com.dfire.core.message.Protocol;
+import com.dfire.core.message.Protocol.*;
+import com.dfire.core.netty.listener.adapter.ResponseListenerAdapter;
 import com.dfire.core.netty.master.MasterContext;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,15 +17,16 @@ import java.util.concurrent.CountDownLatch;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MasterResponseListener implements ResponseListener {
-    private Protocol.Request request;
+public class MasterResponseListener extends ResponseListenerAdapter {
+
+    private Request request;
     private MasterContext context;
     private Boolean receiveResult;
     private CountDownLatch latch;
-    private Protocol.Response response;
+    private Response response;
 
     @Override
-    public void onResponse(Protocol.Response response) {
+    public void onResponse(Response response) {
         if (response.getRid() == request.getRid()) {
             context.getHandler().removeListener(this);
             this.response = response;
@@ -33,8 +35,4 @@ public class MasterResponseListener implements ResponseListener {
         }
     }
 
-    @Override
-    public void onWebResponse(Protocol.WebResponse webResponse) {
-
-    }
 }

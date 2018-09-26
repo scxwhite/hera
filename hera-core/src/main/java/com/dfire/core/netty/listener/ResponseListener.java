@@ -7,9 +7,19 @@ import com.dfire.core.message.Protocol.*;
  * @time: Created in 14:48 2018/1/10
  * @desc  web请求在netty中的handler处理响应监听
  */
-public interface ResponseListener {
+public abstract class ResponseListener {
 
-     void onResponse(Response response);
+     /**
+      * 自动调度层消息response
+      *
+      * @param response
+      */
+     public abstract void onResponse(Response response);
 
-     void onWebResponse(WebResponse webResponse);
+     /**
+      * 页面任务执行请求response
+      *
+      * @param webResponse
+      */
+     public abstract void onWebResponse(WebResponse webResponse);
 }
