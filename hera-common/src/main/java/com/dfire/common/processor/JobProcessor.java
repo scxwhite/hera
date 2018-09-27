@@ -32,7 +32,10 @@ public class JobProcessor implements Processor {
         jsonObject.put("actionId", jobId);
         JSONObject kv = new JSONObject();
         if (kvConfig != null) {
-            kvConfig.keySet().stream().filter(key -> key.startsWith("instance.")).forEach(value -> kv.put(value, kvConfig.get(value)));
+            kvConfig.keySet()
+                    .stream()
+                    .filter(key -> key.startsWith("instance."))
+                    .forEach(value -> kv.put(value, kvConfig.get(value)));
         }
         jsonObject.put("kvConfig", kv);
         return jsonObject.toString();
