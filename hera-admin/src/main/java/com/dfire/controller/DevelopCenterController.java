@@ -6,6 +6,7 @@ import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.common.vo.RestfulResponse;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +57,7 @@ public class DevelopCenterController extends BaseHeraController {
     @ResponseBody
     public String addFileAndFolder(HeraFile heraFile) {
         heraFile.setOwner(getOwner());
+        heraFile.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
         String id = heraFileService.insert(heraFile);
         return id;
     }

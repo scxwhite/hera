@@ -23,8 +23,7 @@ public interface JobManagerMapper {
      * @return
      */
 
-    @Select(" \n" +
-            "select \n" +
+    @Select("select \n" +
             "his.job_id,job.name as job_name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator,count(*) as times\n" +
             "from \n" +
             "(select job_id,start_time start_time,end_time,execute_host,status,operator from hera_action_history \n" +

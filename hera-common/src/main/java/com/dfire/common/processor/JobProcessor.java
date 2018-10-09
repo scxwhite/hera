@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -18,12 +17,14 @@ import java.util.stream.Collectors;
 @Data
 public class JobProcessor implements Processor {
 
+    public static final String name = "JobProcessor";
+
     private String jobId;
-    private Map<String, String> kvConfig = new HashMap<>();
+    private Map<String, String> kvConfig;
 
     @Override
     public String getId() {
-        return "JobProcessor";
+        return name;
     }
 
     @Override
