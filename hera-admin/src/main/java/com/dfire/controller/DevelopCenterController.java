@@ -7,8 +7,8 @@ import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.common.vo.RestfulResponse;
 import com.dfire.core.config.HeraGlobalEnvironment;
-import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.protocol.JobExecuteKind;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -114,7 +114,7 @@ public class DevelopCenterController extends BaseHeraController {
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
-            workClient.executeJobFromWeb(ExecuteKind.DebugKind, newId);
+            workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
             return file.getId();
         });
     }
@@ -152,7 +152,7 @@ public class DevelopCenterController extends BaseHeraController {
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
-            workClient.executeJobFromWeb(ExecuteKind.DebugKind, newId);
+            workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
             return file.getId();
         });
     }
@@ -181,7 +181,7 @@ public class DevelopCenterController extends BaseHeraController {
     @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
     @ResponseBody
     public WebAsyncTask<String> cancelJob(String id) throws ExecutionException, InterruptedException {
-        ExecuteKind kind = ExecuteKind.DebugKind;
+        JobExecuteKind.ExecuteKind kind = JobExecuteKind.ExecuteKind.DebugKind;
         return new WebAsyncTask<>(3000, () ->
                 workClient.cancelJobFromWeb(kind, id));
 

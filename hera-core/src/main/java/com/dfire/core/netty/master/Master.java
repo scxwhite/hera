@@ -22,12 +22,13 @@ import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
 import com.dfire.core.message.HeartBeatInfo;
-import com.dfire.core.message.Protocol;
-import com.dfire.core.message.Protocol.ExecuteKind;
-import com.dfire.core.message.Protocol.Response;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.util.CronParse;
+import com.dfire.protocol.JobExecuteKind;
+import com.dfire.protocol.ResponseStatus;
+import com.dfire.protocol.RpcResponse;
+import com.sun.mail.iap.Protocol;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -41,6 +42,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -569,11 +572,11 @@ public class Master {
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(historyVo));
 
             Exception exception = null;
-            Response response = null;
-            Future<Response> future = null;
+            RpcResponse.Response response = null;
+            Future<RpcResponse.Response> future = null;
             try {
                 future = new MasterExecuteJob().executeJob(masterContext, workHolder,
-                        ExecuteKind.ManualKind, history.getId());
+                        JobExecuteKind.ExecuteKind.ManualKind, history.getId());
                 response = future.get();
             } catch (Exception e) {
                 exception = e;
@@ -585,7 +588,7 @@ public class Master {
                 masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
 
             }
-            boolean success = response != null && response.getStatusEnum() != null && response.getStatusEnum() == Protocol.Status.OK;
+            boolean success = response != null && response.getStatusEnum() != null && response.getStatusEnum() == ResponseStatus.Status.OK;
             log.info("historyId 执行结果" + historyId + "---->" + response.getStatusEnum());
 
             if (!success) {
@@ -686,11 +689,11 @@ public class Master {
         masterContext.getHeraJobActionService().updateStatus(jobStatus);
         heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
-        Response response = null;
-        Future<Response> future = null;
+        RpcResponse.Response response = null;
+        Future<RpcResponse.Response> future = null;
         try {
             future = new MasterExecuteJob().executeJob(masterContext, work,
-                    ExecuteKind.ScheduleKind, heraJobHistory.getId());
+                    ScheduleKind, heraJobHistory.getId());
             response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
         } catch (Exception e) {
             response = null;
@@ -700,7 +703,7 @@ public class Master {
             heraJobHistoryVo.setStatusEnum(jobStatus.getStatus());
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
         }
-        boolean success = response != null && response.getStatusEnum() == Protocol.Status.OK;
+        boolean success = response != null && response.getStatusEnum() == ResponseStatus.Status.OK;
         log.debug("job_id 执行结果" + actionId + "---->" + response.getStatusEnum());
 
         if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
@@ -745,10 +748,10 @@ public class Master {
             history.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
             masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
             Exception exception = null;
-            Response response = null;
-            Future<Response> future = null;
+            RpcResponse.Response response = null;
+            Future<RpcResponse.Response> future = null;
             try {
-                future = new MasterExecuteJob().executeJob(masterContext, workHolder, ExecuteKind.DebugKind, jobId);
+                future = new MasterExecuteJob().executeJob(masterContext, workHolder, JobExecuteKind.ExecuteKind.DebugKind, jobId);
                 response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
             } catch (Exception e) {
                 exception = e;
@@ -756,7 +759,7 @@ public class Master {
                 response = null;
                 log.error(String.format("debugId:%s run failed", jobId), e);
             }
-            boolean success = response != null && response.getStatusEnum() == Protocol.Status.OK;
+            boolean success = response != null && response.getStatusEnum() == ResponseStatus.Status.OK;
             if (!success) {
                 exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
                 log.info("debug job error");

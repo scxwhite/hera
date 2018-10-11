@@ -1,14 +1,12 @@
 package com.dfire.core.netty.master.response;
 
-import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.MasterResponseListener;
-import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.util.AtomicIncrease;
+import com.dfire.protocol.*;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -21,21 +19,21 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class MasterHandleCancelJob {
 
-    public Future<Response> cancel(final MasterContext context, Channel channel, ExecuteKind kind, String jobId) {
-        CancelMessage cancelMessage = CancelMessage.newBuilder()
+    public Future<RpcResponse.Response> cancel(final MasterContext context, Channel channel, JobExecuteKind.ExecuteKind kind, String jobId) {
+        RpcCancelMessage.CancelMessage cancelMessage = RpcCancelMessage.CancelMessage.newBuilder()
                 .setEk(kind)
                 .setId(jobId)
                 .build();
-        final Request request = Request.newBuilder()
+        final RpcRequest.Request request = RpcRequest.Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
-                .setOperate(Operate.Cancel)
+                .setOperate(RpcOperate.Operate.Cancel)
                 .setBody(cancelMessage.toByteString())
                 .build();
-        SocketMessage socketMessage = SocketMessage.newBuilder()
-                .setKind(SocketMessage.Kind.REQUEST)
+        RpcSocketMessage.SocketMessage socketMessage = RpcSocketMessage.SocketMessage.newBuilder()
+                .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
-        Future<Response> future = context.getThreadPool().submit(() -> {
+        Future<RpcResponse.Response> future = context.getThreadPool().submit(() -> {
             final CountDownLatch latch = new CountDownLatch(1);
             MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
             context.getHandler().addListener(responseListener);

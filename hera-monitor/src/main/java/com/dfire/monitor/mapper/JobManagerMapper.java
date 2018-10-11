@@ -23,16 +23,13 @@ public interface JobManagerMapper {
      * @return
      */
 
-    @Select("select \n" +
-            "his.job_id,job.name as job_name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator,count(*) as times\n" +
-            "from \n" +
-            "(select job_id,start_time start_time,end_time,execute_host,status,operator from hera_action_history \n" +
-            "\n" +
-            "where left(start_time,10) = CURRENT_DATE() and status = #{status,jdbcType=VARCHAR}) his\n" +
-            "      \n" +
-            "left join hera_job job on his.job_id = job.id\n" +
-            "\n" +
-            "group by job_id\n" +
+    @Select("select" +
+            "his.job_id,job.name as job_name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator,count(*) as times " +
+            "from" +
+            "(select job_id,start_time start_time,end_time,execute_host,status,operator from hera_action_history " +
+            "where left(start_time,10) = CURRENT_DATE() and status = #{status,jdbcType=VARCHAR}) his " +
+            "left join hera_job job on his.job_id = job.id" +
+            "group by job_id" +
             "order by job_id")
     List<JobHistoryVo> findAllJobHistoryByStatus(String status);
 
@@ -88,14 +85,14 @@ public interface JobManagerMapper {
      * @param curDate
      * @return
      */
-    @Select("select status,count(1) as num\n" +
-            "        from\n" +
-            "        (\n" +
-            "        select job_id,substring_index(group_concat(status order by start_time desc),\",\",1) as status\n" +
-            "        from hera_action_history\n" +
-            "        where left(start_time,10)=#{selectDate,jdbcType=VARCHAR}\n" +
-            "        group by job_id\n" +
-            "        ) t\n" +
+    @Select("select status,count(1) as num " +
+            "        from " +
+            "        ( " +
+            "        select job_id,substring_index(group_concat(status order by start_time desc),\",\",1) as status " +
+            "        from hera_action_history " +
+            "        where left(start_time,10)=#{selectDate,jdbcType=VARCHAR} " +
+            "        group by job_id " +
+            "        ) t " +
             "        group by status")
     List<JobStatusNum> findJobDetailByDate(String curDate);
 
@@ -105,13 +102,11 @@ public interface JobManagerMapper {
      * @param status
      * @return
      */
-    @Select(" select count(1) num ,status, LEFT(start_time,10) curDate\n" +
-            "        from  hera_action_history\n" +
-            "        where\n" +
-
-            "        DATE_SUB(CURDATE(), INTERVAL 5 DAY) <= start_time\n" +
-
-            "        and status = #{status,jdbcType=VARCHAR}\n" +
+    @Select(" select count(1) num ,status, LEFT(start_time,10) curDate " +
+            "        from  hera_action_history " +
+            "        where " +
+            "        DATE_SUB(CURDATE(), INTERVAL 5 DAY) <= start_time " +
+            "        and status = #{status,jdbcType=VARCHAR} " +
             "        GROUP BY LEFT(start_time,10)")
     List<JobStatusNum> findJobDetailByStatus(String status);
 }

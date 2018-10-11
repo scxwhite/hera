@@ -3,10 +3,10 @@ package com.dfire.core.netty.master.response;
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.util.DateUtil;
 import com.dfire.core.message.HeartBeatInfo;
-import com.dfire.core.message.Protocol.HeartBeatMessage;
-import com.dfire.core.message.Protocol.Request;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
+import com.dfire.protocol.RpcHeartBeatMessage;
+import com.dfire.protocol.RpcRequest;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MasterHandleHeartBeat {
 
-    public void handleHeartBeat(MasterContext masterContext, Channel channel, Request request) {
+    public void handleHeartBeat(MasterContext masterContext, Channel channel, RpcRequest.Request request) {
         MasterWorkHolder worker = masterContext.getWorkMap().get(channel);
         HeartBeatInfo heartBeatInfo = new HeartBeatInfo();
-        HeartBeatMessage heartBeatMessage;
+        RpcHeartBeatMessage.HeartBeatMessage heartBeatMessage;
         try {
-            heartBeatMessage = HeartBeatMessage.newBuilder().mergeFrom(request.getBody()).build();
+            heartBeatMessage = RpcHeartBeatMessage.HeartBeatMessage.newBuilder().mergeFrom(request.getBody()).build();
             heartBeatInfo.setHost(heartBeatMessage.getHost());
             heartBeatInfo.setMemRate(heartBeatMessage.getMemRate());
             heartBeatInfo.setMemTotal(heartBeatMessage.getMemTotal());

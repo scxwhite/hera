@@ -1,14 +1,14 @@
 package com.dfire.core.netty.worker.request;
 
 import com.dfire.core.lock.DistributeLock;
-import com.dfire.core.message.Protocol.HeartBeatMessage;
-import com.dfire.core.message.Protocol.Operate;
-import com.dfire.core.message.Protocol.Request;
-import com.dfire.core.message.Protocol.SocketMessage;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
+import com.dfire.protocol.RpcHeartBeatMessage;
+import com.dfire.protocol.RpcOperate;
+import com.dfire.protocol.RpcRequest;
+import com.dfire.protocol.RpcSocketMessage;
 import io.netty.channel.ChannelFuture;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +25,7 @@ public class WorkerHandlerHeartBeat {
         memUseRateJob.readMemUsed();
         CpuLoadPerCoreJob loadPerCoreJob = new CpuLoadPerCoreJob();
         loadPerCoreJob.run();
-        HeartBeatMessage hbm = HeartBeatMessage.newBuilder()
+        RpcHeartBeatMessage.HeartBeatMessage hbm = RpcHeartBeatMessage.HeartBeatMessage.newBuilder()
                 .setHost(DistributeLock.host)
                 .setMemTotal(memUseRateJob.getMemTotal())
                 .setMemRate(memUseRateJob.getRate())
@@ -35,13 +35,13 @@ public class WorkerHandlerHeartBeat {
                 .addAllManualRunnings(context.getManualRunning().keySet())
                 .addAllRunnings(context.getRunning().keySet())
                 .build();
-        Request request = Request.newBuilder().
+        RpcRequest.Request request = RpcRequest.Request.newBuilder().
                         setRid(AtomicIncrease.getAndIncrement()).
-                        setOperate(Operate.HeartBeat).
+                        setOperate(RpcOperate.Operate.HeartBeat).
                         setBody(hbm.toByteString()).
                         build();
-        SocketMessage message = SocketMessage.newBuilder().
-                setKind(SocketMessage.Kind.REQUEST).
+        RpcSocketMessage.SocketMessage message = RpcSocketMessage.SocketMessage.newBuilder().
+                setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST).
                 setBody(request.toByteString()).
                 build();
         return context.getServerChannel().writeAndFlush(message);

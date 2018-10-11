@@ -1,0 +1,23 @@
+syntax = "proto2";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcOperate";
+
+enum Operate {
+
+    //心跳 worker->server
+    HeartBeat = 0;
+
+    //调度执行命令 server->worker
+    Schedule = 1;
+
+    //取消命令 server->worker
+    Cancel = 2;
+
+    //调试命令 server->worker
+    Debug = 3;
+
+    //手动执行命令
+    Manual = 4;
+}

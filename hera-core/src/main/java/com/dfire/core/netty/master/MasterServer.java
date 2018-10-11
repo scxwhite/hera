@@ -1,6 +1,6 @@
 package com.dfire.core.netty.master;
 
-import com.dfire.core.message.Protocol;
+import com.dfire.protocol.RpcSocketMessage;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -46,7 +46,7 @@ public class MasterServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
-                                .addLast("decoder", new ProtobufDecoder(Protocol.SocketMessage.getDefaultInstance()))
+                                .addLast("decoder", new ProtobufDecoder(RpcSocketMessage.SocketMessage.getDefaultInstance()))
                                 .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
                                 .addLast("encoder", new ProtobufEncoder())
                                 .addLast(new IdleStateHandler(0, 0, 10, TimeUnit.SECONDS))

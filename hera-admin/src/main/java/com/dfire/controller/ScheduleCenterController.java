@@ -17,8 +17,8 @@ import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.UnCheckLogin;
 import com.dfire.core.config.HeraGlobalEnvironment;
-import com.dfire.core.message.Protocol.ExecuteKind;
 import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.protocol.JobExecuteKind;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -231,7 +231,7 @@ public class ScheduleCenterController extends BaseHeraController {
         return new WebAsyncTask<>(3000, () -> {
             try {
 
-                workClient.executeJobFromWeb(ExecuteKind.ManualKind, actionHistory.getId());
+                workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.ManualKind, actionHistory.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -352,7 +352,7 @@ public class ScheduleCenterController extends BaseHeraController {
             return new WebAsyncTask<>(() -> ERROR_MSG);
         }
         return new WebAsyncTask<>(3000, () ->
-                workClient.generateActionFromWeb(ExecuteKind.ManualKind, jobId));
+                workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, jobId));
     }
 
     /**
@@ -390,13 +390,13 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         HeraJobHistory history = heraJobHistoryService.findById(historyId);
-        ExecuteKind kind;
+        JobExecuteKind.ExecuteKind kind;
         if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
-            kind = ExecuteKind.ManualKind;
+            kind = JobExecuteKind.ExecuteKind.ManualKind;
         } else {
-            kind = ExecuteKind.ScheduleKind;
+            kind = JobExecuteKind.ExecuteKind.ScheduleKind;
         }
-        ExecuteKind finalKind = kind;
+        JobExecuteKind.ExecuteKind finalKind = kind;
         return new WebAsyncTask<>(3000, () ->
                 workClient.cancelJobFromWeb(finalKind, historyId));
     }

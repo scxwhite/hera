@@ -23,6 +23,7 @@
         <hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
         <lang3.version>3.4</lang3.version>
         <hera.common.version>1.0-SNAPSHOT</hera.common.version>
+        <hera.protocol.version>1.0-SNAPSHOT</hera.protocol.version>
     </properties>
 
     <dependencies>
@@ -147,6 +148,12 @@
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-common</artifactId>
             <version>${hera.common.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.dfire.hera</groupId>
+            <artifactId>hera-protocol</artifactId>
+            <version>${hera.protocol.version}</version>
         </dependency>
 
         <dependency>

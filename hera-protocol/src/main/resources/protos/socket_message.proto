@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcSocketMessage";
+
+//netty rpc通信消息体
+message SocketMessage {
+
+    //rpc通信消息类型
+    enum Kind {
+        REQUEST = 0;
+        RESPONSE = 1;
+        WEB_REQUEST = 2;
+        WEB_RESPONSE = 3;
+    }
+    Kind kind = 1;
+
+    //消息体数据，字节码存储
+    bytes body = 2;
+}

@@ -9,12 +9,12 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.lock.DistributeLock;
-import com.dfire.core.message.Protocol.ExecuteKind;
-import com.dfire.core.message.Protocol.SocketMessage;
-import com.dfire.core.message.Protocol.Status;
-import com.dfire.core.message.Protocol.WebResponse;
 import com.dfire.core.netty.worker.request.*;
 import com.dfire.core.schedule.ScheduleInfoLog;
+import com.dfire.protocol.JobExecuteKind;
+import com.dfire.protocol.ResponseStatus;
+import com.dfire.protocol.RpcSocketMessage;
+import com.dfire.protocol.RpcWebResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -95,7 +95,7 @@ public class WorkClient {
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline().addLast(new IdleStateHandler(0, 0, 5, TimeUnit.SECONDS))
                                 .addLast("frameDecoder", new ProtobufVarint32FrameDecoder())
-                                .addLast("decoder", new ProtobufDecoder(SocketMessage.getDefaultInstance()))
+                                .addLast("decoder", new ProtobufDecoder(RpcSocketMessage.SocketMessage.getDefaultInstance()))
                                 .addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender())
                                 .addLast("encoder", new ProtobufEncoder())
                                 .addLast(new WorkHandler(workContext));
@@ -338,31 +338,31 @@ public class WorkClient {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        WebResponse response = new WorkerHandleWebExecute().handleWebExecute(workContext, kind, id).get();
-        if (response.getStatus() == Status.ERROR) {
+    public void executeJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse response = new WorkerHandleWebExecute().handleWebExecute(workContext, kind, id).get();
+        if (response.getStatus() == ResponseStatus.Status.ERROR) {
             log.error("netty manual web request get jobStatus error");
         }
     }
 
-    public String cancelJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
-        if (webResponse.getStatus() == Status.ERROR) {
+    public String cancelJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
+        if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
             log.error("cancel from web exception");
         }
         return "cancel job success";
     }
 
     public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {
-        WebResponse webResponse = new WorkHandleWebUpdate().handleUpdate(workContext, jobId).get();
-        if (webResponse.getStatus() == Status.ERROR) {
+        RpcWebResponse.WebResponse webResponse = new WorkHandleWebUpdate().handleUpdate(workContext, jobId).get();
+        if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
             log.error("cancel from web exception");
         }
     }
 
-    public String generateActionFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        WebResponse response = new WorkerHandleWebAction().handleWebAction(workContext, kind, id).get();
-        if (response.getStatus() == Status.ERROR) {
+    public String generateActionFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse response = new WorkerHandleWebAction().handleWebAction(workContext, kind, id).get();
+        if (response.getStatus() == ResponseStatus.Status.ERROR) {
             log.error("generate action error");
             return "生成版本失败";
         }

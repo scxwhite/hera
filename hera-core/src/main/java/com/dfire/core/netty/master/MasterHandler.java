@@ -1,9 +1,10 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.common.service.EmailService;
-import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.*;
+import com.dfire.protocol.*;
+import com.dfire.protocol.RpcSocketMessage.*;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -84,13 +85,13 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         switch (socketMessage.getKind()) {
             //心跳
             case REQUEST:
-                Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                if (request.getOperate() == Operate.HeartBeat) {
+                RpcRequest.Request request = RpcRequest.Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                if (request.getOperate() == RpcOperate.Operate.HeartBeat) {
                     masterDoHeartBeat.handleHeartBeat(masterContext, channel, request);
                 }
                 break;
             case WEB_REQUEST:
-                final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                final RpcWebRequest.WebRequest webRequest = RpcWebRequest.WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 log.info("master receive message :{}", webRequest.getOperate().getNumber());
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
@@ -120,12 +121,12 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 break;
             case RESPONSE:
                 for (ResponseListener listener : listeners) {
-                    listener.onResponse(Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                    listener.onResponse(RpcResponse.Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
                 break;
             case WEB_RESPONSE:
                 for (ResponseListener listener : listeners) {
-                    listener.onWebResponse(WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                    listener.onWebResponse(RpcWebResponse.WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
                 break;
             default:
@@ -175,7 +176,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    private SocketMessage wrapper(WebResponse response) {
+    private SocketMessage wrapper(RpcWebResponse.WebResponse response) {
         return SocketMessage.newBuilder().setKind(SocketMessage.Kind.WEB_RESPONSE).setBody(response.toByteString()).build();
     }
 
@@ -192,9 +193,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     private class ChannelResponse {
         Channel     channel;
-        WebResponse webResponse;
+        RpcWebResponse.WebResponse webResponse;
 
-        public ChannelResponse(Channel channel, WebResponse webResponse) {
+        public ChannelResponse(Channel channel, RpcWebResponse.WebResponse webResponse) {
             this.channel = channel;
             this.webResponse = webResponse;
         }

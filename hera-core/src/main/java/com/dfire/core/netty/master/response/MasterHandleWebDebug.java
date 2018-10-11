@@ -1,9 +1,12 @@
 package com.dfire.core.netty.master.response;
 
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
-import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.queue.JobElement;
+import com.dfire.protocol.ResponseStatus;
+import com.dfire.protocol.RpcWebOperate;
+import com.dfire.protocol.RpcWebRequest;
+import com.dfire.protocol.RpcWebResponse.*;
 
 import java.util.Queue;
 
@@ -14,7 +17,7 @@ import java.util.Queue;
  */
 public class MasterHandleWebDebug {
 
-    public WebResponse handleWebDebug(MasterContext context, WebRequest request) {
+    public WebResponse handleWebDebug(MasterContext context, RpcWebRequest.WebRequest request) {
 
         String debugId = request.getId();
         Queue<JobElement> queue = context.getDebugQueue();
@@ -23,8 +26,8 @@ public class MasterHandleWebDebug {
             if (jobElement.getJobId().equals(debugId)) {
                 response = WebResponse.newBuilder()
                         .setRid(request.getRid())
-                        .setOperate(WebOperate.ExecuteDebug)
-                        .setStatus(Status.ERROR)
+                        .setOperate(RpcWebOperate.WebOperate.ExecuteDebug)
+                        .setStatus(ResponseStatus.Status.ERROR)
                         .setErrorText("任务已经在队列中")
                         .build();
                 return response;
@@ -34,8 +37,8 @@ public class MasterHandleWebDebug {
         context.getMaster().debug(debugHistory);
         return WebResponse.newBuilder()
                 .setRid(request.getRid())
-                .setOperate(WebOperate.ExecuteDebug)
-                .setStatus(Status.OK)
+                .setOperate(RpcWebOperate.WebOperate.ExecuteDebug)
+                .setStatus(ResponseStatus.Status.OK)
                 .build();
     }
 

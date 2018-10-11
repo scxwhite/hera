@@ -1,7 +1,8 @@
 package com.dfire.core.netty.listener.adapter;
 
-import com.dfire.core.message.Protocol;
 import com.dfire.core.netty.listener.ResponseListener;
+import com.dfire.protocol.RpcResponse;
+import com.dfire.protocol.RpcWebResponse;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -12,12 +13,12 @@ public class ResponseListenerAdapter extends ResponseListener {
 
 
     @Override
-    public void onResponse(Protocol.Response response) {
+    public void onResponse(RpcResponse.Response response) {
 
     }
 
     @Override
-    public void onWebResponse(Protocol.WebResponse webResponse) {
+    public void onWebResponse(RpcWebResponse.WebResponse webResponse) {
 
     }
 }

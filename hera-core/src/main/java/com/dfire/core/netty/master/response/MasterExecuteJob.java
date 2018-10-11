@@ -1,18 +1,15 @@
 package com.dfire.core.netty.master.response;
 
 import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.vo.HeraJobHistoryVo;
-import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.MasterResponseListener;
-import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.util.AtomicIncrease;
+import com.dfire.protocol.*;
+import com.dfire.protocol.JobExecuteKind.ExecuteKind;
+import com.dfire.protocol.RpcResponse.Response;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sound.midi.Soundbank;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -47,29 +44,29 @@ public class MasterExecuteJob {
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder holder, String jobId) {
         holder.getManningRunning().put(jobId, false);
 
-        ExecuteMessage message = ExecuteMessage.newBuilder().setActionId(jobId).build();
-        final Request request = Request.newBuilder()
+        RpcExecuteMessage.ExecuteMessage message = RpcExecuteMessage.ExecuteMessage.newBuilder().setActionId(jobId).build();
+        final RpcRequest.Request request = RpcRequest.Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
-                .setOperate(Operate.Manual)
+                .setOperate(RpcOperate.Operate.Manual)
                 .setBody(message.toByteString())
                 .build();
-        SocketMessage socketMessage = SocketMessage.newBuilder()
-                .setKind(SocketMessage.Kind.REQUEST)
+        RpcSocketMessage.SocketMessage socketMessage = RpcSocketMessage.SocketMessage.newBuilder()
+                .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
         Future<Response> future = context.getThreadPool().submit(() -> {
-                final CountDownLatch latch = new CountDownLatch(1);
-                MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
-                context.getHandler().addListener(responseListener);
-                try {
-                    latch.await(3, TimeUnit.HOURS);
-                    if (!responseListener.getReceiveResult()) {
-                        log.error("手动任务信号丢失，三小时未收到work返回：{}", jobId);
-                    }
-                } finally {
-                    holder.getRunning().remove(jobId);
+            final CountDownLatch latch = new CountDownLatch(1);
+            MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+            context.getHandler().addListener(responseListener);
+            try {
+                latch.await(3, TimeUnit.HOURS);
+                if (!responseListener.getReceiveResult()) {
+                    log.error("手动任务信号丢失，三小时未收到work返回：{}", jobId);
                 }
-                return responseListener.getResponse();
+            } finally {
+                holder.getRunning().remove(jobId);
+            }
+            return responseListener.getResponse();
         });
         holder.getChannel().writeAndFlush(socketMessage);
         return future;
@@ -88,30 +85,30 @@ public class MasterExecuteJob {
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(actionHistoryId);
         final String actionId = heraJobHistory.getActionId();
         holder.getRunning().put(actionId, false);
-        ExecuteMessage message = ExecuteMessage.newBuilder().setActionId(actionId).build();
-        final Request request = Request.newBuilder()
+        RpcExecuteMessage.ExecuteMessage message = RpcExecuteMessage.ExecuteMessage.newBuilder().setActionId(actionId).build();
+        final RpcRequest.Request request = RpcRequest.Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
-                .setOperate(Operate.Schedule)
+                .setOperate(RpcOperate.Operate.Schedule)
                 .setBody(message.toByteString())
                 .build();
-        SocketMessage socketMessage = SocketMessage.newBuilder()
-                .setKind(SocketMessage.Kind.REQUEST)
+        RpcSocketMessage.SocketMessage socketMessage = RpcSocketMessage.SocketMessage.newBuilder()
+                .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
         Future<Response> future = context.getThreadPool().submit(() -> {
-                final CountDownLatch latch = new CountDownLatch(1);
-                MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
-                context.getHandler().addListener(responseListener);
-                try {
-                    latch.await(3, TimeUnit.HOURS);
-                    if (!responseListener.getReceiveResult()) {
-                        log.error("自动调度任务信号丢失，三小时未收到work返回：{}", actionHistoryId);
-                        //TODO 可以做一些处理
-                    }
-                } finally {
-                    holder.getRunning().remove(actionId);
+            final CountDownLatch latch = new CountDownLatch(1);
+            MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+            context.getHandler().addListener(responseListener);
+            try {
+                latch.await(3, TimeUnit.HOURS);
+                if (!responseListener.getReceiveResult()) {
+                    log.error("自动调度任务信号丢失，三小时未收到work返回：{}", actionHistoryId);
+                    //TODO 可以做一些处理
                 }
-                return responseListener.getResponse();
+            } finally {
+                holder.getRunning().remove(actionId);
+            }
+            return responseListener.getResponse();
         });
         holder.getChannel().writeAndFlush(socketMessage);
         return future;
@@ -128,33 +125,33 @@ public class MasterExecuteJob {
      */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder holder, String id) {
         holder.getDebugRunning().put(id, false);
-        DebugMessage message = DebugMessage
+        RpcDebugMessage.DebugMessage message = RpcDebugMessage.DebugMessage
                 .newBuilder()
                 .setDebugId(id)
                 .build();
-        final Request request = Request.newBuilder()
+        final RpcRequest.Request request = RpcRequest.Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
-                .setOperate(Operate.Debug)
+                .setOperate(RpcOperate.Operate.Debug)
                 .setBody(message.toByteString())
                 .build();
-        SocketMessage socketMessage = SocketMessage
+        RpcSocketMessage.SocketMessage socketMessage = RpcSocketMessage.SocketMessage
                 .newBuilder()
-                .setKind(SocketMessage.Kind.REQUEST)
+                .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
         Future<Response> future = context.getThreadPool().submit(() -> {
-                final CountDownLatch latch = new CountDownLatch(1);
-                MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
-                context.getHandler().addListener(responseListener);
-                try {
-                    latch.await(3, TimeUnit.HOURS);
-                    if (!responseListener.getReceiveResult()) {
-                        log.error("debug任务信号丢失，3小时未收到work返回：{}", id);
-                    }
-                } finally {
-                    holder.getDebugRunning().remove(id);
+            final CountDownLatch latch = new CountDownLatch(1);
+            MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+            context.getHandler().addListener(responseListener);
+            try {
+                latch.await(3, TimeUnit.HOURS);
+                if (!responseListener.getReceiveResult()) {
+                    log.error("debug任务信号丢失，3小时未收到work返回：{}", id);
                 }
-                return responseListener.getResponse();
+            } finally {
+                holder.getDebugRunning().remove(id);
+            }
+            return responseListener.getResponse();
         });
 
         /**

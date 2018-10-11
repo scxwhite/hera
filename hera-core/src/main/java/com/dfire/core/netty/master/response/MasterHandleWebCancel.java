@@ -6,11 +6,10 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.vo.JobStatus;
-import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.queue.JobElement;
+import com.dfire.protocol.*;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,27 +28,27 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class MasterHandleWebCancel {
 
-    public WebResponse handleWebCancel(MasterContext masterContext, WebRequest request) {
-        if (request.getEk() == ExecuteKind.ScheduleKind) {
+    public RpcWebResponse.WebResponse handleWebCancel(MasterContext masterContext, RpcWebRequest.WebRequest request) {
+        if (request.getEk() == JobExecuteKind.ExecuteKind.ScheduleKind) {
             return handleScheduleCancel(masterContext, request);
-        } else if (request.getEk() == ExecuteKind.ManualKind) {
+        } else if (request.getEk() == JobExecuteKind.ExecuteKind.ManualKind) {
             return handleManualCancel(masterContext, request);
-        } else if (request.getEk() == ExecuteKind.DebugKind) {
+        } else if (request.getEk() == JobExecuteKind.ExecuteKind.DebugKind) {
             return handleDebugCancel(masterContext, request);
         }
         return null;
     }
 
-    private WebResponse handleDebugCancel(MasterContext context, WebRequest request) {
-        WebResponse webResponse = null;
+    private RpcWebResponse.WebResponse handleDebugCancel(MasterContext context, RpcWebRequest.WebRequest request) {
+        RpcWebResponse.WebResponse webResponse = null;
         String debugId = request.getId();
         HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
         for (JobElement element : new ArrayList<>(context.getDebugQueue())) {
             if (element.getJobId().equals(debugId)) {
-                webResponse = WebResponse.newBuilder()
+                webResponse = RpcWebResponse.WebResponse.newBuilder()
                         .setRid(request.getRid())
                         .setOperate(request.getOperate())
-                        .setStatus(Status.OK)
+                        .setStatus(ResponseStatus.Status.OK)
                         .build();
                 debugHistory.getLog().appendHera("任务取消");
                 context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
@@ -61,18 +60,18 @@ public class MasterHandleWebCancel {
         for (Channel key : new HashSet<>(context.getWorkMap().keySet())) {
             MasterWorkHolder workHolder = context.getWorkMap().get(key);
             if (workHolder.getDebugRunning().containsKey(debugId)) {
-                Future<Response> future = new MasterHandleCancelJob().cancel(context,
-                        workHolder.getChannel(), ExecuteKind.DebugKind, debugId);
+                Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
+                        workHolder.getChannel(), JobExecuteKind.ExecuteKind.DebugKind, debugId);
                 workHolder.getDebugRunning().remove(debugId);
                 try {
                     future.get(10, TimeUnit.SECONDS);
                 } catch (Exception e) {
 
                 }
-                webResponse = WebResponse.newBuilder()
+                webResponse = RpcWebResponse.WebResponse.newBuilder()
                         .setRid(request.getRid())
                         .setOperate(request.getOperate())
-                        .setStatus(Status.OK)
+                        .setStatus(ResponseStatus.Status.OK)
                         .build();
 
                 log.info("send web cancel response, actionId = " + debugId);
@@ -80,15 +79,15 @@ public class MasterHandleWebCancel {
         }
 
         if (webResponse != null) {
-            webResponse = WebResponse.newBuilder()
+            webResponse = RpcWebResponse.WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
-                    .setStatus(Status.ERROR)
+                    .setStatus(ResponseStatus.Status.ERROR)
                     .setErrorText("Manual任务中找不到匹配的job(" + debugHistory.getId() + "," + debugHistory.getId() + ")，无法执行取消命令")
                     .build();
         }
         debugHistory = context.getHeraDebugHistoryService().findById(debugId);
-        debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) );
+        debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         debugHistory.setStatus(StatusEnum.FAILED);
         context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         return webResponse;
@@ -96,18 +95,18 @@ public class MasterHandleWebCancel {
 
     }
 
-    private WebResponse handleManualCancel(MasterContext context, WebRequest request) {
-        WebResponse webResponse = null;
+    private RpcWebResponse.WebResponse handleManualCancel(MasterContext context, RpcWebRequest.WebRequest request) {
+        RpcWebResponse.WebResponse webResponse = null;
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         String jobId = history.getJobId();
         for (JobElement element : new ArrayList<>(context.getManualQueue())) {
             if (element.getJobId().equals(historyId)) {
-                webResponse = WebResponse.newBuilder()
+                webResponse = RpcWebResponse.WebResponse.newBuilder()
                         .setRid(request.getRid())
                         .setOperate(request.getOperate())
-                        .setStatus(Status.OK)
+                        .setStatus(ResponseStatus.Status.OK)
                         .build();
                 history.getLog().appendHera("任务取消");
                 context.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
@@ -120,18 +119,18 @@ public class MasterHandleWebCancel {
             for (Channel key : new HashSet<>(context.getWorkMap().keySet())) {
                 MasterWorkHolder workHolder = context.getWorkMap().get(key);
                 if (workHolder.getManningRunning().containsKey(historyId)) {
-                    Future<Response> future = new MasterHandleCancelJob().cancel(context,
-                            workHolder.getChannel(), ExecuteKind.ManualKind, historyId);
+                    Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
+                            workHolder.getChannel(), JobExecuteKind.ExecuteKind.ManualKind, historyId);
                     workHolder.getManningRunning().remove(jobId);
                     try {
                         future.get(10, TimeUnit.SECONDS);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    webResponse = WebResponse.newBuilder()
+                    webResponse = RpcWebResponse.WebResponse.newBuilder()
                             .setRid(request.getRid())
                             .setOperate(request.getOperate())
-                            .setStatus(Status.OK)
+                            .setStatus(ResponseStatus.Status.OK)
                             .build();
 
                     log.info("send web cancel response, actionId = " + jobId);
@@ -140,10 +139,10 @@ public class MasterHandleWebCancel {
         }
 
         if (webResponse != null) {
-            webResponse = WebResponse.newBuilder()
+            webResponse = RpcWebResponse.WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
-                    .setStatus(Status.ERROR)
+                    .setStatus(ResponseStatus.Status.ERROR)
                     .setErrorText("Manual任务中找不到匹配的job(" + history.getJobId() + "," + history.getId() + ")，无法执行取消命令")
                     .build();
         }
@@ -156,18 +155,18 @@ public class MasterHandleWebCancel {
 
     }
 
-    private WebResponse handleScheduleCancel(MasterContext context, WebRequest request) {
-        WebResponse webResponse = null;
+    private RpcWebResponse.WebResponse handleScheduleCancel(MasterContext context, RpcWebRequest.WebRequest request) {
+        RpcWebResponse.WebResponse webResponse = null;
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         String jobId = history.getJobId();
         for (JobElement element : new ArrayList<>(context.getScheduleQueue())) {
             if (element.getJobId().equals(historyId)) {
-                webResponse = WebResponse.newBuilder()
+                webResponse = RpcWebResponse.WebResponse.newBuilder()
                         .setRid(request.getRid())
                         .setOperate(request.getOperate())
-                        .setStatus(Status.OK)
+                        .setStatus(ResponseStatus.Status.OK)
                         .build();
                 history.getLog().appendHera("任务取消");
                 context.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
@@ -179,18 +178,18 @@ public class MasterHandleWebCancel {
         for (Channel key : new HashSet<>(context.getWorkMap().keySet())) {
             MasterWorkHolder workHolder = context.getWorkMap().get(key);
             if (workHolder.getRunning().containsKey(jobId)) {
-                Future<Response> future = new MasterHandleCancelJob().cancel(context,
-                        workHolder.getChannel(), ExecuteKind.ScheduleKind, historyId);
+                Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
+                        workHolder.getChannel(), JobExecuteKind.ExecuteKind.ScheduleKind, historyId);
                 workHolder.getRunning().remove(jobId);
                 try {
                     future.get(10, TimeUnit.SECONDS);
                 } catch (Exception e) {
 
                 }
-                webResponse = WebResponse.newBuilder()
+                webResponse = RpcWebResponse.WebResponse.newBuilder()
                         .setRid(request.getRid())
                         .setOperate(request.getOperate())
-                        .setStatus(Status.OK)
+                        .setStatus(ResponseStatus.Status.OK)
                         .build();
 
                 log.info("send web cancel response, actionId = " + jobId);

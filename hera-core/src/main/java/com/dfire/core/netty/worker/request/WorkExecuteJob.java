@@ -11,9 +11,9 @@ import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.job.JobContext;
-import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.util.JobUtils;
+import com.dfire.protocol.*;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,12 +30,12 @@ import java.util.concurrent.Future;
 @Slf4j
 public class WorkExecuteJob {
 
-    public Future<Response> execute(final WorkContext workContext, final Request request) {
-        if (request.getOperate() == Operate.Debug) {
+    public Future<RpcResponse.Response> execute(final WorkContext workContext, final RpcRequest.Request request) {
+        if (request.getOperate() == RpcOperate.Operate.Debug) {
             return debug(workContext, request);
-        } else if (request.getOperate() == Operate.Manual) {
+        } else if (request.getOperate() == RpcOperate.Operate.Manual) {
             return manual(workContext, request);
-        } else if (request.getOperate() == Operate.Schedule) {
+        } else if (request.getOperate() == RpcOperate.Operate.Schedule) {
             return schedule(workContext, request);
         }
         return null;
@@ -51,10 +51,10 @@ public class WorkExecuteJob {
      */
 
 
-    private Future<Response> manual(WorkContext workContext, Request request) {
-        ExecuteMessage message = null;
+    private Future<RpcResponse.Response> manual(WorkContext workContext, RpcRequest.Request request) {
+        RpcExecuteMessage.ExecuteMessage message = null;
         try {
-            message = ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
+            message = RpcExecuteMessage.ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
@@ -100,18 +100,18 @@ public class WorkExecuteJob {
                 workContext.getManualRunning().remove(historyId);
             }
 
-            Status status = Status.OK;
+            ResponseStatus.Status status = ResponseStatus.Status.OK;
             String errorText = "";
             if (exitCode != 0) {
-                status = Status.ERROR;
+                status = ResponseStatus.Status.ERROR;
             }
             if (exception != null && exception.getMessage() != null) {
                 errorText = exception.getMessage();
             }
 
-            Response response = Response.newBuilder()
+            RpcResponse.Response response = RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
-                    .setOperate(Operate.Schedule)
+                    .setOperate(RpcOperate.Operate.Schedule)
                     .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
@@ -128,10 +128,10 @@ public class WorkExecuteJob {
      * @return
      */
 
-    private Future<Response> schedule(WorkContext workContext, Request request) {
-        ExecuteMessage message = null;
+    private Future<RpcResponse.Response> schedule(WorkContext workContext, RpcRequest.Request request) {
+        RpcExecuteMessage.ExecuteMessage message = null;
         try {
-            message = ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
+            message = RpcExecuteMessage.ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
@@ -141,10 +141,10 @@ public class WorkExecuteJob {
         if (workContext.getRunning().containsKey(jobId)) {
             log.info("job is running, can not run again, actionId :" + jobId);
             return workContext.getWorkThreadPool().submit(() ->
-                    Response.newBuilder()
+                    RpcResponse.Response.newBuilder()
                             .setRid(request.getRid())
-                            .setOperate(Operate.Schedule)
-                            .setStatusEnum(Status.ERROR)
+                            .setOperate(RpcOperate.Operate.Schedule)
+                            .setStatusEnum(ResponseStatus.Status.ERROR)
                             .build()
             );
         }
@@ -196,18 +196,18 @@ public class WorkExecuteJob {
                 workContext.getRunning().remove(jobId);
             }
 
-            Status status = Status.OK;
+            ResponseStatus.Status status = ResponseStatus.Status.OK;
             String errorText = "";
             if (exitCode != 0) {
-                status = Status.ERROR;
+                status = ResponseStatus.Status.ERROR;
             }
             if (exception != null) {
                 errorText = exception.toString();
             }
 
-            Response response = Response.newBuilder()
+            RpcResponse.Response response = RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
-                    .setOperate(Operate.Schedule)
+                    .setOperate(RpcOperate.Operate.Schedule)
                     .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
@@ -224,10 +224,10 @@ public class WorkExecuteJob {
      * @param request
      * @return
      */
-    private Future<Response> debug(WorkContext workContext, Request request) {
-        DebugMessage debugMessage = null;
+    private Future<RpcResponse.Response> debug(WorkContext workContext, RpcRequest.Request request) {
+        RpcDebugMessage.DebugMessage debugMessage = null;
         try {
-            debugMessage = DebugMessage.newBuilder().mergeFrom(request.getBody()).build();
+            debugMessage = RpcDebugMessage.DebugMessage.newBuilder().mergeFrom(request.getBody()).build();
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
@@ -267,17 +267,17 @@ public class WorkExecuteJob {
                 workContext.getDebugRunning().remove(debugId);
 
             }
-            Status status = Status.OK;
+            ResponseStatus.Status status = ResponseStatus.Status.OK;
             String errorText = "";
             if (exitCode != 0) {
-                status = Status.ERROR;
+                status = ResponseStatus.Status.ERROR;
             }
             if (exception != null && exception.getMessage() != null) {
                 errorText = exception.getMessage();
             }
-            return Response.newBuilder()
+            return RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
-                    .setOperate(Operate.Debug)
+                    .setOperate(RpcOperate.Operate.Debug)
                     .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();

@@ -1,8 +1,9 @@
 package com.dfire.core.netty.listener;
 
-import com.dfire.core.message.Protocol.*;
 import com.dfire.core.netty.listener.adapter.ResponseListenerAdapter;
 import com.dfire.core.netty.master.MasterContext;
+import com.dfire.protocol.RpcRequest;
+import com.dfire.protocol.RpcResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,14 +20,14 @@ import java.util.concurrent.CountDownLatch;
 @NoArgsConstructor
 public class MasterResponseListener extends ResponseListenerAdapter {
 
-    private Request request;
+    private RpcRequest.Request request;
     private MasterContext context;
     private Boolean receiveResult;
     private CountDownLatch latch;
-    private Response response;
+    private RpcResponse.Response response;
 
     @Override
-    public void onResponse(Response response) {
+    public void onResponse(RpcResponse.Response response) {
         if (response.getRid() == request.getRid()) {
             context.getHandler().removeListener(this);
             this.response = response;
