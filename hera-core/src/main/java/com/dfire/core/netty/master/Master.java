@@ -7,7 +7,6 @@ import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
-import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
@@ -21,14 +20,14 @@ import com.dfire.core.event.base.Events;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
-import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
+import com.dfire.core.route.WorkerRouter;
+import com.dfire.core.route.factory.DefaultWorkerRouterFactory;
 import com.dfire.core.util.CronParse;
 import com.dfire.protocol.JobExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.RpcResponse;
-import com.sun.mail.iap.Protocol;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
@@ -438,7 +437,7 @@ public class Master {
         }
         if (noCompleteCount > 0 && retryCount < 40) {
             generateDependJobAction(jobList, actionMap, retryCount);
-        } else if (retryCount == 40 && noCompleteCount > 0){
+        } else if (retryCount == 40 && noCompleteCount > 0) {
             log.warn("重试ID:{}, 未找到版本个数:{} , 重试次数:{}", retryId, noCompleteCount, retryCount);
         }
     }
@@ -790,40 +789,8 @@ public class Master {
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
 
         int hostGroupId = jobElement == null ? HeraGlobalEnvironment.defaultWorkerGroup : jobElement.getHostGroupId();
-
-        MasterWorkHolder workHolder = null;
-        if (masterContext.getHostGroupCache() != null) {
-            HeraHostGroupVo hostGroupCache = masterContext.getHostGroupCache().get(hostGroupId);
-            List<String> hosts = hostGroupCache.getHosts();
-            if (hosts != null && hosts.size() > 0) {
-                int size = hosts.size();
-                for (int i = 0; i < size && workHolder == null; i++) {
-                    String host = hostGroupCache.selectHost();
-                    if (host == null) {
-                        break;
-                    }
-                    for (MasterWorkHolder worker : masterContext.getWorkMap().values()) {
-                        if (worker != null && worker.getHeartBeatInfo() != null && worker.getHeartBeatInfo().getHost().trim().equals(host.trim())) {
-                            HeartBeatInfo heartBeatInfo = worker.getHeartBeatInfo();
-                            if (heartBeatInfo.getMemRate() != null && heartBeatInfo.getCpuLoadPerCore() != null
-                                    && heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate()
-                                    && heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()) {
-
-                                Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getSystemMemUsed()) / HeraGlobalEnvironment.getPerTaskUseMem();
-                                int sum = heartBeatInfo.getDebugRunning().size() + heartBeatInfo.getManualRunning().size() + heartBeatInfo.getRunning().size();
-                                if (assignTaskNum.intValue() > sum) {
-                                    workHolder = worker;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (workHolder != null) {
-            log.warn("select work is :{}", workHolder.getChannel().remoteAddress());
-        }
+        WorkerRouter workerRouter = new DefaultWorkerRouterFactory().newWorkerRouter("first");
+        MasterWorkHolder workHolder = workerRouter.selectWorker(hostGroupId, masterContext);
         return workHolder;
     }
 

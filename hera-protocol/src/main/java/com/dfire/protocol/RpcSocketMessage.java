@@ -19,11 +19,11 @@ public final class RpcSocketMessage {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>.SocketMessage.Kind kind = 1;</code>
+     * <code>required .SocketMessage.Kind kind = 1;</code>
      */
-    int getKindValue();
+    boolean hasKind();
     /**
-     * <code>.SocketMessage.Kind kind = 1;</code>
+     * <code>required .SocketMessage.Kind kind = 1;</code>
      */
     com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind getKind();
 
@@ -32,7 +32,15 @@ public final class RpcSocketMessage {
      *消息体数据，字节码存储
      * </pre>
      *
-     * <code>bytes body = 2;</code>
+     * <code>required bytes body = 2;</code>
+     */
+    boolean hasBody();
+    /**
+     * <pre>
+     *消息体数据，字节码存储
+     * </pre>
+     *
+     * <code>required bytes body = 2;</code>
      */
     com.google.protobuf.ByteString getBody();
   }
@@ -83,17 +91,23 @@ public final class RpcSocketMessage {
               break;
             case 8: {
               int rawValue = input.readEnum();
-
-              kind_ = rawValue;
+                @SuppressWarnings("deprecation")
+              com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind value = com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(1, rawValue);
+              } else {
+                bitField0_ |= 0x00000001;
+                kind_ = rawValue;
+              }
               break;
             }
             case 18: {
-
+              bitField0_ |= 0x00000002;
               body_ = input.readBytes();
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -149,7 +163,6 @@ public final class RpcSocketMessage {
        * <code>WEB_RESPONSE = 3;</code>
        */
       WEB_RESPONSE(3),
-      UNRECOGNIZED(-1),
       ;
 
       /**
@@ -171,10 +184,6 @@ public final class RpcSocketMessage {
 
 
       public final int getNumber() {
-        if (this == UNRECOGNIZED) {
-          throw new java.lang.IllegalArgumentException(
-              "Can't get the number of an unknown enum value.");
-        }
         return value;
       }
 
@@ -229,9 +238,6 @@ public final class RpcSocketMessage {
           throw new java.lang.IllegalArgumentException(
             "EnumValueDescriptor is not for this type.");
         }
-        if (desc.getIndex() == -1) {
-          return UNRECOGNIZED;
-        }
         return VALUES[desc.getIndex()];
       }
 
@@ -244,21 +250,22 @@ public final class RpcSocketMessage {
       // @@protoc_insertion_point(enum_scope:SocketMessage.Kind)
     }
 
+    private int bitField0_;
     public static final int KIND_FIELD_NUMBER = 1;
     private int kind_;
     /**
-     * <code>.SocketMessage.Kind kind = 1;</code>
+     * <code>required .SocketMessage.Kind kind = 1;</code>
      */
-    public int getKindValue() {
-      return kind_;
+    public boolean hasKind() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>.SocketMessage.Kind kind = 1;</code>
+     * <code>required .SocketMessage.Kind kind = 1;</code>
      */
     public com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind getKind() {
       @SuppressWarnings("deprecation")
       com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind result = com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind.valueOf(kind_);
-      return result == null ? com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind.UNRECOGNIZED : result;
+      return result == null ? com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind.REQUEST : result;
     }
 
     public static final int BODY_FIELD_NUMBER = 2;
@@ -268,7 +275,17 @@ public final class RpcSocketMessage {
      *消息体数据，字节码存储
      * </pre>
      *
-     * <code>bytes body = 2;</code>
+     * <code>required bytes body = 2;</code>
+     */
+    public boolean hasBody() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <pre>
+     *消息体数据，字节码存储
+     * </pre>
+     *
+     * <code>required bytes body = 2;</code>
      */
     public com.google.protobuf.ByteString getBody() {
       return body_;
@@ -281,6 +298,14 @@ public final class RpcSocketMessage {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
+      if (!hasKind()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasBody()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -288,10 +313,10 @@ public final class RpcSocketMessage {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (kind_ != com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind.REQUEST.getNumber()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeEnum(1, kind_);
       }
-      if (!body_.isEmpty()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, body_);
       }
       unknownFields.writeTo(output);
@@ -303,11 +328,11 @@ public final class RpcSocketMessage {
       if (size != -1) return size;
 
       size = 0;
-      if (kind_ != com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind.REQUEST.getNumber()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, kind_);
       }
-      if (!body_.isEmpty()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, body_);
       }
@@ -327,9 +352,15 @@ public final class RpcSocketMessage {
       com.dfire.protocol.RpcSocketMessage.SocketMessage other = (com.dfire.protocol.RpcSocketMessage.SocketMessage) obj;
 
       boolean result = true;
-      result = result && kind_ == other.kind_;
-      result = result && getBody()
-          .equals(other.getBody());
+      result = result && (hasKind() == other.hasKind());
+      if (hasKind()) {
+        result = result && kind_ == other.kind_;
+      }
+      result = result && (hasBody() == other.hasBody());
+      if (hasBody()) {
+        result = result && getBody()
+            .equals(other.getBody());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -341,10 +372,14 @@ public final class RpcSocketMessage {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + KIND_FIELD_NUMBER;
-      hash = (53 * hash) + kind_;
-      hash = (37 * hash) + BODY_FIELD_NUMBER;
-      hash = (53 * hash) + getBody().hashCode();
+      if (hasKind()) {
+        hash = (37 * hash) + KIND_FIELD_NUMBER;
+        hash = (53 * hash) + kind_;
+      }
+      if (hasBody()) {
+        hash = (37 * hash) + BODY_FIELD_NUMBER;
+        hash = (53 * hash) + getBody().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -483,9 +518,9 @@ public final class RpcSocketMessage {
       public Builder clear() {
         super.clear();
         kind_ = 0;
-
+        bitField0_ = (bitField0_ & ~0x00000001);
         body_ = com.google.protobuf.ByteString.EMPTY;
-
+        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -512,8 +547,17 @@ public final class RpcSocketMessage {
       @java.lang.Override
       public com.dfire.protocol.RpcSocketMessage.SocketMessage buildPartial() {
         com.dfire.protocol.RpcSocketMessage.SocketMessage result = new com.dfire.protocol.RpcSocketMessage.SocketMessage(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
         result.kind_ = kind_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
         result.body_ = body_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -562,10 +606,10 @@ public final class RpcSocketMessage {
 
       public Builder mergeFrom(com.dfire.protocol.RpcSocketMessage.SocketMessage other) {
         if (other == com.dfire.protocol.RpcSocketMessage.SocketMessage.getDefaultInstance()) return this;
-        if (other.kind_ != 0) {
-          setKindValue(other.getKindValue());
+        if (other.hasKind()) {
+          setKind(other.getKind());
         }
-        if (other.getBody() != com.google.protobuf.ByteString.EMPTY) {
+        if (other.hasBody()) {
           setBody(other.getBody());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -575,6 +619,12 @@ public final class RpcSocketMessage {
 
       @java.lang.Override
       public final boolean isInitialized() {
+        if (!hasKind()) {
+          return false;
+        }
+        if (!hasBody()) {
+          return false;
+        }
         return true;
       }
 
@@ -596,47 +646,40 @@ public final class RpcSocketMessage {
         }
         return this;
       }
+      private int bitField0_;
 
       private int kind_ = 0;
       /**
-       * <code>.SocketMessage.Kind kind = 1;</code>
+       * <code>required .SocketMessage.Kind kind = 1;</code>
        */
-      public int getKindValue() {
-        return kind_;
+      public boolean hasKind() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>.SocketMessage.Kind kind = 1;</code>
-       */
-      public Builder setKindValue(int value) {
-        kind_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>.SocketMessage.Kind kind = 1;</code>
+       * <code>required .SocketMessage.Kind kind = 1;</code>
        */
       public com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind getKind() {
         @SuppressWarnings("deprecation")
         com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind result = com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind.valueOf(kind_);
-        return result == null ? com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind.UNRECOGNIZED : result;
+        return result == null ? com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind.REQUEST : result;
       }
       /**
-       * <code>.SocketMessage.Kind kind = 1;</code>
+       * <code>required .SocketMessage.Kind kind = 1;</code>
        */
       public Builder setKind(com.dfire.protocol.RpcSocketMessage.SocketMessage.Kind value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000001;
         kind_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
-       * <code>.SocketMessage.Kind kind = 1;</code>
+       * <code>required .SocketMessage.Kind kind = 1;</code>
        */
       public Builder clearKind() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         kind_ = 0;
         onChanged();
         return this;
@@ -648,7 +691,17 @@ public final class RpcSocketMessage {
        *消息体数据，字节码存储
        * </pre>
        *
-       * <code>bytes body = 2;</code>
+       * <code>required bytes body = 2;</code>
+       */
+      public boolean hasBody() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <pre>
+       *消息体数据，字节码存储
+       * </pre>
+       *
+       * <code>required bytes body = 2;</code>
        */
       public com.google.protobuf.ByteString getBody() {
         return body_;
@@ -658,13 +711,13 @@ public final class RpcSocketMessage {
        *消息体数据，字节码存储
        * </pre>
        *
-       * <code>bytes body = 2;</code>
+       * <code>required bytes body = 2;</code>
        */
       public Builder setBody(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  
+  bitField0_ |= 0x00000002;
         body_ = value;
         onChanged();
         return this;
@@ -674,10 +727,10 @@ public final class RpcSocketMessage {
        *消息体数据，字节码存储
        * </pre>
        *
-       * <code>bytes body = 2;</code>
+       * <code>required bytes body = 2;</code>
        */
       public Builder clearBody() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         body_ = getDefaultInstance().getBody();
         onChanged();
         return this;
@@ -685,7 +738,7 @@ public final class RpcSocketMessage {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -708,7 +761,7 @@ public final class RpcSocketMessage {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<SocketMessage>
+    @java.lang.Deprecated public static final com.google.protobuf.Parser<SocketMessage>
         PARSER = new com.google.protobuf.AbstractParser<SocketMessage>() {
       @java.lang.Override
       public SocketMessage parsePartialFrom(
@@ -750,11 +803,11 @@ public final class RpcSocketMessage {
   static {
     java.lang.String[] descriptorData = {
       "\n\024socket_message.proto\"\206\001\n\rSocketMessage" +
-      "\022!\n\004kind\030\001 \001(\0162\023.SocketMessage.Kind\022\014\n\004b" +
-      "ody\030\002 \001(\014\"D\n\004Kind\022\013\n\007REQUEST\020\000\022\014\n\010RESPON" +
+      "\022!\n\004kind\030\001 \002(\0162\023.SocketMessage.Kind\022\014\n\004b" +
+      "ody\030\002 \002(\014\"D\n\004Kind\022\013\n\007REQUEST\020\000\022\014\n\010RESPON" +
       "SE\020\001\022\017\n\013WEB_REQUEST\020\002\022\020\n\014WEB_RESPONSE\020\003B" +
       "(\n\022com.dfire.protocolB\020RpcSocketMessageH" +
-      "\001b\006proto3"
+      "\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

@@ -1,4 +1,4 @@
-syntax = "proto3";
+syntax = "proto2";
 
 option optimize_for = SPEED;
 option java_package = "com.dfire.protocol";
@@ -14,8 +14,8 @@ message SocketMessage {
         WEB_REQUEST = 2;
         WEB_RESPONSE = 3;
     }
-    Kind kind = 1;
+    required Kind kind = 1;
 
     //消息体数据，字节码存储
-    bytes body = 2;
+    required bytes body = 2;
 }
