@@ -241,10 +241,16 @@ public class JobUtils {
             String group = matcher.group();
             group = group.substring(group.indexOf("[") + 1, group.indexOf("]"));
             String[] url = StringUtils.split(group, " ");
-            String uri = url[0];
-            String name = url[1];
+            String uri = null;
+            String name = null;
+            if (url.length == 1) {
+                uri = url[0];
+                log.warn("can not found download name,will use default name,{}", group);
+            } else if (url.length == 2) {
+                uri = url[0];
+                name = url[1];
+            }
             Map<String, String> map = new HashMap<>(2);
-
             boolean exist = false;
             for (Map<String, String> env : resources) {
                 if (env.get("name").equals(name)) {
