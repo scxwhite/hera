@@ -24,9 +24,9 @@ public final class RpcWebOperate {
      *更新job
      * </pre>
      *
-     * <code>UpdateJob = 1;</code>
+     * <code>UpdateJob = 0;</code>
      */
-    UpdateJob(1),
+    UpdateJob(0),
     /**
      * <pre>
      *手动执行或者手动恢复job
@@ -59,6 +59,7 @@ public final class RpcWebOperate {
      * <code>GenerateAction = 5;</code>
      */
     GenerateAction(5),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -66,9 +67,9 @@ public final class RpcWebOperate {
      *更新job
      * </pre>
      *
-     * <code>UpdateJob = 1;</code>
+     * <code>UpdateJob = 0;</code>
      */
-    public static final int UpdateJob_VALUE = 1;
+    public static final int UpdateJob_VALUE = 0;
     /**
      * <pre>
      *手动执行或者手动恢复job
@@ -104,6 +105,10 @@ public final class RpcWebOperate {
 
 
     public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
       return value;
     }
 
@@ -117,7 +122,7 @@ public final class RpcWebOperate {
 
     public static WebOperate forNumber(int value) {
       switch (value) {
-        case 1: return UpdateJob;
+        case 0: return UpdateJob;
         case 2: return ExecuteJob;
         case 3: return CancelJob;
         case 4: return ExecuteDebug;
@@ -159,6 +164,9 @@ public final class RpcWebOperate {
         throw new java.lang.IllegalArgumentException(
           "EnumValueDescriptor is not for this type.");
       }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
       return VALUES[desc.getIndex()];
     }
 
@@ -181,9 +189,10 @@ public final class RpcWebOperate {
   static {
     java.lang.String[] descriptorData = {
       "\n\021web_operate.proto*`\n\nWebOperate\022\r\n\tUpd" +
-      "ateJob\020\001\022\016\n\nExecuteJob\020\002\022\r\n\tCancelJob\020\003\022" +
+      "ateJob\020\000\022\016\n\nExecuteJob\020\002\022\r\n\tCancelJob\020\003\022" +
       "\020\n\014ExecuteDebug\020\004\022\022\n\016GenerateAction\020\005B%\n" +
-      "\022com.dfire.protocolB\rRpcWebOperateH\001"
+      "\022com.dfire.protocolB\rRpcWebOperateH\001b\006pr" +
+      "oto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

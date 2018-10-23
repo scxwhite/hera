@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 import "web_operate.proto";
 import "execute_kind.proto";
@@ -12,11 +12,11 @@ message WebRequest {
         MANUAL = 0;
         MANUAL_RECOVER = 1;
     }
-    required sint32 rid = 1;
-    required WebOperate operate = 2;
-    required ExecuteKind ek = 3;
+    sint32 rid = 1;
+    WebOperate operate = 2;
+    ExecuteKind ek = 3;
     // update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
-    required string id = 4;
-    optional string executor = 5;
-    optional bytes body = 6;
+    string id = 4;
+    string executor = 5;
+    bytes body = 6;
 }

@@ -128,15 +128,7 @@ public final class RpcHeartBeatMessage {
      *时间戳
      * </pre>
      *
-     * <code>optional int64 timestamp = 4;</code>
-     */
-    boolean hasTimestamp();
-    /**
-     * <pre>
-     *时间戳
-     * </pre>
-     *
-     * <code>optional int64 timestamp = 4;</code>
+     * <code>int64 timestamp = 4;</code>
      */
     long getTimestamp();
 
@@ -145,15 +137,7 @@ public final class RpcHeartBeatMessage {
      *内存占用比例
      * </pre>
      *
-     * <code>optional float mem_rate = 5;</code>
-     */
-    boolean hasMemRate();
-    /**
-     * <pre>
-     *内存占用比例
-     * </pre>
-     *
-     * <code>optional float mem_rate = 5;</code>
+     * <code>float mem_rate = 5;</code>
      */
     float getMemRate();
 
@@ -162,15 +146,7 @@ public final class RpcHeartBeatMessage {
      *发送心跳的主机
      * </pre>
      *
-     * <code>optional string host = 6;</code>
-     */
-    boolean hasHost();
-    /**
-     * <pre>
-     *发送心跳的主机
-     * </pre>
-     *
-     * <code>optional string host = 6;</code>
+     * <code>string host = 6;</code>
      */
     java.lang.String getHost();
     /**
@@ -178,7 +154,7 @@ public final class RpcHeartBeatMessage {
      *发送心跳的主机
      * </pre>
      *
-     * <code>optional string host = 6;</code>
+     * <code>string host = 6;</code>
      */
     com.google.protobuf.ByteString
         getHostBytes();
@@ -188,15 +164,7 @@ public final class RpcHeartBeatMessage {
      *每个核心的cpu负载
      * </pre>
      *
-     * <code>optional float cpu_load_per_core = 7;</code>
-     */
-    boolean hasCpuLoadPerCore();
-    /**
-     * <pre>
-     *每个核心的cpu负载
-     * </pre>
-     *
-     * <code>optional float cpu_load_per_core = 7;</code>
+     * <code>float cpu_load_per_core = 7;</code>
      */
     float getCpuLoadPerCore();
 
@@ -205,15 +173,7 @@ public final class RpcHeartBeatMessage {
      *总内存大小，默认4096M
      * </pre>
      *
-     * <code>optional float mem_total = 4096;</code>
-     */
-    boolean hasMemTotal();
-    /**
-     * <pre>
-     *总内存大小，默认4096M
-     * </pre>
-     *
-     * <code>optional float mem_total = 4096;</code>
+     * <code>float mem_total = 4096;</code>
      */
     float getMemTotal();
   }
@@ -265,60 +225,60 @@ public final class RpcHeartBeatMessage {
               done = true;
               break;
             case 10: {
-              com.google.protobuf.ByteString bs = input.readBytes();
+              java.lang.String s = input.readStringRequireUtf8();
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
                 runnings_ = new com.google.protobuf.LazyStringArrayList();
                 mutable_bitField0_ |= 0x00000001;
               }
-              runnings_.add(bs);
+              runnings_.add(s);
               break;
             }
             case 18: {
-              com.google.protobuf.ByteString bs = input.readBytes();
+              java.lang.String s = input.readStringRequireUtf8();
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
                 debugRunnings_ = new com.google.protobuf.LazyStringArrayList();
                 mutable_bitField0_ |= 0x00000002;
               }
-              debugRunnings_.add(bs);
+              debugRunnings_.add(s);
               break;
             }
             case 26: {
-              com.google.protobuf.ByteString bs = input.readBytes();
+              java.lang.String s = input.readStringRequireUtf8();
               if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
                 manualRunnings_ = new com.google.protobuf.LazyStringArrayList();
                 mutable_bitField0_ |= 0x00000004;
               }
-              manualRunnings_.add(bs);
+              manualRunnings_.add(s);
               break;
             }
             case 32: {
-              bitField0_ |= 0x00000001;
+
               timestamp_ = input.readInt64();
               break;
             }
             case 45: {
-              bitField0_ |= 0x00000002;
+
               memRate_ = input.readFloat();
               break;
             }
             case 50: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000004;
-              host_ = bs;
+              java.lang.String s = input.readStringRequireUtf8();
+
+              host_ = s;
               break;
             }
             case 61: {
-              bitField0_ |= 0x00000008;
+
               cpuLoadPerCore_ = input.readFloat();
               break;
             }
             case 32773: {
-              bitField0_ |= 0x00000010;
+
               memTotal_ = input.readFloat();
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -501,17 +461,7 @@ public final class RpcHeartBeatMessage {
      *时间戳
      * </pre>
      *
-     * <code>optional int64 timestamp = 4;</code>
-     */
-    public boolean hasTimestamp() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <pre>
-     *时间戳
-     * </pre>
-     *
-     * <code>optional int64 timestamp = 4;</code>
+     * <code>int64 timestamp = 4;</code>
      */
     public long getTimestamp() {
       return timestamp_;
@@ -524,17 +474,7 @@ public final class RpcHeartBeatMessage {
      *内存占用比例
      * </pre>
      *
-     * <code>optional float mem_rate = 5;</code>
-     */
-    public boolean hasMemRate() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <pre>
-     *内存占用比例
-     * </pre>
-     *
-     * <code>optional float mem_rate = 5;</code>
+     * <code>float mem_rate = 5;</code>
      */
     public float getMemRate() {
       return memRate_;
@@ -547,17 +487,7 @@ public final class RpcHeartBeatMessage {
      *发送心跳的主机
      * </pre>
      *
-     * <code>optional string host = 6;</code>
-     */
-    public boolean hasHost() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <pre>
-     *发送心跳的主机
-     * </pre>
-     *
-     * <code>optional string host = 6;</code>
+     * <code>string host = 6;</code>
      */
     public java.lang.String getHost() {
       java.lang.Object ref = host_;
@@ -567,9 +497,7 @@ public final class RpcHeartBeatMessage {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          host_ = s;
-        }
+        host_ = s;
         return s;
       }
     }
@@ -578,7 +506,7 @@ public final class RpcHeartBeatMessage {
      *发送心跳的主机
      * </pre>
      *
-     * <code>optional string host = 6;</code>
+     * <code>string host = 6;</code>
      */
     public com.google.protobuf.ByteString
         getHostBytes() {
@@ -601,17 +529,7 @@ public final class RpcHeartBeatMessage {
      *每个核心的cpu负载
      * </pre>
      *
-     * <code>optional float cpu_load_per_core = 7;</code>
-     */
-    public boolean hasCpuLoadPerCore() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    /**
-     * <pre>
-     *每个核心的cpu负载
-     * </pre>
-     *
-     * <code>optional float cpu_load_per_core = 7;</code>
+     * <code>float cpu_load_per_core = 7;</code>
      */
     public float getCpuLoadPerCore() {
       return cpuLoadPerCore_;
@@ -624,17 +542,7 @@ public final class RpcHeartBeatMessage {
      *总内存大小，默认4096M
      * </pre>
      *
-     * <code>optional float mem_total = 4096;</code>
-     */
-    public boolean hasMemTotal() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <pre>
-     *总内存大小，默认4096M
-     * </pre>
-     *
-     * <code>optional float mem_total = 4096;</code>
+     * <code>float mem_total = 4096;</code>
      */
     public float getMemTotal() {
       return memTotal_;
@@ -663,19 +571,19 @@ public final class RpcHeartBeatMessage {
       for (int i = 0; i < manualRunnings_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, manualRunnings_.getRaw(i));
       }
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (timestamp_ != 0L) {
         output.writeInt64(4, timestamp_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (memRate_ != 0F) {
         output.writeFloat(5, memRate_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (!getHostBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, host_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (cpuLoadPerCore_ != 0F) {
         output.writeFloat(7, cpuLoadPerCore_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (memTotal_ != 0F) {
         output.writeFloat(4096, memTotal_);
       }
       unknownFields.writeTo(output);
@@ -711,22 +619,22 @@ public final class RpcHeartBeatMessage {
         size += dataSize;
         size += 1 * getManualRunningsList().size();
       }
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (timestamp_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(4, timestamp_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (memRate_ != 0F) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(5, memRate_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (!getHostBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, host_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (cpuLoadPerCore_ != 0F) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(7, cpuLoadPerCore_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (memTotal_ != 0F) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(4096, memTotal_);
       }
@@ -752,37 +660,22 @@ public final class RpcHeartBeatMessage {
           .equals(other.getDebugRunningsList());
       result = result && getManualRunningsList()
           .equals(other.getManualRunningsList());
-      result = result && (hasTimestamp() == other.hasTimestamp());
-      if (hasTimestamp()) {
-        result = result && (getTimestamp()
-            == other.getTimestamp());
-      }
-      result = result && (hasMemRate() == other.hasMemRate());
-      if (hasMemRate()) {
-        result = result && (
-            java.lang.Float.floatToIntBits(getMemRate())
-            == java.lang.Float.floatToIntBits(
-                other.getMemRate()));
-      }
-      result = result && (hasHost() == other.hasHost());
-      if (hasHost()) {
-        result = result && getHost()
-            .equals(other.getHost());
-      }
-      result = result && (hasCpuLoadPerCore() == other.hasCpuLoadPerCore());
-      if (hasCpuLoadPerCore()) {
-        result = result && (
-            java.lang.Float.floatToIntBits(getCpuLoadPerCore())
-            == java.lang.Float.floatToIntBits(
-                other.getCpuLoadPerCore()));
-      }
-      result = result && (hasMemTotal() == other.hasMemTotal());
-      if (hasMemTotal()) {
-        result = result && (
-            java.lang.Float.floatToIntBits(getMemTotal())
-            == java.lang.Float.floatToIntBits(
-                other.getMemTotal()));
-      }
+      result = result && (getTimestamp()
+          == other.getTimestamp());
+      result = result && (
+          java.lang.Float.floatToIntBits(getMemRate())
+          == java.lang.Float.floatToIntBits(
+              other.getMemRate()));
+      result = result && getHost()
+          .equals(other.getHost());
+      result = result && (
+          java.lang.Float.floatToIntBits(getCpuLoadPerCore())
+          == java.lang.Float.floatToIntBits(
+              other.getCpuLoadPerCore()));
+      result = result && (
+          java.lang.Float.floatToIntBits(getMemTotal())
+          == java.lang.Float.floatToIntBits(
+              other.getMemTotal()));
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -806,30 +699,20 @@ public final class RpcHeartBeatMessage {
         hash = (37 * hash) + MANUALRUNNINGS_FIELD_NUMBER;
         hash = (53 * hash) + getManualRunningsList().hashCode();
       }
-      if (hasTimestamp()) {
-        hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
-        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-            getTimestamp());
-      }
-      if (hasMemRate()) {
-        hash = (37 * hash) + MEM_RATE_FIELD_NUMBER;
-        hash = (53 * hash) + java.lang.Float.floatToIntBits(
-            getMemRate());
-      }
-      if (hasHost()) {
-        hash = (37 * hash) + HOST_FIELD_NUMBER;
-        hash = (53 * hash) + getHost().hashCode();
-      }
-      if (hasCpuLoadPerCore()) {
-        hash = (37 * hash) + CPU_LOAD_PER_CORE_FIELD_NUMBER;
-        hash = (53 * hash) + java.lang.Float.floatToIntBits(
-            getCpuLoadPerCore());
-      }
-      if (hasMemTotal()) {
-        hash = (37 * hash) + MEM_TOTAL_FIELD_NUMBER;
-        hash = (53 * hash) + java.lang.Float.floatToIntBits(
-            getMemTotal());
-      }
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
+      hash = (37 * hash) + MEM_RATE_FIELD_NUMBER;
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getMemRate());
+      hash = (37 * hash) + HOST_FIELD_NUMBER;
+      hash = (53 * hash) + getHost().hashCode();
+      hash = (37 * hash) + CPU_LOAD_PER_CORE_FIELD_NUMBER;
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getCpuLoadPerCore());
+      hash = (37 * hash) + MEM_TOTAL_FIELD_NUMBER;
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getMemTotal());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -970,15 +853,15 @@ public final class RpcHeartBeatMessage {
         manualRunnings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000004);
         timestamp_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
+
         memRate_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000010);
+
         host_ = "";
-        bitField0_ = (bitField0_ & ~0x00000020);
+
         cpuLoadPerCore_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000040);
+
         memTotal_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000080);
+
         return this;
       }
 
@@ -1022,25 +905,10 @@ public final class RpcHeartBeatMessage {
           bitField0_ = (bitField0_ & ~0x00000004);
         }
         result.manualRunnings_ = manualRunnings_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000001;
-        }
         result.timestamp_ = timestamp_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000002;
-        }
         result.memRate_ = memRate_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000004;
-        }
         result.host_ = host_;
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000008;
-        }
         result.cpuLoadPerCore_ = cpuLoadPerCore_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000010;
-        }
         result.memTotal_ = memTotal_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -1121,21 +989,20 @@ public final class RpcHeartBeatMessage {
           }
           onChanged();
         }
-        if (other.hasTimestamp()) {
+        if (other.getTimestamp() != 0L) {
           setTimestamp(other.getTimestamp());
         }
-        if (other.hasMemRate()) {
+        if (other.getMemRate() != 0F) {
           setMemRate(other.getMemRate());
         }
-        if (other.hasHost()) {
-          bitField0_ |= 0x00000020;
+        if (!other.getHost().isEmpty()) {
           host_ = other.host_;
           onChanged();
         }
-        if (other.hasCpuLoadPerCore()) {
+        if (other.getCpuLoadPerCore() != 0F) {
           setCpuLoadPerCore(other.getCpuLoadPerCore());
         }
-        if (other.hasMemTotal()) {
+        if (other.getMemTotal() != 0F) {
           setMemTotal(other.getMemTotal());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -1291,7 +1158,8 @@ public final class RpcHeartBeatMessage {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureRunningsIsMutable();
+  checkByteStringIsUtf8(value);
+        ensureRunningsIsMutable();
         runnings_.add(value);
         onChanged();
         return this;
@@ -1420,7 +1288,8 @@ public final class RpcHeartBeatMessage {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureDebugRunningsIsMutable();
+  checkByteStringIsUtf8(value);
+        ensureDebugRunningsIsMutable();
         debugRunnings_.add(value);
         onChanged();
         return this;
@@ -1549,7 +1418,8 @@ public final class RpcHeartBeatMessage {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureManualRunningsIsMutable();
+  checkByteStringIsUtf8(value);
+        ensureManualRunningsIsMutable();
         manualRunnings_.add(value);
         onChanged();
         return this;
@@ -1561,17 +1431,7 @@ public final class RpcHeartBeatMessage {
        *时间戳
        * </pre>
        *
-       * <code>optional int64 timestamp = 4;</code>
-       */
-      public boolean hasTimestamp() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <pre>
-       *时间戳
-       * </pre>
-       *
-       * <code>optional int64 timestamp = 4;</code>
+       * <code>int64 timestamp = 4;</code>
        */
       public long getTimestamp() {
         return timestamp_;
@@ -1581,10 +1441,10 @@ public final class RpcHeartBeatMessage {
        *时间戳
        * </pre>
        *
-       * <code>optional int64 timestamp = 4;</code>
+       * <code>int64 timestamp = 4;</code>
        */
       public Builder setTimestamp(long value) {
-        bitField0_ |= 0x00000008;
+        
         timestamp_ = value;
         onChanged();
         return this;
@@ -1594,10 +1454,10 @@ public final class RpcHeartBeatMessage {
        *时间戳
        * </pre>
        *
-       * <code>optional int64 timestamp = 4;</code>
+       * <code>int64 timestamp = 4;</code>
        */
       public Builder clearTimestamp() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -1609,17 +1469,7 @@ public final class RpcHeartBeatMessage {
        *内存占用比例
        * </pre>
        *
-       * <code>optional float mem_rate = 5;</code>
-       */
-      public boolean hasMemRate() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <pre>
-       *内存占用比例
-       * </pre>
-       *
-       * <code>optional float mem_rate = 5;</code>
+       * <code>float mem_rate = 5;</code>
        */
       public float getMemRate() {
         return memRate_;
@@ -1629,10 +1479,10 @@ public final class RpcHeartBeatMessage {
        *内存占用比例
        * </pre>
        *
-       * <code>optional float mem_rate = 5;</code>
+       * <code>float mem_rate = 5;</code>
        */
       public Builder setMemRate(float value) {
-        bitField0_ |= 0x00000010;
+        
         memRate_ = value;
         onChanged();
         return this;
@@ -1642,10 +1492,10 @@ public final class RpcHeartBeatMessage {
        *内存占用比例
        * </pre>
        *
-       * <code>optional float mem_rate = 5;</code>
+       * <code>float mem_rate = 5;</code>
        */
       public Builder clearMemRate() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        
         memRate_ = 0F;
         onChanged();
         return this;
@@ -1657,17 +1507,7 @@ public final class RpcHeartBeatMessage {
        *发送心跳的主机
        * </pre>
        *
-       * <code>optional string host = 6;</code>
-       */
-      public boolean hasHost() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
-      }
-      /**
-       * <pre>
-       *发送心跳的主机
-       * </pre>
-       *
-       * <code>optional string host = 6;</code>
+       * <code>string host = 6;</code>
        */
       public java.lang.String getHost() {
         java.lang.Object ref = host_;
@@ -1675,9 +1515,7 @@ public final class RpcHeartBeatMessage {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            host_ = s;
-          }
+          host_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -1688,7 +1526,7 @@ public final class RpcHeartBeatMessage {
        *发送心跳的主机
        * </pre>
        *
-       * <code>optional string host = 6;</code>
+       * <code>string host = 6;</code>
        */
       public com.google.protobuf.ByteString
           getHostBytes() {
@@ -1708,14 +1546,14 @@ public final class RpcHeartBeatMessage {
        *发送心跳的主机
        * </pre>
        *
-       * <code>optional string host = 6;</code>
+       * <code>string host = 6;</code>
        */
       public Builder setHost(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000020;
+  
         host_ = value;
         onChanged();
         return this;
@@ -1725,10 +1563,10 @@ public final class RpcHeartBeatMessage {
        *发送心跳的主机
        * </pre>
        *
-       * <code>optional string host = 6;</code>
+       * <code>string host = 6;</code>
        */
       public Builder clearHost() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        
         host_ = getDefaultInstance().getHost();
         onChanged();
         return this;
@@ -1738,14 +1576,15 @@ public final class RpcHeartBeatMessage {
        *发送心跳的主机
        * </pre>
        *
-       * <code>optional string host = 6;</code>
+       * <code>string host = 6;</code>
        */
       public Builder setHostBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000020;
+  checkByteStringIsUtf8(value);
+        
         host_ = value;
         onChanged();
         return this;
@@ -1757,17 +1596,7 @@ public final class RpcHeartBeatMessage {
        *每个核心的cpu负载
        * </pre>
        *
-       * <code>optional float cpu_load_per_core = 7;</code>
-       */
-      public boolean hasCpuLoadPerCore() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
-      }
-      /**
-       * <pre>
-       *每个核心的cpu负载
-       * </pre>
-       *
-       * <code>optional float cpu_load_per_core = 7;</code>
+       * <code>float cpu_load_per_core = 7;</code>
        */
       public float getCpuLoadPerCore() {
         return cpuLoadPerCore_;
@@ -1777,10 +1606,10 @@ public final class RpcHeartBeatMessage {
        *每个核心的cpu负载
        * </pre>
        *
-       * <code>optional float cpu_load_per_core = 7;</code>
+       * <code>float cpu_load_per_core = 7;</code>
        */
       public Builder setCpuLoadPerCore(float value) {
-        bitField0_ |= 0x00000040;
+        
         cpuLoadPerCore_ = value;
         onChanged();
         return this;
@@ -1790,10 +1619,10 @@ public final class RpcHeartBeatMessage {
        *每个核心的cpu负载
        * </pre>
        *
-       * <code>optional float cpu_load_per_core = 7;</code>
+       * <code>float cpu_load_per_core = 7;</code>
        */
       public Builder clearCpuLoadPerCore() {
-        bitField0_ = (bitField0_ & ~0x00000040);
+        
         cpuLoadPerCore_ = 0F;
         onChanged();
         return this;
@@ -1805,17 +1634,7 @@ public final class RpcHeartBeatMessage {
        *总内存大小，默认4096M
        * </pre>
        *
-       * <code>optional float mem_total = 4096;</code>
-       */
-      public boolean hasMemTotal() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
-      }
-      /**
-       * <pre>
-       *总内存大小，默认4096M
-       * </pre>
-       *
-       * <code>optional float mem_total = 4096;</code>
+       * <code>float mem_total = 4096;</code>
        */
       public float getMemTotal() {
         return memTotal_;
@@ -1825,10 +1644,10 @@ public final class RpcHeartBeatMessage {
        *总内存大小，默认4096M
        * </pre>
        *
-       * <code>optional float mem_total = 4096;</code>
+       * <code>float mem_total = 4096;</code>
        */
       public Builder setMemTotal(float value) {
-        bitField0_ |= 0x00000080;
+        
         memTotal_ = value;
         onChanged();
         return this;
@@ -1838,10 +1657,10 @@ public final class RpcHeartBeatMessage {
        *总内存大小，默认4096M
        * </pre>
        *
-       * <code>optional float mem_total = 4096;</code>
+       * <code>float mem_total = 4096;</code>
        */
       public Builder clearMemTotal() {
-        bitField0_ = (bitField0_ & ~0x00000080);
+        
         memTotal_ = 0F;
         onChanged();
         return this;
@@ -1849,7 +1668,7 @@ public final class RpcHeartBeatMessage {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -1872,7 +1691,7 @@ public final class RpcHeartBeatMessage {
       return DEFAULT_INSTANCE;
     }
 
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<HeartBeatMessage>
+    private static final com.google.protobuf.Parser<HeartBeatMessage>
         PARSER = new com.google.protobuf.AbstractParser<HeartBeatMessage>() {
       @java.lang.Override
       public HeartBeatMessage parsePartialFrom(
@@ -1919,7 +1738,7 @@ public final class RpcHeartBeatMessage {
       "stamp\030\004 \001(\003\022\020\n\010mem_rate\030\005 \001(\002\022\014\n\004host\030\006 " +
       "\001(\t\022\031\n\021cpu_load_per_core\030\007 \001(\002\022\022\n\tmem_to" +
       "tal\030\200  \001(\002B+\n\022com.dfire.protocolB\023RpcHea" +
-      "rtBeatMessageH\001"
+      "rtBeatMessageH\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

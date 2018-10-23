@@ -23,15 +23,15 @@ public final class RpcResponse {
      *状态码
      * </pre>
      *
-     * <code>required .Status statusEnum = 1;</code>
+     * <code>.Status statusEnum = 1;</code>
      */
-    boolean hasStatusEnum();
+    int getStatusEnumValue();
     /**
      * <pre>
      *状态码
      * </pre>
      *
-     * <code>required .Status statusEnum = 1;</code>
+     * <code>.Status statusEnum = 1;</code>
      */
     com.dfire.protocol.ResponseStatus.Status getStatusEnum();
 
@@ -40,24 +40,16 @@ public final class RpcResponse {
      *request id,响应时原封不动返回,提供给client配对.
      * </pre>
      *
-     * <code>required sint32 rid = 2;</code>
-     */
-    boolean hasRid();
-    /**
-     * <pre>
-     *request id,响应时原封不动返回,提供给client配对.
-     * </pre>
-     *
-     * <code>required sint32 rid = 2;</code>
+     * <code>sint32 rid = 2;</code>
      */
     int getRid();
 
     /**
-     * <code>required .Operate operate = 3;</code>
+     * <code>.Operate operate = 3;</code>
      */
-    boolean hasOperate();
+    int getOperateValue();
     /**
-     * <code>required .Operate operate = 3;</code>
+     * <code>.Operate operate = 3;</code>
      */
     com.dfire.protocol.RpcOperate.Operate getOperate();
 
@@ -66,15 +58,7 @@ public final class RpcResponse {
      *如果出错,会有出错信息.纯文本形式.client自行包装
      * </pre>
      *
-     * <code>optional string errorText = 4;</code>
-     */
-    boolean hasErrorText();
-    /**
-     * <pre>
-     *如果出错,会有出错信息.纯文本形式.client自行包装
-     * </pre>
-     *
-     * <code>optional string errorText = 4;</code>
+     * <code>string errorText = 4;</code>
      */
     java.lang.String getErrorText();
     /**
@@ -82,7 +66,7 @@ public final class RpcResponse {
      *如果出错,会有出错信息.纯文本形式.client自行包装
      * </pre>
      *
-     * <code>optional string errorText = 4;</code>
+     * <code>string errorText = 4;</code>
      */
     com.google.protobuf.ByteString
         getErrorTextBytes();
@@ -92,15 +76,7 @@ public final class RpcResponse {
      *响应体
      * </pre>
      *
-     * <code>optional bytes body = 5;</code>
-     */
-    boolean hasBody();
-    /**
-     * <pre>
-     *响应体
-     * </pre>
-     *
-     * <code>optional bytes body = 5;</code>
+     * <code>bytes body = 5;</code>
      */
     com.google.protobuf.ByteString getBody();
   }
@@ -154,46 +130,34 @@ public final class RpcResponse {
               break;
             case 8: {
               int rawValue = input.readEnum();
-                @SuppressWarnings("deprecation")
-              com.dfire.protocol.ResponseStatus.Status value = com.dfire.protocol.ResponseStatus.Status.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(1, rawValue);
-              } else {
-                bitField0_ |= 0x00000001;
-                statusEnum_ = rawValue;
-              }
+
+              statusEnum_ = rawValue;
               break;
             }
             case 16: {
-              bitField0_ |= 0x00000002;
+
               rid_ = input.readSInt32();
               break;
             }
             case 24: {
               int rawValue = input.readEnum();
-                @SuppressWarnings("deprecation")
-              com.dfire.protocol.RpcOperate.Operate value = com.dfire.protocol.RpcOperate.Operate.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(3, rawValue);
-              } else {
-                bitField0_ |= 0x00000004;
-                operate_ = rawValue;
-              }
+
+              operate_ = rawValue;
               break;
             }
             case 34: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000008;
-              errorText_ = bs;
+              java.lang.String s = input.readStringRequireUtf8();
+
+              errorText_ = s;
               break;
             }
             case 42: {
-              bitField0_ |= 0x00000010;
+
               body_ = input.readBytes();
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -224,7 +188,6 @@ public final class RpcResponse {
               com.dfire.protocol.RpcResponse.Response.class, com.dfire.protocol.RpcResponse.Response.Builder.class);
     }
 
-    private int bitField0_;
     public static final int STATUSENUM_FIELD_NUMBER = 1;
     private int statusEnum_;
     /**
@@ -232,22 +195,22 @@ public final class RpcResponse {
      *状态码
      * </pre>
      *
-     * <code>required .Status statusEnum = 1;</code>
+     * <code>.Status statusEnum = 1;</code>
      */
-    public boolean hasStatusEnum() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+    public int getStatusEnumValue() {
+      return statusEnum_;
     }
     /**
      * <pre>
      *状态码
      * </pre>
      *
-     * <code>required .Status statusEnum = 1;</code>
+     * <code>.Status statusEnum = 1;</code>
      */
     public com.dfire.protocol.ResponseStatus.Status getStatusEnum() {
       @SuppressWarnings("deprecation")
       com.dfire.protocol.ResponseStatus.Status result = com.dfire.protocol.ResponseStatus.Status.valueOf(statusEnum_);
-      return result == null ? com.dfire.protocol.ResponseStatus.Status.OK : result;
+      return result == null ? com.dfire.protocol.ResponseStatus.Status.UNRECOGNIZED : result;
     }
 
     public static final int RID_FIELD_NUMBER = 2;
@@ -257,17 +220,7 @@ public final class RpcResponse {
      *request id,响应时原封不动返回,提供给client配对.
      * </pre>
      *
-     * <code>required sint32 rid = 2;</code>
-     */
-    public boolean hasRid() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <pre>
-     *request id,响应时原封不动返回,提供给client配对.
-     * </pre>
-     *
-     * <code>required sint32 rid = 2;</code>
+     * <code>sint32 rid = 2;</code>
      */
     public int getRid() {
       return rid_;
@@ -276,18 +229,18 @@ public final class RpcResponse {
     public static final int OPERATE_FIELD_NUMBER = 3;
     private int operate_;
     /**
-     * <code>required .Operate operate = 3;</code>
+     * <code>.Operate operate = 3;</code>
      */
-    public boolean hasOperate() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+    public int getOperateValue() {
+      return operate_;
     }
     /**
-     * <code>required .Operate operate = 3;</code>
+     * <code>.Operate operate = 3;</code>
      */
     public com.dfire.protocol.RpcOperate.Operate getOperate() {
       @SuppressWarnings("deprecation")
       com.dfire.protocol.RpcOperate.Operate result = com.dfire.protocol.RpcOperate.Operate.valueOf(operate_);
-      return result == null ? com.dfire.protocol.RpcOperate.Operate.HeartBeat : result;
+      return result == null ? com.dfire.protocol.RpcOperate.Operate.UNRECOGNIZED : result;
     }
 
     public static final int ERRORTEXT_FIELD_NUMBER = 4;
@@ -297,17 +250,7 @@ public final class RpcResponse {
      *如果出错,会有出错信息.纯文本形式.client自行包装
      * </pre>
      *
-     * <code>optional string errorText = 4;</code>
-     */
-    public boolean hasErrorText() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    /**
-     * <pre>
-     *如果出错,会有出错信息.纯文本形式.client自行包装
-     * </pre>
-     *
-     * <code>optional string errorText = 4;</code>
+     * <code>string errorText = 4;</code>
      */
     public java.lang.String getErrorText() {
       java.lang.Object ref = errorText_;
@@ -317,9 +260,7 @@ public final class RpcResponse {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          errorText_ = s;
-        }
+        errorText_ = s;
         return s;
       }
     }
@@ -328,7 +269,7 @@ public final class RpcResponse {
      *如果出错,会有出错信息.纯文本形式.client自行包装
      * </pre>
      *
-     * <code>optional string errorText = 4;</code>
+     * <code>string errorText = 4;</code>
      */
     public com.google.protobuf.ByteString
         getErrorTextBytes() {
@@ -351,17 +292,7 @@ public final class RpcResponse {
      *响应体
      * </pre>
      *
-     * <code>optional bytes body = 5;</code>
-     */
-    public boolean hasBody() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <pre>
-     *响应体
-     * </pre>
-     *
-     * <code>optional bytes body = 5;</code>
+     * <code>bytes body = 5;</code>
      */
     public com.google.protobuf.ByteString getBody() {
       return body_;
@@ -374,18 +305,6 @@ public final class RpcResponse {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
-      if (!hasStatusEnum()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasRid()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasOperate()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -393,19 +312,19 @@ public final class RpcResponse {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (statusEnum_ != com.dfire.protocol.ResponseStatus.Status.OK.getNumber()) {
         output.writeEnum(1, statusEnum_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (rid_ != 0) {
         output.writeSInt32(2, rid_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (operate_ != com.dfire.protocol.RpcOperate.Operate.HeartBeat.getNumber()) {
         output.writeEnum(3, operate_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (!getErrorTextBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, errorText_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (!body_.isEmpty()) {
         output.writeBytes(5, body_);
       }
       unknownFields.writeTo(output);
@@ -417,22 +336,22 @@ public final class RpcResponse {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (statusEnum_ != com.dfire.protocol.ResponseStatus.Status.OK.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(1, statusEnum_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (rid_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeSInt32Size(2, rid_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (operate_ != com.dfire.protocol.RpcOperate.Operate.HeartBeat.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(3, operate_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (!getErrorTextBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, errorText_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (!body_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(5, body_);
       }
@@ -452,29 +371,14 @@ public final class RpcResponse {
       com.dfire.protocol.RpcResponse.Response other = (com.dfire.protocol.RpcResponse.Response) obj;
 
       boolean result = true;
-      result = result && (hasStatusEnum() == other.hasStatusEnum());
-      if (hasStatusEnum()) {
-        result = result && statusEnum_ == other.statusEnum_;
-      }
-      result = result && (hasRid() == other.hasRid());
-      if (hasRid()) {
-        result = result && (getRid()
-            == other.getRid());
-      }
-      result = result && (hasOperate() == other.hasOperate());
-      if (hasOperate()) {
-        result = result && operate_ == other.operate_;
-      }
-      result = result && (hasErrorText() == other.hasErrorText());
-      if (hasErrorText()) {
-        result = result && getErrorText()
-            .equals(other.getErrorText());
-      }
-      result = result && (hasBody() == other.hasBody());
-      if (hasBody()) {
-        result = result && getBody()
-            .equals(other.getBody());
-      }
+      result = result && statusEnum_ == other.statusEnum_;
+      result = result && (getRid()
+          == other.getRid());
+      result = result && operate_ == other.operate_;
+      result = result && getErrorText()
+          .equals(other.getErrorText());
+      result = result && getBody()
+          .equals(other.getBody());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -486,26 +390,16 @@ public final class RpcResponse {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (hasStatusEnum()) {
-        hash = (37 * hash) + STATUSENUM_FIELD_NUMBER;
-        hash = (53 * hash) + statusEnum_;
-      }
-      if (hasRid()) {
-        hash = (37 * hash) + RID_FIELD_NUMBER;
-        hash = (53 * hash) + getRid();
-      }
-      if (hasOperate()) {
-        hash = (37 * hash) + OPERATE_FIELD_NUMBER;
-        hash = (53 * hash) + operate_;
-      }
-      if (hasErrorText()) {
-        hash = (37 * hash) + ERRORTEXT_FIELD_NUMBER;
-        hash = (53 * hash) + getErrorText().hashCode();
-      }
-      if (hasBody()) {
-        hash = (37 * hash) + BODY_FIELD_NUMBER;
-        hash = (53 * hash) + getBody().hashCode();
-      }
+      hash = (37 * hash) + STATUSENUM_FIELD_NUMBER;
+      hash = (53 * hash) + statusEnum_;
+      hash = (37 * hash) + RID_FIELD_NUMBER;
+      hash = (53 * hash) + getRid();
+      hash = (37 * hash) + OPERATE_FIELD_NUMBER;
+      hash = (53 * hash) + operate_;
+      hash = (37 * hash) + ERRORTEXT_FIELD_NUMBER;
+      hash = (53 * hash) + getErrorText().hashCode();
+      hash = (37 * hash) + BODY_FIELD_NUMBER;
+      hash = (53 * hash) + getBody().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -644,15 +538,15 @@ public final class RpcResponse {
       public Builder clear() {
         super.clear();
         statusEnum_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
+
         rid_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
+
         operate_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
+
         errorText_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
+
         body_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+
         return this;
       }
 
@@ -679,29 +573,11 @@ public final class RpcResponse {
       @java.lang.Override
       public com.dfire.protocol.RpcResponse.Response buildPartial() {
         com.dfire.protocol.RpcResponse.Response result = new com.dfire.protocol.RpcResponse.Response(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
         result.statusEnum_ = statusEnum_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
         result.rid_ = rid_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
         result.operate_ = operate_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
         result.errorText_ = errorText_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
         result.body_ = body_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -750,21 +626,20 @@ public final class RpcResponse {
 
       public Builder mergeFrom(com.dfire.protocol.RpcResponse.Response other) {
         if (other == com.dfire.protocol.RpcResponse.Response.getDefaultInstance()) return this;
-        if (other.hasStatusEnum()) {
-          setStatusEnum(other.getStatusEnum());
+        if (other.statusEnum_ != 0) {
+          setStatusEnumValue(other.getStatusEnumValue());
         }
-        if (other.hasRid()) {
+        if (other.getRid() != 0) {
           setRid(other.getRid());
         }
-        if (other.hasOperate()) {
-          setOperate(other.getOperate());
+        if (other.operate_ != 0) {
+          setOperateValue(other.getOperateValue());
         }
-        if (other.hasErrorText()) {
-          bitField0_ |= 0x00000008;
+        if (!other.getErrorText().isEmpty()) {
           errorText_ = other.errorText_;
           onChanged();
         }
-        if (other.hasBody()) {
+        if (other.getBody() != com.google.protobuf.ByteString.EMPTY) {
           setBody(other.getBody());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -774,15 +649,6 @@ public final class RpcResponse {
 
       @java.lang.Override
       public final boolean isInitialized() {
-        if (!hasStatusEnum()) {
-          return false;
-        }
-        if (!hasRid()) {
-          return false;
-        }
-        if (!hasOperate()) {
-          return false;
-        }
         return true;
       }
 
@@ -804,7 +670,6 @@ public final class RpcResponse {
         }
         return this;
       }
-      private int bitField0_;
 
       private int statusEnum_ = 0;
       /**
@@ -812,35 +677,47 @@ public final class RpcResponse {
        *状态码
        * </pre>
        *
-       * <code>required .Status statusEnum = 1;</code>
+       * <code>.Status statusEnum = 1;</code>
        */
-      public boolean hasStatusEnum() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
+      public int getStatusEnumValue() {
+        return statusEnum_;
       }
       /**
        * <pre>
        *状态码
        * </pre>
        *
-       * <code>required .Status statusEnum = 1;</code>
+       * <code>.Status statusEnum = 1;</code>
+       */
+      public Builder setStatusEnumValue(int value) {
+        statusEnum_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *状态码
+       * </pre>
+       *
+       * <code>.Status statusEnum = 1;</code>
        */
       public com.dfire.protocol.ResponseStatus.Status getStatusEnum() {
         @SuppressWarnings("deprecation")
         com.dfire.protocol.ResponseStatus.Status result = com.dfire.protocol.ResponseStatus.Status.valueOf(statusEnum_);
-        return result == null ? com.dfire.protocol.ResponseStatus.Status.OK : result;
+        return result == null ? com.dfire.protocol.ResponseStatus.Status.UNRECOGNIZED : result;
       }
       /**
        * <pre>
        *状态码
        * </pre>
        *
-       * <code>required .Status statusEnum = 1;</code>
+       * <code>.Status statusEnum = 1;</code>
        */
       public Builder setStatusEnum(com.dfire.protocol.ResponseStatus.Status value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00000001;
+        
         statusEnum_ = value.getNumber();
         onChanged();
         return this;
@@ -850,10 +727,10 @@ public final class RpcResponse {
        *状态码
        * </pre>
        *
-       * <code>required .Status statusEnum = 1;</code>
+       * <code>.Status statusEnum = 1;</code>
        */
       public Builder clearStatusEnum() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        
         statusEnum_ = 0;
         onChanged();
         return this;
@@ -865,17 +742,7 @@ public final class RpcResponse {
        *request id,响应时原封不动返回,提供给client配对.
        * </pre>
        *
-       * <code>required sint32 rid = 2;</code>
-       */
-      public boolean hasRid() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <pre>
-       *request id,响应时原封不动返回,提供给client配对.
-       * </pre>
-       *
-       * <code>required sint32 rid = 2;</code>
+       * <code>sint32 rid = 2;</code>
        */
       public int getRid() {
         return rid_;
@@ -885,10 +752,10 @@ public final class RpcResponse {
        *request id,响应时原封不动返回,提供给client配对.
        * </pre>
        *
-       * <code>required sint32 rid = 2;</code>
+       * <code>sint32 rid = 2;</code>
        */
       public Builder setRid(int value) {
-        bitField0_ |= 0x00000002;
+        
         rid_ = value;
         onChanged();
         return this;
@@ -898,10 +765,10 @@ public final class RpcResponse {
        *request id,响应时原封不动返回,提供给client配对.
        * </pre>
        *
-       * <code>required sint32 rid = 2;</code>
+       * <code>sint32 rid = 2;</code>
        */
       public Builder clearRid() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        
         rid_ = 0;
         onChanged();
         return this;
@@ -909,36 +776,44 @@ public final class RpcResponse {
 
       private int operate_ = 0;
       /**
-       * <code>required .Operate operate = 3;</code>
+       * <code>.Operate operate = 3;</code>
        */
-      public boolean hasOperate() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+      public int getOperateValue() {
+        return operate_;
       }
       /**
-       * <code>required .Operate operate = 3;</code>
+       * <code>.Operate operate = 3;</code>
+       */
+      public Builder setOperateValue(int value) {
+        operate_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.Operate operate = 3;</code>
        */
       public com.dfire.protocol.RpcOperate.Operate getOperate() {
         @SuppressWarnings("deprecation")
         com.dfire.protocol.RpcOperate.Operate result = com.dfire.protocol.RpcOperate.Operate.valueOf(operate_);
-        return result == null ? com.dfire.protocol.RpcOperate.Operate.HeartBeat : result;
+        return result == null ? com.dfire.protocol.RpcOperate.Operate.UNRECOGNIZED : result;
       }
       /**
-       * <code>required .Operate operate = 3;</code>
+       * <code>.Operate operate = 3;</code>
        */
       public Builder setOperate(com.dfire.protocol.RpcOperate.Operate value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00000004;
+        
         operate_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
-       * <code>required .Operate operate = 3;</code>
+       * <code>.Operate operate = 3;</code>
        */
       public Builder clearOperate() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        
         operate_ = 0;
         onChanged();
         return this;
@@ -950,17 +825,7 @@ public final class RpcResponse {
        *如果出错,会有出错信息.纯文本形式.client自行包装
        * </pre>
        *
-       * <code>optional string errorText = 4;</code>
-       */
-      public boolean hasErrorText() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <pre>
-       *如果出错,会有出错信息.纯文本形式.client自行包装
-       * </pre>
-       *
-       * <code>optional string errorText = 4;</code>
+       * <code>string errorText = 4;</code>
        */
       public java.lang.String getErrorText() {
         java.lang.Object ref = errorText_;
@@ -968,9 +833,7 @@ public final class RpcResponse {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            errorText_ = s;
-          }
+          errorText_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -981,7 +844,7 @@ public final class RpcResponse {
        *如果出错,会有出错信息.纯文本形式.client自行包装
        * </pre>
        *
-       * <code>optional string errorText = 4;</code>
+       * <code>string errorText = 4;</code>
        */
       public com.google.protobuf.ByteString
           getErrorTextBytes() {
@@ -1001,14 +864,14 @@ public final class RpcResponse {
        *如果出错,会有出错信息.纯文本形式.client自行包装
        * </pre>
        *
-       * <code>optional string errorText = 4;</code>
+       * <code>string errorText = 4;</code>
        */
       public Builder setErrorText(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  
         errorText_ = value;
         onChanged();
         return this;
@@ -1018,10 +881,10 @@ public final class RpcResponse {
        *如果出错,会有出错信息.纯文本形式.client自行包装
        * </pre>
        *
-       * <code>optional string errorText = 4;</code>
+       * <code>string errorText = 4;</code>
        */
       public Builder clearErrorText() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        
         errorText_ = getDefaultInstance().getErrorText();
         onChanged();
         return this;
@@ -1031,14 +894,15 @@ public final class RpcResponse {
        *如果出错,会有出错信息.纯文本形式.client自行包装
        * </pre>
        *
-       * <code>optional string errorText = 4;</code>
+       * <code>string errorText = 4;</code>
        */
       public Builder setErrorTextBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  checkByteStringIsUtf8(value);
+        
         errorText_ = value;
         onChanged();
         return this;
@@ -1050,17 +914,7 @@ public final class RpcResponse {
        *响应体
        * </pre>
        *
-       * <code>optional bytes body = 5;</code>
-       */
-      public boolean hasBody() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <pre>
-       *响应体
-       * </pre>
-       *
-       * <code>optional bytes body = 5;</code>
+       * <code>bytes body = 5;</code>
        */
       public com.google.protobuf.ByteString getBody() {
         return body_;
@@ -1070,13 +924,13 @@ public final class RpcResponse {
        *响应体
        * </pre>
        *
-       * <code>optional bytes body = 5;</code>
+       * <code>bytes body = 5;</code>
        */
       public Builder setBody(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  
         body_ = value;
         onChanged();
         return this;
@@ -1086,10 +940,10 @@ public final class RpcResponse {
        *响应体
        * </pre>
        *
-       * <code>optional bytes body = 5;</code>
+       * <code>bytes body = 5;</code>
        */
       public Builder clearBody() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        
         body_ = getDefaultInstance().getBody();
         onChanged();
         return this;
@@ -1097,7 +951,7 @@ public final class RpcResponse {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -1120,7 +974,7 @@ public final class RpcResponse {
       return DEFAULT_INSTANCE;
     }
 
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<Response>
+    private static final com.google.protobuf.Parser<Response>
         PARSER = new com.google.protobuf.AbstractParser<Response>() {
       @java.lang.Override
       public Response parsePartialFrom(
@@ -1162,10 +1016,11 @@ public final class RpcResponse {
   static {
     java.lang.String[] descriptorData = {
       "\n\016response.proto\032\014status.proto\032\roperate." +
-      "proto\"p\n\010Response\022\033\n\nstatusEnum\030\001 \002(\0162\007." +
-      "Status\022\013\n\003rid\030\002 \002(\021\022\031\n\007operate\030\003 \002(\0162\010.O" +
+      "proto\"p\n\010Response\022\033\n\nstatusEnum\030\001 \001(\0162\007." +
+      "Status\022\013\n\003rid\030\002 \001(\021\022\031\n\007operate\030\003 \001(\0162\010.O" +
       "perate\022\021\n\terrorText\030\004 \001(\t\022\014\n\004body\030\005 \001(\014B" +
-      "#\n\022com.dfire.protocolB\013RpcResponseH\001"
+      "#\n\022com.dfire.protocolB\013RpcResponseH\001b\006pr" +
+      "oto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

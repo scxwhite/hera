@@ -23,15 +23,7 @@ public final class RpcRequest {
      *request id 唯一标识一个请求
      * </pre>
      *
-     * <code>required sint32 rid = 1;</code>
-     */
-    boolean hasRid();
-    /**
-     * <pre>
-     *request id 唯一标识一个请求
-     * </pre>
-     *
-     * <code>required sint32 rid = 1;</code>
+     * <code>sint32 rid = 1;</code>
      */
     int getRid();
 
@@ -40,15 +32,15 @@ public final class RpcRequest {
      *操作类型
      * </pre>
      *
-     * <code>required .Operate operate = 2;</code>
+     * <code>.Operate operate = 2;</code>
      */
-    boolean hasOperate();
+    int getOperateValue();
     /**
      * <pre>
      *操作类型
      * </pre>
      *
-     * <code>required .Operate operate = 2;</code>
+     * <code>.Operate operate = 2;</code>
      */
     com.dfire.protocol.RpcOperate.Operate getOperate();
 
@@ -57,15 +49,7 @@ public final class RpcRequest {
      *请求体
      * </pre>
      *
-     * <code>optional bytes body = 3;</code>
-     */
-    boolean hasBody();
-    /**
-     * <pre>
-     *请求体
-     * </pre>
-     *
-     * <code>optional bytes body = 3;</code>
+     * <code>bytes body = 3;</code>
      */
     com.google.protobuf.ByteString getBody();
   }
@@ -112,29 +96,23 @@ public final class RpcRequest {
               done = true;
               break;
             case 8: {
-              bitField0_ |= 0x00000001;
+
               rid_ = input.readSInt32();
               break;
             }
             case 16: {
               int rawValue = input.readEnum();
-                @SuppressWarnings("deprecation")
-              com.dfire.protocol.RpcOperate.Operate value = com.dfire.protocol.RpcOperate.Operate.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(2, rawValue);
-              } else {
-                bitField0_ |= 0x00000002;
-                operate_ = rawValue;
-              }
+
+              operate_ = rawValue;
               break;
             }
             case 26: {
-              bitField0_ |= 0x00000004;
+
               body_ = input.readBytes();
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -165,7 +143,6 @@ public final class RpcRequest {
               com.dfire.protocol.RpcRequest.Request.class, com.dfire.protocol.RpcRequest.Request.Builder.class);
     }
 
-    private int bitField0_;
     public static final int RID_FIELD_NUMBER = 1;
     private int rid_;
     /**
@@ -173,17 +150,7 @@ public final class RpcRequest {
      *request id 唯一标识一个请求
      * </pre>
      *
-     * <code>required sint32 rid = 1;</code>
-     */
-    public boolean hasRid() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <pre>
-     *request id 唯一标识一个请求
-     * </pre>
-     *
-     * <code>required sint32 rid = 1;</code>
+     * <code>sint32 rid = 1;</code>
      */
     public int getRid() {
       return rid_;
@@ -196,22 +163,22 @@ public final class RpcRequest {
      *操作类型
      * </pre>
      *
-     * <code>required .Operate operate = 2;</code>
+     * <code>.Operate operate = 2;</code>
      */
-    public boolean hasOperate() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+    public int getOperateValue() {
+      return operate_;
     }
     /**
      * <pre>
      *操作类型
      * </pre>
      *
-     * <code>required .Operate operate = 2;</code>
+     * <code>.Operate operate = 2;</code>
      */
     public com.dfire.protocol.RpcOperate.Operate getOperate() {
       @SuppressWarnings("deprecation")
       com.dfire.protocol.RpcOperate.Operate result = com.dfire.protocol.RpcOperate.Operate.valueOf(operate_);
-      return result == null ? com.dfire.protocol.RpcOperate.Operate.HeartBeat : result;
+      return result == null ? com.dfire.protocol.RpcOperate.Operate.UNRECOGNIZED : result;
     }
 
     public static final int BODY_FIELD_NUMBER = 3;
@@ -221,17 +188,7 @@ public final class RpcRequest {
      *请求体
      * </pre>
      *
-     * <code>optional bytes body = 3;</code>
-     */
-    public boolean hasBody() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <pre>
-     *请求体
-     * </pre>
-     *
-     * <code>optional bytes body = 3;</code>
+     * <code>bytes body = 3;</code>
      */
     public com.google.protobuf.ByteString getBody() {
       return body_;
@@ -244,14 +201,6 @@ public final class RpcRequest {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
-      if (!hasRid()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasOperate()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -259,13 +208,13 @@ public final class RpcRequest {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (rid_ != 0) {
         output.writeSInt32(1, rid_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (operate_ != com.dfire.protocol.RpcOperate.Operate.HeartBeat.getNumber()) {
         output.writeEnum(2, operate_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (!body_.isEmpty()) {
         output.writeBytes(3, body_);
       }
       unknownFields.writeTo(output);
@@ -277,15 +226,15 @@ public final class RpcRequest {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (rid_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeSInt32Size(1, rid_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (operate_ != com.dfire.protocol.RpcOperate.Operate.HeartBeat.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(2, operate_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (!body_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(3, body_);
       }
@@ -305,20 +254,11 @@ public final class RpcRequest {
       com.dfire.protocol.RpcRequest.Request other = (com.dfire.protocol.RpcRequest.Request) obj;
 
       boolean result = true;
-      result = result && (hasRid() == other.hasRid());
-      if (hasRid()) {
-        result = result && (getRid()
-            == other.getRid());
-      }
-      result = result && (hasOperate() == other.hasOperate());
-      if (hasOperate()) {
-        result = result && operate_ == other.operate_;
-      }
-      result = result && (hasBody() == other.hasBody());
-      if (hasBody()) {
-        result = result && getBody()
-            .equals(other.getBody());
-      }
+      result = result && (getRid()
+          == other.getRid());
+      result = result && operate_ == other.operate_;
+      result = result && getBody()
+          .equals(other.getBody());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -330,18 +270,12 @@ public final class RpcRequest {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (hasRid()) {
-        hash = (37 * hash) + RID_FIELD_NUMBER;
-        hash = (53 * hash) + getRid();
-      }
-      if (hasOperate()) {
-        hash = (37 * hash) + OPERATE_FIELD_NUMBER;
-        hash = (53 * hash) + operate_;
-      }
-      if (hasBody()) {
-        hash = (37 * hash) + BODY_FIELD_NUMBER;
-        hash = (53 * hash) + getBody().hashCode();
-      }
+      hash = (37 * hash) + RID_FIELD_NUMBER;
+      hash = (53 * hash) + getRid();
+      hash = (37 * hash) + OPERATE_FIELD_NUMBER;
+      hash = (53 * hash) + operate_;
+      hash = (37 * hash) + BODY_FIELD_NUMBER;
+      hash = (53 * hash) + getBody().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -476,11 +410,11 @@ public final class RpcRequest {
       public Builder clear() {
         super.clear();
         rid_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
+
         operate_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
+
         body_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
+
         return this;
       }
 
@@ -507,21 +441,9 @@ public final class RpcRequest {
       @java.lang.Override
       public com.dfire.protocol.RpcRequest.Request buildPartial() {
         com.dfire.protocol.RpcRequest.Request result = new com.dfire.protocol.RpcRequest.Request(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
         result.rid_ = rid_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
         result.operate_ = operate_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
         result.body_ = body_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -570,13 +492,13 @@ public final class RpcRequest {
 
       public Builder mergeFrom(com.dfire.protocol.RpcRequest.Request other) {
         if (other == com.dfire.protocol.RpcRequest.Request.getDefaultInstance()) return this;
-        if (other.hasRid()) {
+        if (other.getRid() != 0) {
           setRid(other.getRid());
         }
-        if (other.hasOperate()) {
-          setOperate(other.getOperate());
+        if (other.operate_ != 0) {
+          setOperateValue(other.getOperateValue());
         }
-        if (other.hasBody()) {
+        if (other.getBody() != com.google.protobuf.ByteString.EMPTY) {
           setBody(other.getBody());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -586,12 +508,6 @@ public final class RpcRequest {
 
       @java.lang.Override
       public final boolean isInitialized() {
-        if (!hasRid()) {
-          return false;
-        }
-        if (!hasOperate()) {
-          return false;
-        }
         return true;
       }
 
@@ -613,7 +529,6 @@ public final class RpcRequest {
         }
         return this;
       }
-      private int bitField0_;
 
       private int rid_ ;
       /**
@@ -621,17 +536,7 @@ public final class RpcRequest {
        *request id 唯一标识一个请求
        * </pre>
        *
-       * <code>required sint32 rid = 1;</code>
-       */
-      public boolean hasRid() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <pre>
-       *request id 唯一标识一个请求
-       * </pre>
-       *
-       * <code>required sint32 rid = 1;</code>
+       * <code>sint32 rid = 1;</code>
        */
       public int getRid() {
         return rid_;
@@ -641,10 +546,10 @@ public final class RpcRequest {
        *request id 唯一标识一个请求
        * </pre>
        *
-       * <code>required sint32 rid = 1;</code>
+       * <code>sint32 rid = 1;</code>
        */
       public Builder setRid(int value) {
-        bitField0_ |= 0x00000001;
+        
         rid_ = value;
         onChanged();
         return this;
@@ -654,10 +559,10 @@ public final class RpcRequest {
        *request id 唯一标识一个请求
        * </pre>
        *
-       * <code>required sint32 rid = 1;</code>
+       * <code>sint32 rid = 1;</code>
        */
       public Builder clearRid() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        
         rid_ = 0;
         onChanged();
         return this;
@@ -669,35 +574,47 @@ public final class RpcRequest {
        *操作类型
        * </pre>
        *
-       * <code>required .Operate operate = 2;</code>
+       * <code>.Operate operate = 2;</code>
        */
-      public boolean hasOperate() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+      public int getOperateValue() {
+        return operate_;
       }
       /**
        * <pre>
        *操作类型
        * </pre>
        *
-       * <code>required .Operate operate = 2;</code>
+       * <code>.Operate operate = 2;</code>
+       */
+      public Builder setOperateValue(int value) {
+        operate_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *操作类型
+       * </pre>
+       *
+       * <code>.Operate operate = 2;</code>
        */
       public com.dfire.protocol.RpcOperate.Operate getOperate() {
         @SuppressWarnings("deprecation")
         com.dfire.protocol.RpcOperate.Operate result = com.dfire.protocol.RpcOperate.Operate.valueOf(operate_);
-        return result == null ? com.dfire.protocol.RpcOperate.Operate.HeartBeat : result;
+        return result == null ? com.dfire.protocol.RpcOperate.Operate.UNRECOGNIZED : result;
       }
       /**
        * <pre>
        *操作类型
        * </pre>
        *
-       * <code>required .Operate operate = 2;</code>
+       * <code>.Operate operate = 2;</code>
        */
       public Builder setOperate(com.dfire.protocol.RpcOperate.Operate value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00000002;
+        
         operate_ = value.getNumber();
         onChanged();
         return this;
@@ -707,10 +624,10 @@ public final class RpcRequest {
        *操作类型
        * </pre>
        *
-       * <code>required .Operate operate = 2;</code>
+       * <code>.Operate operate = 2;</code>
        */
       public Builder clearOperate() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        
         operate_ = 0;
         onChanged();
         return this;
@@ -722,17 +639,7 @@ public final class RpcRequest {
        *请求体
        * </pre>
        *
-       * <code>optional bytes body = 3;</code>
-       */
-      public boolean hasBody() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <pre>
-       *请求体
-       * </pre>
-       *
-       * <code>optional bytes body = 3;</code>
+       * <code>bytes body = 3;</code>
        */
       public com.google.protobuf.ByteString getBody() {
         return body_;
@@ -742,13 +649,13 @@ public final class RpcRequest {
        *请求体
        * </pre>
        *
-       * <code>optional bytes body = 3;</code>
+       * <code>bytes body = 3;</code>
        */
       public Builder setBody(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000004;
+  
         body_ = value;
         onChanged();
         return this;
@@ -758,10 +665,10 @@ public final class RpcRequest {
        *请求体
        * </pre>
        *
-       * <code>optional bytes body = 3;</code>
+       * <code>bytes body = 3;</code>
        */
       public Builder clearBody() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        
         body_ = getDefaultInstance().getBody();
         onChanged();
         return this;
@@ -769,7 +676,7 @@ public final class RpcRequest {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -792,7 +699,7 @@ public final class RpcRequest {
       return DEFAULT_INSTANCE;
     }
 
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<Request>
+    private static final com.google.protobuf.Parser<Request>
         PARSER = new com.google.protobuf.AbstractParser<Request>() {
       @java.lang.Override
       public Request parsePartialFrom(
@@ -834,9 +741,9 @@ public final class RpcRequest {
   static {
     java.lang.String[] descriptorData = {
       "\n\rrequest.proto\032\roperate.proto\"?\n\007Reques" +
-      "t\022\013\n\003rid\030\001 \002(\021\022\031\n\007operate\030\002 \002(\0162\010.Operat" +
+      "t\022\013\n\003rid\030\001 \001(\021\022\031\n\007operate\030\002 \001(\0162\010.Operat" +
       "e\022\014\n\004body\030\003 \001(\014B\"\n\022com.dfire.protocolB\nR" +
-      "pcRequestH\001"
+      "pcRequestH\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

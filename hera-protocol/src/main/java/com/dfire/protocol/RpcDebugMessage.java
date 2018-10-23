@@ -19,25 +19,17 @@ public final class RpcDebugMessage {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required string debugId = 1;</code>
-     */
-    boolean hasDebugId();
-    /**
-     * <code>required string debugId = 1;</code>
+     * <code>string debugId = 1;</code>
      */
     java.lang.String getDebugId();
     /**
-     * <code>required string debugId = 1;</code>
+     * <code>string debugId = 1;</code>
      */
     com.google.protobuf.ByteString
         getDebugIdBytes();
 
     /**
-     * <code>optional sint32 exitCode = 2;</code>
-     */
-    boolean hasExitCode();
-    /**
-     * <code>optional sint32 exitCode = 2;</code>
+     * <code>sint32 exitCode = 2;</code>
      */
     int getExitCode();
   }
@@ -83,18 +75,18 @@ public final class RpcDebugMessage {
               done = true;
               break;
             case 10: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000001;
-              debugId_ = bs;
+              java.lang.String s = input.readStringRequireUtf8();
+
+              debugId_ = s;
               break;
             }
             case 16: {
-              bitField0_ |= 0x00000002;
+
               exitCode_ = input.readSInt32();
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -125,17 +117,10 @@ public final class RpcDebugMessage {
               com.dfire.protocol.RpcDebugMessage.DebugMessage.class, com.dfire.protocol.RpcDebugMessage.DebugMessage.Builder.class);
     }
 
-    private int bitField0_;
     public static final int DEBUGID_FIELD_NUMBER = 1;
     private volatile java.lang.Object debugId_;
     /**
-     * <code>required string debugId = 1;</code>
-     */
-    public boolean hasDebugId() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required string debugId = 1;</code>
+     * <code>string debugId = 1;</code>
      */
     public java.lang.String getDebugId() {
       java.lang.Object ref = debugId_;
@@ -145,14 +130,12 @@ public final class RpcDebugMessage {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          debugId_ = s;
-        }
+        debugId_ = s;
         return s;
       }
     }
     /**
-     * <code>required string debugId = 1;</code>
+     * <code>string debugId = 1;</code>
      */
     public com.google.protobuf.ByteString
         getDebugIdBytes() {
@@ -171,13 +154,7 @@ public final class RpcDebugMessage {
     public static final int EXITCODE_FIELD_NUMBER = 2;
     private int exitCode_;
     /**
-     * <code>optional sint32 exitCode = 2;</code>
-     */
-    public boolean hasExitCode() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>optional sint32 exitCode = 2;</code>
+     * <code>sint32 exitCode = 2;</code>
      */
     public int getExitCode() {
       return exitCode_;
@@ -190,10 +167,6 @@ public final class RpcDebugMessage {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
-      if (!hasDebugId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -201,10 +174,10 @@ public final class RpcDebugMessage {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (!getDebugIdBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, debugId_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (exitCode_ != 0) {
         output.writeSInt32(2, exitCode_);
       }
       unknownFields.writeTo(output);
@@ -216,10 +189,10 @@ public final class RpcDebugMessage {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (!getDebugIdBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, debugId_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (exitCode_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeSInt32Size(2, exitCode_);
       }
@@ -239,16 +212,10 @@ public final class RpcDebugMessage {
       com.dfire.protocol.RpcDebugMessage.DebugMessage other = (com.dfire.protocol.RpcDebugMessage.DebugMessage) obj;
 
       boolean result = true;
-      result = result && (hasDebugId() == other.hasDebugId());
-      if (hasDebugId()) {
-        result = result && getDebugId()
-            .equals(other.getDebugId());
-      }
-      result = result && (hasExitCode() == other.hasExitCode());
-      if (hasExitCode()) {
-        result = result && (getExitCode()
-            == other.getExitCode());
-      }
+      result = result && getDebugId()
+          .equals(other.getDebugId());
+      result = result && (getExitCode()
+          == other.getExitCode());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -260,14 +227,10 @@ public final class RpcDebugMessage {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (hasDebugId()) {
-        hash = (37 * hash) + DEBUGID_FIELD_NUMBER;
-        hash = (53 * hash) + getDebugId().hashCode();
-      }
-      if (hasExitCode()) {
-        hash = (37 * hash) + EXITCODE_FIELD_NUMBER;
-        hash = (53 * hash) + getExitCode();
-      }
+      hash = (37 * hash) + DEBUGID_FIELD_NUMBER;
+      hash = (53 * hash) + getDebugId().hashCode();
+      hash = (37 * hash) + EXITCODE_FIELD_NUMBER;
+      hash = (53 * hash) + getExitCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -402,9 +365,9 @@ public final class RpcDebugMessage {
       public Builder clear() {
         super.clear();
         debugId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
+
         exitCode_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
+
         return this;
       }
 
@@ -431,17 +394,8 @@ public final class RpcDebugMessage {
       @java.lang.Override
       public com.dfire.protocol.RpcDebugMessage.DebugMessage buildPartial() {
         com.dfire.protocol.RpcDebugMessage.DebugMessage result = new com.dfire.protocol.RpcDebugMessage.DebugMessage(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
         result.debugId_ = debugId_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
         result.exitCode_ = exitCode_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -490,12 +444,11 @@ public final class RpcDebugMessage {
 
       public Builder mergeFrom(com.dfire.protocol.RpcDebugMessage.DebugMessage other) {
         if (other == com.dfire.protocol.RpcDebugMessage.DebugMessage.getDefaultInstance()) return this;
-        if (other.hasDebugId()) {
-          bitField0_ |= 0x00000001;
+        if (!other.getDebugId().isEmpty()) {
           debugId_ = other.debugId_;
           onChanged();
         }
-        if (other.hasExitCode()) {
+        if (other.getExitCode() != 0) {
           setExitCode(other.getExitCode());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -505,9 +458,6 @@ public final class RpcDebugMessage {
 
       @java.lang.Override
       public final boolean isInitialized() {
-        if (!hasDebugId()) {
-          return false;
-        }
         return true;
       }
 
@@ -529,17 +479,10 @@ public final class RpcDebugMessage {
         }
         return this;
       }
-      private int bitField0_;
 
       private java.lang.Object debugId_ = "";
       /**
-       * <code>required string debugId = 1;</code>
-       */
-      public boolean hasDebugId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required string debugId = 1;</code>
+       * <code>string debugId = 1;</code>
        */
       public java.lang.String getDebugId() {
         java.lang.Object ref = debugId_;
@@ -547,16 +490,14 @@ public final class RpcDebugMessage {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            debugId_ = s;
-          }
+          debugId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>required string debugId = 1;</code>
+       * <code>string debugId = 1;</code>
        */
       public com.google.protobuf.ByteString
           getDebugIdBytes() {
@@ -572,36 +513,37 @@ public final class RpcDebugMessage {
         }
       }
       /**
-       * <code>required string debugId = 1;</code>
+       * <code>string debugId = 1;</code>
        */
       public Builder setDebugId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  
         debugId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string debugId = 1;</code>
+       * <code>string debugId = 1;</code>
        */
       public Builder clearDebugId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        
         debugId_ = getDefaultInstance().getDebugId();
         onChanged();
         return this;
       }
       /**
-       * <code>required string debugId = 1;</code>
+       * <code>string debugId = 1;</code>
        */
       public Builder setDebugIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  checkByteStringIsUtf8(value);
+        
         debugId_ = value;
         onChanged();
         return this;
@@ -609,31 +551,25 @@ public final class RpcDebugMessage {
 
       private int exitCode_ ;
       /**
-       * <code>optional sint32 exitCode = 2;</code>
-       */
-      public boolean hasExitCode() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional sint32 exitCode = 2;</code>
+       * <code>sint32 exitCode = 2;</code>
        */
       public int getExitCode() {
         return exitCode_;
       }
       /**
-       * <code>optional sint32 exitCode = 2;</code>
+       * <code>sint32 exitCode = 2;</code>
        */
       public Builder setExitCode(int value) {
-        bitField0_ |= 0x00000002;
+        
         exitCode_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional sint32 exitCode = 2;</code>
+       * <code>sint32 exitCode = 2;</code>
        */
       public Builder clearExitCode() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        
         exitCode_ = 0;
         onChanged();
         return this;
@@ -641,7 +577,7 @@ public final class RpcDebugMessage {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -664,7 +600,7 @@ public final class RpcDebugMessage {
       return DEFAULT_INSTANCE;
     }
 
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<DebugMessage>
+    private static final com.google.protobuf.Parser<DebugMessage>
         PARSER = new com.google.protobuf.AbstractParser<DebugMessage>() {
       @java.lang.Override
       public DebugMessage parsePartialFrom(
@@ -706,8 +642,9 @@ public final class RpcDebugMessage {
   static {
     java.lang.String[] descriptorData = {
       "\n\023debug_message.proto\"1\n\014DebugMessage\022\017\n" +
-      "\007debugId\030\001 \002(\t\022\020\n\010exitCode\030\002 \001(\021B\'\n\022com." +
-      "dfire.protocolB\017RpcDebugMessageH\001"
+      "\007debugId\030\001 \001(\t\022\020\n\010exitCode\030\002 \001(\021B\'\n\022com." +
+      "dfire.protocolB\017RpcDebugMessageH\001b\006proto" +
+      "3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

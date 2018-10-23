@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 option optimize_for = SPEED;
 option java_package = "com.dfire.protocol";
@@ -6,6 +6,6 @@ option java_outer_classname = "RpcExecuteMessage";
 
 message ExecuteMessage {
 
-    required string actionId = 1;
-    optional sint32 exitCode = 2;
+    string actionId = 1;
+    sint32 exitCode = 2;
 }

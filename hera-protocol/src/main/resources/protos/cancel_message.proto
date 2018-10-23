@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 import "execute_kind.proto";
 
@@ -8,7 +8,7 @@ option java_package = "com.dfire.protocol";
 option java_outer_classname = "RpcCancelMessage";
 
 message CancelMessage {
-    required ExecuteKind ek = 1;
-    required string id = 2;
+    ExecuteKind ek = 1;
+    string id = 2;
 }
 
