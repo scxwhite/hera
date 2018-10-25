@@ -116,21 +116,11 @@ $(function () {
         submitHandler: function () {
             $.post($("#baseURl").attr("href") + "/loginCheck", $("#loginForm").serialize(), function (data) {
                 if (data.code == "200") {
-                    layer.open({
-                        title: '系统提示',
-                        content: '登录成功',
-                        icon: '1',
-                        end: function (layero, index) {
-                            var url = base_url + "/home";
-                            window.location.href = url;
-                        }
-                    });
+                    layer.msg("登录成功");
+                    window.location.href =  base_url + "/home";;
                 } else {
-                    layer.open({
-                        title: '系统提示',
-                        content: (data.msg || "登录失败"),
-                        icon: '2'
-                    });
+                    layer.msg("用户名或密码错误");
+
                 }
             });
         }
