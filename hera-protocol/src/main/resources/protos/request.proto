@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 import "operate.proto";
 
@@ -11,12 +11,12 @@ option java_outer_classname = "RpcRequest";
 message Request {
 
     //request id 唯一标识一个请求
-    required sint32 rid = 1;
+    sint32 rid = 1;
 
     //操作类型
-    required Operate operate = 2;
+    Operate operate = 2;
 
     //请求体
-    optional bytes body = 3;
+    bytes body = 3;
 }
 

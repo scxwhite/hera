@@ -1,10 +1,10 @@
-syntax = "proto2";
+syntax = "proto3";
 
 option optimize_for = SPEED;
 option java_package = "com.dfire.protocol";
 option java_outer_classname = "RpcDebugMessage";
 
 message DebugMessage {
-    required string debugId = 1;
-    optional sint32 exitCode = 2;
+    string debugId = 1;
+    sint32 exitCode = 2;
 }

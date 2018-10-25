@@ -25,7 +25,7 @@ public class DownLoadJob extends AbstractJob{
                 String name = map.get("name");
                 String uri = map.get("uri");
                 if(uri.startsWith("hdfs://")) {
-                    String localPath = jobContext.getWorkDir() + File.separator + name;
+                    String localPath = jobContext.getWorkDir() + File.separator + (name == null ? "" : name);
                     String hadoopPath = uri.substring(7);
                     jobList.add(new DownloadHadoopFileJob(jobContext, hadoopPath, localPath));
                 }

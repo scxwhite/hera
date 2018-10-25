@@ -39,6 +39,7 @@ public final class ResponseStatus {
      * <code>ERROR = 1;</code>
      */
     ERROR(1),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -60,6 +61,10 @@ public final class ResponseStatus {
 
 
     public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
       return value;
     }
 
@@ -112,6 +117,9 @@ public final class ResponseStatus {
         throw new java.lang.IllegalArgumentException(
           "EnumValueDescriptor is not for this type.");
       }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
       return VALUES[desc.getIndex()];
     }
 
@@ -135,7 +143,7 @@ public final class ResponseStatus {
     java.lang.String[] descriptorData = {
       "\n\014status.proto*\033\n\006Status\022\006\n\002OK\020\000\022\t\n\005ERRO" +
       "R\020\001B&\n\022com.dfire.protocolB\016ResponseStatu" +
-      "sH\001"
+      "sH\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

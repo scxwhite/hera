@@ -31,6 +31,7 @@ public final class JobExecuteKind {
      * <code>DebugKind = 2;</code>
      */
     DebugKind(2),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -48,6 +49,10 @@ public final class JobExecuteKind {
 
 
     public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
       return value;
     }
 
@@ -101,6 +106,9 @@ public final class JobExecuteKind {
         throw new java.lang.IllegalArgumentException(
           "EnumValueDescriptor is not for this type.");
       }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
       return VALUES[desc.getIndex()];
     }
 
@@ -125,7 +133,7 @@ public final class JobExecuteKind {
       "\n\022execute_kind.proto*>\n\013ExecuteKind\022\020\n\014S" +
       "cheduleKind\020\000\022\016\n\nManualKind\020\001\022\r\n\tDebugKi" +
       "nd\020\002B&\n\022com.dfire.protocolB\016JobExecuteKi" +
-      "ndH\001"
+      "ndH\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

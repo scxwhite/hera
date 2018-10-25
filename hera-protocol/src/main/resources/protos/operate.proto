@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 option optimize_for = SPEED;
 option java_package = "com.dfire.protocol";

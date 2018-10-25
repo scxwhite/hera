@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -90,9 +92,10 @@ public class DevelopCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/debug", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<String> debug(@RequestBody HeraFile heraFile) throws ExecutionException, InterruptedException {
+    public WebAsyncTask<Map<String,Object>> debug(@RequestBody HeraFile heraFile) throws ExecutionException, InterruptedException {
 
-        return new WebAsyncTask<>(3000, () -> {
+        return new WebAsyncTask<>(10000, () -> {
+            Map<String,Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
             String name = file.getName();
             String runType = "1";
@@ -115,7 +118,9 @@ public class DevelopCenterController extends BaseHeraController {
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
             workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
-            return file.getId();
+            res.put("fileId", file.getId());
+            res.put("debugId", newId);
+            return res;
         });
     }
 
@@ -129,10 +134,11 @@ public class DevelopCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/debugSelectCode", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<String> debugSelectCode(@RequestBody HeraFile heraFile) {
+    public WebAsyncTask<Map<String,Object>> debugSelectCode(@RequestBody HeraFile heraFile) {
 
         String owner = getOwner();
-        return new WebAsyncTask<>(3000, () -> {
+        return new WebAsyncTask<>(10000, () -> {
+            Map<String,Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
             file.setContent(heraFile.getContent());
             String name = file.getName();
@@ -153,7 +159,9 @@ public class DevelopCenterController extends BaseHeraController {
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
             workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
-            return file.getId();
+            res.put("fileId", file.getId());
+            res.put("debugId", newId);
+            return res;
         });
     }
 

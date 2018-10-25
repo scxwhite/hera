@@ -59,6 +59,7 @@ public final class RpcOperate {
      * <code>Manual = 4;</code>
      */
     Manual(4),
+    UNRECOGNIZED(-1),
     ;
 
     /**
@@ -104,6 +105,10 @@ public final class RpcOperate {
 
 
     public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
       return value;
     }
 
@@ -159,6 +164,9 @@ public final class RpcOperate {
         throw new java.lang.IllegalArgumentException(
           "EnumValueDescriptor is not for this type.");
       }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
       return VALUES[desc.getIndex()];
     }
 
@@ -183,7 +191,7 @@ public final class RpcOperate {
       "\n\roperate.proto*I\n\007Operate\022\r\n\tHeartBeat\020" +
       "\000\022\014\n\010Schedule\020\001\022\n\n\006Cancel\020\002\022\t\n\005Debug\020\003\022\n" +
       "\n\006Manual\020\004B\"\n\022com.dfire.protocolB\nRpcOpe" +
-      "rateH\001"
+      "rateH\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

@@ -1,4 +1,4 @@
-syntax = "proto2";
+syntax = "proto3";
 
 import "status.proto";
 import "operate.proto";
@@ -11,16 +11,16 @@ option java_outer_classname = "RpcResponse";
 message Response {
 
     //状态码
-    required Status statusEnum = 1;
+    Status statusEnum = 1;
 
     //request id,响应时原封不动返回,提供给client配对.
-    required sint32 rid = 2;
+    sint32 rid = 2;
 
-    required Operate operate = 3;
+    Operate operate = 3;
 
     //如果出错,会有出错信息.纯文本形式.client自行包装
-    optional string errorText = 4;
+    string errorText = 4;
 
     //响应体
-    optional bytes body = 5;
+    bytes body = 5;
 }

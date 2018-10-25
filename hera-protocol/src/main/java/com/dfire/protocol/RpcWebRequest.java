@@ -19,29 +19,25 @@ public final class RpcWebRequest {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required sint32 rid = 1;</code>
-     */
-    boolean hasRid();
-    /**
-     * <code>required sint32 rid = 1;</code>
+     * <code>sint32 rid = 1;</code>
      */
     int getRid();
 
     /**
-     * <code>required .WebOperate operate = 2;</code>
+     * <code>.WebOperate operate = 2;</code>
      */
-    boolean hasOperate();
+    int getOperateValue();
     /**
-     * <code>required .WebOperate operate = 2;</code>
+     * <code>.WebOperate operate = 2;</code>
      */
     com.dfire.protocol.RpcWebOperate.WebOperate getOperate();
 
     /**
-     * <code>required .ExecuteKind ek = 3;</code>
+     * <code>.ExecuteKind ek = 3;</code>
      */
-    boolean hasEk();
+    int getEkValue();
     /**
-     * <code>required .ExecuteKind ek = 3;</code>
+     * <code>.ExecuteKind ek = 3;</code>
      */
     com.dfire.protocol.JobExecuteKind.ExecuteKind getEk();
 
@@ -50,15 +46,7 @@ public final class RpcWebRequest {
      * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
      * </pre>
      *
-     * <code>required string id = 4;</code>
-     */
-    boolean hasId();
-    /**
-     * <pre>
-     * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
-     * </pre>
-     *
-     * <code>required string id = 4;</code>
+     * <code>string id = 4;</code>
      */
     java.lang.String getId();
     /**
@@ -66,31 +54,23 @@ public final class RpcWebRequest {
      * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
      * </pre>
      *
-     * <code>required string id = 4;</code>
+     * <code>string id = 4;</code>
      */
     com.google.protobuf.ByteString
         getIdBytes();
 
     /**
-     * <code>optional string executor = 5;</code>
-     */
-    boolean hasExecutor();
-    /**
-     * <code>optional string executor = 5;</code>
+     * <code>string executor = 5;</code>
      */
     java.lang.String getExecutor();
     /**
-     * <code>optional string executor = 5;</code>
+     * <code>string executor = 5;</code>
      */
     com.google.protobuf.ByteString
         getExecutorBytes();
 
     /**
-     * <code>optional bytes body = 6;</code>
-     */
-    boolean hasBody();
-    /**
-     * <code>optional bytes body = 6;</code>
+     * <code>bytes body = 6;</code>
      */
     com.google.protobuf.ByteString getBody();
   }
@@ -108,7 +88,7 @@ public final class RpcWebRequest {
     }
     private WebRequest() {
       rid_ = 0;
-      operate_ = 1;
+      operate_ = 0;
       ek_ = 0;
       id_ = "";
       executor_ = "";
@@ -140,53 +120,41 @@ public final class RpcWebRequest {
               done = true;
               break;
             case 8: {
-              bitField0_ |= 0x00000001;
+
               rid_ = input.readSInt32();
               break;
             }
             case 16: {
               int rawValue = input.readEnum();
-                @SuppressWarnings("deprecation")
-              com.dfire.protocol.RpcWebOperate.WebOperate value = com.dfire.protocol.RpcWebOperate.WebOperate.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(2, rawValue);
-              } else {
-                bitField0_ |= 0x00000002;
-                operate_ = rawValue;
-              }
+
+              operate_ = rawValue;
               break;
             }
             case 24: {
               int rawValue = input.readEnum();
-                @SuppressWarnings("deprecation")
-              com.dfire.protocol.JobExecuteKind.ExecuteKind value = com.dfire.protocol.JobExecuteKind.ExecuteKind.valueOf(rawValue);
-              if (value == null) {
-                unknownFields.mergeVarintField(3, rawValue);
-              } else {
-                bitField0_ |= 0x00000004;
-                ek_ = rawValue;
-              }
+
+              ek_ = rawValue;
               break;
             }
             case 34: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000008;
-              id_ = bs;
+              java.lang.String s = input.readStringRequireUtf8();
+
+              id_ = s;
               break;
             }
             case 42: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000010;
-              executor_ = bs;
+              java.lang.String s = input.readStringRequireUtf8();
+
+              executor_ = s;
               break;
             }
             case 50: {
-              bitField0_ |= 0x00000020;
+
               body_ = input.readBytes();
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -230,6 +198,7 @@ public final class RpcWebRequest {
        * <code>MANUAL_RECOVER = 1;</code>
        */
       MANUAL_RECOVER(1),
+      UNRECOGNIZED(-1),
       ;
 
       /**
@@ -243,6 +212,10 @@ public final class RpcWebRequest {
 
 
       public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
         return value;
       }
 
@@ -295,6 +268,9 @@ public final class RpcWebRequest {
           throw new java.lang.IllegalArgumentException(
             "EnumValueDescriptor is not for this type.");
         }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
         return VALUES[desc.getIndex()];
       }
 
@@ -307,17 +283,10 @@ public final class RpcWebRequest {
       // @@protoc_insertion_point(enum_scope:WebRequest.Trigger)
     }
 
-    private int bitField0_;
     public static final int RID_FIELD_NUMBER = 1;
     private int rid_;
     /**
-     * <code>required sint32 rid = 1;</code>
-     */
-    public boolean hasRid() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required sint32 rid = 1;</code>
+     * <code>sint32 rid = 1;</code>
      */
     public int getRid() {
       return rid_;
@@ -326,35 +295,35 @@ public final class RpcWebRequest {
     public static final int OPERATE_FIELD_NUMBER = 2;
     private int operate_;
     /**
-     * <code>required .WebOperate operate = 2;</code>
+     * <code>.WebOperate operate = 2;</code>
      */
-    public boolean hasOperate() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+    public int getOperateValue() {
+      return operate_;
     }
     /**
-     * <code>required .WebOperate operate = 2;</code>
+     * <code>.WebOperate operate = 2;</code>
      */
     public com.dfire.protocol.RpcWebOperate.WebOperate getOperate() {
       @SuppressWarnings("deprecation")
       com.dfire.protocol.RpcWebOperate.WebOperate result = com.dfire.protocol.RpcWebOperate.WebOperate.valueOf(operate_);
-      return result == null ? com.dfire.protocol.RpcWebOperate.WebOperate.UpdateJob : result;
+      return result == null ? com.dfire.protocol.RpcWebOperate.WebOperate.UNRECOGNIZED : result;
     }
 
     public static final int EK_FIELD_NUMBER = 3;
     private int ek_;
     /**
-     * <code>required .ExecuteKind ek = 3;</code>
+     * <code>.ExecuteKind ek = 3;</code>
      */
-    public boolean hasEk() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+    public int getEkValue() {
+      return ek_;
     }
     /**
-     * <code>required .ExecuteKind ek = 3;</code>
+     * <code>.ExecuteKind ek = 3;</code>
      */
     public com.dfire.protocol.JobExecuteKind.ExecuteKind getEk() {
       @SuppressWarnings("deprecation")
       com.dfire.protocol.JobExecuteKind.ExecuteKind result = com.dfire.protocol.JobExecuteKind.ExecuteKind.valueOf(ek_);
-      return result == null ? com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind : result;
+      return result == null ? com.dfire.protocol.JobExecuteKind.ExecuteKind.UNRECOGNIZED : result;
     }
 
     public static final int ID_FIELD_NUMBER = 4;
@@ -364,17 +333,7 @@ public final class RpcWebRequest {
      * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
      * </pre>
      *
-     * <code>required string id = 4;</code>
-     */
-    public boolean hasId() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    /**
-     * <pre>
-     * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
-     * </pre>
-     *
-     * <code>required string id = 4;</code>
+     * <code>string id = 4;</code>
      */
     public java.lang.String getId() {
       java.lang.Object ref = id_;
@@ -384,9 +343,7 @@ public final class RpcWebRequest {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          id_ = s;
-        }
+        id_ = s;
         return s;
       }
     }
@@ -395,7 +352,7 @@ public final class RpcWebRequest {
      * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
      * </pre>
      *
-     * <code>required string id = 4;</code>
+     * <code>string id = 4;</code>
      */
     public com.google.protobuf.ByteString
         getIdBytes() {
@@ -414,13 +371,7 @@ public final class RpcWebRequest {
     public static final int EXECUTOR_FIELD_NUMBER = 5;
     private volatile java.lang.Object executor_;
     /**
-     * <code>optional string executor = 5;</code>
-     */
-    public boolean hasExecutor() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>optional string executor = 5;</code>
+     * <code>string executor = 5;</code>
      */
     public java.lang.String getExecutor() {
       java.lang.Object ref = executor_;
@@ -430,14 +381,12 @@ public final class RpcWebRequest {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          executor_ = s;
-        }
+        executor_ = s;
         return s;
       }
     }
     /**
-     * <code>optional string executor = 5;</code>
+     * <code>string executor = 5;</code>
      */
     public com.google.protobuf.ByteString
         getExecutorBytes() {
@@ -456,13 +405,7 @@ public final class RpcWebRequest {
     public static final int BODY_FIELD_NUMBER = 6;
     private com.google.protobuf.ByteString body_;
     /**
-     * <code>optional bytes body = 6;</code>
-     */
-    public boolean hasBody() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
-    }
-    /**
-     * <code>optional bytes body = 6;</code>
+     * <code>bytes body = 6;</code>
      */
     public com.google.protobuf.ByteString getBody() {
       return body_;
@@ -475,22 +418,6 @@ public final class RpcWebRequest {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
-      if (!hasRid()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasOperate()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasEk()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -498,22 +425,22 @@ public final class RpcWebRequest {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (rid_ != 0) {
         output.writeSInt32(1, rid_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (operate_ != com.dfire.protocol.RpcWebOperate.WebOperate.UpdateJob.getNumber()) {
         output.writeEnum(2, operate_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (ek_ != com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind.getNumber()) {
         output.writeEnum(3, ek_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (!getIdBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, id_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (!getExecutorBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, executor_);
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+      if (!body_.isEmpty()) {
         output.writeBytes(6, body_);
       }
       unknownFields.writeTo(output);
@@ -525,25 +452,25 @@ public final class RpcWebRequest {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (rid_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeSInt32Size(1, rid_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (operate_ != com.dfire.protocol.RpcWebOperate.WebOperate.UpdateJob.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(2, operate_);
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (ek_ != com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(3, ek_);
       }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+      if (!getIdBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, id_);
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+      if (!getExecutorBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, executor_);
       }
-      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+      if (!body_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(6, body_);
       }
@@ -563,34 +490,16 @@ public final class RpcWebRequest {
       com.dfire.protocol.RpcWebRequest.WebRequest other = (com.dfire.protocol.RpcWebRequest.WebRequest) obj;
 
       boolean result = true;
-      result = result && (hasRid() == other.hasRid());
-      if (hasRid()) {
-        result = result && (getRid()
-            == other.getRid());
-      }
-      result = result && (hasOperate() == other.hasOperate());
-      if (hasOperate()) {
-        result = result && operate_ == other.operate_;
-      }
-      result = result && (hasEk() == other.hasEk());
-      if (hasEk()) {
-        result = result && ek_ == other.ek_;
-      }
-      result = result && (hasId() == other.hasId());
-      if (hasId()) {
-        result = result && getId()
-            .equals(other.getId());
-      }
-      result = result && (hasExecutor() == other.hasExecutor());
-      if (hasExecutor()) {
-        result = result && getExecutor()
-            .equals(other.getExecutor());
-      }
-      result = result && (hasBody() == other.hasBody());
-      if (hasBody()) {
-        result = result && getBody()
-            .equals(other.getBody());
-      }
+      result = result && (getRid()
+          == other.getRid());
+      result = result && operate_ == other.operate_;
+      result = result && ek_ == other.ek_;
+      result = result && getId()
+          .equals(other.getId());
+      result = result && getExecutor()
+          .equals(other.getExecutor());
+      result = result && getBody()
+          .equals(other.getBody());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -602,30 +511,18 @@ public final class RpcWebRequest {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (hasRid()) {
-        hash = (37 * hash) + RID_FIELD_NUMBER;
-        hash = (53 * hash) + getRid();
-      }
-      if (hasOperate()) {
-        hash = (37 * hash) + OPERATE_FIELD_NUMBER;
-        hash = (53 * hash) + operate_;
-      }
-      if (hasEk()) {
-        hash = (37 * hash) + EK_FIELD_NUMBER;
-        hash = (53 * hash) + ek_;
-      }
-      if (hasId()) {
-        hash = (37 * hash) + ID_FIELD_NUMBER;
-        hash = (53 * hash) + getId().hashCode();
-      }
-      if (hasExecutor()) {
-        hash = (37 * hash) + EXECUTOR_FIELD_NUMBER;
-        hash = (53 * hash) + getExecutor().hashCode();
-      }
-      if (hasBody()) {
-        hash = (37 * hash) + BODY_FIELD_NUMBER;
-        hash = (53 * hash) + getBody().hashCode();
-      }
+      hash = (37 * hash) + RID_FIELD_NUMBER;
+      hash = (53 * hash) + getRid();
+      hash = (37 * hash) + OPERATE_FIELD_NUMBER;
+      hash = (53 * hash) + operate_;
+      hash = (37 * hash) + EK_FIELD_NUMBER;
+      hash = (53 * hash) + ek_;
+      hash = (37 * hash) + ID_FIELD_NUMBER;
+      hash = (53 * hash) + getId().hashCode();
+      hash = (37 * hash) + EXECUTOR_FIELD_NUMBER;
+      hash = (53 * hash) + getExecutor().hashCode();
+      hash = (37 * hash) + BODY_FIELD_NUMBER;
+      hash = (53 * hash) + getBody().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -760,17 +657,17 @@ public final class RpcWebRequest {
       public Builder clear() {
         super.clear();
         rid_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        operate_ = 1;
-        bitField0_ = (bitField0_ & ~0x00000002);
+
+        operate_ = 0;
+
         ek_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
+
         id_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
+
         executor_ = "";
-        bitField0_ = (bitField0_ & ~0x00000010);
+
         body_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000020);
+
         return this;
       }
 
@@ -797,33 +694,12 @@ public final class RpcWebRequest {
       @java.lang.Override
       public com.dfire.protocol.RpcWebRequest.WebRequest buildPartial() {
         com.dfire.protocol.RpcWebRequest.WebRequest result = new com.dfire.protocol.RpcWebRequest.WebRequest(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
         result.rid_ = rid_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
         result.operate_ = operate_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
         result.ek_ = ek_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
         result.id_ = id_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
         result.executor_ = executor_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000020;
-        }
         result.body_ = body_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -872,26 +748,24 @@ public final class RpcWebRequest {
 
       public Builder mergeFrom(com.dfire.protocol.RpcWebRequest.WebRequest other) {
         if (other == com.dfire.protocol.RpcWebRequest.WebRequest.getDefaultInstance()) return this;
-        if (other.hasRid()) {
+        if (other.getRid() != 0) {
           setRid(other.getRid());
         }
-        if (other.hasOperate()) {
-          setOperate(other.getOperate());
+        if (other.operate_ != 0) {
+          setOperateValue(other.getOperateValue());
         }
-        if (other.hasEk()) {
-          setEk(other.getEk());
+        if (other.ek_ != 0) {
+          setEkValue(other.getEkValue());
         }
-        if (other.hasId()) {
-          bitField0_ |= 0x00000008;
+        if (!other.getId().isEmpty()) {
           id_ = other.id_;
           onChanged();
         }
-        if (other.hasExecutor()) {
-          bitField0_ |= 0x00000010;
+        if (!other.getExecutor().isEmpty()) {
           executor_ = other.executor_;
           onChanged();
         }
-        if (other.hasBody()) {
+        if (other.getBody() != com.google.protobuf.ByteString.EMPTY) {
           setBody(other.getBody());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -901,18 +775,6 @@ public final class RpcWebRequest {
 
       @java.lang.Override
       public final boolean isInitialized() {
-        if (!hasRid()) {
-          return false;
-        }
-        if (!hasOperate()) {
-          return false;
-        }
-        if (!hasEk()) {
-          return false;
-        }
-        if (!hasId()) {
-          return false;
-        }
         return true;
       }
 
@@ -934,109 +796,118 @@ public final class RpcWebRequest {
         }
         return this;
       }
-      private int bitField0_;
 
       private int rid_ ;
       /**
-       * <code>required sint32 rid = 1;</code>
-       */
-      public boolean hasRid() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required sint32 rid = 1;</code>
+       * <code>sint32 rid = 1;</code>
        */
       public int getRid() {
         return rid_;
       }
       /**
-       * <code>required sint32 rid = 1;</code>
+       * <code>sint32 rid = 1;</code>
        */
       public Builder setRid(int value) {
-        bitField0_ |= 0x00000001;
+        
         rid_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required sint32 rid = 1;</code>
+       * <code>sint32 rid = 1;</code>
        */
       public Builder clearRid() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        
         rid_ = 0;
         onChanged();
         return this;
       }
 
-      private int operate_ = 1;
+      private int operate_ = 0;
       /**
-       * <code>required .WebOperate operate = 2;</code>
+       * <code>.WebOperate operate = 2;</code>
        */
-      public boolean hasOperate() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+      public int getOperateValue() {
+        return operate_;
       }
       /**
-       * <code>required .WebOperate operate = 2;</code>
+       * <code>.WebOperate operate = 2;</code>
+       */
+      public Builder setOperateValue(int value) {
+        operate_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.WebOperate operate = 2;</code>
        */
       public com.dfire.protocol.RpcWebOperate.WebOperate getOperate() {
         @SuppressWarnings("deprecation")
         com.dfire.protocol.RpcWebOperate.WebOperate result = com.dfire.protocol.RpcWebOperate.WebOperate.valueOf(operate_);
-        return result == null ? com.dfire.protocol.RpcWebOperate.WebOperate.UpdateJob : result;
+        return result == null ? com.dfire.protocol.RpcWebOperate.WebOperate.UNRECOGNIZED : result;
       }
       /**
-       * <code>required .WebOperate operate = 2;</code>
+       * <code>.WebOperate operate = 2;</code>
        */
       public Builder setOperate(com.dfire.protocol.RpcWebOperate.WebOperate value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00000002;
+        
         operate_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
-       * <code>required .WebOperate operate = 2;</code>
+       * <code>.WebOperate operate = 2;</code>
        */
       public Builder clearOperate() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        operate_ = 1;
+        
+        operate_ = 0;
         onChanged();
         return this;
       }
 
       private int ek_ = 0;
       /**
-       * <code>required .ExecuteKind ek = 3;</code>
+       * <code>.ExecuteKind ek = 3;</code>
        */
-      public boolean hasEk() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+      public int getEkValue() {
+        return ek_;
       }
       /**
-       * <code>required .ExecuteKind ek = 3;</code>
+       * <code>.ExecuteKind ek = 3;</code>
+       */
+      public Builder setEkValue(int value) {
+        ek_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.ExecuteKind ek = 3;</code>
        */
       public com.dfire.protocol.JobExecuteKind.ExecuteKind getEk() {
         @SuppressWarnings("deprecation")
         com.dfire.protocol.JobExecuteKind.ExecuteKind result = com.dfire.protocol.JobExecuteKind.ExecuteKind.valueOf(ek_);
-        return result == null ? com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind : result;
+        return result == null ? com.dfire.protocol.JobExecuteKind.ExecuteKind.UNRECOGNIZED : result;
       }
       /**
-       * <code>required .ExecuteKind ek = 3;</code>
+       * <code>.ExecuteKind ek = 3;</code>
        */
       public Builder setEk(com.dfire.protocol.JobExecuteKind.ExecuteKind value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00000004;
+        
         ek_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
-       * <code>required .ExecuteKind ek = 3;</code>
+       * <code>.ExecuteKind ek = 3;</code>
        */
       public Builder clearEk() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        
         ek_ = 0;
         onChanged();
         return this;
@@ -1048,17 +919,7 @@ public final class RpcWebRequest {
        * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
        * </pre>
        *
-       * <code>required string id = 4;</code>
-       */
-      public boolean hasId() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <pre>
-       * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
-       * </pre>
-       *
-       * <code>required string id = 4;</code>
+       * <code>string id = 4;</code>
        */
       public java.lang.String getId() {
         java.lang.Object ref = id_;
@@ -1066,9 +927,7 @@ public final class RpcWebRequest {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            id_ = s;
-          }
+          id_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
@@ -1079,7 +938,7 @@ public final class RpcWebRequest {
        * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
        * </pre>
        *
-       * <code>required string id = 4;</code>
+       * <code>string id = 4;</code>
        */
       public com.google.protobuf.ByteString
           getIdBytes() {
@@ -1099,14 +958,14 @@ public final class RpcWebRequest {
        * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
        * </pre>
        *
-       * <code>required string id = 4;</code>
+       * <code>string id = 4;</code>
        */
       public Builder setId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  
         id_ = value;
         onChanged();
         return this;
@@ -1116,10 +975,10 @@ public final class RpcWebRequest {
        * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
        * </pre>
        *
-       * <code>required string id = 4;</code>
+       * <code>string id = 4;</code>
        */
       public Builder clearId() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        
         id_ = getDefaultInstance().getId();
         onChanged();
         return this;
@@ -1129,14 +988,15 @@ public final class RpcWebRequest {
        * update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
        * </pre>
        *
-       * <code>required string id = 4;</code>
+       * <code>string id = 4;</code>
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000008;
+  checkByteStringIsUtf8(value);
+        
         id_ = value;
         onChanged();
         return this;
@@ -1144,13 +1004,7 @@ public final class RpcWebRequest {
 
       private java.lang.Object executor_ = "";
       /**
-       * <code>optional string executor = 5;</code>
-       */
-      public boolean hasExecutor() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>optional string executor = 5;</code>
+       * <code>string executor = 5;</code>
        */
       public java.lang.String getExecutor() {
         java.lang.Object ref = executor_;
@@ -1158,16 +1012,14 @@ public final class RpcWebRequest {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            executor_ = s;
-          }
+          executor_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string executor = 5;</code>
+       * <code>string executor = 5;</code>
        */
       public com.google.protobuf.ByteString
           getExecutorBytes() {
@@ -1183,36 +1035,37 @@ public final class RpcWebRequest {
         }
       }
       /**
-       * <code>optional string executor = 5;</code>
+       * <code>string executor = 5;</code>
        */
       public Builder setExecutor(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  
         executor_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string executor = 5;</code>
+       * <code>string executor = 5;</code>
        */
       public Builder clearExecutor() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        
         executor_ = getDefaultInstance().getExecutor();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string executor = 5;</code>
+       * <code>string executor = 5;</code>
        */
       public Builder setExecutorBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  checkByteStringIsUtf8(value);
+        
         executor_ = value;
         onChanged();
         return this;
@@ -1220,34 +1073,28 @@ public final class RpcWebRequest {
 
       private com.google.protobuf.ByteString body_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes body = 6;</code>
-       */
-      public boolean hasBody() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
-      }
-      /**
-       * <code>optional bytes body = 6;</code>
+       * <code>bytes body = 6;</code>
        */
       public com.google.protobuf.ByteString getBody() {
         return body_;
       }
       /**
-       * <code>optional bytes body = 6;</code>
+       * <code>bytes body = 6;</code>
        */
       public Builder setBody(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000020;
+  
         body_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional bytes body = 6;</code>
+       * <code>bytes body = 6;</code>
        */
       public Builder clearBody() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        
         body_ = getDefaultInstance().getBody();
         onChanged();
         return this;
@@ -1255,7 +1102,7 @@ public final class RpcWebRequest {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -1278,7 +1125,7 @@ public final class RpcWebRequest {
       return DEFAULT_INSTANCE;
     }
 
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<WebRequest>
+    private static final com.google.protobuf.Parser<WebRequest>
         PARSER = new com.google.protobuf.AbstractParser<WebRequest>() {
       @java.lang.Override
       public WebRequest parsePartialFrom(
@@ -1321,11 +1168,11 @@ public final class RpcWebRequest {
     java.lang.String[] descriptorData = {
       "\n\021web_request.proto\032\021web_operate.proto\032\022" +
       "execute_kind.proto\"\250\001\n\nWebRequest\022\013\n\003rid" +
-      "\030\001 \002(\021\022\034\n\007operate\030\002 \002(\0162\013.WebOperate\022\030\n\002" +
-      "ek\030\003 \002(\0162\014.ExecuteKind\022\n\n\002id\030\004 \002(\t\022\020\n\010ex" +
+      "\030\001 \001(\021\022\034\n\007operate\030\002 \001(\0162\013.WebOperate\022\030\n\002" +
+      "ek\030\003 \001(\0162\014.ExecuteKind\022\n\n\002id\030\004 \001(\t\022\020\n\010ex" +
       "ecutor\030\005 \001(\t\022\014\n\004body\030\006 \001(\014\")\n\007Trigger\022\n\n" +
       "\006MANUAL\020\000\022\022\n\016MANUAL_RECOVER\020\001B%\n\022com.dfi" +
-      "re.protocolB\rRpcWebRequestH\001"
+      "re.protocolB\rRpcWebRequestH\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

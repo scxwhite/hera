@@ -19,25 +19,17 @@ public final class RpcManualMessage {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>required string historyId = 1;</code>
-     */
-    boolean hasHistoryId();
-    /**
-     * <code>required string historyId = 1;</code>
+     * <code>string historyId = 1;</code>
      */
     java.lang.String getHistoryId();
     /**
-     * <code>required string historyId = 1;</code>
+     * <code>string historyId = 1;</code>
      */
     com.google.protobuf.ByteString
         getHistoryIdBytes();
 
     /**
-     * <code>optional sint32 exitCode = 2;</code>
-     */
-    boolean hasExitCode();
-    /**
-     * <code>optional sint32 exitCode = 2;</code>
+     * <code>sint32 exitCode = 2;</code>
      */
     int getExitCode();
   }
@@ -83,18 +75,18 @@ public final class RpcManualMessage {
               done = true;
               break;
             case 10: {
-              com.google.protobuf.ByteString bs = input.readBytes();
-              bitField0_ |= 0x00000001;
-              historyId_ = bs;
+              java.lang.String s = input.readStringRequireUtf8();
+
+              historyId_ = s;
               break;
             }
             case 16: {
-              bitField0_ |= 0x00000002;
+
               exitCode_ = input.readSInt32();
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -125,17 +117,10 @@ public final class RpcManualMessage {
               com.dfire.protocol.RpcManualMessage.ManualMessage.class, com.dfire.protocol.RpcManualMessage.ManualMessage.Builder.class);
     }
 
-    private int bitField0_;
     public static final int HISTORYID_FIELD_NUMBER = 1;
     private volatile java.lang.Object historyId_;
     /**
-     * <code>required string historyId = 1;</code>
-     */
-    public boolean hasHistoryId() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required string historyId = 1;</code>
+     * <code>string historyId = 1;</code>
      */
     public java.lang.String getHistoryId() {
       java.lang.Object ref = historyId_;
@@ -145,14 +130,12 @@ public final class RpcManualMessage {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          historyId_ = s;
-        }
+        historyId_ = s;
         return s;
       }
     }
     /**
-     * <code>required string historyId = 1;</code>
+     * <code>string historyId = 1;</code>
      */
     public com.google.protobuf.ByteString
         getHistoryIdBytes() {
@@ -171,13 +154,7 @@ public final class RpcManualMessage {
     public static final int EXITCODE_FIELD_NUMBER = 2;
     private int exitCode_;
     /**
-     * <code>optional sint32 exitCode = 2;</code>
-     */
-    public boolean hasExitCode() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>optional sint32 exitCode = 2;</code>
+     * <code>sint32 exitCode = 2;</code>
      */
     public int getExitCode() {
       return exitCode_;
@@ -190,10 +167,6 @@ public final class RpcManualMessage {
       if (isInitialized == 1) return true;
       if (isInitialized == 0) return false;
 
-      if (!hasHistoryId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -201,10 +174,10 @@ public final class RpcManualMessage {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (!getHistoryIdBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, historyId_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (exitCode_ != 0) {
         output.writeSInt32(2, exitCode_);
       }
       unknownFields.writeTo(output);
@@ -216,10 +189,10 @@ public final class RpcManualMessage {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (!getHistoryIdBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, historyId_);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (exitCode_ != 0) {
         size += com.google.protobuf.CodedOutputStream
           .computeSInt32Size(2, exitCode_);
       }
@@ -239,16 +212,10 @@ public final class RpcManualMessage {
       com.dfire.protocol.RpcManualMessage.ManualMessage other = (com.dfire.protocol.RpcManualMessage.ManualMessage) obj;
 
       boolean result = true;
-      result = result && (hasHistoryId() == other.hasHistoryId());
-      if (hasHistoryId()) {
-        result = result && getHistoryId()
-            .equals(other.getHistoryId());
-      }
-      result = result && (hasExitCode() == other.hasExitCode());
-      if (hasExitCode()) {
-        result = result && (getExitCode()
-            == other.getExitCode());
-      }
+      result = result && getHistoryId()
+          .equals(other.getHistoryId());
+      result = result && (getExitCode()
+          == other.getExitCode());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -260,14 +227,10 @@ public final class RpcManualMessage {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      if (hasHistoryId()) {
-        hash = (37 * hash) + HISTORYID_FIELD_NUMBER;
-        hash = (53 * hash) + getHistoryId().hashCode();
-      }
-      if (hasExitCode()) {
-        hash = (37 * hash) + EXITCODE_FIELD_NUMBER;
-        hash = (53 * hash) + getExitCode();
-      }
+      hash = (37 * hash) + HISTORYID_FIELD_NUMBER;
+      hash = (53 * hash) + getHistoryId().hashCode();
+      hash = (37 * hash) + EXITCODE_FIELD_NUMBER;
+      hash = (53 * hash) + getExitCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -402,9 +365,9 @@ public final class RpcManualMessage {
       public Builder clear() {
         super.clear();
         historyId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
+
         exitCode_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
+
         return this;
       }
 
@@ -431,17 +394,8 @@ public final class RpcManualMessage {
       @java.lang.Override
       public com.dfire.protocol.RpcManualMessage.ManualMessage buildPartial() {
         com.dfire.protocol.RpcManualMessage.ManualMessage result = new com.dfire.protocol.RpcManualMessage.ManualMessage(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
         result.historyId_ = historyId_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
         result.exitCode_ = exitCode_;
-        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -490,12 +444,11 @@ public final class RpcManualMessage {
 
       public Builder mergeFrom(com.dfire.protocol.RpcManualMessage.ManualMessage other) {
         if (other == com.dfire.protocol.RpcManualMessage.ManualMessage.getDefaultInstance()) return this;
-        if (other.hasHistoryId()) {
-          bitField0_ |= 0x00000001;
+        if (!other.getHistoryId().isEmpty()) {
           historyId_ = other.historyId_;
           onChanged();
         }
-        if (other.hasExitCode()) {
+        if (other.getExitCode() != 0) {
           setExitCode(other.getExitCode());
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -505,9 +458,6 @@ public final class RpcManualMessage {
 
       @java.lang.Override
       public final boolean isInitialized() {
-        if (!hasHistoryId()) {
-          return false;
-        }
         return true;
       }
 
@@ -529,17 +479,10 @@ public final class RpcManualMessage {
         }
         return this;
       }
-      private int bitField0_;
 
       private java.lang.Object historyId_ = "";
       /**
-       * <code>required string historyId = 1;</code>
-       */
-      public boolean hasHistoryId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required string historyId = 1;</code>
+       * <code>string historyId = 1;</code>
        */
       public java.lang.String getHistoryId() {
         java.lang.Object ref = historyId_;
@@ -547,16 +490,14 @@ public final class RpcManualMessage {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            historyId_ = s;
-          }
+          historyId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>required string historyId = 1;</code>
+       * <code>string historyId = 1;</code>
        */
       public com.google.protobuf.ByteString
           getHistoryIdBytes() {
@@ -572,36 +513,37 @@ public final class RpcManualMessage {
         }
       }
       /**
-       * <code>required string historyId = 1;</code>
+       * <code>string historyId = 1;</code>
        */
       public Builder setHistoryId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  
         historyId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string historyId = 1;</code>
+       * <code>string historyId = 1;</code>
        */
       public Builder clearHistoryId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        
         historyId_ = getDefaultInstance().getHistoryId();
         onChanged();
         return this;
       }
       /**
-       * <code>required string historyId = 1;</code>
+       * <code>string historyId = 1;</code>
        */
       public Builder setHistoryIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  checkByteStringIsUtf8(value);
+        
         historyId_ = value;
         onChanged();
         return this;
@@ -609,31 +551,25 @@ public final class RpcManualMessage {
 
       private int exitCode_ ;
       /**
-       * <code>optional sint32 exitCode = 2;</code>
-       */
-      public boolean hasExitCode() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional sint32 exitCode = 2;</code>
+       * <code>sint32 exitCode = 2;</code>
        */
       public int getExitCode() {
         return exitCode_;
       }
       /**
-       * <code>optional sint32 exitCode = 2;</code>
+       * <code>sint32 exitCode = 2;</code>
        */
       public Builder setExitCode(int value) {
-        bitField0_ |= 0x00000002;
+        
         exitCode_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional sint32 exitCode = 2;</code>
+       * <code>sint32 exitCode = 2;</code>
        */
       public Builder clearExitCode() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        
         exitCode_ = 0;
         onChanged();
         return this;
@@ -641,7 +577,7 @@ public final class RpcManualMessage {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -664,7 +600,7 @@ public final class RpcManualMessage {
       return DEFAULT_INSTANCE;
     }
 
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<ManualMessage>
+    private static final com.google.protobuf.Parser<ManualMessage>
         PARSER = new com.google.protobuf.AbstractParser<ManualMessage>() {
       @java.lang.Override
       public ManualMessage parsePartialFrom(
@@ -706,8 +642,9 @@ public final class RpcManualMessage {
   static {
     java.lang.String[] descriptorData = {
       "\n\024manual_message.proto\"4\n\rManualMessage\022" +
-      "\021\n\thistoryId\030\001 \002(\t\022\020\n\010exitCode\030\002 \001(\021B(\n\022" +
-      "com.dfire.protocolB\020RpcManualMessageH\001"
+      "\021\n\thistoryId\030\001 \001(\t\022\020\n\010exitCode\030\002 \001(\021B(\n\022" +
+      "com.dfire.protocolB\020RpcManualMessageH\001b\006" +
+      "proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
