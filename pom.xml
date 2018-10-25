@@ -35,7 +35,7 @@
         <mysql.version>5.1.26</mysql.version>
         <fastjson.version>1.2.7</fastjson.version>
         <guava.version>23.0</guava.version>
-        <projectlombok.version>1.16.18</projectlombok.version>
+        <projectlombok.version>1.18.2</projectlombok.version>
         <junit.version>4.12</junit.version>
         <slf4j.version>1.7.9</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
