@@ -1,5 +1,9 @@
 package com.dfire.common.util;
 
+import com.dfire.common.constants.TimeFormatConstant;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -75,7 +79,7 @@ public class HeraDateTool {
     }
 
     public static String getToday() {
-        return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        return new DateTime().toString(TimeFormatConstant.YYYY_MM_DD);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.dfire.common.util;
 
+import com.dfire.common.constants.TimeFormatConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -64,7 +65,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             template = template.replace(m, sw.toString());
             matcher = pt.matcher(template);
         }
-        template = template.replace("${yesterday}", new HeraDateTool(new Date()).addDay(-1).format("yyyyMMdd"));
+        template = template.replace("${yesterday}", new HeraDateTool(new Date()).addDay(-1).format(TimeFormatConstant.YYYYMMDD));
         return template;
     }
 
