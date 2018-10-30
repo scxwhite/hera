@@ -84,9 +84,9 @@ public class QuartzSchedulerService {
             if(jobDetail != null) {
                 scheduler.deleteJob(jobKey);
             }
-
+            log.warn("remove action {} from quartz", actionId);
         } catch (SchedulerException e) {
-            log.error("clear quartz schedule error : " + actionId);
+            log.error("remove quartz schedule error : " + actionId);
         }
 
     }

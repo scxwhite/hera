@@ -2,6 +2,7 @@ package com.dfire.core.quartz;
 
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.event.HeraScheduleTriggerEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 
@@ -9,6 +10,7 @@ import org.quartz.JobExecutionContext;
  * @author xiaosuda
  * @date 2018/6/26
  */
+@Slf4j
 public class HeraQuartzJob implements Job {
 
     @Override
@@ -17,5 +19,6 @@ public class HeraQuartzJob implements Job {
         Dispatcher dispatcher = (Dispatcher) context.getJobDetail().getJobDataMap().get("dispatcher");
         HeraScheduleTriggerEvent scheduledEvent = HeraScheduleTriggerEvent.builder().jobId(jobId).build();
         dispatcher.forwardEvent(scheduledEvent);
+        log.warn("execute schedule job {}", jobId);
     }
 }

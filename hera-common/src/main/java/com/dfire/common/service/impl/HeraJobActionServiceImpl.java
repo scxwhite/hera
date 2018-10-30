@@ -31,20 +31,15 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         HeraAction action = heraJobActionMapper.findById(heraAction);
         boolean isExpire = Long.parseLong(heraAction.getId()) < Long.parseLong(DateUtil.getNowStringForAction());
         if (action != null) {
-            if (action.getStatus() != null && !StatusEnum.RUNNING.toString().equals(action.getStatus())) {
+            //如果该任务不是在运行中
+            if (action.getStatus() == null || !StatusEnum.RUNNING.toString().equals(action.getStatus())) {
                 heraAction.setStatus(action.getStatus());
                 heraAction.setHistoryId(action.getHistoryId());
                 heraAction.setReadyDependency(action.getReadyDependency());
+                heraAction.setGmtCreate(action.getGmtCreate());
             } else {
-                if (!isExpire) {
-                    action.setJobDependencies(heraAction.getJobDependencies());
-                    action.setReadyDependency(heraAction.getReadyDependency());
-                    action.setDependencies(heraAction.getDependencies());
-                    action.setAuto(heraAction.getAuto());
-                    action.setGmtModified(new Date());
-                    action.setScript(heraAction.getScript());
-                }
                 heraAction = action;
+                heraAction.setGmtModified(new Date());
             }
             return heraJobActionMapper.update(heraAction);
         } else {

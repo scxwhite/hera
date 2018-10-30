@@ -147,21 +147,10 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        log.error("worker miss connection !!!");
+        masterContext.getMaster().workerDisconnectProcess(ctx.channel());
         super.channelUnregistered(ctx);
-        log.info("worker miss connection !!!");
 
-        //TODO 解决work正在执行任务，却无法回写任务状态 or work宕机 任务状态消失
-        MasterWorkHolder workHolder = masterContext.getWorkMap().get(ctx.channel());
-        EmailService emailService = masterContext.getEmailService();
-
-        StringBuilder content = new StringBuilder();
-        content.append("不幸的消息，work宕机了:").append(ctx.channel().remoteAddress()).append("<br>");
-        content.append("自动调度队列任务：").append(workHolder.getHeartBeatInfo().getRunning()).append("<br>");
-        content.append("手动队列任务：").append(workHolder.getHeartBeatInfo().getManualRunning()).append("<br>");
-        content.append("开发中心队列任务：").append(workHolder.getHeartBeatInfo().getDebugRunning()).append("<br>");
-        log.error(content.toString());
-        // work断开  不再分发任务
-        masterContext.getWorkMap().remove(ctx.channel());
     }
 
     @Override
