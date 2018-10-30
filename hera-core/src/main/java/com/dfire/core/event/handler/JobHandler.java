@@ -387,7 +387,7 @@ public class JobHandler extends AbstractHandler {
     }
 
     /**
-     * 漏泡重新触发调度事件
+     * 漏跑重新触发调度事件
      *
      * @param event
      */
@@ -398,8 +398,7 @@ public class JobHandler extends AbstractHandler {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
 
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
-                    String currentDate = DateUtil.getNowStringForAction();
-                    if (Long.parseLong(actionId) < Long.parseLong(currentDate)) {
+                    if (Long.parseLong(actionId) < Long.parseLong( DateUtil.getNowStringForAction())) {
                         HeraJobHistory history = HeraJobHistory.builder()
                                 .illustrate(LogConstant.LOST_JOB_LOG)
                                 .actionId(heraActionVo.getId())

@@ -156,11 +156,12 @@ public class Master {
     /**
      * 漏泡检测，清理schedule线程，1小时调度一次,超过15分钟，job开始检测漏泡
      */
+
+    @Scheduled(cron = "0 */30 * * * ?")
     private void lostJobCheck() {
-        log.info("refresh host group success,start clear schedule");
+        log.info("refresh host group success, start rool back");
         masterContext.refreshHostGroupCache();
         String currDate = DateUtil.getNowStringForAction();
-
         Dispatcher dispatcher = masterContext.getDispatcher();
         if (dispatcher != null) {
             Map<Long, HeraAction> actionMapNew = heraActionMap;
@@ -276,8 +277,6 @@ public class Master {
                     }
                 }
             }
-            //进行漏跑检测 + 清理
-            lostJobCheck();
             log.info("generate all action success");
             return true;
         }
@@ -833,7 +832,7 @@ public class Master {
                 .build();
         heraJobHistory.setStatusEnum(StatusEnum.RUNNING);
         if (checkJobExists(heraJobHistory)) {
-            return ;
+            return;
         }
         heraJobHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "进入任务队列");
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(heraJobHistory));

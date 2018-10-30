@@ -29,7 +29,6 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     @Override
     public int insert(HeraAction heraAction) {
         HeraAction action = heraJobActionMapper.findById(heraAction);
-        boolean isExpire = Long.parseLong(heraAction.getId()) < Long.parseLong(DateUtil.getNowStringForAction());
         if (action != null) {
             //如果该任务不是在运行中
             if (action.getStatus() == null || !StatusEnum.RUNNING.toString().equals(action.getStatus())) {
@@ -43,9 +42,6 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             }
             return heraJobActionMapper.update(heraAction);
         } else {
-            if (isExpire) {
-                heraAction.setStatus(StatusEnum.FAILED.toString());
-            }
             return heraJobActionMapper.insert(heraAction);
         }
     }
