@@ -64,7 +64,7 @@ public class MasterExecuteJob {
                     log.error("手动任务信号丢失，三小时未收到work返回：{}", jobId);
                 }
             } finally {
-                holder.getRunning().remove(jobId);
+                holder.getManningRunning().remove(jobId);
             }
             return responseListener.getResponse();
         });

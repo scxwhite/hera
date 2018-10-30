@@ -1,10 +1,9 @@
 package com.dfire.core.netty.master;
 
-import com.dfire.common.service.EmailService;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.*;
 import com.dfire.protocol.*;
-import com.dfire.protocol.RpcSocketMessage.*;
+import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

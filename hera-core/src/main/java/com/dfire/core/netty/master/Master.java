@@ -818,7 +818,7 @@ public class Master {
      * @param heraJobHistory
      * @return
      */
-    public HeraJobHistoryVo run(HeraJobHistoryVo heraJobHistory) {
+    public void run(HeraJobHistoryVo heraJobHistory) {
         String actionId = heraJobHistory.getActionId();
         int priorityLevel = 3;
         HeraActionVo heraJobVo = BeanConvertUtils.convert(masterContext.getHeraJobActionService().findById(actionId)).getSource();
@@ -832,8 +832,28 @@ public class Master {
                 .priorityLevel(priorityLevel)
                 .build();
         heraJobHistory.setStatusEnum(StatusEnum.RUNNING);
-        if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER) {
+        if (checkJobExists(heraJobHistory)) {
+            return ;
+        }
+        heraJobHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "进入任务队列");
+        masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(heraJobHistory));
+        if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
+            element.setJobId(heraJobHistory.getId());
+            masterContext.getManualQueue().offer(element);
+        } else {
+            JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
+            jobStatus.setStatus(StatusEnum.RUNNING);
+            jobStatus.setHistoryId(heraJobHistory.getId());
+            masterContext.getHeraJobActionService().updateStatus(jobStatus);
+            masterContext.getScheduleQueue().offer(element);
+        }
+        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+    }
 
+
+    private boolean checkJobExists(HeraJobHistoryVo heraJobHistory) {
+        String actionId = heraJobHistory.getActionId();
+        if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER) {
             /**
              *  check调度器等待队列是否有此任务在排队
              *
@@ -844,19 +864,9 @@ public class Master {
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    break;
+                    return true;
                 }
             }
-            for (JobElement jobElement : new ArrayList<>(masterContext.getManualQueue())) {
-                if (jobElement.getJobId().equals(actionId)) {
-                    heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
-                    heraJobHistory.setStartTime(new Date());
-                    heraJobHistory.setEndTime(new Date());
-                    heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    break;
-                }
-            }
-
             /**
              *  check所有的worker中是否有此任务的id在执行，如果有，不进入队列等待
              *
@@ -864,47 +874,41 @@ public class Master {
             for (Channel key : masterContext.getWorkMap().keySet()) {
                 MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
                 if (workHolder.getRunning().containsKey(actionId)) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(LogConstant.CHECK_QUEUE_LOG).append("执行worker ip " + workHolder.getChannel().localAddress());
-                    heraJobHistory.getLog().append(sb.toString());
+                    heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    break;
+                    return true;
+
+                }
+            }
+
+
+        } else if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
+
+            for (JobElement jobElement : new ArrayList<>(masterContext.getManualQueue())) {
+                if (jobElement.getJobId().equals(actionId)) {
+                    heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
+                    heraJobHistory.setStartTime(new Date());
+                    heraJobHistory.setEndTime(new Date());
+                    heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                    return true;
                 }
             }
 
             for (Channel key : masterContext.getWorkMap().keySet()) {
                 MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
                 if (workHolder.getManningRunning().containsKey(actionId)) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(LogConstant.CHECK_MANUAL_QUEUE_LOG).append("执行worker ip " + workHolder.getChannel().localAddress());
-                    heraJobHistory.getLog().append(sb.toString());
+                    heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    break;
+                    return true;
                 }
             }
-
         }
+        return false;
 
-        if (heraJobHistory.getStatusEnum() == StatusEnum.RUNNING) {
-            heraJobHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "进入任务队列");
-            masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(heraJobHistory));
-            if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
-                element.setJobId(heraJobHistory.getId());
-                masterContext.getManualQueue().offer(element);
-            } else {
-                JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
-                jobStatus.setStatus(StatusEnum.RUNNING);
-                jobStatus.setHistoryId(heraJobHistory.getId());
-                masterContext.getHeraJobActionService().updateStatus(jobStatus);
-                masterContext.getScheduleQueue().offer(element);
-            }
-        }
-        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
-        return heraJobHistory;
     }
 
     /**
@@ -958,7 +962,7 @@ public class Master {
                             //丢失重试次数信息   master直接重试
                             heraJobHistory.setIllustrate("work断线，丢失任务重试次数，重新执行该任务");
                             this.run(BeanConvertUtils.convert(heraJobHistory));
-                        } else if (StatusEnum.RUNNING.toString().equals(heraJobHistory.getStatus())){
+                        } else if (StatusEnum.RUNNING.toString().equals(heraJobHistory.getStatus())) {
                             //如果仍然在运行中，那么检测新的心跳信息 判断work是断线重连 or 重启
                             HeartBeatInfo newBeatInfo = masterContext.getWorkMap().get(newChannel).getHeartBeatInfo();
                             if (newBeatInfo == null) {
