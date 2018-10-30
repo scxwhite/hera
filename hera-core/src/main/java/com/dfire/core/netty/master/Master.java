@@ -20,6 +20,7 @@ import com.dfire.core.event.base.Events;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
+import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.route.WorkerRouter;
@@ -913,7 +914,7 @@ public class Master {
      */
     public void workerDisconnectProcess(Channel channel) {
 
-        String ip = channel.remoteAddress().toString().split(":")[0];
+        String ip = getIpFromChannel(channel);
         log.error("work:{}断线", ip);
         MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);
         masterContext.getWorkMap().remove(channel);
@@ -923,10 +924,12 @@ public class Master {
             //十分钟后开始检查 work是否重连成功
             masterContext.masterTimer.newTimeout((x) -> {
                 Channel newChannel = null;
+                HeraAction heraAction;
+                HeraJobHistory heraJobHistory;
                 //遍历新的心跳信息 匹配断线ip是否重新连接
                 Set<Channel> channels = masterContext.getWorkMap().keySet();
                 for (Channel cha : channels) {
-                    if (cha.remoteAddress().toString().split(":")[0].equals(ip)) {
+                    if (getIpFromChannel(cha).equals(ip)) {
                         newChannel = cha;
                         break;
                     }
@@ -935,8 +938,7 @@ public class Master {
                 if (newChannel != null) {
                     log.warn("work重连成功:{}", newChannel.remoteAddress());
                     // 判断任务状态 无论是否成功，全部重新广播一遍
-                    HeraAction heraAction;
-                    HeraJobHistory heraJobHistory;
+
                     for (String action : scheduleTask) {
                         heraAction = masterContext.getHeraJobActionService().findById(action);
                         //检测action表是否已经更新 如果更新 证明work的成功信号发送给了master已经广播
@@ -954,29 +956,50 @@ public class Master {
                             masterContext.getDispatcher().forwardEvent(successEvent);
                         } else if (StatusEnum.FAILED.toString().equals(heraJobHistory.getStatus())) {
                             //丢失重试次数信息   master直接重试
+                            heraJobHistory.setIllustrate("work断线，丢失任务重试次数，重新执行该任务");
                             this.run(BeanConvertUtils.convert(heraJobHistory));
                         } else if (StatusEnum.RUNNING.toString().equals(heraJobHistory.getStatus())){
+                            //如果仍然在运行中，那么检测新的心跳信息 判断work是断线重连 or 重启
+                            HeartBeatInfo newBeatInfo = masterContext.getWorkMap().get(newChannel).getHeartBeatInfo();
+                            if (newBeatInfo == null) {
+                                TimeUnit.SECONDS.sleep(HeraGlobalEnvironment.getHeartBeat() * 2);
+                                newBeatInfo = masterContext.getWorkMap().get(newChannel).getHeartBeatInfo();
+                            }
 
+                            if (newBeatInfo != null) {
+                                List<String> newRunning = newBeatInfo.getRunning();
+                                //如果work新的心跳信息 包含该任务的信息 work继续执行即可
+                                if (newRunning.contains(action)) {
+                                    continue;
+                                }
+                            }
+                            heraJobHistory.setIllustrate("work心跳为空，重新执行该任务");
+                            //不包含该任务信息，重新调度
+                            this.run(BeanConvertUtils.convert(heraJobHistory));
                         }
-
                     }
 
                 } else {
-
-
+                    for (String action : scheduleTask) {
+                        heraAction = masterContext.getHeraJobActionService().findById(action);
+                        heraJobHistory = masterContext.getHeraJobHistoryService().findById(heraAction.getHistoryId());
+                        heraJobHistory.setIllustrate("work断线超出十分钟，重新执行该任务");
+                        this.run(BeanConvertUtils.convert(heraJobHistory));
+                    }
                 }
 
             }, 10, TimeUnit.MINUTES);
 
         }
-        StringBuilder content = new StringBuilder();
-        content.append("不幸的消息，work宕机了:").append(channel.remoteAddress()).append("<br>");
-        content.append("自动调度队列任务：").append(workHolder.getHeartBeatInfo().getRunning()).append("<br>");
-        content.append("手动队列任务：").append(workHolder.getHeartBeatInfo().getManualRunning()).append("<br>");
-        content.append("开发中心队列任务：").append(workHolder.getHeartBeatInfo().getDebugRunning()).append("<br>");
-        log.error(content.toString());
+        String content = "不幸的消息，work宕机了:" + channel.remoteAddress() + "<br>" +
+                "自动调度队列任务：" + workHolder.getHeartBeatInfo().getRunning() + "<br>" +
+                "手动队列任务：" + workHolder.getHeartBeatInfo().getManualRunning() + "<br>" +
+                "开发中心队列任务：" + workHolder.getHeartBeatInfo().getDebugRunning() + "<br>";
+        log.error(content);
+    }
 
-
+    private String getIpFromChannel(Channel channel) {
+        return channel.remoteAddress().toString().split(":")[0];
     }
 
 }
