@@ -102,4 +102,9 @@ public class HeraFileServiceImpl implements HeraFileService {
         return heraFileMapper.updateContent(heraFile);
     }
 
+    @Override
+    public int updateFileName(HeraFile heraFile) {
+        return heraFileMapper.updateFileName(heraFile);
+    }
+
 }

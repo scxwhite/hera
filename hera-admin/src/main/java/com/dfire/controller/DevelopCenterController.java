@@ -82,6 +82,17 @@ public class DevelopCenterController extends BaseHeraController {
         return response;
     }
 
+    @RequestMapping(value = "/rename", method = RequestMethod.GET)
+    @ResponseBody
+    public String rename(HeraFile heraFile) {
+        int result = heraFileService.updateFileName(heraFile);
+        String response = "";
+        response = "删除成功";
+        return response;
+    }
+
+
+
     /**
      * 手动执行脚本
      *

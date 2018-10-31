@@ -33,5 +33,7 @@ public interface HeraFileService {
 
     int updateContent(HeraFile heraFile);
 
+    int updateFileName(HeraFile heraFile);
+
 
 }
