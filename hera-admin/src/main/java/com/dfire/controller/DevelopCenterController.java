@@ -23,6 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -128,7 +131,19 @@ public class DevelopCenterController extends BaseHeraController {
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
-            workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
+
+            ExecutorService pool = Executors.newSingleThreadExecutor();
+            pool.submit(() -> {
+                try {
+                    workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+
+//            workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
             res.put("fileId", file.getId());
             res.put("debugId", newId);
             return res;

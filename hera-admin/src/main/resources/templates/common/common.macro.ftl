@@ -23,9 +23,10 @@
           href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
 
 	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.css"></link>
-	<link rel="stylesheet"
-          href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput-rtl.min.css"></link>
+	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput-rtl.min.css"></link>
+    <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
 
+    <link rel="stylesheet" href="${request.contextPath}/css/common.css">
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -110,9 +111,8 @@
 	<aside class="main-sidebar height-self">
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
-            <ul class="sidebar-menu">
-
-                <li class="active treeview menu-open">
+            <ul class="sidebar-menu tree">
+                <li class="treeview menu-open" id="home">
                     <a href="${request.contextPath}/home">
                         <i class="fa fa-dashboard"></i> <span>首页</span>
                         <span class="pull-right-container">
@@ -121,7 +121,7 @@
                     </a>
                 </li>
 
-                <li class="active treeview">
+                <li class="treeview" id="sysManager">
                     <a href="#">
                         <i class="fa fa-folder"></i> <span>系统管理</span>
                         <span class="pull-right-container">
@@ -129,14 +129,14 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="active"><a href="${request.contextPath}/userManage"><i class="fa fa-circle-o"></i>
+                        <li class="" id="userManage"><a href="${request.contextPath}/userManage"><i class="fa fa-circle-o"></i>
                             用户管理</a></li>
-                        <li><a href="${request.contextPath}/hostGroupManage"><i class="fa fa-circle-o"></i>机器组管理</a>
+                        <li id="hostGroupManage"><a href="${request.contextPath}/hostGroupManage"><i class="fa fa-circle-o"></i>机器组管理</a>
                         </li>
                     </ul>
                 </li>
 
-                <li class="active treeview">
+                <li class=" treeview" id="jobManage">
                     <a href="#">
                         <i class="fa fa-folder"></i> <span>任务管理</span>
                         <span class="pull-right-container">
@@ -144,18 +144,18 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="active"><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a>
+                        <li class="" id="jobDetail"><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a>
                         </li>
-                        <li class="active"><a href="${request.contextPath}/jobDag"><i
+                        <li class="" id="jobDag"><a href="${request.contextPath}/jobDag"><i
                                 class="fa fa-circle-o"></i>任务依赖图</a></li>
                     </ul>
                 </li>
 
 
-                <li class="nav-click <#if pageName == "developCenter">active</#if>"><a
+                <li class="nav-click" id="developManage"><a
                         href="${request.contextPath}/developCenter"><i class="fa fa-book"></i> <span>开发中心</span></a>
                 </li>
-                <li class="nav-click <#if pageName == "scheduleCenter">active</#if>"><a
+                <li class="nav-click" id="scheduleCenter"><a
                         href="${request.contextPath}/scheduleCenter"><i class="fa fa-edit"></i> <span>调度中心</span></a>
                 </li>
 

@@ -1,4 +1,6 @@
 $(function () {
+    $('#home').addClass('active');
+
     var option = {
         title: {
             show: true
@@ -68,7 +70,6 @@ $(function () {
 
     function initLineJobStatus(data) {
         initOption();
-        option.title.text = "任务执行状态";
         option.title.subtext = data['xAxis'][0] + "~" + data['xAxis'][data['xAxis'].length - 1];
         option.xAxis.boundaryGap = false;
         option.xAxis.type = "category";
@@ -144,7 +145,6 @@ $(function () {
 
     function initPieJobStatus(status) {
         initOption();
-        option.title.text = "实时任务状态";
         option.title.subtext = getNowFormatDate(0);
         option.title.x = "center";
         option.xAxis = [];
@@ -159,6 +159,7 @@ $(function () {
             minAngle: 3,
             center: ['50%', '50%'],
             data: []
+            // color: ['#F38181','#FCE38A','#95E1D3','#EAFFD0']
         };
         var legend = new Array();
         var allJobsNum = 0;
@@ -190,7 +191,6 @@ $(function () {
     function initJobTopTen(jobs) {
         initOption();
         var myChart = echarts.init(document.getElementById('jobTop'));
-        option.title.text = '任务时长TOP10';
         option.title.subtext = getNowFormatDate(0);
         option.title.x = 'center';
         option.legend.data = ['昨日', '今日'];
@@ -242,7 +242,25 @@ function row(name, data, type, stack) {
     this.data = data;
     this.type = type;
     this.stack = stack;
-    this.itemStyle = {normal: {label: {show: false, position: 'insideRight'}}};
+    if (name === '今日'){
+        this.itemStyle = {
+            normal: {
+                label: {
+                    show: false, position: 'insideRight'
+                },
+                // color:'#F38181'
+            }
+        };
+    } else {
+        this.itemStyle = {
+            normal: {
+                label: {
+                    show: false, position: 'insideRight'
+                },
+                // color:'#95E1D3'
+            }
+        };
+    }
 }
 
 function pieRow(name, value) {
@@ -263,8 +281,31 @@ function lineRow(name, data) {
         data: [
             {type: 'max', name: '最大值'},
             {type: 'min', name: '最小值'}
-        ]
+            ]
     };
+    // switch (name) {
+    //     case '运行成功次数':
+    //         this.itemStyle={
+    //         normal:{color:'#F38181'}
+    //         }
+    //         break;
+    //     case '运行失败次数':
+    //         this.itemStyle={
+    //             normal:{color:'#FCE38A'}
+    //         }
+    //         break;
+    //     case '运行总次数':
+    //         this.itemStyle={
+    //             normal:{color:'#95E1D3'}
+    //         }
+    //         break;
+    //     case '成功任务数':
+    //         this.itemStyle={
+    //             normal:{color:'#00cae0'}
+    //         }
+    //         break;
+    // }
+
 }
 
 function getNowFormatDate(subDays) {

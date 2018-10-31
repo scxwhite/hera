@@ -1,4 +1,8 @@
 $(function () {
+    $('#jobDetail').addClass('active');
+    $('#jobDetail').parent().addClass('menu-open');
+    $('#jobManage').addClass('active');
+
     var oTable = new TableInit();
     oTable.init();
 });

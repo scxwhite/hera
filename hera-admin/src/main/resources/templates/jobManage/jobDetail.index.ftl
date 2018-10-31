@@ -8,7 +8,7 @@
 
 </head>
 
-<body class="hold-transition skin-blue-light sidebar-mini">
+<body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
     <!-- header -->
 	<@netCommon.commonHeader />
@@ -17,15 +17,26 @@
 
     <div class="content-wrapper">
         <section class="content">
-            <div class="input-group form-inline col-lg-2">
-                <label class="name input-group-addon">任务状态</label>
-                <select class="form-control" id="jobStatus" onchange="updateTable()">
-                    <option value="failed" selected>失败</option>
-                    <option value="success">成功</option>
-                    <option value="running">运行中</option>
-                </select>
-            </div>
-            <table id="historyJobTable"></table>
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">机器组管理</h3>
+                    </div>
+                    <div class="box-body">
+                        <div id="toolbar">
+                            <button class="btn btn-success" id="addHostGroup">添加</button>
+                        </div>
+
+                        <div class="input-group form-inline col-lg-2 pull-right" style="margin-left: 4px" >
+                            <label class="name input-group-addon">任务状态</label>
+                            <select class="form-control" id="jobStatus" onchange="updateTable()">
+                                <option value="failed" selected>失败</option>
+                                <option value="success">成功</option>
+                                <option value="running">运行中</option>
+                            </select>
+                        </div>
+                        <table id="historyJobTable"></table>
+                    </div>
+                </div>
         </section>
     </div>
 

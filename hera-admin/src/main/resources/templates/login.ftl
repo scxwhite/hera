@@ -27,7 +27,7 @@
 
 <div class="login">
 <#--<div class="box png">-->
-    <div><h3 align="center">赫拉任务调度系统</h3></div>
+    <div><h3 align="center" class="title">赫拉任务调度系统</h3></div>
     <div class="input">
         <div class="log">
             <ul class="nav nav-tabs" role="tablist" id="menu-tab">
@@ -39,10 +39,10 @@
 
                 <div class="tab-pane active" id="tab-login">
                     <form id="loginForm" method="post">
-                        <div class="name">
+                        <div class="name" style="margin: 4px">
                             <label>用户名</label><input type="text" class="text" name="userName" placeholder="用户名"/>
                         </div>
-                        <div class="pwd">
+                        <div class="pwd" style="margin: 4px">
                             <label>密　码</label><input type="password" class="text" name="password" placeholder="密码"/>
                         </div>
                         <button type="submit" class="btn btn-primary btn-block btn-flat">
@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="tab-pane" id="tab-middle">
-                    <p class="login-box-msg text-center" style="color: #3dff0e;">提醒：hera账号与hive账号必须相同</p>
+                    <p class="login-box-msg text-center">提醒：hera账号与hive账号必须相同</p>
 
                     <form action="" type="post" id="registerForm">
                         <fieldset>
@@ -96,9 +96,6 @@
     </div>
 <#--</div>-->
 
-    <div class="air-balloon ab-1 png"></div>
-    <div class="air-balloon ab-2 png"></div>
-    <div class="footer"></div>
 </div>
 
 <!-- /.login-box -->

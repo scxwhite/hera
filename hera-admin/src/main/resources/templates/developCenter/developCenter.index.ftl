@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/paraiso-light.css">
+    <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
+    <link rel="stylesheet" href="${request.contextPath}/css/developCenter.css">
+<#--<link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">-->
 </head>
 
 <style type="text/css">
@@ -44,8 +47,8 @@
 
 </style>
 
-<body class="hold-transition skin-blue-light sidebar-mini">
-<div class="wrapper">
+<body class="hold-transition skin-black sidebar-mini">
+<div class="wrapper" style="height: 100%;">
     <!-- header -->
 	<@netCommon.commonHeader />
     <!-- left -->
@@ -53,10 +56,7 @@
 
     <div class="content-wrapper">
         <section class="content">
-
-            <div class="row">
-
-
+            <div class="row myPanel">
                 <div class="col-md-2 panel panel-primary">
                     <div style="overflow: auto;" class="height-self">
                         <ul id="documentTree" class="ztree"></ul>
@@ -72,24 +72,42 @@
                     </div>
                 </div>
 
-                <div class="col-md-10 panel panel-primary">
+                <div class="col-md-10 panel panel-primary left-panel">
                     <div id="config" class="devStyle">
                         <button id="execute" type="submit" class="btn btn-primary btn-sm">执行</button>
                         <button id="executeSelector" type="submit" class="btn btn-primary btn-sm">执行选中的代码</button>
                         <button id="uploadResource" type="submit" class="btn btn-primary btn-sm">上传资源</button>
                         <button id="syncingTask" type="submit" class="btn btn-primary btn-sm">同步任务</button>
+                        <button id="saveScript" class="btn btn-primary btn-sm">保存脚本</button>
                     </div>
                 <#--tab框-->
+                    <div class="prev-next-con" id="prevNextCon">
+                        <div class="prev-tab iconfont icon-prev">&#xe62d;</div>
+                        <div class="next-tab iconfont icon-next">&#xe62e;</div>
+                    </div>
                     <div id="tabContainer" class="devStyle"></div>
-                    <div id="scriptEditor" class="box box-primary" class="devStyle">
-                        <textarea id="fileScript" name="editor"></textarea>
+                    <div class="code-log-con">
+                        <div id="scriptEditor" class="box box-primary " class="devStyle">
+                            <textarea id="fileScript" name="editor"></textarea>
+                        </div>
+                        <div id="logContainer" class="log-container">
+                            <div class="prev-next-con">
+                                <div class="prev-tab iconfont icon-prev">&#xe62d;</div>
+                                <div class="next-tab iconfont icon-next">&#xe62e;</div>
+                            </div>
+                            <div class="right-now-logs-id" id="rightLogCon">
+                                <ul class="right-now-ul"></ul>
+                            </div>
+                            <div class="right-now-log-con" id="rightNowLogCon">
+                                <div class="right-now-log">
+                                </div>
+                            </div>
+                            <div class="bottom-tabs">
+                                <span id="showLog" class="right-log-tab log-tab">查看日志</span>
+                                <span id="logButton" class="history-log-tab log-tab">历史日志</span>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="devStyle">
-                        <button id="saveScript" class="btn btn-primary btn-sm">保存脚本</button>
-                        <button id="logButton" class="btn btn-primary btn-sm">查看日志</button>
-                    </div>
-
                     <div class="modal fade" id="debugLogDetail" tabindex="-1" role="dialog"
                          aria-labelledby="title">
                         <div id="debugLog" class="modal-dialog" style="width: 1300px">
@@ -101,12 +119,10 @@
                                 <div class="modal-body">
                                     <table class="table " id="debugLogDetailTable"></table>
                                 </div>
-
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
                                     <button type="button" class="btn btn-info add-btn" name="refreshLog">刷新</button>
                                 </div>
-
                             </div>
                         </div>
                     </div>
