@@ -179,11 +179,12 @@ public class WorkExecuteJob {
                 String res;
                 if (exitCode == 0) {
                     res = StatusEnum.SUCCESS.toString();
-                    workContext.getHeraJobActionService().updateStatusAndReadDependency(HeraAction.builder().id(history.getActionId()).status(res).readyDependency("{}").build());
+                    //action表更新放在work端  用于信号丢失的检测
+                   // workContext.getHeraJobActionService().updateStatusAndReadDependency(HeraAction.builder().id(history.getActionId()).status(res).readyDependency("{}").build());
                 } else {
                     res = StatusEnum.FAILED.toString();
-
-                    workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
+                    //action表更新放在work端   用于信号丢失的检测
+                    //workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
 
                 }
                 //更新状态和日志
@@ -282,5 +283,15 @@ public class WorkExecuteJob {
                     .setErrorText(errorText)
                     .build();
         });
+    }
+
+    public static void main(String[] args) {
+        String x = new String("1") + new String("2");
+
+        String y = "12";
+
+        String z = "1" + "2";
+        System.out.println(x == y);
+        System.out.println(z == y);
     }
 }

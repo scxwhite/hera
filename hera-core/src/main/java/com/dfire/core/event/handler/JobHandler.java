@@ -387,7 +387,7 @@ public class JobHandler extends AbstractHandler {
     }
 
     /**
-     * 漏泡重新触发调度事件
+     * 漏跑重新触发调度事件
      *
      * @param event
      */
@@ -398,8 +398,7 @@ public class JobHandler extends AbstractHandler {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
 
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
-                    String currentDate = DateUtil.getNowStringForAction();
-                    if (Long.parseLong(actionId) < Long.parseLong(currentDate)) {
+                    if (Long.parseLong(actionId) < Long.parseLong( DateUtil.getNowStringForAction())) {
                         HeraJobHistory history = HeraJobHistory.builder()
                                 .illustrate(LogConstant.LOST_JOB_LOG)
                                 .actionId(heraActionVo.getId())
@@ -434,7 +433,7 @@ public class JobHandler extends AbstractHandler {
             JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(jobKey).build();
             jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
             jobDetail.getJobDataMap().put("dispatcher", dispatcher);
-            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression());
+            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression().trim());
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, Constants.HERA_GROUP).withSchedule(scheduleBuilder).build();
             masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
             log.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
