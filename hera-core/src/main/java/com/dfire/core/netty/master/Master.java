@@ -831,11 +831,10 @@ public class Master {
                 .priorityLevel(priorityLevel)
                 .build();
         heraJobHistory.setStatusEnum(StatusEnum.RUNNING);
+        //重复job检测
         if (checkJobExists(heraJobHistory)) {
             return;
         }
-        heraJobHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "进入任务队列");
-        masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(heraJobHistory));
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
             element.setJobId(heraJobHistory.getId());
             masterContext.getManualQueue().offer(element);
@@ -846,6 +845,7 @@ public class Master {
             masterContext.getHeraJobActionService().updateStatus(jobStatus);
             masterContext.getScheduleQueue().offer(element);
         }
+        heraJobHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "进入任务队列");
         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
     }
 
@@ -863,6 +863,7 @@ public class Master {
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                    masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     return true;
                 }
             }
@@ -877,6 +878,7 @@ public class Master {
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                    masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     return true;
 
                 }
@@ -891,6 +893,7 @@ public class Master {
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                    masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     return true;
                 }
             }
@@ -902,6 +905,7 @@ public class Master {
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                    masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     return true;
                 }
             }
@@ -960,7 +964,8 @@ public class Master {
                         } else if (StatusEnum.FAILED.toString().equals(heraJobHistory.getStatus())) {
                             //丢失重试次数信息   master直接重试
                             heraJobHistory.setIllustrate("work断线，丢失任务重试次数，重新执行该任务");
-                            this.run(BeanConvertUtils.convert(heraJobHistory));
+                            startNewJob(heraJobHistory);
+
                         } else if (StatusEnum.RUNNING.toString().equals(heraJobHistory.getStatus())) {
                             //如果仍然在运行中，那么检测新的心跳信息 判断work是断线重连 or 重启
                             HeartBeatInfo newBeatInfo = masterContext.getWorkMap().get(newChannel).getHeartBeatInfo();
@@ -978,7 +983,7 @@ public class Master {
                             }
                             heraJobHistory.setIllustrate("work心跳为空，重新执行该任务");
                             //不包含该任务信息，重新调度
-                            this.run(BeanConvertUtils.convert(heraJobHistory));
+                            startNewJob(heraJobHistory);
                         }
                     }
 
@@ -987,7 +992,8 @@ public class Master {
                         heraAction = masterContext.getHeraJobActionService().findById(action);
                         heraJobHistory = masterContext.getHeraJobHistoryService().findById(heraAction.getHistoryId());
                         heraJobHistory.setIllustrate("work断线超出十分钟，重新执行该任务");
-                        this.run(BeanConvertUtils.convert(heraJobHistory));
+                        startNewJob(heraJobHistory);
+
                     }
                 }
 
@@ -999,6 +1005,21 @@ public class Master {
                 "手动队列任务：" + workHolder.getHeartBeatInfo().getManualRunning() + "<br>" +
                 "开发中心队列任务：" + workHolder.getHeartBeatInfo().getDebugRunning() + "<br>";
         log.error(content);
+    }
+
+    private void startNewJob(HeraJobHistory heraJobHistory) {
+        heraJobHistory.setStatus(StatusEnum.FAILED.toString());
+        masterContext.getHeraJobHistoryService().update(heraJobHistory);
+        HeraJobHistory newHistory = HeraJobHistory.builder().
+                actionId(heraJobHistory.getActionId()).
+                illustrate(LogConstant.RETRY_JOB).
+                jobId(heraJobHistory.getJobId()).
+                triggerType(heraJobHistory.getTriggerType()).
+                operator(heraJobHistory.getOperator()).
+                hostGroupId(heraJobHistory.getHostGroupId()).
+                log(heraJobHistory.getIllustrate()).build();
+        masterContext.getHeraJobHistoryService().insert(newHistory);
+        this.run(BeanConvertUtils.convert(newHistory));
     }
 
     private String getIpFromChannel(Channel channel) {
