@@ -1006,9 +1006,7 @@ public class Master {
                         startNewJob(heraJobHistory);
                     }
                 }
-
             }, 10, TimeUnit.MINUTES);
-
         }
         String content = "不幸的消息，work宕机了:" + channel.remoteAddress() + "<br>" +
                 "自动调度队列任务：" + workHolder.getHeartBeatInfo().getRunning() + "<br>" +
