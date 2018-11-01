@@ -1,0 +1,18 @@
+.icon-home{
+    font-size: 70px;
+}
+.nav-tabs .active a {
+    border-top: solid 1px #2c4762 !important;
+    background: #2c4762 !important;
+    color: #fff !important;
+}
+.btn-primary {
+    background-color: #2c4762;
+    border-color: #2c4762;
+}
+.label-primary{
+    background-color: #2c4762 !important;
+}
+.box.box-primary {
+    border-top-color: #2c4762;
+}

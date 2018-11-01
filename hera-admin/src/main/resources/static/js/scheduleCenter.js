@@ -1,4 +1,5 @@
 $(function () {
+    $('#scheduleCenter').addClass('active');
     var focusId = -1;
     var focusItem = null;
     var isGroup;
@@ -736,6 +737,7 @@ $(function () {
     function OnRightClick() {
 
     }
+
 
 
     var zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");

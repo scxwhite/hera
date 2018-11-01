@@ -72,7 +72,7 @@
 
 </head>
 
-<body class="hold-transition skin-blue-light sidebar-mini">
+<body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
     <!-- header -->
 	<@netCommon.commonHeader />
@@ -81,32 +81,37 @@
 
     <div class="content-wrapper">
         <section class="content">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">机器组管理</h3>
+                </div>
+                <div class="box-body">
 
             <form class="form-inline">
 
                 <div class="form-group">
                     <label for="itemw">任务ID:</label>
                     <input id="item" class="input-sm" style="width:80px;"/>
-                    <input class="btn btn-info" type="button" value="上游任务链" onclick="keypath(0)"/>
-                    <input class="btn btn-info" type="button" value="下游任务链" onclick="keypath(1)"/>
+                    <input class="btn btn-primary" type="button" value="上游任务链" onclick="keypath(0)"/>
+                    <input class="btn btn-primary" type="button" value="下游任务链" onclick="keypath(1)"/>
                 </div>
 
                 <div class="form-group">
                     <#--<label for="expand">&nbsp;&nbsp;&nbsp;展示个数:</label>-->
                     <#--<input id="expand" class="input-sm" style="width:80px;" value="1"/>-->
                     <#--<input class="btn btn-info" type="button" id="nextNode" value="展示">-->
-                    <input class="btn btn-info" type="button" id="expandAll" value="展示全部">
+                    <input class="btn btn-primary" type="button" id="expandAll" value="展示全部">
                 </div>
             </form>
 
             </br>
-            <div class="row">
+            <div class="row" style="margin: 0;">
                 <svg style="border: 3px solid dimgrey;height:700" class="col-lg-10">
                     <g/>
                 </svg>
-                <textarea class="label-info col-lg-2" style="height: 300px" id="jobDetail" readonly>任务信息</textarea>
+                <textarea class="label-primary col-lg-2" style="height: 300px" id="jobDetail" readonly>任务信息</textarea>
             </div>
-
+                </div>
         </section>
     </div>
 </div>

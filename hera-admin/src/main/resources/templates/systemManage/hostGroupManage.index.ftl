@@ -23,7 +23,7 @@
 </head>
 
 
-<body class="hold-transition skin-blue-light sidebar-mini">
+<body class="hold-transition skin-black sidebar-mini">
 
 <div class="wrapper">
     <!-- header -->
@@ -31,22 +31,31 @@
     <!-- left -->
 	<@netCommon.commonLeft "hostgroup"/>
     <div class="content-wrapper">
-        <div id="toolbar">
-            <button class="btn btn-success" id="addHostGroup">添加</button>
+        <div class="content">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">机器组管理</h3>
+                </div>
+                <div class="box-body">
+                    <div id="toolbar">
+                    <button class="btn btn-success" id="addHostGroup">添加</button>
+                    </div>
+                    <table id="selectTable"
+                           data-url="${request.contextPath}/hostGroup/list" class="table" data-pagination="true" data-toggle="table"
+                           data-search="true" data-toolbar="#toolbar"
+                           data-show-refresh="true">
+                        <thead>
+                            <tr>
+                                <th data-field="name" data-title="名称"></th>
+                                <th data-field="effective" data-title="状态"></th>
+                                <th data-field="description" data-title="描述"></th>
+                                <th data-title="操作" data-formatter="operator"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
         </div>
-        <table id="selectTable"
-               data-url="${request.contextPath}/hostGroup/list" class="table" data-pagination="true" data-toggle="table"
-               data-search="true" data-toolbar="#toolbar"
-               data-show-refresh="true">
-            <thead>
-            <tr>
-                <th data-field="name" data-title="名称"></th>
-                <th data-field="effective" data-title="状态"></th>
-                <th data-field="description" data-title="描述"></th>
-                <th data-title="操作" data-formatter="operator"></th>
-            </tr>
-            </thead>
-        </table>
     </div>
 </div>
 
@@ -96,6 +105,9 @@
     var groupCache = {};
     $(function () {
         initEvent();
+        $('#hostGroupManage').addClass('active');
+        $('#hostGroupManage').parent().addClass('menu-open');
+        $('#sysManager').addClass('active');
     });
 
     function operator(val, row) {

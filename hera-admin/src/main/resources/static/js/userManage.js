@@ -8,7 +8,9 @@ var userList = new Array();
 var indexList = new Array();
 
 $(function () {
-
+    $('#userManage').addClass('active');
+    $('#userManage').parent().addClass('menu-open');
+    $('#sysManager').addClass('active');
     $(".add-btn").click(function () {
 
         var id = $('#id').text();

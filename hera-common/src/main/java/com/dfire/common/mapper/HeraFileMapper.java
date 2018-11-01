@@ -54,4 +54,6 @@ public interface HeraFileMapper {
     @Update("update hera_file set content = #{content} where id = #{id}")
     int updateContent(HeraFile heraFile);
 
+    @Update("update hera_file set name = #{name} where id = #{id}")
+    int updateFileName(HeraFile heraFile);
 }

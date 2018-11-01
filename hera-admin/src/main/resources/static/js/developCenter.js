@@ -1,6 +1,6 @@
 var codeMirror;
 $(function () {
-
+    $('#developManage').addClass('active');
     /**
      * 开发中心zTree初始化配置
      *
@@ -19,8 +19,13 @@ $(function () {
             }
         },
         callback: {
-            onRightClick: OnRightClick,
-            onClick: leftClick
+            // onRightClick: OnRightClick,
+            onClick: leftClick,
+            onRename:renameFile,
+            onRemove:removeFile
+        },
+        edit:{
+            enable:true
         }
     };
 
@@ -43,6 +48,7 @@ $(function () {
      */
 
     var tabData = new Array();
+    var logData = new Array();
 
     /**
      * 添加的叶子节点个数统计，为重命名统计
@@ -57,6 +63,12 @@ $(function () {
     /**
      * 点击脚本的事件
      */
+    var tabContainer = $('#tabContainer');
+    var logTabContainer = $('#rightLogCon');
+    var rightNowLogCon = $('#rightNowLogCon');
+    var rightTimer = null;
+    var debugId;
+
     function leftClick() {
         var selected = zTree.getSelectedNodes()[0];
         var id = selected['id'];
@@ -91,6 +103,9 @@ $(function () {
             });
 
             $("#tabContainer").data("tabs").addTab(tabDetail);
+            var lis = tabContainer.children('ul').children();
+            tabContainer.tabsLength += lis[lis.length - 1].clientWidth;
+            showPrevNext(tabContainer);
         } else {
             tabObj = $("#tabContainer").tabs({
                 data: tabDetail,
@@ -100,8 +115,12 @@ $(function () {
             tabObj = $("#tabContainer").data("tabs").showTab(id);
         }
         localStorage.setItem("tabData", JSON.stringify(tabData));
-    }
 
+    }
+    tabContainer.on('deleteTab',function (e,length) {
+        e.stopPropagation();
+        tabContainer.tabsLength -= length;
+    })
 
     /**
      * 查看脚本运行日志
@@ -116,6 +135,36 @@ $(function () {
         $("#debugLogDetail").modal('show');
     });
 
+    $('#openLogs').click(function (e) {
+        e.stopPropagation();
+        $(this).tab('show');
+        showLogs();
+    })
+
+    //显示日志
+    function showLogs(){
+        var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
+        var parameter = {fileId: targetId};
+        var actionRow = new Object();
+        var timerHandler = null;
+        actionRow.id = targetId;
+        $.ajax({
+            url: base_url + "/developCenter/getLog.do",
+            data: {
+                fileId:actionRow.id
+            },
+            success: function (data) {
+                if (data.status != 'running') {
+                    window.clearInterval(timerHandler);
+                }
+                var logArea = $('#outputContainer');
+                logArea.innerHTML = data.log;
+                logArea.scrollTop(logArea.prop("scrollHeight"), 200);
+                actionRow.log = data.log;
+                actionRow.status = data.status;
+            }
+        })
+    }
 
     /**
      *
@@ -187,7 +236,15 @@ $(function () {
 
         $("body").bind("mousedown", onBodyMouseDown);
     }
+    //修改文件名后回调
+    function renameFile(event, treeId, treeNode, isCancel) {
+        console.log(treeId,treeNode);
 
+    }
+    //删除文件后回调
+    function removeFile(event, treeId, treeNode) {
+        console.log(treeId,treeNode);
+    }
     /**
      * 隐藏菜单
      */
@@ -361,6 +418,7 @@ $(function () {
 
 
     $("#execute").click(function () {
+
         var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
         var fileScript = codeMirror.getValue();
         var parameter = {
@@ -378,11 +436,100 @@ $(function () {
             dataType: "json",
             success: function (data) {
                 result = data;
+                debugId=data.debugId;
+                showRightNowLog(data.fileId,data.debugId);
             }
         });
 
-    });
 
+    });
+    //获得当前log
+    function getRightNowLog(){
+        $.ajax({
+            url: base_url + "/developCenter/getLog.do",
+            type: "get",
+            data: {
+                id: debugId,
+            },
+            success: function (data) {
+                console.log("data.status " + data.status)
+                if (data.status !== 'running') {
+                    clearInterval(rightTimer);
+                    set('log'+debugId,data.log);
+                }
+                var logArea = $('#log' + debugId);
+                logArea.html(data.log);
+
+            }
+        })
+    }
+    //检查localStorage 有则显示日志
+    function showStorageLog() {
+        var last;
+        for(var i =0;i<localStorage.length;i++){
+            if(localStorage.key(i).indexOf('log')!==-1){
+                last = localStorage.key(i);
+                var ul = logTabContainer.children('ul');
+                ul.children().removeClass('active-log');
+                ul.prepend("<li class=\"logs-id active-log\">DebugId : "+localStorage.key(i).slice(3)+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
+                ul.children('li:first').attr('his-id',localStorage.key(i).slice(3));
+                showPrevNext(logTabContainer);
+            }
+        }
+        rightNowLogCon.children().first().remove();
+        rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"'+last+'\"></div>');
+        var logArea = $('#' + last);
+        logArea.html(localStorage.getItem(last));
+    }
+    showStorageLog();
+    //显示当前日志
+    function showRightNowLog(id,debugId){
+        //tab
+        var ul = logTabContainer.children('ul');
+        ul.children().removeClass('active-log');
+        ul.prepend("<li class=\"logs-id active-log\">DebugId : "+debugId+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
+        var lis=ul.children();
+        logTabContainer.tabsLength += lis[lis.length - 1].clientWidth;
+        showPrevNext(logTabContainer);
+        ul.children('li:first').attr('his-id',debugId);
+        //日志
+        rightNowLogCon.children().first().remove();
+        rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"log'+debugId+'\"></div>');
+        if(rightTimer){
+            clearInterval(rightTimer);
+        }
+        rightTimer=setInterval(getRightNowLog,2000);
+    }
+    //单击当前日志tab
+    logTabContainer.on('click','li',function (e) {
+        e.stopPropagation();
+        logTabContainer.children('ul').children().removeClass('active-log');
+        $(this).addClass('active-log');
+        debugId=$(this).attr('his-id');
+        rightNowLogCon.children().first().remove();
+        rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"log'+debugId+'\"></div>');
+        var storageLog=get('log'+debugId,1000*60*60*24);
+        if(storageLog){
+            rightNowLogCon.children('#log'+debugId).html(storageLog);
+        }else {
+            if(rightTimer){
+                clearInterval(rightTimer);
+            }
+            rightTimer=setInterval(getRightNowLog,2000);
+        }
+    })
+    //关闭日志
+    logTabContainer.on('click','span',function(e){
+        e.stopPropagation();
+        var li = $(this).parent();
+        var width = li.width();
+        logTabContainer.tabsLength -=width;
+        var debugId=li.attr('his-id');
+        localStorage.removeItem('log'+debugId);
+        li.remove();
+        clearInterval(rightTimer);
+
+    })
 
     /**
      * 点击执行选中代码执行逻辑
@@ -409,7 +556,29 @@ $(function () {
         });
 
     });
+    //封装过期控制代码
+    function set(key,value){
+        var curTime = new Date().getTime();
+        localStorage.setItem(key,JSON.stringify({data:value,time:curTime}));
+    }
+    function get(key,exp){
+        var data = localStorage.getItem(key);
+        var dataObj = JSON.parse(data);
+        if(dataObj){
+            if (new Date().getTime() - dataObj.time>exp) {
+                console.log('信息已过期');
+            }else{
+                //console.log("data="+dataObj.data);
+                //console.log(JSON.parse(dataObj.data));
+                var dataObjDatatoJson = dataObj.data;
+                return dataObjDatatoJson;
+            }
 
+        }
+    }
+    /**
+     * 弹出日志div
+     */
 
     /**
      * 文件上传
@@ -444,7 +613,7 @@ $(function () {
             theme: "paraiso-light",
             readOnly: false
         });
-        codeMirror.display.wrapper.style.height = (screenHeight - 186) + "px";
+        codeMirror.display.wrapper.style.height = 500 + "px";
         codeMirror.on('keypress', function () {
             if (!codeMirror.getOption('readOnly')) {
                 codeMirror.showHint();
@@ -472,9 +641,110 @@ $(function () {
         $.each($(".height-self"), function (i, n) {
             $(n).css("height", (screenHeight - 50) + "px");
         });
+        tabInitLength(tabContainer);
+        showPrevNext(tabContainer);
+        tabInitLength(logTabContainer);
+        showPrevNext(logTabContainer);
     });
+    //初始化log
+    function logInit(){
 
+    }
 
+    //初始化tabs的长度
+    function tabInitLength(tabContainer){
+        tabContainer.tabsLength=0;
+        var ul = tabContainer.children('ul');
+        if(tabContainer.children('ul').length > 0) {
+            var lis = tabContainer.children('ul').children();
+            //初始tabs width
+            for (var i = 0; i < lis.length; i++) {
+                tabContainer.tabsLength += lis[i].clientWidth;
+            }
+            console.log('tab init',tabContainer.tabsLength);
+        }
+    }
+    //计算tabs长度是否超过container
+    function showPrevNext(tabContainer){
+        tabContainer.tabContainerWidth =  tabContainer.width();
+        if(tabContainer.tabsLength > tabContainer.tabContainerWidth){
+            tabContainer.siblings('.prev-next-con').children('.prev-tab').addClass('show');
+            tabContainer.siblings('.prev-next-con').children('.next-tab').addClass('show');
+            tabContainer.css({"left": "30px"});
+        }
+    }
+
+    //tab超出范围出现左右调整框
+    //单击左右按钮
+    $('#prevNextCon').on('click','.prev-tab',tabContainer,function (e) {
+        e.stopPropagation();
+        var ul =tabContainer.children('ul');
+        var positionLeft = ul.position().left;
+        if(positionLeft<0){
+            if(-positionLeft+tabContainer.tabContainerWidth>tabContainer.tabsLength+100){
+                ul.stop();
+            }else{
+                ul.animate({
+                    left:'-=60px'
+                },100)
+            }
+        }else {
+            ul.animate({
+                left:'-=60px'
+            },100)
+        }
+    });
+    $('#prevNextCon').on('click','.next-tab',tabContainer,function (e) {
+        e.stopPropagation();
+        var ul =tabContainer.children('ul');
+        var positionLeft = ul.position().left;
+        if(positionLeft<=0){
+            ul.animate({
+                left:'+=50px'
+            },100)
+        }else{
+            ul.stop();
+        }
+    });
+    $('#logContainer').on('click','.prev-tab',logTabContainer,function (e) {
+        e.stopPropagation();
+        var tabContainer = e.data;
+        var ul =tabContainer.children('ul');
+        var positionLeft = ul.position().left;
+        if(positionLeft<0){
+            if(-positionLeft+tabContainer.tabContainerWidth>tabContainer.tabsLength+100){
+                ul.stop();
+            }else{
+                ul.animate({
+                    left:'-=50px'
+                },100)
+            }
+        }else {
+            ul.animate({
+                left:'-=50px'
+            },100)
+        }
+    });
+    $('#logContainer').on('click','.next-tab',logTabContainer,function (e) {
+        e.stopPropagation();
+        var tabContainer = e.data;
+        var ul =tabContainer.children('ul');
+        var positionLeft = ul.position().left;
+        if(positionLeft<=0){
+            ul.animate({
+                left:'+=50px'
+            },100)
+        }else{
+            ul.stop();
+        }
+    });
+    var rightNowLogs = $('#outputContainer');
+    rightNowLogs.hide();
+    //点击查看日志 显示日志
+    $('#showLog').click(function (e) {
+        e.stopPropagation();
+        rightNowLogs.toggle();
+    })
 });
 
 
@@ -594,6 +864,7 @@ var TableInit = function (targetId) {
         });
     }
     return oTableInit;
+
 }
 
 
@@ -628,6 +899,5 @@ function setScript(id) {
         script = '';
     }
     codeMirror.setValue(script);
-
 }
 

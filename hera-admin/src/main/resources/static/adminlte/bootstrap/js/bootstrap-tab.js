@@ -84,7 +84,7 @@
         ul_nav.on("click", "li", function () {
             var id = $(this).children().attr('href').substring(1);
             $("#scriptEditor").attr("style", "display:block;");
-            setScript( id);
+            setScript(id);
         })
         var div_content = $(this.template.div_content);
 
@@ -98,7 +98,7 @@
                 ul_li.find("a").append(ul_li_close);
                 ul_li.find("a").append("&nbsp;");
             }
-            ul_nav.append(ul_li);
+            ul_nav.prepend(ul_li);
             //div-content
             var div_content_panel = $(this.template.div_content_panel.format(data[i].id));
             div_content.append(div_content_panel);
@@ -153,7 +153,7 @@
             ul_li.find("a").append("&nbsp;");
         }
 
-        this.$element.find(".nav-tabs:eq(0)").append(ul_li);
+        this.$element.find(".nav-tabs:eq(0)").prepend(ul_li);
         //div-content
         var div_content_panel = $(this.template.div_content_panel.format(obj.id));
         this.$element.find(".tab-content:eq(0)").append(div_content_panel);
@@ -178,6 +178,10 @@
 
                      setScript(headId);
                 }
+                //传递tab 删除事件给外部 来减少删除的tab长度
+                var length = $(this).parents("li").width();
+                $("#tabContainer").trigger('deleteTab',length);
+
                 $(this).parents("li").remove();
                 $("#" + href).remove();
 
@@ -212,7 +216,6 @@
 
         }
     }
-
     //根据id设置活动tab页
     BaseTab.prototype.showTab = function (tabId) {
         this.$element.find(".nav-tabs li a[href='#" + tabId + "']").tab("show");
@@ -224,15 +227,10 @@
         href = href.substring(1);
         return href;
     }
-
-
     String.prototype.format = function () {
         if (arguments.length == 0) return this;
         for (var s = this, i = 0; i < arguments.length; i++)
             s = s.replace(new RegExp("\\{" + i + "\\}", "g"), arguments[i]);
         return s;
     };
-
-
-
 })(jQuery, window, document)

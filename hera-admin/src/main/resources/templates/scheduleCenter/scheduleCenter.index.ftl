@@ -77,7 +77,7 @@
     }
 </style>
 
-<body class="hold-transition skin-blue-light sidebar-mini">
+<body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
     <!-- header -->
 	<@netCommon.commonHeader />

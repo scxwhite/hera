@@ -10,7 +10,7 @@
 
 </style>
 
-<body class="hold-transition skin-blue-light sidebar-mini">
+<body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
     <!-- header -->
 	<@netCommon.commonHeader />
@@ -19,12 +19,15 @@
 
     <div class="content-wrapper">
         <section class="content">
-
-            <div class = "jobPreview"  class="div-row" style="margin-bottom:10px">
-
-                <table id="table" class="table"/>
-                </table>
-
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">用户管理</h3>
+                </div>
+                <div class="box-body">
+                    <div class = "jobPreview"  class="div-row" style="margin-bottom:10px">
+                        <table id="table" class="table"/></table>
+                    </div>
+                </div>
             </div>
 
             <div class="modal fade" id="editUser" tabindex="-1" role="dialog" aria-labelledby="addConfig" aria-hidden="true">
