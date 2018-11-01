@@ -949,6 +949,7 @@ public class Master {
                         heraAction = masterContext.getHeraJobActionService().findById(action);
                         //检测action表是否已经更新 如果更新 证明work的成功信号发送给了master已经广播
                         if (StatusEnum.SUCCESS.toString().equals(heraAction.getStatus())) {
+                            log.warn("任务{}已经执行完成并发信号给master，无需重试", action);
                             continue;
                         }
                         heraJobHistory = masterContext.getHeraJobHistoryService().findById(heraAction.getHistoryId());
@@ -958,9 +959,14 @@ public class Master {
                                     , heraJobHistory.getId());
                             heraAction.setStatus(heraJobHistory.getStatus());
                             masterContext.getHeraJobActionService().updateStatus(heraAction);
+
+                            log.warn("任务{}已经执行完成但是信号未发送给master,手动广播成功事件", action);
+
                             //成功时间广播
                             masterContext.getDispatcher().forwardEvent(successEvent);
                         } else if (StatusEnum.FAILED.toString().equals(heraJobHistory.getStatus())) {
+
+                            log.warn("任务{}执行失败，但是丢失重试次数，重新调度", action);
                             //丢失重试次数信息   master直接重试
                             heraJobHistory.setIllustrate("work断线，丢失任务重试次数，重新执行该任务");
                             startNewJob(heraJobHistory);
@@ -972,15 +978,17 @@ public class Master {
                                 TimeUnit.SECONDS.sleep(HeraGlobalEnvironment.getHeartBeat() * 2);
                                 newBeatInfo = masterContext.getWorkMap().get(newChannel).getHeartBeatInfo();
                             }
-
                             if (newBeatInfo != null) {
                                 List<String> newRunning = newBeatInfo.getRunning();
                                 //如果work新的心跳信息 包含该任务的信息 work继续执行即可
                                 if (newRunning.contains(action)) {
+                                    log.warn("任务{}还在运行中，并且work重连后心跳信息存在，等待work执行完成", action);
                                     continue;
                                 }
                             }
                             heraJobHistory.setIllustrate("work心跳为空，重新执行该任务");
+
+                            log.warn("任务{}还在运行中，但是work已经无该任务的相关信息，重新调度该任务", action);
                             //不包含该任务信息，重新调度
                             startNewJob(heraJobHistory);
                         }
@@ -991,12 +999,12 @@ public class Master {
                         heraAction = masterContext.getHeraJobActionService().findById(action);
                         heraJobHistory = masterContext.getHeraJobHistoryService().findById(heraAction.getHistoryId());
                         heraJobHistory.setIllustrate("work断线超出十分钟，重新执行该任务");
+                        log.warn("work断线并且未重连，重新调度任务{}", action);
                         startNewJob(heraJobHistory);
-
                     }
                 }
 
-            }, 10, TimeUnit.MINUTES);
+            }, 5, TimeUnit.MINUTES);
 
         }
         String content = "不幸的消息，work宕机了:" + channel.remoteAddress() + "<br>" +

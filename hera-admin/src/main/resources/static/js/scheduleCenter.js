@@ -209,7 +209,7 @@ $(function () {
             },
             type: "post",
             success: function (data) {
-                alert(data);
+                layer.msg(data);
             }
         })
     });

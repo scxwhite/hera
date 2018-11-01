@@ -351,8 +351,10 @@ public class ScheduleCenterController extends BaseHeraController {
         if (!hasPermission(Integer.parseInt(jobId), JOB)) {
             return new WebAsyncTask<>(() -> ERROR_MSG);
         }
-        return new WebAsyncTask<>(3000, () ->
+        WebAsyncTask<String> asyncTask = new WebAsyncTask<>(15 * 1000L, () ->
                 workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, jobId));
+        asyncTask.onTimeout(() -> "版本生成时间较长，请耐心等待下");
+        return asyncTask;
     }
 
     /**
