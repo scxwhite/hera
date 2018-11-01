@@ -1007,7 +1007,7 @@ public class Master {
                     }
                 }
 
-            }, 5, TimeUnit.MINUTES);
+            }, 10, TimeUnit.MINUTES);
 
         }
         String content = "不幸的消息，work宕机了:" + channel.remoteAddress() + "<br>" +
