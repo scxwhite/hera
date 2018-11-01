@@ -691,14 +691,15 @@ $(function () {
         $.ajax({
             url: base_url + "/scheduleCenter/manual.do",
             type: "get",
-            async: false,
             data: {
                 actionId: $("#selectJobVersion").val(),
                 triggerType: triggerType
             },
             success: function (data) {
-                if (data.success == false) {
-                    alert(data.msg)
+                if (data.success == true) {
+                    layer.msg("任务执行成功");
+                } else {
+                    layer.msg(data.msg);
                 }
             }
         });
