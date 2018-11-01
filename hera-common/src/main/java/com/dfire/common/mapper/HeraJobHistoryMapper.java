@@ -83,7 +83,7 @@ public interface HeraJobHistoryMapper {
     @Select("select count(1) from hera_action_history where job_id = #{id}")
     Integer selectCountById(Integer id);
 
-    @Select("select * from hera_action_history where job_id = #{jobId} order by id desc limit #{offset,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER} ")
+    @Select("select id,action_id,job_id,start_time,end_time,execute_host,operator,status,trigger_type,illustrate,host_group_id from hera_action_history where job_id = #{jobId} order by id desc limit #{offset,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER} ")
     List<HeraJobHistory> selectByPage(PageHelper pageHelper);
 }
 

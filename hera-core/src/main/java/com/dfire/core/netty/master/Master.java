@@ -898,8 +898,7 @@ public class Master {
                 }
             }
 
-            for (Channel key : masterContext.getWorkMap().keySet()) {
-                MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
+            for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
                 if (workHolder.getManningRunning().containsKey(actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());

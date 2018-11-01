@@ -955,9 +955,8 @@ var JobLogTable = function (jobId) {
             ],
             detailView: true,
             detailFormatter: function (index, row) {
-                var log = row["log"];
                 var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; word-break: break-all; word-wrap:break-word; height:600px; white-space:pre-line;font-family:Microsoft YaHei" id="log_' + row.id + '">'
-                    + log +
+                    + '日志加载中。。' +
                     '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;
             },
@@ -968,7 +967,10 @@ var JobLogTable = function (jobId) {
                 }
                 onExpand = index;
                 if (row.status == "running") {
+                    scheduleLog();
                     timerHandler = window.setInterval(scheduleLog, 3000);
+                } else {
+                    scheduleLog();
                 }
             },
             onCollapseRow: function (index, row) {
@@ -982,7 +984,9 @@ var JobLogTable = function (jobId) {
 function cancelJob(historyId, jobId) {
     var url = base_url + "/scheduleCenter/cancelJob.do";
     var parameter = {historyId: historyId, jobId: jobId};
-    getDataByGet(url, parameter)
+    $.get(url, parameter, function (data) {
+        layer.msg(data);
+    });
 
 }
 

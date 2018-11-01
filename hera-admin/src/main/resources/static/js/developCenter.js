@@ -871,7 +871,11 @@ var TableInit = function (targetId) {
 function cancelJob(historyId) {
     var url = base_url + "/developCenter/cancelJob.do";
     var parameter = {id: historyId};
-    getDataByGet(url, parameter)
+
+
+    $.get(url, parameter, function (data) {
+        layer.msg(data);
+    });
 
 }
 
