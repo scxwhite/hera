@@ -927,6 +927,10 @@ public class Master {
 
         if (workHolder != null) {
             List<String> scheduleTask = workHolder.getHeartBeatInfo().getRunning();
+
+            if (scheduleTask == null || scheduleTask.size() == 0) {
+                return ;
+            }
             //十分钟后开始检查 work是否重连成功
             masterContext.masterTimer.newTimeout((x) -> {
                 Channel newChannel = null;
@@ -986,8 +990,7 @@ public class Master {
                                     continue;
                                 }
                             }
-                            heraJobHistory.setIllustrate("work心跳为空，重新执行该任务");
-
+                            heraJobHistory.setIllustrate("work心跳该任务信息为空，重新执行该任务");
                             log.warn("任务{}还在运行中，但是work已经无该任务的相关信息，重新调度该任务", action);
                             //不包含该任务信息，重新调度
                             startNewJob(heraJobHistory);

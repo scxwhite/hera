@@ -127,7 +127,6 @@ $(function () {
      */
 
     $("#logButton").click(function () {
-        debugger
         var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
         $('#debugLogDetailTable').bootstrapTable("destroy");
         var tableObject = new TableInit(targetId);
