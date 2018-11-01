@@ -238,12 +238,55 @@ $(function () {
     }
     //修改文件名后回调
     function renameFile(event, treeId, treeNode, isCancel) {
-        console.log(treeId,treeNode);
+        $.ajax({
+            url: base_url + "/developCenter/rename.do",
+            type:'get',
+            data:{
+                id:treeNode.id,
+                name:treeNode.name
+            },
+            success:function (res) {
+                $('#responseCon').animate({right:'20px'},500)
+                setTimeout(function () {
+                    $('#responseCon').animate({right:'-140px'},500);
+                },1000);
+                $('#response').html(res);
+            },
+            error:function (err) {
+                $('#responseCon').animate({right:'20px'},500)
+                setTimeout(function () {
+                    $('#responseCon').animate({right:'-140px'},500);
+                },1000);
+                $('#response').html(err);
+            }
+        })
 
     }
     //删除文件后回调
     function removeFile(event, treeId, treeNode) {
-        console.log(treeId,treeNode);
+        $.ajax({
+            url: base_url + "/developCenter/delete.do",
+            type:'get',
+            data:{
+                id:treeNode.id
+            },
+            success:function (res) {
+                $('#responseCon').animate({right:'20px'},500)
+                setTimeout(function () {
+                    $('#responseCon').animate({right:'-140px'},500);
+                },1000);
+                $('#response').html(res);
+            },
+            error:function (err) {
+                $('#responseCon').animate({right:'20px'},500)
+                setTimeout(function () {
+                    $('#responseCon').animate({right:'-140px'},500);
+                },1000);
+                $('#response').html(err);
+
+            }
+        })
+
     }
     /**
      * 隐藏菜单
