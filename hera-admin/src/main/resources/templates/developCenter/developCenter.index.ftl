@@ -162,7 +162,7 @@
 </div>
 
 <div class="response box box-success" id="responseCon">
-    <p id="response">重命名成功</p>
+    <p id="response"></p>
 </div>
 
 <@netCommon.commonScript />

@@ -24,8 +24,12 @@
     top: 100px;
     right: -140px;
     background: #ffffff;
+    z-index: 9999;
 }
 .response p{
     text-align: center;
     line-height: 60px;
+}
+.response-sch{
+    top: 700px;
 }

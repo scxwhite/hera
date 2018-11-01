@@ -9,12 +9,12 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/paraiso-light.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
-
+    <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
 </head>
 
 <style type="text/css">
 
-    .box, .content, .form-group {
+    .box, .content {
         margin-bottom: 0;
         padding-bottom: 0;
         margin-top: 0;
@@ -385,7 +385,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">定时表达式:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" name="cronExpression">
+                                                <input class="form-control" type="text" name="cronExpression" id="timeChange">
 
                                             </div>
                                         </div>
@@ -811,8 +811,59 @@
         </div>
     </div>
 </div>
+<#--定时表达式模态框-->
 
+<div class="modal fade" tabindex="-1" role="dialog" id="timeModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">构造定时表达式</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="inputMin" class="col-sm-2 control-label">分</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="inputMin" placeholder="分">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputHour" class="col-sm-2 control-label">时</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="inputHour" placeholder="时">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDay" class="col-sm-2 control-label">天</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="inputDay" placeholder="天">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputMonth" class="col-sm-2 control-label">月</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="inputMonth" placeholder="月">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputWeek" class="col-sm-2 control-label">周</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="inputWeek" placeholder="周">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveTimeBtn">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
+<div class="response response-sch box box-success" id="responseCon">
+    <p id="response"></p>
+</div>
 
 <@netCommon.commonScript />
 
