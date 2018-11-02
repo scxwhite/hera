@@ -81,10 +81,10 @@ public class WorkHandleCancel {
      */
     private Future<RpcResponse.Response> cancelSchedule(WorkContext workContext, RpcRequest.Request request, String historyId) {
         HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(historyId);
-        HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-        final String jobId = history.getJobId();
-        log.info("worker receive cancel schedule job, actionId =" + jobId);
-        if (!workContext.getRunning().containsKey(history.getId())) {
+        final String jobId = heraJobHistory.getJobId();
+        String actionId = heraJobHistory.getActionId();
+        log.info("worker receive cancel schedule job, actionId =" + actionId);
+        if (!workContext.getRunning().containsKey(actionId)) {
             return workContext.getWorkThreadPool().submit(() -> RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)
@@ -93,7 +93,7 @@ public class WorkHandleCancel {
                     .build());
         }
         return workContext.getWorkThreadPool().submit(() -> {
-            workContext.getWorkClient().cancelScheduleJob(jobId);
+            workContext.getWorkClient().cancelScheduleJob(actionId);
             return RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)

@@ -69,7 +69,7 @@ public class ScheduleCenterController extends BaseHeraController {
     private final String GROUP = "group";
     private final String ERROR_MSG = "抱歉，您没有权限进行此操作";
 
-    private final long timeout = 15 * 1000L;
+    private final long timeout = 60 * 1000L;
 
 
     @RequestMapping()
@@ -232,7 +232,6 @@ public class ScheduleCenterController extends BaseHeraController {
 
         WebAsyncTask<RestfulResponse> webAsyncTask = new WebAsyncTask<>(timeout, () -> {
             try {
-
                 workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.ManualKind, actionHistory.getId());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -403,8 +402,11 @@ public class ScheduleCenterController extends BaseHeraController {
             kind = JobExecuteKind.ExecuteKind.ScheduleKind;
         }
         JobExecuteKind.ExecuteKind finalKind = kind;
-        return new WebAsyncTask<>(3000, () ->
+
+        WebAsyncTask<String> webAsyncTask = new WebAsyncTask<>(timeout, () ->
                 workClient.cancelJobFromWeb(finalKind, historyId));
+        webAsyncTask.onTimeout(() -> "任务取消执行中，请耐心等待");
+        return webAsyncTask;
     }
 
     @RequestMapping(value = "getLog", method = RequestMethod.GET)

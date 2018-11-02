@@ -307,11 +307,11 @@ public class WorkClient {
     /**
      * 取消自动调度执行的任务
      *
-     * @param jobId
+     * @param actionId
      */
-    public void cancelScheduleJob(String jobId) {
-        Job job = workContext.getRunning().get(jobId);
-        workContext.getRunning().remove(jobId);
+    public void cancelScheduleJob(String actionId) {
+        Job job = workContext.getRunning().get(actionId);
+        workContext.getRunning().remove(actionId);
         job.cancel();
 
         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
