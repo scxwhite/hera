@@ -54,7 +54,7 @@ public class MasterContext {
      * todo 参数可配置
      *
      */
-    private Timer masterTimer = null;
+    protected Timer masterTimer = null;
 
     public MasterContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
