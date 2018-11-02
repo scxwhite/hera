@@ -69,6 +69,8 @@ public class ScheduleCenterController extends BaseHeraController {
     private final String GROUP = "group";
     private final String ERROR_MSG = "抱歉，您没有权限进行此操作";
 
+    private final long timeout = 15 * 1000L;
+
 
     @RequestMapping()
     public String login() {
@@ -228,7 +230,7 @@ public class ScheduleCenterController extends BaseHeraController {
         heraAction.setScript(heraJob.getScript());
         heraJobActionService.update(heraAction);
 
-        return new WebAsyncTask<>(3000, () -> {
+        WebAsyncTask<RestfulResponse> webAsyncTask = new WebAsyncTask<>(timeout, () -> {
             try {
 
                 workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.ManualKind, actionHistory.getId());
@@ -237,6 +239,8 @@ public class ScheduleCenterController extends BaseHeraController {
             }
             return new RestfulResponse(true, actionId);
         });
+        webAsyncTask.onTimeout(() -> new RestfulResponse(false, "执行任务操作请求中，请稍后"));
+        return webAsyncTask;
     }
 
     @RequestMapping(value = "/getJobVersion", method = RequestMethod.GET)
@@ -351,7 +355,7 @@ public class ScheduleCenterController extends BaseHeraController {
         if (!hasPermission(Integer.parseInt(jobId), JOB)) {
             return new WebAsyncTask<>(() -> ERROR_MSG);
         }
-        WebAsyncTask<String> asyncTask = new WebAsyncTask<>(15 * 1000L, () ->
+        WebAsyncTask<String> asyncTask = new WebAsyncTask<>(timeout, () ->
                 workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, jobId));
         asyncTask.onTimeout(() -> "版本生成时间较长，请耐心等待下");
         return asyncTask;

@@ -54,7 +54,7 @@ public class MasterContext {
      * todo 参数可配置
      *
      */
-    final Timer masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
+    private Timer masterTimer = null;
 
     public MasterContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -66,6 +66,8 @@ public class MasterContext {
         masterServer = new MasterServer(handler);
         masterServer.start(HeraGlobalEnvironment.getConnectPort());
         master = new Master(this);
+        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
+        this.getQuartzSchedulerService().start();
         log.info("end init master content success ");
     }
 

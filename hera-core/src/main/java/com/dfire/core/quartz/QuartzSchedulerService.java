@@ -46,15 +46,14 @@ public class QuartzSchedulerService {
         return prop;
     }
 
-    @PostConstruct
-    public void start() throws IOException {
+    public void start() {
         log.info("start init quartz schedule");
         try {
             SchedulerFactory schedulerFactory = new StdSchedulerFactory(setQuartzProperties());
             scheduler = schedulerFactory.getScheduler();
             scheduler.start();
             log.info("start init quartz scheduler");
-        } catch (SchedulerException e) {
+        } catch (SchedulerException | IOException e) {
             e.printStackTrace();
             log.info("failed init quartz scheduler");
         }
