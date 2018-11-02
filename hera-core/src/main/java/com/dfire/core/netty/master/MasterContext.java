@@ -61,13 +61,13 @@ public class MasterContext {
     }
 
     public void init() {
+        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
+        this.getQuartzSchedulerService().start();
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);
         masterServer = new MasterServer(handler);
         masterServer.start(HeraGlobalEnvironment.getConnectPort());
         master = new Master(this);
-        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
-        this.getQuartzSchedulerService().start();
         log.info("end init master content success ");
     }
 
