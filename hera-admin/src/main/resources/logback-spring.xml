@@ -90,22 +90,23 @@
     <root>
         <level value="${logLevel}"/>
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="alertMonitor"/>
     </root>
 
 
-    <logger name="com.dfire.logs.ScheduleLog" additivity="false">
+    <logger name="com.dfire.logs.ScheduleLog" additivity="true">
         <level value="INFO"/>
         <appender-ref ref="scheduleLog"/>
     </logger>
-    <logger name="com.dfire.logs.SocketLog" additivity="false">
+    <logger name="com.dfire.logs.SocketLog" additivity="true">
         <level value="INFO"/>
         <appender-ref ref="socketLog"/>
     </logger>
-    <logger name="com.dfire.logs.HeraLog" additivity="false">
+    <logger name="com.dfire.logs.HeraLog" additivity="true">
         <level value="INFO"/>
         <appender-ref ref="heraLog"/>
     </logger>
-    <logger name="com.dfire.logs.DebugLog" additivity="false">
+    <logger name="com.dfire.logs.DebugLog" additivity="true">
         <level value="INFO"/>
         <appender-ref ref="debugLog"/>
     </logger>

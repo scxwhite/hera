@@ -80,7 +80,7 @@ public class HeraFileServiceImpl implements HeraFileService {
     @Override
     public List<HeraFileTreeNodeVo> buildFileTree(String user) {
         List<HeraFile> fileVoList = this.findByOwner(user);
-        List<HeraFileTreeNodeVo> list = fileVoList.stream().map(file -> {
+        return fileVoList.stream().map(file -> {
             HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
             if (file.getParent() == null || StringUtils.isBlank(file.getParent())) {
                 vo.setParent("root");
@@ -94,7 +94,6 @@ public class HeraFileServiceImpl implements HeraFileService {
             }
             return vo;
         }).collect(Collectors.toList());
-        return list;
     }
 
     @Override
