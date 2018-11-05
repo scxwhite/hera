@@ -3,6 +3,7 @@ package com.dfire.common.entity.vo;
 import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.vo.LogContent;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.Date;
  * @desc
  */
 @Builder
+@AllArgsConstructor
 @Data
 @NoArgsConstructor
 public class HeraDebugHistoryVo {
