@@ -81,12 +81,9 @@ public class JobHandler extends AbstractHandler {
         if (super.canHandle(event)) {
             return true;
         }
-        if (event instanceof HeraJobFailedEvent || event instanceof HeraJobSuccessEvent ||
+        return event instanceof HeraJobFailedEvent || event instanceof HeraJobSuccessEvent ||
                 event instanceof HeraJobLostEvent || event instanceof HeraScheduleTriggerEvent ||
-                event instanceof HeraJobMaintenanceEvent) {
-            return true;
-        }
-        return false;
+                event instanceof HeraJobMaintenanceEvent;
     }
 
     /**
@@ -293,11 +290,11 @@ public class JobHandler extends AbstractHandler {
 
                     String[] emails = new String[id.length];
                     int index = 0;
-                    for (int i = 0; i < id.length; i++) {
-                        if (StringUtils.isBlank(id[i])) {
+                    for (String anId : id) {
+                        if (StringUtils.isBlank(anId)) {
                             continue;
                         }
-                        HeraUser user = heraUserService.findById(HeraUser.builder().id(Integer.parseInt(id[i])).build());
+                        HeraUser user = heraUserService.findById(HeraUser.builder().id(Integer.parseInt(anId)).build());
                         if (user != null && user.getEmail() != null) {
                             emails[index++] = user.getEmail();
                         }

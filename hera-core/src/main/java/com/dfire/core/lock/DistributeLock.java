@@ -41,6 +41,8 @@ public class DistributeLock {
 
     private HeraSchedule heraSchedule;
 
+    private final long timeout = 1000 * 60 * 5L;
+
 
     static {
         try {
@@ -87,22 +89,24 @@ public class DistributeLock {
             long currentTime = System.currentTimeMillis();
             long lockTime = heraLock.getServerUpdate().getTime();
             long interval = currentTime - lockTime;
-            if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
-                Integer lock = heraLockService.changeLock(host, new Date(), new Date(), heraLock.getHost());
+            if (interval > timeout && isPreemptionHost()) {
+                Date date = new Date();
+                Integer lock = heraLockService.changeLock(host, date, date, heraLock.getHost());
                 if (lock != null && lock > 0) {
                     log.error("master 发生切换,{} 抢占成功", host);
                     heraSchedule.startup();
                     heraLock.setHost(host);
+                    //TODO  接入master切换通知
+
                 } else {
                     log.info("master抢占失败，由其它worker抢占成功");
                 }
-                //TODO  接入通知
             } else {
                 //非主节点，调度器不执行
                 heraSchedule.shutdown();
             }
         }
-
+        //TODO  是否考虑master不执行work服务
         workClient.init(applicationContext);
 
         try {

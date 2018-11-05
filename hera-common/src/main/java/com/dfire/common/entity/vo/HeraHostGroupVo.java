@@ -42,9 +42,7 @@ public class HeraHostGroupVo {
         if (currentPosition >= size) {
             currentPosition = 0;
         }
-        String host = hosts.get(currentPosition);
-        currentPosition++;
-        return host;
+        return hosts.get(currentPosition++);
     }
 
 }

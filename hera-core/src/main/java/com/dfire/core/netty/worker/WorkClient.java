@@ -146,12 +146,11 @@ public class WorkClient {
                     if (logContent == null) {
                         logContent = "";
                     }
-                    log.error(new StringBuilder("log output error!\n")
-                            .append("[actionId:").append(his.getJobId())
-                            .append(", hisId:").append(his.getId())
-                            .append(", logLength:")
-                            .append(logContent.length()).append("]")
-                            .toString(), e);
+                    log.error("log output error!\n" +
+                            "[actionId:" + his.getJobId() +
+                            ", hisId:" + his.getId() +
+                            ", logLength:" +
+                            logContent.length() + "]", e);
                 } catch (Exception ex) {
                     log.error("log exception error!");
                 }

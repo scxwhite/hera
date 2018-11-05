@@ -499,7 +499,6 @@ public class Master {
             log.warn("schedule队列任务：{}", masterContext.getScheduleQueue());
             printThreadPoolLog();
             JobElement jobElement = masterContext.getScheduleQueue().peek();
-
             MasterWorkHolder workHolder = getRunnableWork(jobElement);
             if (workHolder == null) {
                 log.warn("can not get work to execute job in master");
@@ -542,13 +541,12 @@ public class Master {
     }
 
     private void printThreadPoolLog() {
-        StringBuilder sb = new StringBuilder("当前线程池信息");
-        sb.append("[ActiveCount: ").append(executeJobPool.getActiveCount()).append(",");
-        sb.append("CompletedTaskCount：").append(executeJobPool.getCompletedTaskCount()).append(",");
-        sb.append("PoolSize:").append(executeJobPool.getPoolSize()).append(",");
-        sb.append("LargestPoolSize:").append(executeJobPool.getLargestPoolSize()).append(",");
-        sb.append("TaskCount:").append(executeJobPool.getTaskCount()).append("]");
-        log.warn(sb.toString());
+        String sb = "当前线程池信息" + "[ActiveCount: " + executeJobPool.getActiveCount() + "," +
+                "CompletedTaskCount：" + executeJobPool.getCompletedTaskCount() + "," +
+                "PoolSize:" + executeJobPool.getPoolSize() + "," +
+                "LargestPoolSize:" + executeJobPool.getLargestPoolSize() + "," +
+                "TaskCount:" + executeJobPool.getTaskCount() + "]";
+        log.warn(sb);
     }
 
     /**
@@ -697,16 +695,16 @@ public class Master {
                     ScheduleKind, heraJobHistory.getId());
             response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
         } catch (Exception e) {
-            response = null;
             log.error("schedule job run error :" + actionId, e);
-            future.cancel(true);
+            if (future != null) {
+                future.cancel(true);
+            }
             jobStatus.setStatus(StatusEnum.FAILED);
             heraJobHistoryVo.setStatusEnum(jobStatus.getStatus());
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
         }
         boolean success = response != null && response.getStatusEnum() == ResponseStatus.Status.OK;
-        log.debug("job_id 执行结果" + actionId + "---->" + response.getStatusEnum());
-
+        log.debug("job_id 执行结果" + actionId + "---->" + (response == null ? "空指针" : response.getStatusEnum().toString()));
         if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
                 || heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER)) {
             jobStatus.setReadyDependency(new HashMap<>(0));
@@ -852,10 +850,10 @@ public class Master {
 
     private boolean checkJobExists(HeraJobHistoryVo heraJobHistory) {
         String actionId = heraJobHistory.getActionId();
+        String historyId = heraJobHistory.getId();
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER) {
             /**
              *  check调度器等待队列是否有此任务在排队
-             *
              */
             for (JobElement jobElement : new ArrayList<>(masterContext.getScheduleQueue())) {
                 if (jobElement.getJobId().equals(actionId)) {
@@ -870,7 +868,6 @@ public class Master {
             }
             /**
              *  check所有的worker中是否有此任务的id在执行，如果有，不进入队列等待
-             *
              */
             for (Channel key : masterContext.getWorkMap().keySet()) {
                 MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
@@ -889,8 +886,8 @@ public class Master {
 
         } else if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
 
-            for (JobElement jobElement : new ArrayList<>(masterContext.getManualQueue())) {
-                if (jobElement.getJobId().equals(actionId)) {
+            for (JobElement jobElement : masterContext.getManualQueue()) {
+                if (jobElement.getJobId().equals(historyId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
@@ -902,7 +899,7 @@ public class Master {
             }
 
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
-                if (workHolder.getManningRunning().containsKey(actionId)) {
+                if (workHolder.getManningRunning().containsKey(historyId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
@@ -920,7 +917,7 @@ public class Master {
     /**
      * work断开的处理
      *
-     * @param channel
+     * @param channel channel
      */
     public void workerDisconnectProcess(Channel channel) {
 
@@ -933,7 +930,7 @@ public class Master {
             List<String> scheduleTask = workHolder.getHeartBeatInfo().getRunning();
 
             if (scheduleTask == null || scheduleTask.size() == 0) {
-                return ;
+                return;
             }
             //十分钟后开始检查 work是否重连成功
             masterContext.masterTimer.newTimeout((x) -> {
