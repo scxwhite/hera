@@ -1,6 +1,7 @@
 package com.dfire.core.tool;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.logs.SocketLog;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -14,7 +15,6 @@ import java.util.regex.Pattern;
  * @date 2018/4/13
  */
 @Data
-@Slf4j
 public class MemUseRateJob {
 
     private float rate;
@@ -55,7 +55,7 @@ public class MemUseRateJob {
         try {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
         } catch (FileNotFoundException e) {
-            log.info("文件不存在：{}", MEM_INFO_PATH);
+            SocketLog.info("文件不存在：{}", MEM_INFO_PATH);
             e.printStackTrace();
         }
         String line;

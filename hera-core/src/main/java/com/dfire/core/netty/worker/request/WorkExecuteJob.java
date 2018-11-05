@@ -13,6 +13,8 @@ import com.dfire.core.job.Job;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.util.JobUtils;
+import com.dfire.logs.ScheduleLog;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +29,6 @@ import java.util.concurrent.Future;
  * @time: Created in 下午4:20 2018/4/25
  * @desc worker job 最终执行体，收到master handler执行请求的时候，开始创建Job processor
  */
-@Slf4j
 public class WorkExecuteJob {
 
     public Future<RpcResponse.Response> execute(final WorkContext workContext, final RpcRequest.Request request) {
@@ -59,7 +60,7 @@ public class WorkExecuteJob {
             e.printStackTrace();
         }
         final String historyId = message.getActionId();
-        log.info("worker received master request to run manual job, historyId = {}", historyId);
+        SocketLog.info("worker received master request to run manual job, historyId = {}", historyId);
         final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(historyId));
         return workContext.getWorkThreadPool().submit(() -> {
             history.setExecuteHost(WorkContext.host);
@@ -115,7 +116,7 @@ public class WorkExecuteJob {
                     .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
-            log.info("send execute message, historyId = {}", historyId);
+            SocketLog.info("send execute message, historyId = {}", historyId);
             return response;
         });
     }
@@ -137,18 +138,7 @@ public class WorkExecuteJob {
         }
         // 查看master分发 actionHistoryId
         final String jobId = message.getActionId();
-        log.info("worker received master request to run schedule, actionId :" + jobId);
-        if (workContext.getRunning().containsKey(jobId)) {
-            log.info("job is running, can not run again, actionId :" + jobId);
-            return workContext.getWorkThreadPool().submit(() ->
-                    RpcResponse.Response.newBuilder()
-                            .setRid(request.getRid())
-                            .setOperate(RpcOperate.Operate.Schedule)
-                            .setStatusEnum(ResponseStatus.Status.ERROR)
-                            .build()
-            );
-        }
-
+        SocketLog.info("worker received master request to run schedule, actionId :" + jobId);
         final JobStatus jobStatus = workContext.getHeraJobActionService().findJobStatus(jobId);
         final HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(jobStatus.getHistoryId());
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
@@ -212,7 +202,7 @@ public class WorkExecuteJob {
                     .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
-            log.info("send execute message, actionId = " + jobId);
+            ScheduleLog.info("send execute message, actionId = " + jobId);
             return response;
         });
 

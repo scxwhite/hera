@@ -1,7 +1,7 @@
 package com.dfire.common.util;
 
 import com.dfire.common.constants.TimeFormatConstant;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.HeraLog;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
  * @time: Created in 15:40 2018/3/22
  * @desc 层次结构属性解析，hera时间配置解析
  */
-@Slf4j
 public class RenderHierarchyProperties extends HierarchyProperties {
 
     private HierarchyProperties properties;
@@ -26,7 +25,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
         try {
             Velocity.init();
         } catch (Exception e) {
-            log.error("velocity init fail", e);
+            HeraLog.error("velocity init fail", e);
         }
     }
 
@@ -55,11 +54,11 @@ public class RenderHierarchyProperties extends HierarchyProperties {
                 context.put("zdt", new HeraDateTool(new Date()));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
-                    log.error("render fail with target:" + m);
+                    HeraLog.error("render fail with target:" + m);
                     break;
                 }
             } catch (Exception e) {
-                log.error("zdt render error", e);
+                HeraLog.error("zdt render error", e);
                 break;
             }
             template = template.replace(m, sw.toString());
@@ -87,11 +86,11 @@ public class RenderHierarchyProperties extends HierarchyProperties {
                 context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
-                    log.error("render fail with target:" + m);
+                    HeraLog.error("render fail with target:" + m);
                     break;
                 }
             } catch (Exception e) {
-                log.error("zdt render error", e);
+                HeraLog.error("zdt render error", e);
                 break;
             }
             template = template.replace(m, sw.toString());

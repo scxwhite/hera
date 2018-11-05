@@ -402,7 +402,7 @@
 		},
 		calculateScaleRange = helpers.calculateScaleRange = function(valuesArray, drawingSize, textSize, startFromZero, integersOnly){
 
-			//Set a minimum step of two - a point at the top of the graph, and a point at the base
+			//Set a minimum step of two - a point at the top of the com.dfire.graph, and a point at the base
 			var minSteps = 2,
 				maxSteps = Math.floor(drawingSize/(textSize * 1.5)),
 				skipFitting = (minSteps >= maxSteps);
@@ -419,7 +419,7 @@
 			// Adding/minusing 0.5 will give us a range of 1.
 			if (maxValue === minValue){
 				maxValue += 0.5;
-				// So we don't end up with a graph with a negative start value if we've said always start from zero
+				// So we don't end up with a com.dfire.graph with a negative start value if we've said always start from zero
 				if (minValue >= 0.5 && !startFromZero){
 					minValue -= 0.5;
 				}
@@ -437,7 +437,7 @@
 				stepValue = Math.pow(10, rangeOrderOfMagnitude),
 				numberOfSteps = Math.round(graphRange / stepValue);
 
-			//If we have more space on the graph we'll use it to give more definition to the data
+			//If we have more space on the com.dfire.graph we'll use it to give more definition to the data
 			while((numberOfSteps > maxSteps || (numberOfSteps * 2) < maxSteps) && !skipFitting) {
 				if(numberOfSteps > maxSteps){
 					stepValue *=2;
@@ -3058,7 +3058,7 @@
 							tension
 						);
 
-						// Prevent the bezier going outside of the bounds of the graph
+						// Prevent the bezier going outside of the bounds of the com.dfire.graph
 
 						// Cap puter bezier handles to the upper/lower scale bounds
 						if (point.controlPoints.outer.y > this.scale.endPoint){

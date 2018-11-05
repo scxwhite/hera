@@ -19,7 +19,6 @@ import com.dfire.config.UnCheckLogin;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.protocol.JobExecuteKind;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,7 +42,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Controller
 @RequestMapping("/scheduleCenter")
-@Slf4j
 public class ScheduleCenterController extends BaseHeraController {
 
     @Autowired
@@ -87,7 +85,6 @@ public class ScheduleCenterController extends BaseHeraController {
     @ResponseBody
     public HeraJobVo getJobMessage(Integer jobId) {
         HeraJob job = heraJobService.findById(jobId);
-        log.info("job 明细 {}", job.getId());
         HeraJobVo heraJobVo = BeanConvertUtils.convert(job);
         heraJobVo.setInheritConfig(getInheritConfig(job.getGroupId()));
         HeraJobMonitor monitor = heraJobMonitorService.findByJobId(jobId);
@@ -144,13 +141,13 @@ public class ScheduleCenterController extends BaseHeraController {
             Date date = new Date();
             Long targetId = Long.parseLong(String.valueOf(id));
             List<HeraPermission> permissions = new ArrayList<>(uIdS.size());
-            for (int i = 0; i < uIdS.size(); i++) {
+            for (Object uId : uIdS) {
                 HeraPermission heraPermission = new HeraPermission();
                 heraPermission.setType(typeStr);
                 heraPermission.setGmtModified(date);
                 heraPermission.setGmtCreate(date);
                 heraPermission.setTargetId(targetId);
-                heraPermission.setUid((String) uIdS.get(i));
+                heraPermission.setUid((String) uId);
                 permissions.add(heraPermission);
             }
 
@@ -375,9 +372,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/getHostGroupIds", method = RequestMethod.GET)
     @ResponseBody
     public List<HeraHostGroup> getHostGroupIds() {
-        List<HeraHostGroup> all = heraHostGroupService.getAll();
-
-        return all;
+        return heraHostGroupService.getAll();
     }
 
     /**
@@ -447,7 +442,6 @@ public class ScheduleCenterController extends BaseHeraController {
 
 
     private Map<String, String> getInheritConfig(Integer groupId) {
-        log.info("group_id = {}", groupId);
         HeraGroup group;
         Map<String, String> configMap = new HashMap<>();
         while (groupId != null && groupId != 0) {

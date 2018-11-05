@@ -3,7 +3,7 @@ package com.dfire.core.job;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.core.config.HeraGlobalEnvironment;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.HeraLog;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.context.ApplicationContext;
@@ -22,7 +22,6 @@ import java.util.List;
  * @Date ： 15:53 2018/8/20
  * @Modified :
  */
-@Slf4j
 public class SparkJob extends ProcessJob {
 
     public final String UDF_SQL_NAME = "hera_udf.sql";
@@ -49,7 +48,7 @@ public class SparkJob extends ProcessJob {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                log.error("创建.spark失败");
+                HeraLog.error("创建.spark失败");
             }
         }
 
@@ -85,7 +84,7 @@ public class SparkJob extends ProcessJob {
         } else if (jobContext.getRunType() == 4) {
             shellPrefix = "";
         } else {
-            log.info("没有运行类型 runType = " + jobContext.getRunType());
+            HeraLog.info("没有运行类型 runType = " + jobContext.getRunType());
         }
 
         String[] excludeFile = HeraGlobalEnvironment.excludeFile.split(";");

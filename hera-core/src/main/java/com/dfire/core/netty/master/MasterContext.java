@@ -6,6 +6,7 @@ import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
+import com.dfire.logs.HeraLog;
 import io.netty.channel.Channel;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
@@ -27,7 +28,6 @@ import java.util.concurrent.*;
  * @desc hera调度器执行上下文
  */
 
-@Slf4j
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -68,7 +68,7 @@ public class MasterContext {
         masterServer = new MasterServer(handler);
         masterServer.start(HeraGlobalEnvironment.getConnectPort());
         master = new Master(this);
-        log.info("end init master content success ");
+        HeraLog.info("end init master content success ");
     }
 
     public void destroy() {
@@ -80,13 +80,13 @@ public class MasterContext {
         if (this.getQuartzSchedulerService() != null) {
             try {
                 this.getQuartzSchedulerService().shutdown();
-                log.info("quartz schedule shutdown success");
+                HeraLog.info("quartz schedule shutdown success");
             } catch (Exception e) {
                 e.printStackTrace();
-                log.error("quartz schedule shutdown error");
+                HeraLog.error("quartz schedule shutdown error");
             }
         }
-        log.info("destroy master context success");
+        HeraLog.info("destroy master context success");
     }
 
     public synchronized Map<Integer, HeraHostGroupVo> getHostGroupCache() {
@@ -140,7 +140,7 @@ public class MasterContext {
         try {
             hostGroupCache = getHeraHostGroupService().getAllHostGroupInfo();
         } catch (Exception e) {
-            log.info("refresh host group error");
+            HeraLog.info("refresh host group error");
         }
     }
 

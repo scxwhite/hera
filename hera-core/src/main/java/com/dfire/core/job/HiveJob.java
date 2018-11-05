@@ -3,6 +3,7 @@ package com.dfire.core.job;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.logs.HeraLog;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -22,7 +23,6 @@ import java.util.List;
  * @time: Created in 上午7:59 2018/5/12
  * @desc
  */
-@Slf4j
 public class HiveJob extends ProcessJob {
 
     private ApplicationContext applicationContext;
@@ -41,12 +41,12 @@ public class HiveJob extends ProcessJob {
 
     private Integer runInner() throws Exception {
         String script = getProperties().getLocalProperty(RunningJobKeyConstant.JOB_SCRIPT);
-        File file = new File(jobContext.getWorkDir() + File.separator + new Date().getTime() + ".hive");
+        File file = new File(jobContext.getWorkDir() + File.separator + System.currentTimeMillis() + ".hive");
         if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                log.error("创建.hive失败");
+                HeraLog.error("创建.hive失败");
             }
         }
 
@@ -83,7 +83,7 @@ public class HiveJob extends ProcessJob {
         } else if (jobContext.getRunType() == 4) {
             shellPrefix = "";
         } else {
-            log.info("没有运行类型 runType = " + jobContext.getRunType());
+            HeraLog.info("没有运行类型 runType = " + jobContext.getRunType());
         }
 
         String[] excludeFile = HeraGlobalEnvironment.excludeFile.split(";");

@@ -1,6 +1,6 @@
 package com.dfire.common.util;
 
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.HeraLog;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
  * @time: Created in 18:48 2018/1/11
  * @desc  获取SpringContext
  */
-@Slf4j
 @Component
 public class SpringContextHolder implements ApplicationContextAware {
 
@@ -22,7 +21,7 @@ public class SpringContextHolder implements ApplicationContextAware {
         if(SpringContextHolder.applicationContext == null) {
             SpringContextHolder.applicationContext = applicationContext;
         }
-        log.info("set config success");
+        HeraLog.info("set config success");
     }
 
     public static ApplicationContext getApplicationContext() {

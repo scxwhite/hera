@@ -1,14 +1,12 @@
 package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.core.exception.HeraCaughtExceptionHandler;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.HeraLog;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +18,6 @@ import java.util.concurrent.CountDownLatch;
  * @time: Created in 11:01 2018/3/23
  * @desc 通过操作系统创建进程Process的Job任务
  */
-@Slf4j
 public abstract class ProcessJob extends AbstractJob implements Job {
 
     protected volatile Process             process;
@@ -45,7 +42,6 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 .filter(key -> jobContext.getProperties().getProperty(key) != null && (key.startsWith("instance.") || key.startsWith("secret.")))
                 .forEach(k -> envMap.put(k, jobContext.getProperties().getProperty(k)));
         envMap.put("instance.workDir", jobContext.getWorkDir());
-        log.info("获取命令");
 
         List<String> commands = getCommandList();
 
@@ -143,7 +139,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             String arg = builder.toString();
             commands.add(arg);
         }
-        log.info("组装后的命令为：{}", JSONObject.toJSONString(commands));
+        HeraLog.info("组装后的命令为：{}", JSONObject.toJSONString(commands));
         return commands.toArray(new String[commands.size()]);
     }
 

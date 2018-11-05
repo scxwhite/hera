@@ -9,7 +9,6 @@ import com.dfire.common.vo.RestfulResponse;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.protocol.JobExecuteKind;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,16 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 16:34 2018/1/13
  * @desc 开发中心页面控制器
  */
-@Slf4j
 @Controller
 @RequestMapping("/developCenter")
 public class DevelopCenterController extends BaseHeraController {
@@ -70,29 +65,20 @@ public class DevelopCenterController extends BaseHeraController {
     @ResponseBody
     public HeraFile getHeraFile(HeraFile heraFile) {
         heraFile.setOwner(getOwner());
-        HeraFile file = heraFileService.findById(heraFile.getId());
-        return file;
+        return heraFileService.findById(heraFile.getId());
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     @ResponseBody
     public String delete(HeraFile heraFile) {
-        HeraFile file = heraFileService.findById(heraFile.getId());
-        String response = "";
-        heraFileService.delete(heraFile.getId());
-        response = "删除成功";
-        return response;
+        return heraFileService.delete(heraFile.getId()) > 0 ? "删除成功" : "删除失败";
     }
 
     @RequestMapping(value = "/rename", method = RequestMethod.GET)
     @ResponseBody
     public String rename(HeraFile heraFile) {
-        int result = heraFileService.updateFileName(heraFile);
-        String response = "";
-        response = "更新成功";
-        return response;
+        return heraFileService.updateFileName(heraFile) > 0 ? "更新成功" : "更新失败";
     }
-
 
 
     /**
@@ -100,15 +86,13 @@ public class DevelopCenterController extends BaseHeraController {
      *
      * @param heraFile
      * @return
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
     @RequestMapping(value = "/debug", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<Map<String,Object>> debug(@RequestBody HeraFile heraFile) throws ExecutionException, InterruptedException {
+    public WebAsyncTask<Map<String, Object>> debug(@RequestBody HeraFile heraFile) {
 
         return new WebAsyncTask<>(10000, () -> {
-            Map<String,Object> res = new HashMap<>(2);
+            Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
             String name = file.getName();
             String runType = "1";
@@ -130,19 +114,7 @@ public class DevelopCenterController extends BaseHeraController {
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
-
-            ExecutorService pool = Executors.newSingleThreadExecutor();
-            pool.submit(() -> {
-                try {
-                    workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-
-//            workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
+            workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
             res.put("fileId", file.getId());
             res.put("debugId", newId);
             return res;
@@ -159,11 +131,11 @@ public class DevelopCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/debugSelectCode", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<Map<String,Object>> debugSelectCode(@RequestBody HeraFile heraFile) {
+    public WebAsyncTask<Map<String, Object>> debugSelectCode(@RequestBody HeraFile heraFile) {
 
         String owner = getOwner();
         return new WebAsyncTask<>(10000, () -> {
-            Map<String,Object> res = new HashMap<>(2);
+            Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
             file.setContent(heraFile.getContent());
             String name = file.getName();
@@ -199,8 +171,7 @@ public class DevelopCenterController extends BaseHeraController {
     @RequestMapping(value = "findDebugHistory", method = RequestMethod.GET)
     @ResponseBody
     public List<HeraDebugHistory> findDebugHistory(String fileId) {
-        List<HeraDebugHistory> list = debugHistoryService.findByFileId(fileId);
-        return list;
+        return debugHistoryService.findByFileId(fileId);
     }
 
     /**
@@ -233,6 +204,4 @@ public class DevelopCenterController extends BaseHeraController {
         int result = heraFileService.updateContent(heraFile);
         return RestfulResponse.builder().success(true).msg("保存成功").results(result).build();
     }
-
-
 }

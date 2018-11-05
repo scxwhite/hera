@@ -1,4 +1,4 @@
-package graph;
+package com.dfire.graph;
 
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.model.HeraGroupBean;
@@ -11,7 +11,6 @@ import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.SpringContextHolder;
 import com.dfire.common.vo.JobStatus;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
@@ -21,7 +20,6 @@ import java.util.Map;
  * @time: Created in 下午5:16 2018/6/20
  * @desc 构建任务，组内存图
  */
-@Slf4j
 public class JobGroupGraphTool {
 
 

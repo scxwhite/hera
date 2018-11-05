@@ -3,8 +3,8 @@ package com.dfire.core.netty.worker.request;
 import com.dfire.core.netty.listener.WorkResponseListener;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
  * @time: Created in 上午12:56 2018/5/12
  * @desc 接收到web cancel job 请求的时候,发起netty master handler 取消任务请求
  */
-@Slf4j
 public class WorkHandleWebCancel {
 
     public Future<RpcWebResponse.WebResponse> handleCancel(final WorkContext workContext, JobExecuteKind.ExecuteKind kind, String id) {
@@ -36,7 +35,7 @@ public class WorkHandleWebCancel {
             workContext.getHandler().addListener(responseListener);
             latch.await(3, TimeUnit.HOURS);
             if (!responseListener.getReceiveResult()) {
-                log.error("取消任务超出3小时未得到master消息返回：{}", id);
+                SocketLog.error("取消任务超出3小时未得到master消息返回：{}", id);
             }
             return responseListener.getWebResponse();
         });

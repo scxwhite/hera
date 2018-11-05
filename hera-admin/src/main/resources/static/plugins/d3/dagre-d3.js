@@ -1141,7 +1141,7 @@ module.exports = {
 };
 
 /*
- * Returns true if the specified node in the graph is a subgraph node. A
+ * Returns true if the specified node in the com.dfire.graph is a subgraph node. A
  * subgraph node is one that contains other nodes.
  */
 function isSubgraph(g, v) {
@@ -1507,8 +1507,8 @@ var _ = require("./lodash"),
     List = require("./data/list");
 
 /*
- * A greedy heuristic for finding a feedback arc set for a graph. A feedback
- * arc set is a set of edges that can be removed to make a graph acyclic.
+ * A greedy heuristic for finding a feedback arc set for a com.dfire.graph. A feedback
+ * arc set is a set of edges that can be removed to make a com.dfire.graph acyclic.
  * The algorithm comes from: P. Eades, X. Lin, and W. F. Smyth, "A fast and
  * effective heuristic for the feedback arc set problem." This implementation
  * adjusts that from the paper to allow for weighted edges.
@@ -1631,7 +1631,7 @@ var _ = require("./lodash"),
     normalizeRanks = require("./util").normalizeRanks,
     parentDummyChains = require("./parent-dummy-chains"),
     removeEmptyRanks = require("./util").removeEmptyRanks,
-    nestingGraph = require("./nesting-graph"),
+    nestingGraph = require("./nesting-com.dfire.graph"),
     addBorderSegments = require("./add-border-segments"),
     coordinateSystem = require("./coordinate-system"),
     order = require("./order"),
@@ -1682,9 +1682,9 @@ function runLayout(g, time) {
 }
 
 /*
- * Copies final layout information from the layout graph back to the input
- * graph. This process only copies whitelisted attributes from the layout graph
- * to the input graph, so it serves as a good place to determine what
+ * Copies final layout information from the layout com.dfire.graph back to the input
+ * com.dfire.graph. This process only copies whitelisted attributes from the layout com.dfire.graph
+ * to the input com.dfire.graph, so it serves as a good place to determine what
  * attributes can influence layout.
  */
 function updateInputGraph(inputGraph, layoutGraph) {
@@ -1731,9 +1731,9 @@ var graphNumAttrs = ["nodesep", "edgesep", "ranksep", "marginx", "marginy"],
     edgeAttrs = ["labelpos"];
 
 /*
- * Constructs a new graph from the input graph, which can be used for layout.
- * This process copies only whitelisted attributes from the input graph to the
- * layout graph. Thus this function serves as a good place to determine what
+ * Constructs a new com.dfire.graph from the input com.dfire.graph, which can be used for layout.
+ * This process copies only whitelisted attributes from the input com.dfire.graph to the
+ * layout com.dfire.graph. Thus this function serves as a good place to determine what
  * attributes can influence layout.
  */
 function buildLayoutGraph(inputGraph) {
@@ -2027,26 +2027,26 @@ module.exports = {
 };
 
 /*
- * A nesting graph creates dummy nodes for the tops and bottoms of subgraphs,
+ * A nesting com.dfire.graph creates dummy nodes for the tops and bottoms of subgraphs,
  * adds appropriate edges to ensure that all cluster nodes are placed between
- * these boundries, and ensures that the graph is connected.
+ * these boundries, and ensures that the com.dfire.graph is connected.
  *
  * In addition we ensure, through the use of the minlen property, that nodes
  * and subgraph border nodes to not end up on the same rank.
  *
  * Preconditions:
  *
- *    1. Input graph is a DAG
- *    2. Nodes in the input graph has a minlen attribute
+ *    1. Input com.dfire.graph is a DAG
+ *    2. Nodes in the input com.dfire.graph has a minlen attribute
  *
  * Postconditions:
  *
- *    1. Input graph is connected.
+ *    1. Input com.dfire.graph is connected.
  *    2. Dummy nodes are added for the tops and bottoms of subgraphs.
  *    3. The minlen attribute for nodes is adjusted to ensure nodes do not
  *       get placed on the same rank as subgraph border nodes.
  *
- * The nesting graph idea comes from Sander, "Layout of Compound Directed
+ * The nesting com.dfire.graph idea comes from Sander, "Layout of Compound Directed
  * Graphs."
  */
 function run(g) {
@@ -2163,19 +2163,19 @@ module.exports = {
 };
 
 /*
- * Breaks any long edges in the graph into short segments that span 1 layer
+ * Breaks any long edges in the com.dfire.graph into short segments that span 1 layer
  * each. This operation is undoable with the denormalize function.
  *
  * Pre-conditions:
  *
- *    1. The input graph is a DAG.
- *    2. Each node in the graph has a "rank" property.
+ *    1. The input com.dfire.graph is a DAG.
+ *    2. Each node in the com.dfire.graph has a "rank" property.
  *
  * Post-condition:
  *
- *    1. All edges in the graph have a length of 1.
+ *    1. All edges in the com.dfire.graph have a length of 1.
  *    2. Dummy nodes are added where edges have been split into segments.
- *    3. The graph is augmented with a "dummyChains" attribute which contains
+ *    3. The com.dfire.graph is augmented with a "dummyChains" attribute which contains
  *       the first dummy in each chain of dummy nodes produced.
  */
 function run(g) {
@@ -2335,34 +2335,34 @@ var _ = require("../lodash"),
 module.exports = buildLayerGraph;
 
 /*
- * Constructs a graph that can be used to sort a layer of nodes. The graph will
+ * Constructs a com.dfire.graph that can be used to sort a layer of nodes. The com.dfire.graph will
  * contain all base and subgraph nodes from the request layer in their original
  * hierarchy and any edges that are incident on these nodes and are of the type
  * requested by the "relationship" parameter.
  *
  * Nodes from the requested rank that do not have parents are assigned a root
- * node in the output graph, which is set in the root graph attribute. This
+ * node in the output com.dfire.graph, which is set in the root com.dfire.graph attribute. This
  * makes it easy to walk the hierarchy of movable nodes during ordering.
  *
  * Pre-conditions:
  *
- *    1. Input graph is a DAG
- *    2. Base nodes in the input graph have a rank attribute
- *    3. Subgraph nodes in the input graph has minRank and maxRank attributes
+ *    1. Input com.dfire.graph is a DAG
+ *    2. Base nodes in the input com.dfire.graph have a rank attribute
+ *    3. Subgraph nodes in the input com.dfire.graph has minRank and maxRank attributes
  *    4. Edges have an assigned weight
  *
  * Post-conditions:
  *
- *    1. Output graph has all nodes in the movable rank with preserved
+ *    1. Output com.dfire.graph has all nodes in the movable rank with preserved
  *       hierarchy.
  *    2. Root nodes in the movable layer are made children of the node
- *       indicated by the root attribute of the graph.
+ *       indicated by the root attribute of the com.dfire.graph.
  *    3. Non-movable nodes incident on movable nodes, selected by the
- *       relationship parameter, are included in the graph (without hierarchy).
+ *       relationship parameter, are included in the com.dfire.graph (without hierarchy).
  *    4. Edges incident on movable nodes, selected by the relationship
- *       parameter, are added to the output graph.
+ *       parameter, are added to the output com.dfire.graph.
  *    5. The weights for copied edges are aggregated as need, since the output
- *       graph is not a multi-graph.
+ *       com.dfire.graph is not a multi-com.dfire.graph.
  */
 function buildLayerGraph(g, rank, relationship) {
   var root = createRootNode(g),
@@ -2412,17 +2412,17 @@ module.exports = crossCount;
 
 /*
  * A function that takes a layering (an array of layers, each with an array of
- * ordererd nodes) and a graph and returns a weighted crossing count.
+ * ordererd nodes) and a com.dfire.graph and returns a weighted crossing count.
  *
  * Pre-conditions:
  *
- *    1. Input graph must be simple (not a multigraph), directed, and include
+ *    1. Input com.dfire.graph must be simple (not a multigraph), directed, and include
  *       only simple edges.
- *    2. Edges in the input graph must have assigned weights.
+ *    2. Edges in the input com.dfire.graph must have assigned weights.
  *
  * Post-conditions:
  *
- *    1. The graph and layering matrix are left unchanged.
+ *    1. The com.dfire.graph and layering matrix are left unchanged.
  *
  * This algorithm is derived from Barth, et al., "Bilayer Cross Counting."
  */
@@ -2482,7 +2482,7 @@ var _ = require("../lodash"),
     initOrder = require("./init-order"),
     crossCount = require("./cross-count"),
     sortSubgraph = require("./sort-subgraph"),
-    buildLayerGraph = require("./build-layer-graph"),
+    buildLayerGraph = require("./build-layer-com.dfire.graph"),
     addSubgraphConstraints = require("./add-subgraph-constraints"),
     Graph = require("../graphlib").Graph,
     util = require("../util");
@@ -2490,7 +2490,7 @@ var _ = require("../lodash"),
 module.exports = order;
 
 /*
- * Applies heuristics to minimize edge crossings in the graph and sets the best
+ * Applies heuristics to minimize edge crossings in the com.dfire.graph and sets the best
  * order solution as an order attribute on each node.
  *
  * Pre-conditions:
@@ -2605,9 +2605,9 @@ module.exports = resolveConflicts;
 
 /*
  * Given a list of entries of the form {v, barycenter, weight} and a
- * constraint graph this function will resolve any conflicts between the
- * constraint graph and the barycenters for the entries. If the barycenters for
- * an entry would violate a constraint in the constraint graph then we coalesce
+ * constraint com.dfire.graph this function will resolve any conflicts between the
+ * constraint com.dfire.graph and the barycenters for the entries. If the barycenters for
+ * an entry would violate a constraint in the constraint com.dfire.graph then we coalesce
  * the nodes in the conflict into a new node that respects the contraint and
  * aggregates barycenter and weight information.
  *
@@ -2625,7 +2625,7 @@ module.exports = resolveConflicts;
  *    A new list of entries of the form {vs, i, barycenter, weight}. The list
  *    `vs` may either be a singleton or it may be an aggregation of nodes
  *    ordered such that they do not violate constraints from the constraint
- *    graph. The property `i` is the lowest original index of any of the
+ *    com.dfire.graph. The property `i` is the lowest original index of any of the
  *    elements in `vs`.
  */
 function resolveConflicts(entries, cg) {
@@ -2972,7 +2972,7 @@ module.exports = {
 };
 
 /*
- * Marks all edges in the graph with a type-1 conflict with the "type1Conflict"
+ * Marks all edges in the com.dfire.graph with a type-1 conflict with the "type1Conflict"
  * property. A type-1 conflict is one where a non-inner segment crosses an
  * inner segment. An inner segment is an edge with both incident nodes marked
  * with the "dummy" property.
@@ -3118,7 +3118,7 @@ function verticalAlignment(g, layering, conflicts, neighborFn) {
       align = {},
       pos = {};
 
-  // We cache the position here based on the layering because the graph and
+  // We cache the position here based on the layering because the com.dfire.graph and
   // layering may be out of sync. The layering matrix is manipulated to
   // generate different extreme alignments.
   _.each(layering, function(layer) {
@@ -3155,7 +3155,7 @@ function verticalAlignment(g, layering, conflicts, neighborFn) {
 
 function horizontalCompaction(g, layering, root, align, reverseSep) {
   // This portion of the algorithm differs from BK due to a number of problems.
-  // Instead of their algorithm we construct a new block graph and do two
+  // Instead of their algorithm we construct a new block com.dfire.graph and do two
   // sweeps. The first sweep places blocks with the smallest possible
   // coordinates. The second sweep removes unused space by moving blocks to the
   // greatest coordinates without violating separation.
@@ -3409,7 +3409,7 @@ module.exports = feasibleTree;
  *    - Graph nodes will have their rank adjusted to ensure that all edges are
  *      tight.
  *
- * Returns a tree (undirected graph) that is constructed using only "tight"
+ * Returns a tree (undirected com.dfire.graph) that is constructed using only "tight"
  * edges.
  */
 function feasibleTree(g) {
@@ -3480,7 +3480,7 @@ var rankUtil = require("./util"),
 module.exports = rank;
 
 /*
- * Assigns a rank to each node in the input graph that respects the "minlen"
+ * Assigns a rank to each node in the input com.dfire.graph that respects the "minlen"
  * constraint specified on edges between nodes.
  *
  * This basic structure is derived from Gansner, et al., "A Technique for
@@ -3541,18 +3541,18 @@ networkSimplex.enterEdge = enterEdge;
 networkSimplex.exchangeEdges = exchangeEdges;
 
 /*
- * The network simplex algorithm assigns ranks to each node in the input graph
+ * The network simplex algorithm assigns ranks to each node in the input com.dfire.graph
  * and iteratively improves the ranking to reduce the length of edges.
  *
  * Preconditions:
  *
- *    1. The input graph must be a DAG.
- *    2. All nodes in the graph must have an object value.
- *    3. All edges in the graph must have "minlen" and "weight" attributes.
+ *    1. The input com.dfire.graph must be a DAG.
+ *    2. All nodes in the com.dfire.graph must have an object value.
+ *    3. All edges in the com.dfire.graph must have "minlen" and "weight" attributes.
  *
  * Postconditions:
  *
- *    1. All nodes in the graph will have an assigned "rank" attribute that has
+ *    1. All nodes in the com.dfire.graph will have an assigned "rank" attribute that has
  *       been optimized by the network simplex algorithm. Ranks start at 0.
  *
  *
@@ -3567,7 +3567,7 @@ networkSimplex.exchangeEdges = exchangeEdges;
  *       rankings by shorting edges.
  *    3. Iteratively find edges that have negative cut values. Generally a
  *       negative cut value indicates that the edge could be removed and a new
- *       tree edge could be added to produce a more compact graph.
+ *       tree edge could be added to produce a more compact com.dfire.graph.
  *
  * Much of the algorithms here are derived from Gansner, et al., "A Technique
  * for Drawing Directed Graphs." The structure of the file roughly follows the
@@ -3605,15 +3605,15 @@ function assignCutValue(t, g, child) {
 }
 
 /*
- * Given the tight tree, its graph, and a child in the graph calculate and
+ * Given the tight tree, its com.dfire.graph, and a child in the com.dfire.graph calculate and
  * return the cut value for the edge between the child and its parent.
  */
 function calcCutValue(t, g, child) {
   var childLab = t.node(child),
       parent = childLab.parent,
-      // True if the child is on the tail end of the edge in the directed graph
+      // True if the child is on the tail end of the edge in the directed com.dfire.graph
       childIsTail = true,
-      // The graph's view of the tree edge we're inspecting
+      // The com.dfire.graph's view of the tree edge we're inspecting
       graphEdge = g.edge(child, parent),
       // The accumulated cut value for the edge between this node and its parent
       cutValue = 0;
@@ -3685,7 +3685,7 @@ function enterEdge(t, g, edge) {
       w = edge.w;
 
   // For the rest of this function we assume that v is the tail and w is the
-  // head, so if we don't have this edge in the graph we should flip it to
+  // head, so if we don't have this edge in the com.dfire.graph we should flip it to
   // match the correct orientation.
   if (!g.hasEdge(v, w)) {
     v = edge.w;
@@ -3766,7 +3766,7 @@ module.exports = {
 };
 
 /*
- * Initializes ranks for the input graph using the longest path algorithm. This
+ * Initializes ranks for the input com.dfire.graph using the longest path algorithm. This
  * algorithm scales well and is fast in practice, it yields rather poor
  * solutions. Nodes are pushed to the lowest layer possible, leaving the bottom
  * ranks wide and leaving edges longer than necessary. However, due to its
@@ -3779,8 +3779,8 @@ module.exports = {
  *
  * Pre-conditions:
  *
- *    1. Input graph is a DAG.
- *    2. Input graph node labels can be assigned properties.
+ *    1. Input com.dfire.graph is a DAG.
+ *    2. Input com.dfire.graph node labels can be assigned properties.
  *
  * Post-conditions:
  *
@@ -3842,7 +3842,7 @@ module.exports = {
 };
 
 /*
- * Adds a dummy node to the graph and return v.
+ * Adds a dummy node to the com.dfire.graph and return v.
  */
 function addDummyNode(g, type, attrs, name) {
   var v;
@@ -3856,7 +3856,7 @@ function addDummyNode(g, type, attrs, name) {
 }
 
 /*
- * Returns a new graph with only simple edges. Handles aggregation of data
+ * Returns a new com.dfire.graph with only simple edges. Handles aggregation of data
  * associated with multi-edges.
  */
 function simplify(g) {
@@ -3964,7 +3964,7 @@ function buildLayerMatrix(g) {
 }
 
 /*
- * Adjusts the ranks for all nodes in the graph such that all nodes v have
+ * Adjusts the ranks for all nodes in the com.dfire.graph such that all nodes v have
  * rank(v) >= 0 and at least one node w has rank(w) = 0.
  */
 function normalizeRanks(g) {
@@ -4040,7 +4040,7 @@ function partition(collection, fn) {
 }
 
 /*
- * Returns a new function that wraps `fn` with a timer. The wrapper logs the
+ * Returns a new function that wraps `fn` with a timer. The wrapper com.dfire.logs the
  * time it takes to execute the function.
  */
 function time(name, fn) {
@@ -4134,7 +4134,7 @@ var _ = require("../lodash");
 module.exports = dfs;
 
 /*
- * A helper that preforms a pre- or post-order traversal on the input graph
+ * A helper that preforms a pre- or post-order traversal on the input com.dfire.graph
  * and returns the nodes in the order they were visited. This algorithm treats
  * the input as undirected.
  *
@@ -4353,7 +4353,7 @@ function preorder(g, vs) {
 
 },{"./dfs":61}],70:[function(require,module,exports){
 var _ = require("../lodash"),
-    Graph = require("../graph"),
+    Graph = require("../com.dfire.graph"),
     PriorityQueue = require("../data/priority-queue");
 
 module.exports = prim;
@@ -4394,7 +4394,7 @@ function prim(g, weightFunc) {
     if (_.has(parents, v)) {
       result.setEdge(v, parents[v]);
     } else if (init) {
-      throw new Error("Input graph is not connected: " + g);
+      throw new Error("Input com.dfire.graph is not connected: " + g);
     } else {
       init = true;
     }
@@ -4670,7 +4670,7 @@ function Graph(opts) {
   this._isMultigraph = _.has(opts, "multigraph") ? opts.multigraph : false;
   this._isCompound = _.has(opts, "compound") ? opts.compound : false;
 
-  // Label for the graph itself
+  // Label for the com.dfire.graph itself
   this._label = undefined;
 
   // Defaults to be set when creating a new node
@@ -4710,10 +4710,10 @@ function Graph(opts) {
   this._edgeLabels = {};
 }
 
-/* Number of nodes in the graph. Should only be changed by the implementation. */
+/* Number of nodes in the com.dfire.graph. Should only be changed by the implementation. */
 Graph.prototype._nodeCount = 0;
 
-/* Number of edges in the graph. Should only be changed by the implementation. */
+/* Number of edges in the com.dfire.graph. Should only be changed by the implementation. */
 Graph.prototype._edgeCount = 0;
 
 
@@ -4839,7 +4839,7 @@ Graph.prototype.removeNode =  function(v) {
 
 Graph.prototype.setParent = function(v, parent) {
   if (!this._isCompound) {
-    throw new Error("Cannot set parent in a non-compound graph");
+    throw new Error("Cannot set parent in a non-compound com.dfire.graph");
   }
 
   if (_.isUndefined(parent)) {
@@ -5119,13 +5119,13 @@ function edgeObjToId(isDirected, edgeObj) {
 },{"./lodash":77}],75:[function(require,module,exports){
 // Includes only the "core" of graphlib
 module.exports = {
-  Graph: require("./graph"),
+  Graph: require("./com.dfire.graph"),
   version: require("./version")
 };
 
 },{"./graph":74,"./version":78}],76:[function(require,module,exports){
 var _ = require("./lodash"),
-    Graph = require("./graph");
+    Graph = require("./com.dfire.graph");
 
 module.exports = {
   write: write,
@@ -11653,12 +11653,12 @@ module.exports = '1.0.5';
      * _([1, 2]).forEach(function(n) {
      *   console.log(n);
      * }).value();
-     * // => logs each value from left to right and returns the array
+     * // => com.dfire.logs each value from left to right and returns the array
      *
      * _.forEach({ 'a': 1, 'b': 2 }, function(n, key) {
      *   console.log(n, key);
      * });
-     * // => logs each value-key pair and returns the object (iteration order is not guaranteed)
+     * // => com.dfire.logs each value-key pair and returns the object (iteration order is not guaranteed)
      */
     var forEach = createForEach(arrayEach, baseEach);
 
@@ -11679,7 +11679,7 @@ module.exports = '1.0.5';
      * _([1, 2]).forEachRight(function(n) {
      *   console.log(n);
      * }).value();
-     * // => logs each value from right to left and returns the array
+     * // => com.dfire.logs each value from right to left and returns the array
      */
     var forEachRight = createForEach(arrayEachRight, baseEachRight);
 
@@ -12473,7 +12473,7 @@ module.exports = '1.0.5';
      * _.defer(function(stamp) {
      *   console.log(_.now() - stamp);
      * }, _.now());
-     * // => logs the number of milliseconds it took for the deferred function to be invoked
+     * // => com.dfire.logs the number of milliseconds it took for the deferred function to be invoked
      */
     var now = nativeNow || function() {
       return new Date().getTime();
@@ -12502,7 +12502,7 @@ module.exports = '1.0.5';
      * _.forEach(saves, function(type) {
      *   asyncSave({ 'type': type, 'complete': done });
      * });
-     * // => logs 'done saving!' after the two async saves have completed
+     * // => com.dfire.logs 'done saving!' after the two async saves have completed
      */
     function after(n, func) {
       if (typeof func != 'function') {
@@ -12654,7 +12654,7 @@ module.exports = '1.0.5';
      *
      * _.bindAll(view);
      * jQuery('#docs').on('click', view.onClick);
-     * // => logs 'clicked docs' when the element is clicked
+     * // => com.dfire.logs 'clicked docs' when the element is clicked
      */
     var bindAll = restParam(function(object, methodNames) {
       methodNames = methodNames.length ? baseFlatten(methodNames) : functions(object);
@@ -12989,7 +12989,7 @@ module.exports = '1.0.5';
      * _.defer(function(text) {
      *   console.log(text);
      * }, 'deferred');
-     * // logs 'deferred' after one or more milliseconds
+     * // com.dfire.logs 'deferred' after one or more milliseconds
      */
     var defer = restParam(function(func, args) {
       return baseDelay(func, 1, args);
@@ -13011,7 +13011,7 @@ module.exports = '1.0.5';
      * _.delay(function(text) {
      *   console.log(text);
      * }, 1000, 'later');
-     * // => logs 'later' after one second
+     * // => com.dfire.logs 'later' after one second
      */
     var delay = restParam(function(func, wait, args) {
       return baseDelay(func, wait, args);
@@ -14631,7 +14631,7 @@ module.exports = '1.0.5';
      * _.forIn(new Foo, function(value, key) {
      *   console.log(key);
      * });
-     * // => logs 'a', 'b', and 'c' (iteration order is not guaranteed)
+     * // => com.dfire.logs 'a', 'b', and 'c' (iteration order is not guaranteed)
      */
     var forIn = createForIn(baseFor);
 
@@ -14658,7 +14658,7 @@ module.exports = '1.0.5';
      * _.forInRight(new Foo, function(value, key) {
      *   console.log(key);
      * });
-     * // => logs 'c', 'b', and 'a' assuming `_.forIn ` logs 'a', 'b', and 'c'
+     * // => com.dfire.logs 'c', 'b', and 'a' assuming `_.forIn ` com.dfire.logs 'a', 'b', and 'c'
      */
     var forInRight = createForIn(baseForRight);
 
@@ -14687,7 +14687,7 @@ module.exports = '1.0.5';
      * _.forOwn(new Foo, function(value, key) {
      *   console.log(key);
      * });
-     * // => logs 'a' and 'b' (iteration order is not guaranteed)
+     * // => com.dfire.logs 'a' and 'b' (iteration order is not guaranteed)
      */
     var forOwn = createForOwn(baseForOwn);
 
@@ -14714,7 +14714,7 @@ module.exports = '1.0.5';
      * _.forOwnRight(new Foo, function(value, key) {
      *   console.log(key);
      * });
-     * // => logs 'b' and 'a' assuming `_.forOwn` logs 'a' and 'b'
+     * // => com.dfire.logs 'b' and 'a' assuming `_.forOwn` com.dfire.logs 'a' and 'b'
      */
     var forOwnRight = createForOwn(baseForOwnRight);
 

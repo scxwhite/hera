@@ -10,13 +10,11 @@ import com.dfire.protocol.RpcOperate;
 import com.dfire.protocol.RpcRequest;
 import com.dfire.protocol.RpcSocketMessage;
 import io.netty.channel.ChannelFuture;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author xiaosuda
  * @date 2018/4/12
  */
-@Slf4j
 public class WorkerHandlerHeartBeat {
 
 

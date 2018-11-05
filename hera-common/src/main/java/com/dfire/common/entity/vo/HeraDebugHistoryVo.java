@@ -20,6 +20,7 @@ import java.util.Date;
 @Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class HeraDebugHistoryVo {
 
     private String id;

@@ -10,16 +10,17 @@ import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.event.HeraJobFailedEvent;
 import com.dfire.core.event.base.MvcEvent;
 import com.dfire.core.netty.master.MasterContext;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 下午5:38 2018/4/19
  * @desc 任务失败的监听, 当任务失败，需要发送邮件给相关人员
  */
-@Slf4j
 public class HeraJobFailListener extends AbstractListener {
 
     private HeraJobHistoryService heraJobHistoryService;

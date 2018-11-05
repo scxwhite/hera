@@ -5974,7 +5974,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @public
 	         * @param {Array.<string>} targetNameList Target Component type list.
 	         *                                           Can be ['aa', 'bb', 'aa.xx']
-	         * @param {Array.<string>} fullNameList By which we can build dependency graph.
+	         * @param {Array.<string>} fullNameList By which we can build dependency com.dfire.graph.
 	         * @param {Function} callback Params: componentType, dependencies.
 	         * @param {Object} context Scope of callback.
 	         */
@@ -7211,7 +7211,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            // If we reverse the order (make this._data firstly, and then make
 	            // this._dataBeforeProcessed by cloneShallow), cloneShallow will
-	            // cause this._data.graph.data !== this._data when using
+	            // cause this._data.com.dfire.graph.data !== this._data when using
 	            // module:echarts/data/Graph or module:echarts/data/Tree.
 	            // See module:echarts/data/helper/linkList
 	            this._data = this._dataBeforeProcessed.cloneShallow();
@@ -21938,7 +21938,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 
 	    /**
-	     * Shallow clone a new list except visual and layout properties, and graph elements.
+	     * Shallow clone a new list except visual and layout properties, and com.dfire.graph elements.
 	     * New list only change the indices.
 	     */
 	    listProto.cloneShallow = function () {
@@ -32805,7 +32805,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    function doConvert(methodName, ecModel, finder, value) {
 	        var seriesModel = finder.seriesModel;
-	        var coordSys = seriesModel ? seriesModel.coordinateSystem : null; // e.g., graph.
+	        var coordSys = seriesModel ? seriesModel.coordinateSystem : null; // e.g., com.dfire.graph.
 	        return coordSys === this ? coordSys[methodName](value) : null;
 	    }
 
@@ -34818,7 +34818,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * Link lists and struct (graph or tree)
+	 * Link lists and struct (com.dfire.graph or tree)
 	 */
 
 
@@ -34831,9 +34831,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Caution:
 	    // In most case, either list or its shallow clones (see list.cloneShallow)
 	    // is active in echarts process. So considering heap memory consumption,
-	    // we do not clone tree or graph, but share them among list and its shallow clones.
+	    // we do not clone tree or com.dfire.graph, but share them among list and its shallow clones.
 	    // But in some rare case, we have to keep old list (like do animation in chart). So
-	    // please take care that both the old list and the new list share the same tree/graph.
+	    // please take care that both the old list and the new list share the same tree/com.dfire.graph.
 
 	    /**
 	     * @param {Object} opt
@@ -37853,7 +37853,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            roam: false,
 
-	            // Default on center of graph
+	            // Default on center of com.dfire.graph
 	            center: null,
 
 	            zoom: 1,
@@ -38046,7 +38046,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    graphProto.type = 'graph';
 
 	    /**
-	     * If is directed graph
+	     * If is directed com.dfire.graph
 	     * @return {boolean}
 	     */
 	    graphProto.isDirected = function () {
@@ -43954,7 +43954,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        layoutInfo: null,
 
 	        /**
-	         * Init a graph data structure from data in option series
+	         * Init a com.dfire.graph data structure from data in option series
 	         *
 	         * @param  {Object} option  the object used to config echarts view
 	         * @return {module:echarts/data/List} storage initial data
