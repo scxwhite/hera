@@ -161,6 +161,10 @@
     <strong id="failureText" ></strong>
 </div>
 
+<div class="response box box-success" id="responseCon">
+    <p id="response"></p>
+</div>
+
 <@netCommon.commonScript />
 <script src="${request.contextPath}/plugins/codemirror/lib/codemirror.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/mode/shell/shell.js"></script>

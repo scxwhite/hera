@@ -90,7 +90,7 @@ public class DevelopCenterController extends BaseHeraController {
     public String rename(HeraFile heraFile) {
         int result = heraFileService.updateFileName(heraFile);
         String response = "";
-        response = "删除成功";
+        response = "更新成功";
         return response;
     }
 

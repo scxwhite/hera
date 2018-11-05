@@ -16,3 +16,20 @@
 .box.box-primary {
     border-top-color: #2c4762;
 }
+.response{
+    width: 140px;
+    height: 60px;
+    box-shadow: 10px 10px 10px rgba(0,0,0,0.2);
+    position: fixed;
+    top: 100px;
+    right: -140px;
+    background: #ffffff;
+    z-index: 9999;
+}
+.response p{
+    text-align: center;
+    line-height: 60px;
+}
+.response-sch{
+    top: 700px;
+}

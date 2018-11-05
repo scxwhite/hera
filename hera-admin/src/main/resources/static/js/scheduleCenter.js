@@ -208,8 +208,30 @@ $(function () {
                 jobId: focusId
             },
             type: "post",
-            success: function (data) {
-                layer.msg(data);
+
+            success:function (res) {
+
+                layer.msg(res);
+                 console.log(res)
+                $('#responseCon').animate({right:'20px'},500)
+                setTimeout(function () {
+                    $('#responseCon').animate({right:'-140px'},500);
+                },1000);
+                $('#response').html('接口没好待解决');
+                //接口没好待解决
+                // if (res.success === true){
+                //     $('#response').html('成功');
+                // }else{
+                //     $('#response').html('执行失败msg:'+res.msg);
+                // }
+            },
+            error:function (err) {
+                // console.log(err)
+                $('#responseCon').animate({right:'20px'},500)
+                setTimeout(function () {
+                    $('#responseCon').animate({right:'-140px'},500);
+                },1000);
+                $('#response').html('生成失败 错误：'+err.status);
             }
         })
     });
@@ -695,12 +717,30 @@ $(function () {
                 actionId: $("#selectJobVersion").val(),
                 triggerType: triggerType
             },
-            success: function (data) {
-                if (data.success == true) {
-                    layer.msg("任务执行成功");
-                } else {
-                    layer.msg(data.msg);
-                }
+            success: function (res) {
+                 if (res.success == true) {
+                     layer.msg('执行成功')
+                 } else {
+                     layer.msg(res.msg)
+                 }
+                // console.log(res);
+              /*  $('#responseCon').animate({right:'20px'},500)
+                setTimeout(function () {
+                    $('#responseCon').animate({right:'-140px'},500);
+                },1000);
+                if (res.success === true){
+                    $('#response').html('执行成功');
+                }else{
+                    $('#response').html('执行失败msg:'+res.msg);
+                }*/
+            },
+            error:function (err) {
+                // console.log(err);
+                $('#responseCon').animate({right:'20px'},500)
+                setTimeout(function () {
+                    $('#responseCon').animate({right:'-140px'},500);
+                },1000);
+                $('#response').html(err);
             }
         });
         $('#myModal').modal('hide');
@@ -814,6 +854,32 @@ $(function () {
                 hostGroup.append(option);
             }
 
+        })
+        $('#timeChange').focus(function (e) {
+            e.stopPropagation();
+            $('#timeModal').modal('toggle');
+            var para = $.trim($('#timeChange').val());
+            var min = para.substr(2,1);
+            var hour = para.substr(4,1);
+            var day = para.substr(6,1);
+            var month = para.substr(8,1);
+            var week = para.substr(10,1);
+            $('#inputMin').val(min);
+            $('#inputHour').val(hour);
+            $('#inputDay').val(day);
+            $('#inputMonth').val(month);
+            $('#inputWeek').val(week);
+        });
+        $('#saveTimeBtn').click(function (e) {
+            e.stopPropagation();
+            var min = $.trim($('#inputMin').val());
+            var hour = $.trim($('#inputHour').val());
+            var day = $.trim($('#inputDay').val());
+            var month = $.trim($('#inputMonth').val());
+            var week = $.trim($('#inputWeek').val());
+            var para = '0 '+ min+' '+hour+' '+day+' '+month+' '+week;
+            $('#timeChange').val(para);
+            $('#timeModal').modal('toggle');
         })
     });
 });
