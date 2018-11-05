@@ -124,19 +124,19 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-common</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-core</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-monitor</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
         <dependency>
