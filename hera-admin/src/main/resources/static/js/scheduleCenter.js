@@ -768,7 +768,7 @@ $(function () {
                 $('#selectJobVersion').append(jobVersion);
                 $('#selectJobVersion').selectpicker('refresh');
 
-                $('#myModal').modal('show');
+                $('#myModal').modal('show`');
 
             }
         });

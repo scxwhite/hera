@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/paraiso-light.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/3024-day.css">
     <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
     <link rel="stylesheet" href="${request.contextPath}/css/developCenter.css">
 <#--<link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">-->

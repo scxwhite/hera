@@ -653,7 +653,7 @@ $(function () {
             mode: "sql",
             lineNumbers: true,
             autofocus: true,
-            theme: "paraiso-light",
+            theme: "3024-day",
             readOnly: false
         });
         codeMirror.display.wrapper.style.height = 500 + "px";
@@ -713,7 +713,7 @@ $(function () {
         if(tabContainer.tabsLength > tabContainer.tabContainerWidth){
             tabContainer.siblings('.prev-next-con').children('.prev-tab').addClass('show');
             tabContainer.siblings('.prev-next-con').children('.next-tab').addClass('show');
-            tabContainer.css({"left": "30px"});
+            tabContainer.children('ul').css({"padding-left": "30px"});
         }
     }
 
