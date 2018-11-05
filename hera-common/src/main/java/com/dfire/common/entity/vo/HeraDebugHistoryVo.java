@@ -5,6 +5,7 @@ import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.vo.LogContent;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -15,6 +16,7 @@ import java.util.Date;
  */
 @Builder
 @Data
+@NoArgsConstructor
 public class HeraDebugHistoryVo {
 
     private String id;

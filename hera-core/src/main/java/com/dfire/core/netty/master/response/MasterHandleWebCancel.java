@@ -78,7 +78,7 @@ public class MasterHandleWebCancel {
             }
         }
 
-        if (webResponse != null) {
+        if (webResponse == null) {
             webResponse = RpcWebResponse.WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
@@ -196,9 +196,6 @@ public class MasterHandleWebCancel {
         heraJobHistory.setStatus(StatusEnum.FAILED.toString());
         heraJobHistory.setIllustrate("任务取消");
         context.getHeraJobHistoryService().update(heraJobHistory);
-
-
-
         context.getHeraJobActionService().updateStatus(HeraAction.builder().id(actionId).status(StatusEnum.FAILED.toString()).build());
         return webResponse;
     }

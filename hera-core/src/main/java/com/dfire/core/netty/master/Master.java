@@ -757,8 +757,9 @@ public class Master {
                 response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
             } catch (Exception e) {
                 exception = e;
-                future.cancel(true);
-                response = null;
+                if (future != null) {
+                    future.cancel(true);
+                }
                 log.error(String.format("debugId:%s run failed", jobId), e);
             }
             boolean success = response != null && response.getStatusEnum() == ResponseStatus.Status.OK;
@@ -793,8 +794,7 @@ public class Master {
 
         int hostGroupId = jobElement == null ? HeraGlobalEnvironment.defaultWorkerGroup : jobElement.getHostGroupId();
         WorkerRouter workerRouter = new DefaultWorkerRouterFactory().newWorkerRouter("first");
-        MasterWorkHolder workHolder = workerRouter.selectWorker(hostGroupId, masterContext);
-        return workHolder;
+        return workerRouter.selectWorker(hostGroupId, masterContext);
     }
 
     public void debug(HeraDebugHistoryVo debugHistory) {
@@ -967,9 +967,7 @@ public class Master {
                                     , heraJobHistory.getId());
                             heraAction.setStatus(heraJobHistory.getStatus());
                             masterContext.getHeraJobActionService().updateStatus(heraAction);
-
                             log.warn("任务{}已经执行完成但是信号未发送给master,手动广播成功事件", action);
-
                             //成功时间广播
                             masterContext.getDispatcher().forwardEvent(successEvent);
                         } else if (StatusEnum.FAILED.toString().equals(heraJobHistory.getStatus())) {
@@ -978,7 +976,6 @@ public class Master {
                             //丢失重试次数信息   master直接重试
                             heraJobHistory.setIllustrate("work断线，丢失任务重试次数，重新执行该任务");
                             startNewJob(heraJobHistory);
-
                         } else if (StatusEnum.RUNNING.toString().equals(heraJobHistory.getStatus())) {
                             //如果仍然在运行中，那么检测新的心跳信息 判断work是断线重连 or 重启
                             HeartBeatInfo newBeatInfo = masterContext.getWorkMap().get(newChannel).getHeartBeatInfo();
@@ -1000,7 +997,6 @@ public class Master {
                             startNewJob(heraJobHistory);
                         }
                     }
-
                 } else {
                     for (String action : scheduleTask) {
                         heraAction = masterContext.getHeraJobActionService().findById(action);
@@ -1011,12 +1007,13 @@ public class Master {
                     }
                 }
             }, 10, TimeUnit.MINUTES);
+
+            String content = "不幸的消息，work宕机了:" + channel.remoteAddress() + "<br>" +
+                    "自动调度队列任务：" + workHolder.getHeartBeatInfo().getRunning() + "<br>" +
+                    "手动队列任务：" + workHolder.getHeartBeatInfo().getManualRunning() + "<br>" +
+                    "开发中心队列任务：" + workHolder.getHeartBeatInfo().getDebugRunning() + "<br>";
+            log.error(content);
         }
-        String content = "不幸的消息，work宕机了:" + channel.remoteAddress() + "<br>" +
-                "自动调度队列任务：" + workHolder.getHeartBeatInfo().getRunning() + "<br>" +
-                "手动队列任务：" + workHolder.getHeartBeatInfo().getManualRunning() + "<br>" +
-                "开发中心队列任务：" + workHolder.getHeartBeatInfo().getDebugRunning() + "<br>";
-        log.error(content);
     }
 
     private void startNewJob(HeraJobHistory heraJobHistory) {

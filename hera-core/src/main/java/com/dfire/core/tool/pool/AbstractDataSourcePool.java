@@ -25,9 +25,9 @@ public abstract class AbstractDataSourcePool {
         dataSource.setUrl(HeraGlobalEnvironment.getSparkAddress());
         dataSource.setUsername(HeraGlobalEnvironment.getSparkUser());
         dataSource.setPassword(HeraGlobalEnvironment.getSparkPassword());
-        dataSource.setInitialSize(10);
+        dataSource.setInitialSize(1);
         dataSource.setMaxActive(20);
-        dataSource.setMinIdle(20);
+        dataSource.setMinIdle(1);
         dataSource.setTestOnBorrow(true);
         dataSource.setTestOnReturn(false);
         dataSource.setTestWhileIdle(true);
