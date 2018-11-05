@@ -63,8 +63,7 @@ public class DevelopCenterController extends BaseHeraController {
     public String addFileAndFolder(HeraFile heraFile) {
         heraFile.setOwner(getOwner());
         heraFile.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
-        String id = heraFileService.insert(heraFile);
-        return id;
+        return heraFileService.insert(heraFile);
     }
 
     @RequestMapping(value = "/find", method = RequestMethod.GET)
