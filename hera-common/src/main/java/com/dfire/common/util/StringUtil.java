@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPathException;
 import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.Processor;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.StringUtils;
 
 import java.security.MessageDigest;
@@ -22,7 +22,6 @@ import java.util.Map;
  * @desc 字符串处理工具类
  */
 
-@Slf4j
 public class StringUtil {
 
     /**
@@ -38,7 +37,7 @@ public class StringUtil {
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            log.error("MD5 错误");
+            HeraLog.error("MD5 错误");
         }
         md.update(sourceStr.getBytes());
         byte b[] = md.digest();

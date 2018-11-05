@@ -9,6 +9,8 @@ import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
+import com.dfire.logs.HeraLog;
+import com.dfire.logs.ScheduleLog;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -16,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
  * @time: Created in 下午5:19 2018/4/19
  * @desc 增操作，添加controller
  */
-@Slf4j
 public class HeraAddJobListener extends AbstractListener {
 
     private Master master;
@@ -48,7 +49,7 @@ public class HeraAddJobListener extends AbstractListener {
                     masterContext.getDispatcher().addJobHandler(handler);
                     handler.handleEvent(new ApplicationEvent(Events.Initialize));
                     mvcEvent.setCancelled(true);
-                    log.info("schedule add job with actionId:" + actionId);
+                    ScheduleLog.info("schedule add job with actionId:" + actionId);
                 }
             }
 

@@ -28,6 +28,7 @@ import com.dfire.core.quartz.HeraQuartzJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
+import com.dfire.logs.ScheduleLog;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,7 +47,6 @@ import java.util.*;
  */
 
 @Builder
-@Slf4j
 @AllArgsConstructor
 public class JobHandler extends AbstractHandler {
 
@@ -118,7 +118,7 @@ public class JobHandler extends AbstractHandler {
         if (heraAction != null) {
             //对版本表中处于running状态的任务进行重试
             if (StatusEnum.RUNNING.toString().equals(heraAction.getStatus())) {
-                log.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
+                ScheduleLog.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
                 //有历史版本
                 if (heraAction.getHistoryId() != null) {
                     HeraJobHistory jobHistory = jobHistoryService.findById(heraAction.getHistoryId());
@@ -179,7 +179,7 @@ public class JobHandler extends AbstractHandler {
             } catch (Exception e) {
                 if (e instanceof SchedulerException) {
                     heraActionVo.setAuto(false);
-                    log.error("create job quartz schedule error");
+                    ScheduleLog.error("create job quartz schedule error");
                 }
                 throw new RuntimeException(e);
             }
@@ -225,12 +225,12 @@ public class JobHandler extends AbstractHandler {
                         String date = simpleDateFormat.format(new Date(Long.valueOf(dependencies.get(key))));
                         if (!now.equals(date)) {
                             jobStatus.getReadyDependency().remove(key);
-                            log.info("remove overwrite dependency");
+                            ScheduleLog.info("remove overwrite dependency");
                         }
                     }
                 }
             }
-            log.info("received a success dependency job with actionId = " + jobId);
+            ScheduleLog.info("received a success dependency job with actionId = " + jobId);
             jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
             heraJobActionService.updateStatus(jobStatus);
         }
@@ -242,10 +242,10 @@ public class JobHandler extends AbstractHandler {
             }
         }
         if (allComplete) {
-            log.info("JobId:" + jobId + " all dependency jobs is ready,run!");
+            ScheduleLog.info("JobId:" + jobId + " all dependency jobs is ready,run!");
             startNewJob(event.getTriggerType(), heraActionVo);
         } else {
-            log.info("some of dependency is not ready, waiting");
+            ScheduleLog.info("some of dependency is not ready, waiting");
         }
     }
 
@@ -264,7 +264,7 @@ public class JobHandler extends AbstractHandler {
         if (historyVo.getStatusEnum() == StatusEnum.FAILED) {
             HeraJobFailedEvent jobFailedEvent = new HeraJobFailedEvent(heraActionVo.getId(), triggerType, historyVo);
             masterContext.getDispatcher().forwardEvent(jobFailedEvent);
-            log.info("job execute error, dispatch job failed event");
+            ScheduleLog.info("job execute error, dispatch job failed event");
         }
     }
 
@@ -282,7 +282,7 @@ public class JobHandler extends AbstractHandler {
             try {
                 HeraJobMonitor monitor = heraJobMonitorService.findByJobId(Integer.parseInt(heraActionVo.getJobId()));
                 if (monitor == null) {
-                    log.info("任务无监控人：{}", heraActionVo.getJobId());
+                    ScheduleLog.info("任务无监控人：{}", heraActionVo.getJobId());
                 } else {
 
                     String ids = monitor.getUserIds();
@@ -305,7 +305,7 @@ public class JobHandler extends AbstractHandler {
 
             } catch (MessagingException e) {
                 e.printStackTrace();
-                log.error("发送邮件失败");
+                ScheduleLog.error("发送邮件失败");
             }
         }
     }
@@ -407,7 +407,7 @@ public class JobHandler extends AbstractHandler {
                                 .build();
                         masterContext.getHeraJobHistoryService().insert(history);
                         master.run(BeanConvertUtils.convert(history));
-                        log.info("lost job, start schedule :{}", actionId);
+                        ScheduleLog.info("lost job, start schedule :{}", actionId);
                     }
                 }
             }
@@ -433,7 +433,7 @@ public class JobHandler extends AbstractHandler {
             CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression().trim());
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, Constants.HERA_GROUP).withSchedule(scheduleBuilder).build();
             masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
-            log.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
+            ScheduleLog.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
         }
     }
 

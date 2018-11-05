@@ -1,4 +1,4 @@
-package graph;
+package com.dfire.graph;
 
 import lombok.Data;
 

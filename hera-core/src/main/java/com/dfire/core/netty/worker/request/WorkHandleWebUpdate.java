@@ -3,6 +3,7 @@ package com.dfire.core.netty.worker.request;
 import com.dfire.core.netty.listener.WorkResponseListener;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,7 +16,6 @@ import java.util.concurrent.TimeUnit;
  * @time: Created in 上午1:07 2018/5/12
  * @desc
  */
-@Slf4j
 public class WorkHandleWebUpdate {
 
     public Future<RpcWebResponse.WebResponse> handleUpdate(final WorkContext workContext, String jobId) {
@@ -36,7 +36,7 @@ public class WorkHandleWebUpdate {
             workContext.getHandler().addListener(responseListener);
             latch.await(3, TimeUnit.HOURS);
             if (!responseListener.getReceiveResult()) {
-                log.error("更新job超出3小时未得到master消息返回：{}", jobId);
+                SocketLog.error("更新job超出3小时未得到master消息返回：{}", jobId);
             }
             return responseListener.getWebResponse();
         });

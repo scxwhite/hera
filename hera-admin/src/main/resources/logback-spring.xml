@@ -16,29 +16,12 @@
         </encoder>
     </appender>
 
-    <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/logs_warn.log</file>
-        <Append>true</Append>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/bak/logs_warn.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
-            <!-- keep 10 days worth of history -->
-            <maxHistory>10</maxHistory>
-        </rollingPolicy>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${PATTERN}</pattern>
-        </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-    </appender>
 
-    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/logs_error.log</file>
+    <appender name="scheduleLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/schedule.log</file>
         <Append>true</Append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/bak/logs_error.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>${logPath}/bak/schedule.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
             <!-- keep 10 days worth of history -->
             <maxHistory>10</maxHistory>
         </rollingPolicy>
@@ -46,18 +29,12 @@
             <pattern>${PATTERN}</pattern>
             <immediateFlush>${immediateFlush}</immediateFlush>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
     </appender>
-
-    <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/logs_debug.log</file>
+    <appender name="socketLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/socket.log</file>
         <Append>true</Append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/bak/logs_debug.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>${logPath}/bak/socket.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
             <!-- keep 10 days worth of history -->
             <maxHistory>10</maxHistory>
         </rollingPolicy>
@@ -65,18 +42,12 @@
             <pattern>${PATTERN}</pattern>
             <immediateFlush>${immediateFlush}</immediateFlush>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>DEBUG</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
     </appender>
-
-    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/logs_info.log</file>
+    <appender name="heraLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/hera.log</file>
         <Append>true</Append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/bak/logs_info.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>${logPath}/bak/hera.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
             <!-- keep 10 days worth of history -->
             <maxHistory>10</maxHistory>
         </rollingPolicy>
@@ -84,18 +55,26 @@
             <pattern>${PATTERN}</pattern>
             <immediateFlush>${immediateFlush}</immediateFlush>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>INFO</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
     </appender>
-
-    <appender name="ALERT_MONITOR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/alert_monitor.log</file>
+    <appender name="debugLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/debug.log</file>
         <Append>true</Append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/bak/alert_monitor.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>${logPath}/bak/debug.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 10 days worth of history -->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${PATTERN}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="alertMonitor" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/alertMonitor.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/bak/alertMonitor.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
             <!-- keep 10 days worth of history -->
             <maxHistory>10</maxHistory>
         </rollingPolicy>
@@ -106,36 +85,31 @@
         </encoder>
     </appender>
 
-    <appender name="TIME_OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/timeout.log</file>
-        <Append>true</Append>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/bak/timeout.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
-            <!-- keep 5 days worth of history -->
-            <maxHistory>5</maxHistory>
-        </rollingPolicy>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>${PATTERN}</pattern>
-            <immediateFlush>${immediateFlush}</immediateFlush>
-        </encoder>
-    </appender>
-
 
     <!--控制台打印资源加载信息-->
     <root>
         <level value="${logLevel}"/>
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE_DEBUG"/>
-        <appender-ref ref="FILE_WARN"/>
-        <appender-ref ref="FILE_ERROR"/>
-        <appender-ref ref="FILE_INFO"/>
-        <appender-ref ref="ALERT_MONITOR"/>
     </root>
 
 
-    <logger name="org.springframework" level="INFO"/>
-    <logger name="org.mybatis" level="INFO"/>
-    <logger name="com.alibaba" level="WARN"/>
-    <logger name="org.apache" level="WARN"/>
-    <logger name="druid.sql" level="WARN"/>
+    <logger name="com.dfire.logs.ScheduleLog" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="scheduleLog"/>
+    </logger>
+    <logger name="com.dfire.logs.SocketLog" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="socketLog"/>
+    </logger>
+    <logger name="com.dfire.logs.HeraLog" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="heraLog"/>
+    </logger>
+    <logger name="com.dfire.logs.DebugLog" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="debugLog"/>
+    </logger>
+
+
+
 </configuration>

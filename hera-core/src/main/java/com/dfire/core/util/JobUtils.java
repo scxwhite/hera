@@ -17,7 +17,7 @@ import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.RenderHierarchyProperties;
 import com.dfire.core.job.*;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 
@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
  * @time: Created in 上午12:13 2018/4/26
  * @desc 任务执行体job的创建工具，创建任务依据任务配置创建任务前置处理，核心执行体，后置处理，以及脚本中的变量替换
  */
-@Slf4j
 public class JobUtils {
 
     public static final Pattern pattern = Pattern.compile("download\\[(hdfs)://.+]");
@@ -159,7 +158,7 @@ public class JobUtils {
                 }
             }
         } catch (ParseException e) {
-            log.error("parse end time error");
+            HeraLog.error("parse end time error");
         }
         for (Processor processor : processors) {
             String config = processor.getConfig();
@@ -245,7 +244,7 @@ public class JobUtils {
             String name = null;
             if (url.length == 1) {
                 uri = url[0];
-                log.warn("can not found download name,will use default name,{}", group);
+                HeraLog.warn("can not found download name,will use default name,{}", group);
             } else if (url.length == 2) {
                 uri = url[0];
                 name = url[1];

@@ -10,7 +10,7 @@ public class ProcessJobTest {
     public static void main(String[] args) throws IOException, InterruptedException {
 
 
-        String[] commands = {"sudo","-u","pjx","sh","/opt/logs/spring-boot/2018-07-16/debug-480/tmp.sh"};
+        String[] commands = {"sudo","-u","pjx","sh","/opt/com.dfire.logs/spring-boot/2018-07-16/debug-480/tmp.sh"};
         ProcessBuilder processBuilder = new ProcessBuilder(commands);
         processBuilder.directory(new File("/"));
         Process process = processBuilder.start();

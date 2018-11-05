@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.util.CommandUtils;
+import com.dfire.logs.HeraLog;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
@@ -21,7 +22,6 @@ import java.util.List;
  * @desc shell脚本执行类，拼接shell文件，执行文件执行命令
  */
 
-@Slf4j
 public class ShellJob extends ProcessJob {
 
     private String shell;
@@ -126,7 +126,7 @@ public class ShellJob extends ProcessJob {
         } else {
             list.add("sh " + shellFilePath);
         }
-        log.info("命令：{}", JSONObject.toJSONString(list));
+        HeraLog.info("命令：{}", JSONObject.toJSONString(list));
         return list;
     }
 

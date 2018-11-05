@@ -3,9 +3,9 @@ package com.dfire.core.netty.master.response;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.util.AtomicIncrease;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import io.netty.channel.Channel;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
  * @time: Created in 下午3:42 2018/5/11
  * @desc master接收到worker端取消任务执行请求时，处理逻辑
  */
-@Slf4j
 public class MasterHandleCancelJob {
 
     public Future<RpcResponse.Response> cancel(final MasterContext context, Channel channel, JobExecuteKind.ExecuteKind kind, String jobId) {
@@ -39,7 +38,7 @@ public class MasterHandleCancelJob {
             context.getHandler().addListener(responseListener);
             latch.await(3, TimeUnit.HOURS);
             if (!responseListener.getReceiveResult()) {
-                log.error("取消任务信号消失，三小时未收到work返回：{}", jobId);
+                SocketLog.error("取消任务信号消失，三小时未收到work返回：{}", jobId);
             }
             return responseListener.getResponse();
         });

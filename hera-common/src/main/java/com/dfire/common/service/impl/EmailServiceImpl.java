@@ -1,7 +1,6 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.service.EmailService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,6 @@ import java.util.Properties;
  * @author xiaosuda
  * @date 2018/7/31
  */
-@Slf4j
 @Service("emailServiceImpl")
 public class EmailServiceImpl implements EmailService {
 

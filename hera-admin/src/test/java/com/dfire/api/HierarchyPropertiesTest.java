@@ -6,7 +6,7 @@ import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.RenderHierarchyProperties;
 import com.dfire.common.util.SpringContextHolder;
 import com.dfire.core.util.JobUtils;
-import graph.JobGroupGraphTool;
+import com.dfire.graph.JobGroupGraphTool;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.annotation.MapperScan;

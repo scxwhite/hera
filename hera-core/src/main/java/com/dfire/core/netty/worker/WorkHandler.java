@@ -3,6 +3,7 @@ package com.dfire.core.netty.worker;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -16,7 +17,6 @@ import java.util.concurrent.*;
  * @time: Created in 1:32 2018/1/4
  * @desc SocketMessage为RPC消息体
  */
-@Slf4j
 public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.SocketMessage> {
 
     private CompletionService<RpcResponse.Response> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
@@ -35,9 +35,9 @@ public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.So
                     if (workContext.getServerChannel() != null) {
                         workContext.getServerChannel().writeAndFlush(wrapper(response));
                     }
-                    log.info("worker get response thread success");
+                    SocketLog.info("worker get response thread success");
                 } catch (Exception e) {
-                    log.error("worker handler take future exception");
+                    SocketLog.error("worker handler take future exception");
                     throw new RuntimeException(e);
                 }
             }
@@ -89,7 +89,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.So
                 }
                 break;
             default:
-                log.error("can not recognition ");
+                SocketLog.error("can not recognition ");
                 break;
 
         }
@@ -97,25 +97,25 @@ public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.So
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info("客户端与服务端连接开启");
+        SocketLog.info("客户端与服务端连接开启");
         ctx.fireChannelActive();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.error("客户端与服务端连接关闭");
+        SocketLog.warn("客户端与服务端连接关闭");
         workContext.setServerChannel(null);
         ctx.fireChannelInactive();
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.info("worker complete read message ");
+        SocketLog.info("worker complete read message ");
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.info("work exception");
+        SocketLog.error("work exception: {}, {}", ctx.channel().remoteAddress(), cause.toString());
         super.exceptionCaught(ctx, cause);
     }
 
