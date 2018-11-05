@@ -653,7 +653,7 @@ $(function () {
             mode: "sql",
             lineNumbers: true,
             autofocus: true,
-            theme: "3024-day",
+            theme: "base16-light",
             readOnly: false
         });
         codeMirror.display.wrapper.style.height = 500 + "px";
