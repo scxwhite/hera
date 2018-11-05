@@ -59,8 +59,6 @@ public class Master {
     private MasterContext masterContext;
     private Map<Long, HeraAction> heraActionMap;
     private ThreadPoolExecutor executeJobPool;
-    private final Integer DELAY_TIME = 1;
-    private final Integer MAX_DELAY_TIME = 10;
 
     public Master(final MasterContext masterContext) {
 
@@ -110,7 +108,10 @@ public class Master {
          */
         TimerTask scanWaitingQueueTask = new TimerTask() {
             Integer nextTime = HeraGlobalEnvironment.getScanRate();
-
+            // scan频率递增的步长
+            private final Integer DELAY_TIME = 100;
+            // 最大scan频率
+            private final Integer MAX_DELAY_TIME = 10 * 1000;
             @Override
             public void run(Timeout timeout) {
                 try {
@@ -121,13 +122,13 @@ public class Master {
                     }
                     ScheduleLog.info("scan waiting queueTask run");
                 } catch (Exception e) {
-                    ScheduleLog.error("scan waiting queueTask exception");
+                    ScheduleLog.error("scan waiting queueTask exception:{}", e.toString());
                 } finally {
-                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.SECONDS);
+                    masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.MILLISECONDS);
                 }
             }
         };
-        masterContext.masterTimer.newTimeout(scanWaitingQueueTask, 3, TimeUnit.SECONDS);
+        masterContext.masterTimer.newTimeout(scanWaitingQueueTask, HeraGlobalEnvironment.getScanRate(), TimeUnit.MILLISECONDS);
 
 
         //定时检测work心跳是否超时
@@ -514,13 +515,13 @@ public class Master {
         if (!masterContext.getManualQueue().isEmpty()) {
             ScheduleLog.warn("manual队列任务：{}", masterContext.getManualQueue());
             printThreadPoolLog();
-            JobElement element = masterContext.getScheduleQueue().peek();
-            MasterWorkHolder selectWork = getRunnableWork(element);
+            JobElement jobElement = masterContext.getScheduleQueue().peek();
+            MasterWorkHolder selectWork = getRunnableWork(jobElement);
             if (selectWork == null) {
                 ScheduleLog.warn("can not get work to execute job in master");
             } else {
-                element = masterContext.getManualQueue().poll();
-                runManualJob(selectWork, element.getJobId());
+                jobElement = masterContext.getManualQueue().poll();
+                runManualJob(selectWork, jobElement.getJobId());
                 hasTask = true;
             }
         }
@@ -528,13 +529,13 @@ public class Master {
         if (!masterContext.getDebugQueue().isEmpty()) {
             ScheduleLog.warn("debug队列任务：{}", masterContext.getDebugQueue());
             printThreadPoolLog();
-            JobElement element = masterContext.getScheduleQueue().peek();
-            MasterWorkHolder selectWork = getRunnableWork(element);
+            JobElement jobElement = masterContext.getScheduleQueue().peek();
+            MasterWorkHolder selectWork = getRunnableWork(jobElement);
             if (selectWork == null) {
                 ScheduleLog.warn("can not get work to execute job in master");
             } else {
-                element = masterContext.getDebugQueue().poll();
-                runDebugJob(selectWork, element.getJobId());
+                jobElement = masterContext.getDebugQueue().poll();
+                runDebugJob(selectWork, jobElement.getJobId());
                 hasTask = true;
             }
         }
