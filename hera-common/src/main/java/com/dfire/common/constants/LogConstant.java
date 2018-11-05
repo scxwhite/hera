@@ -23,4 +23,7 @@ public class LogConstant {
 
     public static final String FAIL_JOB_RETRY = "失败任务重试，开始执行\n";
 
+
+    public static final String RETRY_JOB = "某种原因重试任务\n";
+
 }

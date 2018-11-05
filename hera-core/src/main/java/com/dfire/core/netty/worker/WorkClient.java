@@ -119,11 +119,11 @@ public class WorkClient {
                                 log.error("send heart beat failed ,failCount :" + failCount);
                             } else {
                                 failCount = 0;
-                                log.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
+                                log.debug("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
                             }
                             if (failCount > 10) {
                                 future.cancel(true);
-                                log.info("cancel connect server ,failCount:" + failCount);
+                                log.debug("cancel connect server ,failCount:" + failCount);
                             }
                         });
                     } else {
@@ -307,11 +307,11 @@ public class WorkClient {
     /**
      * 取消自动调度执行的任务
      *
-     * @param jobId
+     * @param actionId
      */
-    public void cancelScheduleJob(String jobId) {
-        Job job = workContext.getRunning().get(jobId);
-        workContext.getRunning().remove(jobId);
+    public void cancelScheduleJob(String actionId) {
+        Job job = workContext.getRunning().get(actionId);
+        workContext.getRunning().remove(actionId);
         job.cancel();
 
         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();

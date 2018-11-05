@@ -25,7 +25,6 @@ $(document).ready(function () {
 
 function keypath(type) {
     graphType = type;
-    debugger
     var node = $("#item")[0].value;
     if (node == "")
         return;

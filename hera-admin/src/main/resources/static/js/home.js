@@ -96,7 +96,6 @@ $(function () {
         data['xAxis'].forEach(function (xAxis, index) {
             find = false
             data['runFailed'].forEach(function (job, jobIndex) {
-                debugger
                 if (job.curDate == xAxis) {
                     find = true;
                     runFailed[index] = job.num;
@@ -105,7 +104,6 @@ $(function () {
             if (find == false) runFailed[index] = 0;
             else find = false;
             data['runSuccess'].forEach(function (job, jobIndex) {
-                debugger
                 if (job.curDate == xAxis) {
                     find = true;
                     runSuccess[index] = job.num;

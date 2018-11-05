@@ -29,7 +29,9 @@ public class HeraAspect {
         Long start = System.currentTimeMillis();
         Object res = joinPoint.proceed();
         Long end = System.currentTimeMillis();
-        log.info("方法名:{},参数:{},耗时:{}ms", joinPoint.getSignature().getName(), Arrays.asList(joinPoint.getArgs()), end - start);
+        if (start - end >= 10 * 1000L) {
+            log.info("方法名:{},参数:{},耗时:{}ms", joinPoint.getSignature().getName(), Arrays.asList(joinPoint.getArgs()), end - start);
+        }
         return res;
     }
 }

@@ -34,7 +34,7 @@ public class MasterHandleHeartBeat {
             heartBeatInfo.setManualRunning(heartBeatMessage.getManualRunningsList());
             heartBeatInfo.setTimestamp(DateUtil.longToDate(heartBeatMessage.getTimestamp()));
             worker.setHeartBeatInfo(heartBeatInfo);
-            log.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
+            log.debug("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }

@@ -127,7 +127,6 @@ $(function () {
      */
 
     $("#logButton").click(function () {
-        debugger
         var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
         $('#debugLogDetailTable').bootstrapTable("destroy");
         var tableObject = new TableInit(targetId);
@@ -914,7 +913,11 @@ var TableInit = function (targetId) {
 function cancelJob(historyId) {
     var url = base_url + "/developCenter/cancelJob.do";
     var parameter = {id: historyId};
-    getDataByGet(url, parameter)
+
+
+    $.get(url, parameter, function (data) {
+        layer.msg(data);
+    });
 
 }
 

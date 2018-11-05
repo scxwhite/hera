@@ -54,13 +54,15 @@ public class MasterContext {
      * todo 参数可配置
      *
      */
-    final Timer masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
+    protected Timer masterTimer = null;
 
     public MasterContext(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
     public void init() {
+        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
+        this.getQuartzSchedulerService().start();
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);
         masterServer = new MasterServer(handler);

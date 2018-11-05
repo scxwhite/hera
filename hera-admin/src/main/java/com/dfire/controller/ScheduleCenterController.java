@@ -69,6 +69,8 @@ public class ScheduleCenterController extends BaseHeraController {
     private final String GROUP = "group";
     private final String ERROR_MSG = "抱歉，您没有权限进行此操作";
 
+    private final long timeout = 60 * 1000L;
+
 
     @RequestMapping()
     public String login() {
@@ -228,15 +230,16 @@ public class ScheduleCenterController extends BaseHeraController {
         heraAction.setScript(heraJob.getScript());
         heraJobActionService.update(heraAction);
 
-        return new WebAsyncTask<>(3000, () -> {
+        WebAsyncTask<RestfulResponse> webAsyncTask = new WebAsyncTask<>(timeout, () -> {
             try {
-
                 workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.ManualKind, actionHistory.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return new RestfulResponse(true, actionId);
         });
+        webAsyncTask.onTimeout(() -> new RestfulResponse(false, "执行任务操作请求中，请稍后"));
+        return webAsyncTask;
     }
 
     @RequestMapping(value = "/getJobVersion", method = RequestMethod.GET)
@@ -351,8 +354,10 @@ public class ScheduleCenterController extends BaseHeraController {
         if (!hasPermission(Integer.parseInt(jobId), JOB)) {
             return new WebAsyncTask<>(() -> ERROR_MSG);
         }
-        return new WebAsyncTask<>(3000, () ->
+        WebAsyncTask<String> asyncTask = new WebAsyncTask<>(timeout, () ->
                 workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, jobId));
+        asyncTask.onTimeout(() -> "版本生成时间较长，请耐心等待下");
+        return asyncTask;
     }
 
     /**
@@ -397,8 +402,11 @@ public class ScheduleCenterController extends BaseHeraController {
             kind = JobExecuteKind.ExecuteKind.ScheduleKind;
         }
         JobExecuteKind.ExecuteKind finalKind = kind;
-        return new WebAsyncTask<>(3000, () ->
+
+        WebAsyncTask<String> webAsyncTask = new WebAsyncTask<>(timeout, () ->
                 workClient.cancelJobFromWeb(finalKind, historyId));
+        webAsyncTask.onTimeout(() -> "任务取消执行中，请耐心等待");
+        return webAsyncTask;
     }
 
     @RequestMapping(value = "getLog", method = RequestMethod.GET)
