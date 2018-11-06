@@ -540,28 +540,28 @@ $(function () {
             if (key === "roll.back.times") {
                 var backTimes = $("#" + dom + " [name='rollBackTimes']");
                 if (dom == "jobMessage") {
-                    backTimes.text(val);
+                    backTimes.val(val);
                 } else {
                     backTimes.val(val);
                 }
             } else if (key === "roll.back.wait.time") {
                 var waitTime = $("#" + dom + " [name='rollBackWaitTime']");
                 if (dom == "jobMessage") {
-                    waitTime.text(val);
+                    waitTime.val(val);
                 } else {
                     waitTime.val(val);
                 }
             } else if (key === "run.priority.level") {
                 var level = $("#" + dom + " [name='runPriorityLevel']");
                 if (dom == "jobMessage") {
-                    level.text(val == 1 ? "low" : val == 2 ? "medium" : "high");
+                    level.val(val == 1 ? "low" : val == 2 ? "medium" : "high");
                 } else {
                     level.val(val);
                 }
             } else if (key === "zeus.dependency.cycle" || key === "hera.dependency.cycle") {
                 var cycle = $("#" + dom + " [name='heraDependencyCycle']");
                 if (dom == "jobMessage") {
-                    cycle.text(val);
+                    cycle.val(val);
                 } else {
                     cycle.val(val);
                 }
