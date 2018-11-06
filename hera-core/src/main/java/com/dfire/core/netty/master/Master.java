@@ -17,7 +17,6 @@ import com.dfire.core.HeraException;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.Events;
-import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
 import com.dfire.core.message.HeartBeatInfo;
@@ -37,8 +36,9 @@ import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,15 +54,19 @@ import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
  * @time: Created in 16:24 2018/1/12
  * @desc hera核心任务调度器
  */
+@Component
+@Order(1)
 public class Master {
 
     private MasterContext masterContext;
-    private Map<Long, HeraAction> heraActionMap;
+    private Map<Long, HeraAction> heraActionMap = new HashMap<>();
     private ThreadPoolExecutor executeJobPool;
 
+    public Map<Long, HeraAction> getHeraActionMap() {
+        return heraActionMap;
+    }
 
-    public Master(final MasterContext masterContext) {
-
+    public void init(MasterContext masterContext){
         this.masterContext = masterContext;
         heraActionMap = new HashMap<>();
         executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 60L, TimeUnit.SECONDS,
@@ -82,16 +86,30 @@ public class Master {
         allJobList.forEach(heraAction -> masterContext.getDispatcher().
                 addJobHandler(new JobHandler(String.valueOf(heraAction.getId()), this, masterContext)));
         masterContext.getDispatcher().forwardEvent(Events.Initialize);
-        masterContext.setMaster(this);
         masterContext.refreshHostGroupCache();
         HeraLog.info("refresh hostGroup cache");
 
 
+
+        // 1.生成版本
+        batchActionCheck();
+        // 2.扫描任务
+        waitingQueueCheck();
+        // 3.心跳检查
+        heartCheck();
+
+    }
+
+    /**
+     * 版本定时生成
+     */
+    private void batchActionCheck(){
         TimerTask generateActionTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) {
                 try {
-                    generateBatchAction();
+                    ScheduleLog.info("全量任务版本生成");
+                    generateAction(false, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -101,19 +119,22 @@ public class Master {
         };
         //延迟加载  避免定时调度未启动
         masterContext.masterTimer.newTimeout(generateActionTask, 20, TimeUnit.SECONDS);
+    }
 
-        /**
-         * 扫描任务等待队列，可获得worker的任务将执行
-         * 对于没有可运行机器的时，manual,debug任务重新offer到原队列
-         *
-         */
+
+
+    /**
+     * 扫描任务等待队列，可获得worker的任务将执行
+     * 对于没有可运行机器的时，manual,debug任务重新offer到原队列
+     *
+     */
+    private void waitingQueueCheck(){
         TimerTask scanWaitingQueueTask = new TimerTask() {
             Integer nextTime = HeraGlobalEnvironment.getScanRate();
             // scan频率递增的步长
             private final Integer DELAY_TIME = 100;
             // 最大scan频率
             private final Integer MAX_DELAY_TIME = 10 * 1000;
-
             @Override
             public void run(Timeout timeout) {
                 try {
@@ -130,10 +151,14 @@ public class Master {
                 }
             }
         };
+
         masterContext.masterTimer.newTimeout(scanWaitingQueueTask, HeraGlobalEnvironment.getScanRate(), TimeUnit.MILLISECONDS);
+    }
 
-
-        //定时检测work心跳是否超时
+    /**
+     *  定时检测work心跳是否超时
+     */
+    private void heartCheck(){
         TimerTask checkHeartBeatTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) throws Exception {
@@ -156,96 +181,9 @@ public class Master {
             }
         };
         masterContext.masterTimer.newTimeout(checkHeartBeatTask, 20, TimeUnit.SECONDS);
-
-
-        masterContext.masterTimer.newTimeout(new TimerTask() {
-            @Override
-            public void run(Timeout timeout) throws Exception {
-                try {
-                    lostJobCheck();
-                    DateTime dateTime = new DateTime();
-
-                    int hour = dateTime.hourOfDay().get();
-                    int minute = dateTime.getMinuteOfHour();
-
-                    if (hour == 8 && minute <= 30) {
-                        removeJob();
-                    }
-                } catch (Exception e) {
-                    ScheduleLog.info("漏跑检测异常{}", e);
-                } finally {
-                    masterContext.masterTimer.newTimeout(this, 30, TimeUnit.MINUTES);
-                }
-            }
-        }, 30, TimeUnit.MINUTES);
     }
 
-    /**
-     * 漏泡检测，清理schedule线程，1小时调度一次,超过15分钟，job开始检测漏泡
-     */
 
-    private void lostJobCheck() {
-        ScheduleLog.info("refresh host group success, start roll back");
-        masterContext.refreshHostGroupCache();
-        String currDate = DateUtil.getNowStringForAction();
-        Dispatcher dispatcher = masterContext.getDispatcher();
-        if (dispatcher != null) {
-            //TODO 漏跑检测 应该检测最新的任务状态 而不应该使用上次生成的版本信息作为标准  除非任务执行完成，更新状态 或者读取数据库最新状态
-            Map<Long, HeraAction> actionMapNew = heraActionMap;
-            Long tmp = Long.parseLong(currDate) - 15000000;
-            if (actionMapNew != null && actionMapNew.size() > 0) {
-                List<Long> actionIdList = new ArrayList<>();
-                for (Long actionId : actionMapNew.keySet()) {
-                    if (actionId < tmp) {
-                        rollBackLostJob(actionId, actionMapNew, actionIdList);
-                    }
-                }
-                ScheduleLog.info("roll back action count:" + actionIdList.size());
-            }
-            ScheduleLog.info("clear job scheduler ok");
-        }
-    }
-
-    private void removeJob() {
-        ScheduleLog.warn("开始进行版本清理");
-        Dispatcher dispatcher = masterContext.getDispatcher();
-        Long currDate = Long.parseLong(DateUtil.getNowStringForAction());
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, +1);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd0000000000");
-        Long nextDay = Long.parseLong(simpleDateFormat.format(calendar.getTime()));
-        Long tmp = currDate - 15000000;
-        Map<Long, HeraAction> actionMapNew = heraActionMap;
-        //移除未生成的调度
-        List<AbstractHandler> handlers = dispatcher.getJobHandlers();
-        List<JobHandler> shouldRemove = new ArrayList<>();
-        if (handlers != null && handlers.size() > 0) {
-            handlers.forEach(handler -> {
-                JobHandler jobHandler = (JobHandler) handler;
-                String actionId = jobHandler.getActionId();
-                Long aid = Long.parseLong(actionId);
-                if (Long.parseLong(actionId) < tmp) {
-                    masterContext.getQuartzSchedulerService().deleteJob(actionId);
-                } else if (aid >= currDate && aid < nextDay) {
-                    if (!actionMapNew.containsKey(aid)) {
-                        masterContext.getQuartzSchedulerService().deleteJob(actionId);
-                        masterContext.getHeraJobActionService().delete(actionId);
-                    }
-                }
-                if (!DateUtil.isToday(actionId)) {
-                    shouldRemove.add(jobHandler);
-                }
-            });
-        }
-        //移除 过期 失效的handler
-        shouldRemove.forEach(dispatcher::removeJobHandler);
-        ScheduleLog.warn("版本清理完成");
-    }
-
-    public void generateBatchAction() {
-        ScheduleLog.info("全量任务版本生成");
-        generateAction(false, null);
-    }
 
     public boolean generateSingleAction(Integer jobId) {
         ScheduleLog.info("单个任务版本生成：{}", jobId);
@@ -475,46 +413,6 @@ public class Master {
         }
     }
 
-
-    private void rollBackLostJob(Long actionId, Map<Long, HeraAction> actionMapNew, List<Long> actionIdList) {
-        HeraAction lostJob = actionMapNew.get(actionId);
-        if (lostJob != null) {
-            String dependencies = lostJob.getDependencies();
-            if (StringUtils.isNotBlank(dependencies)) {
-                List<String> jobDependList = Arrays.asList(dependencies.split(","));
-                boolean isAllComplete = true;
-                if (jobDependList.size() > 0) {
-                    for (String jobDepend : jobDependList) {
-                        Long jobDep = Long.parseLong(jobDepend);
-                        if (actionMapNew.get(jobDep) != null) {
-                            HeraAction action = actionMapNew.get(jobDep);
-                            if (action != null) {
-                                String status = action.getStatus();
-                                if (status == null || status.equals("wait")) {
-                                    isAllComplete = false;
-                                } else if (status.equals(StatusEnum.FAILED.toString())) {
-                                    isAllComplete = false;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (isAllComplete) {
-                    if (!actionIdList.contains(actionId)) {
-                        masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId.toString()));
-                        actionIdList.add(actionId);
-                        ScheduleLog.info("roll back lost actionId :" + actionId);
-                    }
-                }
-            } else { //独立任务情况
-                if (!actionIdList.contains(actionId)) {
-                    masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId.toString()));
-                    actionIdList.add(actionId);
-                    ScheduleLog.info("roll back lost actionId :" + actionId);
-                }
-            }
-        }
-    }
 
     /**
      * 扫描任务等待队列，取出任务去执行
