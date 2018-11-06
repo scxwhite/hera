@@ -36,3 +36,6 @@ div#rMenu ul li {
     background-color: #eee;
     border: 1px solid #ddd;
 }
+.tip{
+    color: red;
+}

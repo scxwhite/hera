@@ -204,10 +204,10 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">描述:</label>
+                                            <label class="control-label input-sm col-sm-3"><label class="tip">*</label>描述:</label>
                                             <div class="col-sm-8">
                                                 <#--<label class="form-control-static"></label>-->
-                                                    <input class="form-control" type="text" name="runPriorityLevel" readonly>
+                                                    <input class="form-control" type="text" name="" readonly>
                                             </div>
                                         </div>
                                     </div>
