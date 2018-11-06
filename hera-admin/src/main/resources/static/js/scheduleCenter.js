@@ -209,26 +209,10 @@ $(function () {
             },
             type: "post",
             success:function (res) {
-                // console.log(res)
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html('接口没好待解决');
-                //接口没好待解决
-                // if (res.success === true){
-                //     $('#response').html('成功');
-                // }else{
-                //     $('#response').html('执行失败msg:'+res.msg);
-                // }
+                layer.msg(res);
             },
             error:function (err) {
-                // console.log(err)
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html('生成失败 错误：'+err.status);
+                layer.msg(err);
             }
         })
     });
@@ -715,28 +699,14 @@ $(function () {
                 triggerType: triggerType
             },
             success: function (res) {
-                // if (data.success == false) {
-                //     alert(data.msg)
-                // }
-                // console.log(res);
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                if (res.success === true){
-                    $('#response').html('执行成功');
+                if(res.success===true){
+                    layer.msg('成功');
                 }else{
-                    $('#response').html('执行失败msg:'+res.msg);
-
+                    layer.msg('失败')
                 }
             },
             error:function (err) {
-                // console.log(err);
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html(err);
+                layer.msg(err);
             }
         });
         $('#myModal').modal('hide');
@@ -765,7 +735,7 @@ $(function () {
                 $('#selectJobVersion').append(jobVersion);
                 $('#selectJobVersion').selectpicker('refresh');
 
-                $('#myModal').modal('show`');
+                $('#myModal').modal('show');
 
             }
         });
@@ -800,13 +770,12 @@ $(function () {
         codeMirror = CodeMirror.fromTextArea(editor[0], {
             mode: "text/x-sh",
             lineNumbers: true,
-            theme: "paraiso-light",
+            theme: "base16-light",
             readOnly: true,
             matchBrackets: true,
             smartIndent: true,
             styleActiveLine: true,
             nonEmpty: true
-
         });
 
         codeMirror.on('keypress', function () {

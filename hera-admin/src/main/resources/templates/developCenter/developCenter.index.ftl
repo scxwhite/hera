@@ -4,7 +4,7 @@
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/metroStyle/metroStyle.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/base16-light.css">
@@ -19,9 +19,9 @@
         position: absolute;
         visibility: hidden;
         top: 0;
-        background-color: #40a8e4;
         text-align: left;
-        padding: 2px;
+        width: 100px;
+        z-index: 9999;
     }
 
     div#rMenu ul {
@@ -37,11 +37,12 @@
     }
 
     div#rMenu ul li {
-        margin: 1px 0;
-        padding: 0 5px;
+        padding: 1px 5px;
         cursor: pointer;
         list-style: none outside none;
-        background-color: #40a8e4;
+    }
+    div#rMenu ul li:hover{
+        background-color: rgba(0,0,0,0.1);
     }
 
 
@@ -61,8 +62,8 @@
                     <div style="overflow: auto;" class="height-self">
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
-                    <div id="rMenu">
-                        <ul style="font-size: 15px;color: black">
+                    <div id="rMenu" class="box box-primary">
+                        <ul>
                             <li id="addFolder">增加文件夹</li>
                             <li id="addHiveFile">新建Hive</li>
                             <li id="addShellFile">新建Shell</li>

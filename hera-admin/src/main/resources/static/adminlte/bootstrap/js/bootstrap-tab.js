@@ -220,7 +220,11 @@
     BaseTab.prototype.showTab = function (tabId) {
         this.$element.find(".nav-tabs li a[href='#" + tabId + "']").tab("show");
     }
-
+    //根据id修改text
+    BaseTab.prototype.changeText = function (tabId,text) {
+        this.options.data.text = text;
+        this.$element.find(".nav-tabs li a[href='#" + tabId + "']").children('span').html(text);
+    }
     //获取当前活动tab页的ID
     BaseTab.prototype.getCurrentTabId = function () {
         var href = this.$element.find(".nav-tabs li.active a").attr("href");

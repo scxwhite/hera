@@ -4,10 +4,10 @@
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/metroStyle/metroStyle.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/paraiso-light.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/base16-light.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
 </head>
@@ -112,39 +112,43 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">组id:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="id">1</label>
+                                                <#--<label class="form-control-static" name="id">1</label>-->
+                                                <input class="form-control" type="text" name="id" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">名称:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static"
-                                                       name="name">activity_import</label>
+                                                <#--<label class="form-control-static" name="name">activity_import</label>-->
+                                                <input class="form-control" type="text" name="name" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">所有人:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="owner">类型</label>
+                                                <#--<label class="form-control-static" name="owner">类型</label>-->
+                                                <input class="form-control" type="text" name="owner" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">描述:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static"
-                                                       name="description">导数据</label>
+                                                <#--<label class="form-control-static" name="description">导数据</label>-->
+                                                <input class="form-control" type="text" name="description" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">关注人员:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="focusUser"></label>
+                                                <#--<label class="form-control-static" name="focusUser"></label>-->
+                                                <input class="form-control" type="text" name="focusUser" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">管理员:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="uidS"></label>
+                                                <#--<label class="form-control-static" name="uidS"></label>-->
+                                                <input class="form-control" type="text" name="uidS" readonly>
                                             </div>
                                         </div>
 
@@ -166,38 +170,44 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">任务id:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="id"></label>
+                                                <#--<label class="form-control-static" name="id"></label>-->
+                                                    <input class="form-control" type="text" name="id" readonly>
+
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">名称:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="name">哈哈</label>
+                                                <#--<label class="form-control-static" name="name">哈哈</label>-->
+                                                <input class="form-control" type="text" name="name" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">任务类型:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static" name="runType"></label>
+                                                <#--<label class="form-control-static" name="runType"></label>-->
+                                                <input class="form-control" type="text" name="runType" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4"> 自动调度:</label>
                                             <div class="col-sm-8">
-                                                <label class="label" name="auto"></label>
+                                                <#--<label class="label" name="auto"></label>-->
+                                                    <input class="form-control" type="text" name="auto" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">任务优先级:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static"
-                                                       name="runPriorityLevel"></label>
+                                                <#--<label class="form-control-static" name="runPriorityLevel"></label>-->
+                                                <input class="form-control" type="text" name="runPriorityLevel" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">描述:</label>
                                             <div class="col-sm-8">
-                                                <label class="form-control-static"></label>
+                                                <#--<label class="form-control-static"></label>-->
+                                                    <input class="form-control" type="text" name="runPriorityLevel" readonly>
                                             </div>
                                         </div>
                                     </div>
