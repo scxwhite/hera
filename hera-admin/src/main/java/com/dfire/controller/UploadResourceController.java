@@ -30,6 +30,9 @@ import java.util.Map;
 @RequestMapping("/uploadResource")
 public class UploadResourceController {
 
+
+    private final String PATH = "/opt/logs/spring-boot/";
+
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
@@ -48,7 +51,7 @@ public class UploadResourceController {
                     String prefix = StringUtils.substringBefore(fileName, ".");
                     String suffix = StringUtils.substringAfter(fileName, ".");
                     newFileName = prefix + "-" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + "." + suffix;
-                    newFilePath = "/opt/com.dfire.logs/spring-boot/" + newFileName;
+                    newFilePath = PATH + newFileName;
                     file = new File(newFilePath);
                     multipartFile.transferTo(file);
                 }
@@ -57,7 +60,7 @@ public class UploadResourceController {
             }
             JobContext jobContext = JobContext.builder().build();
             jobContext.setProperties(new HierarchyProperties(new HashMap<>(16)));
-            jobContext.setWorkDir("/opt/com.dfire.logs/spring-boot");
+            jobContext.setWorkDir(PATH);
             UploadLocalFileJob uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), "/hera/hdfs-upload-dir");
             HeraLog.info("controller upload file command {}", uploadJob.getCommandList().toString());
 

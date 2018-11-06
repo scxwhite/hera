@@ -513,7 +513,7 @@ $(function () {
                 last = localStorage.key(i);
                 var ul = logTabContainer.children('ul');
                 ul.children().removeClass('active-log');
-                ul.prepend("<li class=\"com.dfire.logs-id active-log\">DebugId : "+localStorage.key(i).slice(3)+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
+                ul.prepend("<li class=\"logs-id active-log\">DebugId : "+localStorage.key(i).slice(3)+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
                 ul.children('li:first').attr('his-id',localStorage.key(i).slice(3));
                 showPrevNext(logTabContainer);
             }
@@ -529,7 +529,7 @@ $(function () {
         //tab
         var ul = logTabContainer.children('ul');
         ul.children().removeClass('active-log');
-        ul.prepend("<li class=\"com.dfire.logs-id active-log\">DebugId : "+debugId+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
+        ul.prepend("<li class=\"logs-id active-log\">DebugId : "+debugId+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
         var lis=ul.children();
         logTabContainer.tabsLength += lis[lis.length - 1].clientWidth;
         showPrevNext(logTabContainer);
