@@ -11,7 +11,6 @@ $(function () {
     var editor = $('#editor');
     var setting = {
         view: {
-            showLine: false
         },
         data: {
             simpleData: {

@@ -58,8 +58,10 @@ website:    http://code.google.com/p/jquerytree/
 .ztree li span.button.roots_open{background-position: -105px 0;}
 .ztree li span.button.roots_close{background-position: -126px 0;}
 .ztree li span.button.center_open{background-position: -105px -21px;}
+.ztree li span.button.center_open2{background-position: -105px -21px;}
 .ztree li span.button.center_close{background-position: -126px -21px;}
 .ztree li span.button.bottom_open{background-position: -105px -42px;}
+.ztree li span.button.bottom_open2{background-position: -105px -42px;}
 .ztree li span.button.bottom_close{background-position: -126px -42px;}
 .ztree li span.button.noline_open{background-position: -105px -84px;}
 .ztree li span.button.noline_close{background-position: -126px -84px;}
@@ -71,6 +73,9 @@ website:    http://code.google.com/p/jquerytree/
 
 .ztree li span.button.ico_open{margin-right:2px; background-position: -147px -21px; vertical-align:top; *vertical-align:middle}
 .ztree li span.button.ico_close{margin-right:2px; margin-right:2px; background-position: -147px 0; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_open2{margin-right:2px; background-position: -147px -21px; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_close2{margin-right:2px; margin-right:2px; background-position: -147px 0; vertical-align:top; *vertical-align:middle}
+
 .ztree li span.button.ico_docu{margin-right:2px; background-position: -147px -42px; vertical-align:top; *vertical-align:middle}
 .ztree li span.button.edit {margin-left:2px; margin-right: -1px; background-position: -189px -21px; vertical-align:top; *vertical-align:middle}
 .ztree li span.button.edit:hover {
