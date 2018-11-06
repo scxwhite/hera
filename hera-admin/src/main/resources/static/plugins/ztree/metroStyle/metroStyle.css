@@ -60,9 +60,11 @@ website:    http://code.google.com/p/jquerytree/
 .ztree li span.button.center_open{background-position: -105px -21px;}
 .ztree li span.button.center_open2{background-position: -105px -21px;}
 .ztree li span.button.center_close{background-position: -126px -21px;}
+.ztree li span.button.center_close2{background-position: -126px -21px;}
 .ztree li span.button.bottom_open{background-position: -105px -42px;}
 .ztree li span.button.bottom_open2{background-position: -105px -42px;}
 .ztree li span.button.bottom_close{background-position: -126px -42px;}
+.ztree li span.button.bottom_close2{background-position: -126px -42px;}
 .ztree li span.button.noline_open{background-position: -105px -84px;}
 .ztree li span.button.noline_close{background-position: -126px -84px;}
 .ztree li span.button.root_docu{ background:none;}
