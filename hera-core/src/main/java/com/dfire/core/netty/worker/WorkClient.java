@@ -343,9 +343,9 @@ public class WorkClient {
     public String cancelJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error("cancel from web exception");
+            SocketLog.error("取消任务失败");
         }
-        return "cancel job success";
+        return "取消任务成功";
     }
 
     public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {

@@ -7,7 +7,9 @@ $(function () {
      */
     var setting = {
         view: {
-            showLine: false
+            // addHoverDom:addHoverDom,
+            // removeHoverDom: removeHoverDom,
+            selectedMulti: false
         },
         data: {
             simpleData: {
@@ -15,20 +17,178 @@ $(function () {
                 idKey: "id",
                 pIdKey: "parent",
                 rootPId: 0
-
+            },
+            keep:{
+                parent:true
             }
         },
         callback: {
-            // onRightClick: OnRightClick,
+            onRightClick: OnRightClick,
             onClick: leftClick,
             onRename:renameFile,
             onRemove:removeFile
         },
         edit:{
-            enable:true
+            enable:true,
+            editNameSelectAll: true,
+            // showRemoveBtn: showRemoveBtn,
+            // showRenameBtn: showRenameBtn
         }
     };
 
+    function add(e) {
+        var zTree = $.fn.zTree.getZTreeObj("documentTree"),
+            isParent = e.data.isParent,
+            nodes = zTree.getSelectedNodes(),
+            treeNode = nodes[0];
+            hideRMenu();
+            var selected = zTree.getSelectedNodes()[0];
+            var id = selected['id'];
+            addCount++;
+            if(e.data.type===1){
+                //new folder
+                var name = "文件夹" + addCount;
+                var parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
+
+                $.ajax({
+                    url: base_url + "/developCenter/addFile.do",
+                    type: "get",
+                    async: false,
+                    data: parameter,
+                    success: function (data) {
+                        if (treeNode) {
+                            treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name:name});
+                        } else {
+                            treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
+                        }
+                        if (treeNode) {
+                            zTree.editName(treeNode[0]);
+                        } else {
+                            layer.msg("叶子节点被锁定，无法增加子节点");
+                        }
+                    }
+                });
+            } else if(e.data.type===2){
+                var name = addCount + ".hive";
+
+                var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+                console.log(zTree)
+                $.ajax({
+                    url: base_url + "/developCenter/addFile.do",
+                    type: "get",
+                    async: false,
+                    data: parameter,
+                    success: function (data) {
+                        console.log(data)
+                        if (treeNode) {
+                            treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name: name});
+                        } else {
+                            treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
+                        }
+                        if (treeNode) {
+                            zTree.editName(treeNode[0]);
+                        } else {
+                            layer.msg("叶子节点被锁定，无法增加子节点");
+                        }
+                    }
+                });
+
+            }else if(e.data.type===3){
+                //new .sh file
+                var name = addCount + ".sh";
+                var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+
+                $.ajax({
+                    url: base_url + "/developCenter/addFile.do",
+                    type: "get",
+                    async: false,
+                    data: parameter,
+                    success: function (data) {
+                        if (treeNode) {
+                            treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name: name});
+                        } else {
+                            treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
+                        }
+                        if (treeNode) {
+                            zTree.editName(treeNode[0]);
+                        } else {
+                            layer.msg("叶子节点被锁定，无法增加子节点");
+                        }
+                    }
+                });
+            }
+
+    };
+    //修改文件名后回调
+    function renameFile(event, treeId, treeNode, isCancel) {
+        $.ajax({
+            url: base_url + "/developCenter/rename.do",
+            type:'get',
+            data:{
+                id:treeNode.id,
+                name:treeNode.name
+            },
+            success:function (res) {
+                layer.msg(res);
+                //同步修改codemirror上的tab名
+                var id = treeNode.id;
+                var name = treeNode.name;
+                var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
+                tabObj = $("#tabContainer").tabs({
+                    data: tabDetail,
+                    showIndex: 0,
+                    loadAll: true
+                });
+                tabObj = $("#tabContainer").data("tabs").changeText(id,name);
+                //更改localStorage内的值
+                tabData = JSON.parse(localStorage.getItem('tabData'));
+                console.log(tabData);
+                for(var i =0;i<tabData.length;i++){
+                    if(tabData[i].id===id){
+                        tabData.splice(i,1);
+                        break;
+                    }
+                }
+                if(!treeNode.isParent){
+                    tabData.push(tabDetail);
+                }
+                localStorage.setItem("tabData", JSON.stringify(tabData));
+            },
+            error:function (err) {
+                layer.msg(err);
+            }
+        })
+    }
+
+    //删除文件后回调
+    function removeFile(event, treeId, treeNode) {
+        $.ajax({
+            url: base_url + "/developCenter/delete.do",
+            type:'get',
+            data:{
+                id:treeNode.id
+            },
+            success:function (res) {
+                layer.msg(res);
+                //从localStorage中删除
+                tabData = JSON.parse(localStorage.getItem('tabData'));
+                for(var i =0;i<tabData.length;i++){
+                    if(tabData[i].id===treeNode.id){
+                        tabData.splice(i,1);
+                        break;
+                    }
+                }
+                //localStorage delete
+                localStorage.setItem('tabData',JSON.stringify(tabData));
+                //移除tab
+                tabObj = $("#tabContainer").data("tabs").remove(treeNode.id);
+            },
+            error:function (err) {
+                layer.msg(err);
+            }
+        })
+
+    }
     /**
      * zTree 右键菜单初始化数据
      */
@@ -113,6 +273,7 @@ $(function () {
                 loadAll: true
             });
             tabObj = $("#tabContainer").data("tabs").showTab(id);
+            console.log(id)
         }
         localStorage.setItem("tabData", JSON.stringify(tabData));
 
@@ -197,8 +358,10 @@ $(function () {
      * @param treeNode
      * @constructor
      */
+    var rightClickNode;
     function OnRightClick(event, treeId, treeNode) {
         zTree.selectNode(treeNode);
+        rightClickNode=treeNode;
         var selected = zTree.getSelectedNodes()[0];
         var isParent = selected['isParent'];//true false
         if (isParent == true) {
@@ -235,58 +398,7 @@ $(function () {
 
         $("body").bind("mousedown", onBodyMouseDown);
     }
-    //修改文件名后回调
-    function renameFile(event, treeId, treeNode, isCancel) {
-        $.ajax({
-            url: base_url + "/developCenter/rename.do",
-            type:'get',
-            data:{
-                id:treeNode.id,
-                name:treeNode.name
-            },
-            success:function (res) {
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html(res);
-            },
-            error:function (err) {
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html(err);
-            }
-        })
 
-    }
-    //删除文件后回调
-    function removeFile(event, treeId, treeNode) {
-        $.ajax({
-            url: base_url + "/developCenter/delete.do",
-            type:'get',
-            data:{
-                id:treeNode.id
-            },
-            success:function (res) {
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html(res);
-            },
-            error:function (err) {
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html(err);
-
-            }
-        })
-
-    }
     /**
      * 隐藏菜单
      */
@@ -305,112 +417,19 @@ $(function () {
         }
     }
 
-    $("#addFolder").click(function () {
+    $("#addFolder").bind('click',{isParent:true,type:1},add);
+
+    $("#addHiveFile").bind('click',{isParent:false,type:2},add);
+
+
+    $("#addShellFile").bind('click',{isParent:false,type:3},add);
+    //重命名
+    $("#rename").bind('click',{node:rightClickNode},function () {
         hideRMenu();
         var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var name = "文件夹" + addCount;
-
-        var newNode = {name: name, isParent: true, parent: id};
-        addCount++;
-
-        var parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
-
-        $.ajax({
-            url: base_url + "/developCenter/addFile.do",
-            type: "get",
-            async: false,
-            data: parameter,
-            success: function (data) {
-                newNode['id'] = data;
-            }
-        });
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
-        }
-
-        fixIcon();//调用修复图标的方法。方法如下：
-        location.reload();
-
-
-    });
-
-
-    $("#addHiveFile").click(function () {
-        hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var parent = selected['parent'];
-        var name = selected['name'];
-
-        var newNode = {name: +addCount + name, isParent: true};
-        addCount++;
-        var name = addCount + ".hive";
-
-        var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-
-        $.ajax({
-            url: base_url + "/developCenter/addFile.do",
-            type: "get",
-            async: false,
-            data: parameter,
-            success: function (data) {
-            }
-        });
-
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
-        }
-
-        fixIcon();//调用修复图标的方法。方法如下：
-        location.reload();
-
-
-    });
-
-
-    $("#addShellFile").click(function () {
-        hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var parent = selected['parent'];
-        var name = selected['name'];
-
-        var newNode = {name: +addCount + name, isParent: true};
-        addCount++;
-        var name = addCount + ".sh";
-
-        var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-
-        $.ajax({
-            url: base_url + "/developCenter/addFile.do",
-            type: "get",
-            async: false,
-            data: parameter,
-            success: function (data) {
-
-            }
-        });
-
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
-        }
-        fixIcon();//调用修复图标的方法。方法如下：
-        location.reload();
-
-
-    });
-
-
-    $("#rename").click(function () {
-        hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var parent = selected['parent'];
-
+        console.log(selected,rightClickNode);
+        var treeObj = $.fn.zTree.getZTreeObj("documentTree");
+        treeObj.editName(selected);
     });
 
 
@@ -424,20 +443,23 @@ $(function () {
             return item['id'] != id;
         });
         localStorage.setItem("tabData", JSON.stringify(tabData));
-
         $.ajax({
             url: base_url + "/developCenter/delete.do",
             type: "get",
             async: false,
             data: parameter,
             success: function (data) {
+                layer.msg(data)
+                var zTree = $.fn.zTree.getZTreeObj("documentTree"),
+                    nodes = zTree.getSelectedNodes(),
+                    treeNode = nodes[0];
+                if (nodes.length == 0) {
+                    alert("请先选择一个节点");
+                    return;
+                }
+                zTree.removeNode(treeNode);
             }
         });
-
-        fixIcon();//调用修复图标的方法。方法如下：
-        location.reload();
-
-
     });
 
 
@@ -594,6 +616,8 @@ $(function () {
             dataType: "json",
             success: function (data) {
                 result = data;
+                debugId=data.debugId;
+                showRightNowLog(data.fileId,data.debugId);
             }
         });
 
@@ -610,12 +634,9 @@ $(function () {
             if (new Date().getTime() - dataObj.time>exp) {
                 console.log('信息已过期');
             }else{
-                //console.log("data="+dataObj.data);
-                //console.log(JSON.parse(dataObj.data));
                 var dataObjDatatoJson = dataObj.data;
                 return dataObjDatatoJson;
             }
-
         }
     }
     /**
@@ -652,7 +673,7 @@ $(function () {
             mode: "sql",
             lineNumbers: true,
             autofocus: true,
-            theme: "paraiso-light",
+            theme: "base16-light",
             readOnly: false
         });
         codeMirror.display.wrapper.style.height = 500 + "px";
@@ -712,7 +733,7 @@ $(function () {
         if(tabContainer.tabsLength > tabContainer.tabContainerWidth){
             tabContainer.siblings('.prev-next-con').children('.prev-tab').addClass('show');
             tabContainer.siblings('.prev-next-con').children('.next-tab').addClass('show');
-            tabContainer.css({"left": "30px"});
+            tabContainer.children('ul').css({"padding-left": "30px"});
         }
     }
 

@@ -13,6 +13,7 @@ html, body {
 .left-panel{
     height: calc(100vh - 50px);
     position: relative;
+    padding-left: 0;
 }
 #tabContainer{
     height: 26px;
@@ -67,7 +68,7 @@ html, body {
     overflow: hidden;
 }
 #config{
-    padding:10px 0;
+    padding:10px;
 }
 .icon-next,.icon-prev{
     color: #999999;
@@ -96,7 +97,7 @@ html, body {
     position: absolute;
     bottom: 0;
     top: 76px;
-    left: 15px;
+    left: 0px;
     right: 15px;
 }
 .log-tab{
@@ -157,10 +158,11 @@ html, body {
 .right-now-ul{
     position: absolute;
     width: 9999px;
+    padding-left: 0;
 }
 .log-container .prev-tab,.log-container .next-tab{
-    height: 30px;
-    line-height: 30px;
+    height: 32px;
+    line-height: 32px;
 }
 .log-container .next-tab{
     right: 0;
