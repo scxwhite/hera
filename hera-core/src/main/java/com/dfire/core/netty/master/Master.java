@@ -162,7 +162,7 @@ public class Master {
 
     @Scheduled(cron = "0 */30 * * * ?")
     private void lostJobCheck() {
-        ScheduleLog.info("refresh host group success, start rool back");
+        ScheduleLog.info("refresh host group success, start roll back");
         masterContext.refreshHostGroupCache();
         String currDate = DateUtil.getNowStringForAction();
         Dispatcher dispatcher = masterContext.getDispatcher();
@@ -500,7 +500,6 @@ public class Master {
         boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
             ScheduleLog.warn("schedule队列任务：{}", masterContext.getScheduleQueue());
-            printThreadPoolLog();
             JobElement jobElement = masterContext.getScheduleQueue().peek();
             MasterWorkHolder workHolder = getRunnableWork(jobElement);
             if (workHolder == null) {
@@ -514,7 +513,6 @@ public class Master {
 
         if (!masterContext.getManualQueue().isEmpty()) {
             ScheduleLog.warn("manual队列任务：{}", masterContext.getManualQueue());
-            printThreadPoolLog();
             JobElement jobElement = masterContext.getScheduleQueue().peek();
             MasterWorkHolder selectWork = getRunnableWork(jobElement);
             if (selectWork == null) {
@@ -528,7 +526,6 @@ public class Master {
 
         if (!masterContext.getDebugQueue().isEmpty()) {
             ScheduleLog.warn("debug队列任务：{}", masterContext.getDebugQueue());
-            printThreadPoolLog();
             JobElement jobElement = masterContext.getScheduleQueue().peek();
             MasterWorkHolder selectWork = getRunnableWork(jobElement);
             if (selectWork == null) {
