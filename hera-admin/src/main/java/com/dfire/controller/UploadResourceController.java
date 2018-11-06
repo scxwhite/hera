@@ -36,10 +36,10 @@ public class UploadResourceController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    public RestfulResponse uploadResource(MultipartHttpServletRequest request, @RequestParam("id") Integer id) {
+    public RestfulResponse uploadResource(MultipartHttpServletRequest request) {
         Map<String, MultipartFile> fileMap = request.getFileMap();
         String fileName;
-        String newFilePath = "";
+        String newFilePath;
         String newFileName = "";
         File file = null;
         RestfulResponse restfulResponse = RestfulResponse.builder().build();
@@ -63,7 +63,6 @@ public class UploadResourceController {
             jobContext.setWorkDir(PATH);
             UploadLocalFileJob uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), "/hera/hdfs-upload-dir");
             HeraLog.info("controller upload file command {}", uploadJob.getCommandList().toString());
-
             int exitCode = uploadJob.run();
             if (exitCode == 0) {
                 restfulResponse.setSuccess(true);

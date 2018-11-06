@@ -763,7 +763,7 @@
 
             <div class="modal-footer">
                 <input multiple id="fileForm" name="fileForm" type="file" class="file-loading"
-                       data-show-preview="false">
+                       >
                 <br>
                 <button class="btn btn-primary" id="closeUploadModal">关闭</button>
             </div>
@@ -885,6 +885,7 @@
 <script src="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.2/js/locales/zh.js"></script>
 
 
 </body>
