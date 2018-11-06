@@ -38,6 +38,7 @@ public class DistributeLock {
     @Autowired
     private WorkClient workClient;
 
+    @Autowired
     private HeraSchedule heraSchedule;
 
     private final long timeout = 1000 * 60 * 5L;
@@ -53,7 +54,6 @@ public class DistributeLock {
 
     @PostConstruct
     public void init() {
-        heraSchedule = new HeraSchedule(applicationContext);
         TimerTask checkLockTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) {
