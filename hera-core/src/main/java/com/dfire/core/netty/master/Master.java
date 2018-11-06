@@ -36,9 +36,11 @@ import com.dfire.protocol.RpcResponse;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,11 +56,14 @@ import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
  * @time: Created in 16:24 2018/1/12
  * @desc hera核心任务调度器
  */
+@NoArgsConstructor
+@Component
 public class Master {
 
     private MasterContext masterContext;
     private Map<Long, HeraAction> heraActionMap;
     private ThreadPoolExecutor executeJobPool;
+
 
     public Master(final MasterContext masterContext) {
 
