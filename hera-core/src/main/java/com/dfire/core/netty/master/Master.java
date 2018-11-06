@@ -103,7 +103,7 @@ public class Master {
 
         /**
          * 扫描任务等待队列，可获得worker的任务将执行
-         * 对于没有科运行机器的时候，自动调度任务将offer到exception队列，manual,debug任务重新offer到原队列
+         * 对于没有可运行机器的时，manual,debug任务重新offer到原队列
          *
          */
         TimerTask scanWaitingQueueTask = new TimerTask() {
@@ -167,6 +167,7 @@ public class Master {
         String currDate = DateUtil.getNowStringForAction();
         Dispatcher dispatcher = masterContext.getDispatcher();
         if (dispatcher != null) {
+            //TODO 漏跑检测 应该检测最新的任务状态 而不应该使用上次生成的版本信息作为标准  除非任务执行完成，更新状态 或者读取数据库最新状态
             Map<Long, HeraAction> actionMapNew = heraActionMap;
             Long tmp = Long.parseLong(currDate) - 15000000;
             if (actionMapNew != null && actionMapNew.size() > 0) {
