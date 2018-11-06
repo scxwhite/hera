@@ -697,9 +697,9 @@ $(function () {
             },
             success: function (res) {
                 if(res.success===true){
-                    layer.msg('成功');
+                    layer.msg('执行成功');
                 }else{
-                    layer.msg('失败')
+                    layer.msg('执行失败')
                 }
             },
             error:function (err) {

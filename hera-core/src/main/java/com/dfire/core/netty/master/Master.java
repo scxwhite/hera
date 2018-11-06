@@ -158,21 +158,28 @@ public class Master {
         masterContext.masterTimer.newTimeout(checkHeartBeatTask, 20, TimeUnit.SECONDS);
 
 
-        masterContext.masterTimer.newTimeout((timeout -> {
-            lostJobCheck();
+        masterContext.masterTimer.newTimeout(new TimerTask() {
+            @Override
+            public void run(Timeout timeout) throws Exception {
+                try {
+                    lostJobCheck();
+                    DateTime dateTime = new DateTime();
 
-            DateTime dateTime = new DateTime();
+                    int hour = dateTime.hourOfDay().get();
+                    int minute = dateTime.getMinuteOfHour();
 
-
-            int hour = dateTime.hourOfDay().get();
-            int minute = dateTime.getMinuteOfHour();
-
-            if (hour == 8 && minute <= 30) {
-                removeJob();
+                    if (hour == 8 && minute <= 30) {
+                        removeJob();
+                    }
+                } catch (Exception e) {
+                    ScheduleLog.info("漏跑检测异常{}", e);
+                } finally {
+                    masterContext.masterTimer.newTimeout(this, 30, TimeUnit.MINUTES);
+                }
             }
-
-        }), 30, TimeUnit.MINUTES);
+        }, 30, TimeUnit.MINUTES);
     }
+
     /**
      * 漏泡检测，清理schedule线程，1小时调度一次,超过15分钟，job开始检测漏泡
      */

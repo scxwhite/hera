@@ -336,14 +336,14 @@ public class WorkClient {
     public void executeJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse response = new WorkerHandleWebExecute().handleWebExecute(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error("netty manual web request get jobStatus error");
+            SocketLog.error(response.getErrorText());
         }
     }
 
     public String cancelJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error("取消任务失败");
+            SocketLog.error(webResponse.getErrorText());
         }
         return "取消任务成功";
     }
@@ -351,7 +351,7 @@ public class WorkClient {
     public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse webResponse = new WorkHandleWebUpdate().handleUpdate(workContext, jobId).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error("cancel from web exception");
+            SocketLog.error(webResponse.getErrorText());
         }
     }
 
