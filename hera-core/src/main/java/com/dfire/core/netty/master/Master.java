@@ -36,11 +36,9 @@ import com.dfire.protocol.RpcResponse;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -56,8 +54,6 @@ import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
  * @time: Created in 16:24 2018/1/12
  * @desc hera核心任务调度器
  */
-@NoArgsConstructor
-@Component
 public class Master {
 
     private MasterContext masterContext;
@@ -117,6 +113,7 @@ public class Master {
             private final Integer DELAY_TIME = 100;
             // 最大scan频率
             private final Integer MAX_DELAY_TIME = 10 * 1000;
+
             @Override
             public void run(Timeout timeout) {
                 try {
@@ -159,13 +156,27 @@ public class Master {
             }
         };
         masterContext.masterTimer.newTimeout(checkHeartBeatTask, 20, TimeUnit.SECONDS);
-    }
 
+
+        masterContext.masterTimer.newTimeout((timeout -> {
+            lostJobCheck();
+
+            DateTime dateTime = new DateTime();
+
+
+            int hour = dateTime.hourOfDay().get();
+            int minute = dateTime.getMinuteOfHour();
+
+            if (hour == 8 && minute <= 30) {
+                removeJob();
+            }
+
+        }), 30, TimeUnit.MINUTES);
+    }
     /**
      * 漏泡检测，清理schedule线程，1小时调度一次,超过15分钟，job开始检测漏泡
      */
 
-    @Scheduled(cron = "0 0/30 * * * ?")
     private void lostJobCheck() {
         ScheduleLog.info("refresh host group success, start roll back");
         masterContext.refreshHostGroupCache();
@@ -188,7 +199,6 @@ public class Master {
         }
     }
 
-    @Scheduled(cron = "0 0 8 * * ?")
     private void removeJob() {
         ScheduleLog.warn("开始进行版本清理");
         Dispatcher dispatcher = masterContext.getDispatcher();
