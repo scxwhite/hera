@@ -160,7 +160,7 @@ public class Master {
      * 漏泡检测，清理schedule线程，1小时调度一次,超过15分钟，job开始检测漏泡
      */
 
-    @Scheduled(cron = "0 */30 * * * ?")
+    @Scheduled(cron = "0 0/30 * * * ?")
     private void lostJobCheck() {
         ScheduleLog.info("refresh host group success, start roll back");
         masterContext.refreshHostGroupCache();

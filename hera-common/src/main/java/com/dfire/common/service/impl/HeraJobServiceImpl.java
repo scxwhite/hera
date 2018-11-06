@@ -1,5 +1,6 @@
 package com.dfire.common.service.impl;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.HeraJob;
@@ -89,8 +90,8 @@ public class HeraJobServiceImpl implements HeraJobService {
         List<HeraJobTreeNodeVo> list = groups.stream()
                 .filter(group -> group.getExisted() == 1)
                 .map(g -> HeraJobTreeNodeVo.builder()
-                        .id(g.getId() + "")
-                        .parent(g.getParent() + "")
+                        .id(Constants.GROUP_PREFIX + g.getId())
+                        .parent(Constants.GROUP_PREFIX + g.getParent())
                         .directory(g.getDirectory())
                         .isParent(true)
                         .name(g.getName() + "(" + g.getId() + ")")
@@ -99,7 +100,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         List<HeraJobTreeNodeVo> jobList = jobs.stream()
                 .map(job -> HeraJobTreeNodeVo.builder()
                         .id(job.getId() + "")
-                        .parent(job.getGroupId() + "")
+                        .parent(Constants.GROUP_PREFIX + job.getGroupId())
                         .isParent(false)
                         .name(job.getName() + "(" + job.getId() + ")")
                         .build())

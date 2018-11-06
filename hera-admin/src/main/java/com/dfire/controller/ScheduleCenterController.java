@@ -1,6 +1,7 @@
 package com.dfire.controller;
 
 import com.alibaba.fastjson.JSONArray;
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraGroupVo;
@@ -63,6 +64,14 @@ public class ScheduleCenterController extends BaseHeraController {
     @Autowired
     private HeraHostGroupService heraHostGroupService;
 
+    private ThreadPoolExecutor poolExecutor;
+
+    {
+        poolExecutor = new ThreadPoolExecutor(
+                1, Runtime.getRuntime().availableProcessors() * 4, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("updateJobThread"), new ThreadPoolExecutor.AbortPolicy());
+        poolExecutor.allowCoreThreadTimeOut(true);
+    }
+
     private final String JOB = "job";
     private final String GROUP = "group";
     private final String ERROR_MSG = "抱歉，您没有权限进行此操作";
@@ -111,11 +120,12 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/getGroupMessage", method = RequestMethod.GET)
     @ResponseBody
-    public HeraGroupVo getGroupMessage(Integer groupId) {
-        HeraGroup group = heraGroupService.findById(groupId);
+    public HeraGroupVo getGroupMessage(String groupId) {
+        Integer id = getGroupId(groupId);
+        HeraGroup group = heraGroupService.findById(id);
         HeraGroupVo groupVo = BeanConvertUtils.convert(group);
         groupVo.setInheritConfig(getInheritConfig(groupVo.getParent()));
-        groupVo.setUIdS(getuIds(groupId));
+        groupVo.setUIdS(getuIds(id));
         return groupVo;
     }
 
@@ -262,7 +272,8 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse updateGroupMessage(HeraGroupVo groupVo) {
+    public RestfulResponse updateGroupMessage(HeraGroupVo groupVo, String groupId) {
+        groupVo.setId(getGroupId(groupId));
         if (!hasPermission(groupVo.getId(), GROUP)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
@@ -273,29 +284,31 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse deleteJob(Integer id, Boolean isGroup) {
-        if (!hasPermission(id, isGroup ? GROUP : JOB)) {
+    public RestfulResponse deleteJob(String id, Boolean isGroup) {
+        Integer xId = getGroupId(id);
+        if (!hasPermission(xId, isGroup ? GROUP : JOB)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
         boolean res;
-        String check = checkDependencies(id, isGroup);
+        String check = checkDependencies(xId, isGroup);
         if (StringUtils.isNotBlank(check)) {
             return new RestfulResponse(false, check);
         }
 
         if (isGroup) {
-            res = heraGroupService.delete(id) > 0;
+            res = heraGroupService.delete(xId) > 0;
             return new RestfulResponse(res, res ? "删除成功" : "系统异常,请联系管理员");
 
         }
-        res = heraJobService.delete(id) > 0;
-        updateJobToMaster(res, id);
+        res = heraJobService.delete(xId) > 0;
+        updateJobToMaster(res, xId);
         return new RestfulResponse(res, res ? "删除成功" : "系统异常,请联系管理员");
     }
 
     @RequestMapping(value = "/addJob", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse addJob(HeraJob heraJob) {
+    public RestfulResponse addJob(HeraJob heraJob, String parentId) {
+        heraJob.setGroupId(getGroupId(parentId));
         if (!hasPermission(heraJob.getGroupId(), GROUP)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
@@ -321,7 +334,8 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/addGroup", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse addJob(HeraGroup heraGroup) {
+    public RestfulResponse addJob(HeraGroup heraGroup, String parentId) {
+        heraGroup.setParent(getGroupId(parentId));
         if (!hasPermission(heraGroup.getParent(), GROUP)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
@@ -425,8 +439,6 @@ public class ScheduleCenterController extends BaseHeraController {
 
     private void updateJobToMaster(boolean result, Integer id) {
         if (result) {
-            ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(
-                    1, 1, 10L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("updateJob"), new ThreadPoolExecutor.AbortPolicy());
             poolExecutor.execute(() -> {
                 try {
                     workClient.updateJobFromWeb(String.valueOf(id));
@@ -436,20 +448,17 @@ public class ScheduleCenterController extends BaseHeraController {
                     e.printStackTrace();
                 }
             });
-            poolExecutor.shutdown();
         }
     }
 
 
     private Map<String, String> getInheritConfig(Integer groupId) {
-        HeraGroup group;
-        Map<String, String> configMap = new HashMap<>();
-        while (groupId != null && groupId != 0) {
-            group = heraGroupService.findConfigById(groupId);
-            if (group.getConfigs() != null) {
-                configMap.putAll(StringUtil.convertStringToMap(group.getConfigs()));
-            }
+        HeraGroup group = heraGroupService.findConfigById(groupId);
+        Map<String, String> configMap = new HashMap<>(64);
+        while (group != null && groupId != null && groupId != 0) {
+            configMap.putAll(StringUtil.convertStringToMap(group.getConfigs()));
             groupId = group.getParent();
+            group = heraGroupService.findConfigById(groupId);
         }
         return configMap;
     }
@@ -557,6 +566,21 @@ public class ScheduleCenterController extends BaseHeraController {
     @ResponseBody
     public JsonResponse getJobImpactOrProgress(Integer jobId, Integer type) {
         return heraJobService.findCurrentJobGraph(jobId, type);
+    }
+
+    private Integer getGroupId(String group) {
+        String groupNum = group;
+        if (group.startsWith(Constants.GROUP_PREFIX)) {
+            groupNum = group.split("_")[1];
+        }
+        Integer res;
+        try {
+            res = Integer.parseInt(groupNum);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("无法识别的groupId：" + group);
+        }
+
+        return res;
     }
 
 }

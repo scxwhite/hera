@@ -183,7 +183,7 @@ $(function () {
             data: {
                 name: $('#addGroupModal [name="groupName"]').val(),
                 directory: $('#addGroupModal [name="groupType"]').val(),
-                parent: focusId
+                parentId: focusId
             },
             success: function (data) {
                 $('#addGroupModal').modal('hide');
@@ -212,7 +212,6 @@ $(function () {
             success:function (res) {
 
                 layer.msg(res);
-                 console.log(res)
                 $('#responseCon').animate({right:'20px'},500)
                 setTimeout(function () {
                     $('#responseCon').animate({right:'-140px'},500);
@@ -317,7 +316,7 @@ $(function () {
             data: {
                 name: name,
                 runType: type,
-                groupId: focusId
+                parentId: focusId
             },
             success: function (data) {
                 if (data.success == true) {
@@ -403,7 +402,6 @@ $(function () {
 
         function search(key) {
             var keys, length;
-            console.log(key);
             if (key == null || key == "" || key == undefined) {
                 tree.getNodesByFilter(function (node) {
                     tree.showNode(node);
@@ -479,7 +477,6 @@ $(function () {
      */
     $('#editOperator [name="save"]').on('click', function () {
         if (!isGroup) {
-            console.log(codeMirror.getValue());
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
@@ -497,7 +494,7 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
                 data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                "&resource=" + "&id=" + focusId,
+                "&resource=" + "&groupId=" + focusId,
                 type: "post",
                 success: function (data) {
                     leftClick();
