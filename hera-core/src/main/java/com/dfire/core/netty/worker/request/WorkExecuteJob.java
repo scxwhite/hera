@@ -76,6 +76,7 @@ public class WorkExecuteJob {
             HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getActionId());
             final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN),
                     jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
+            //TODO 存储actionId 不应该放historyID
             workContext.getManualRunning().put(historyId, job);
 
             Integer exitCode = -1;

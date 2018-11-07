@@ -44,6 +44,7 @@ public class MasterTimerSchedule {
         String currDate = DateUtil.getNowStringForAction();
         Dispatcher dispatcher = masterContext.getDispatcher();
         if (dispatcher != null) {
+            //TODO  应该使用最新状态
             Map<Long, HeraAction> actionMapNew = masterContext.getMaster().getHeraActionMap();
             Long tmp = Long.parseLong(currDate) - 15000000;
             if (actionMapNew != null && actionMapNew.size() > 0) {

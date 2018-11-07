@@ -207,10 +207,10 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         TriggerTypeEnum triggerTypeEnum = null;
-        if (triggerType == 1) {
-            triggerTypeEnum = TriggerTypeEnum.MANUAL;
-        } else if (triggerType == 2) {
+        if (triggerType == 2) {
             triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
+        } else {
+            triggerTypeEnum = TriggerTypeEnum.MANUAL;
         }
 
         HeraAction heraAction = heraJobActionService.findById(actionId);
@@ -227,7 +227,7 @@ public class ScheduleCenterController extends BaseHeraController {
         actionHistory.setJobId(heraAction.getJobId());
         actionHistory.setActionId(heraAction.getId());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
-        actionHistory.setOperator(owner);
+        actionHistory.setOperator(owner.equals(HeraGlobalEnvironment.getAdmin()) ?  heraJob.getOwner() : owner);
         actionHistory.setIllustrate(owner);
         actionHistory.setStatus(StatusEnum.RUNNING.toString());
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());

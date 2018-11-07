@@ -65,10 +65,8 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 threadName = "not-normal-job";
             }
             CountDownLatch latch = new CountDownLatch(2);
-            InputStream inputStream = process.getInputStream();
-            InputStream errorStream = process.getErrorStream();
-            Thread inputThread = new StreamThread(inputStream, threadName, latch);
-            Thread outputThread = new StreamThread(errorStream, threadName, latch);
+            Thread inputThread = new StreamThread(process.getInputStream(), threadName, latch);
+            Thread outputThread = new StreamThread(process.getErrorStream(), threadName, latch);
             inputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
             outputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
             inputThread.start();
@@ -222,7 +220,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         @Override
         public void run() {
             try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream,"utf-8"));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     logConsole(line);
