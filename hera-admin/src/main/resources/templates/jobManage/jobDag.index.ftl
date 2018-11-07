@@ -91,7 +91,7 @@
 
                 <div class="form-group">
                     <label for="itemw">任务ID:</label>
-                    <input id="item" class="input-sm" style="width:80px;"/>
+                    <input id="item" class="input-sm" style="width:80px; border: 1px solid #ccc;"/>
                     <input class="btn btn-primary" type="button" value="上游任务链" onclick="keypath(0)"/>
                     <input class="btn btn-primary" type="button" value="下游任务链" onclick="keypath(1)"/>
                 </div>
