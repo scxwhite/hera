@@ -25,7 +25,7 @@
 <body>
 
 
-<div class="login">
+<div class="login box box-primary">
 <#--<div class="box png">-->
     <div><h3 align="center" class="title">赫拉任务调度系统</h3></div>
     <div class="input">
@@ -39,13 +39,13 @@
 
                 <div class="tab-pane active" id="tab-login">
                     <form id="loginForm" method="post">
-                        <div class="name" style="margin: 4px">
+                        <div class="name" style="margin: 20px 10px">
                             <label>用户名</label><input type="text" class="text" name="userName" placeholder="用户名"/>
                         </div>
-                        <div class="pwd" style="margin: 4px">
+                        <div class="pwd" style="margin: 20px 10px">
                             <label>密　码</label><input type="password" class="text" name="password" placeholder="密码"/>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block btn-flat">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat" style="border-radius: 4px">
                             登陆
                         </button>
                     </form>

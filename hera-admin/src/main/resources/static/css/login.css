@@ -21,6 +21,15 @@ body{
 .title{
     margin-bottom: 20px;
 }
-#loginForm label{
+#loginForm label,#registerForm .form-group label{
     margin-right: 10px;
 }
+#loginForm input,#registerForm .form-group input{
+    padding:4px;
+    border-radius: 4px;
+    border: 1px solid #cccccc;
+}
+#loginForm input{
+    width: 80%;
+}
+
