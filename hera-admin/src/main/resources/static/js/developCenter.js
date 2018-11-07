@@ -350,9 +350,11 @@ $(function () {
             dataType: "json",
             success: function (data) {
                 layer.msg(data.msg);
+            },
+            error:function (err) {
+                layer.msg(err);
             }
         });
-
      });
 
     /**
@@ -643,6 +645,7 @@ $(function () {
             }
         }
     }
+
     /**
      * 弹出日志div
      */
@@ -686,7 +689,36 @@ $(function () {
                 codeMirror.showHint();
             }
         });
+        var saveTimer;
+        //监听codemirror change事件 实时保存
+        codeMirror.on('change',function () {
+            if(saveTimer){
+                clearTimeout(saveTimer);
+            }
+            saveTimer=setTimeout(function () {
+                var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+                var fileScript = codeMirror.getValue();
+                var parameter = {
+                    id: fileId,
+                    content: fileScript
+                };
+                var url = base_url + "/developCenter/saveScript.do";
 
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    data: JSON.stringify(parameter),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data.msg);
+                    },
+                    error:function (err) {
+                        layer.msg(err);
+                    }
+                });
+            },1000);
+        });
 
         var storeData = JSON.parse(localStorage.getItem('tabData'));
         if (storeData != null) {
