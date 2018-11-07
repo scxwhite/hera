@@ -711,7 +711,7 @@ $(function () {
                     contentType: "application/json",
                     dataType: "json",
                     success: function (data) {
-                        layer.msg(data.msg);
+                        console.log(data.msg);
                     },
                     error:function (err) {
                         layer.msg(err);
