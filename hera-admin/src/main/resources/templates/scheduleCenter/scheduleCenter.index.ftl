@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/metroStyle/metroStyle.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/base16-light.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/lucario.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
 </head>

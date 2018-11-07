@@ -776,7 +776,7 @@ $(function () {
         codeMirror = CodeMirror.fromTextArea(editor[0], {
             mode: "text/x-sh",
             lineNumbers: true,
-            theme: "base16-light",
+            theme: "lucario",
             readOnly: true,
             matchBrackets: true,
             smartIndent: true,
@@ -792,7 +792,7 @@ $(function () {
 
         selfConfigCM = CodeMirror.fromTextArea($('#config textarea')[0], {
             mode: "text/x-sh",
-            theme: "paraiso-light",
+            theme: "lucario",
             readOnly: true,
             matchBrackets: true,
             smartIndent: true,
@@ -800,7 +800,7 @@ $(function () {
         });
         inheritConfigCM = CodeMirror.fromTextArea($('#inheritConfig textarea')[0], {
             mode: "text/x-sh",
-            theme: "paraiso-light",
+            theme: "lucario",
             readOnly: true,
             matchBrackets: true,
             smartIndent: true,
