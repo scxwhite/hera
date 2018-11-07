@@ -618,7 +618,7 @@ $(function () {
                     $('#heraDependencyCycle').css("display", isShow ? "none" : "");
                     $('#cronExpression').css("display", isShow ? "" : "none");
                     formDataLoad("jobMessage form", data);
-                    $("#jobMessage [name='scheduleType']").text(isShow ? "定时调度" : "依赖调度");
+                    $("#jobMessage [name='scheduleType']").val(isShow ? "定时调度" : "依赖调度");
                     selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
                     $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
                     $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
@@ -851,6 +851,12 @@ $(function () {
             var para = '0 ' + min + ' ' + hour + ' ' + day + ' ' + month + ' ' + week;
             $('#timeChange').val(para);
             $('#timeModal').modal('toggle');
+        })
+
+        //隐藏
+        $('.hideBtn').click(function (e) {
+            e.stopPropagation();
+            $(this).parent().hide();
         })
     });
 });

@@ -54,3 +54,13 @@ input {
     background: #fafafa;
     border-bottom: 1px #2c4762 solid;
 }
+
+.hideBtn {
+    right: 0;
+    top: 0;
+    position: absolute;
+    height: 100vh;
+    width: 4px;
+    background: #ccc;
+    z-index: 2;
+}
