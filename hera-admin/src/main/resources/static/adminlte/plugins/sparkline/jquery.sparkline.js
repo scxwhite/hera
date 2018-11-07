@@ -156,7 +156,7 @@
 *                  to specify colors for individual ranges of values
 *
 *   discrete - Options:
-*       lineHeight - Height of each line in pixels - Defaults to 30% of the graph height
+*       lineHeight - Height of each line in pixels - Defaults to 30% of the com.dfire.graph height
 *       thesholdValue - Values less than this value will be drawn using thresholdColor instead of lineColor
 *       thresholdColor
 *

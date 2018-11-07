@@ -4,8 +4,8 @@ import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.route.WorkerRouter;
+import com.dfire.logs.ScheduleLog;
 import io.netty.util.internal.PlatformDependent;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Random;
@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
  * @time: Created in 上午11:11 2018/10/12
  * @desc 随机选择一台机器分发任务
  */
-@Slf4j
 public class WorkerRouterRandom extends WorkerRouter {
 
     private static final AtomicIntegerFieldUpdater<HeraHostGroupVo> updater;
@@ -51,7 +50,7 @@ public class WorkerRouterRandom extends WorkerRouter {
             }
         }
         if (workHolder != null) {
-            log.warn("select work is :{}", workHolder.getChannel().remoteAddress());
+            ScheduleLog.warn("select work is :{}", workHolder.getChannel().remoteAddress());
         }
         return workHolder;
     }

@@ -4,7 +4,7 @@ import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.route.WorkerRouter;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.ScheduleLog;
 
 import java.util.List;
 
@@ -13,7 +13,6 @@ import java.util.List;
  * @time: Created in 下午3:47 2018/10/11
  * @desc 按照列表头选择机器
  */
-@Slf4j
 public class WorkerRouterFirst extends WorkerRouter {
 
 
@@ -37,7 +36,7 @@ public class WorkerRouterFirst extends WorkerRouter {
             }
         }
         if (workHolder != null) {
-            log.warn("select work is :{}", workHolder.getChannel().remoteAddress());
+            ScheduleLog.warn("select work is :{}", workHolder.getChannel().remoteAddress());
         }
         return workHolder;
     }

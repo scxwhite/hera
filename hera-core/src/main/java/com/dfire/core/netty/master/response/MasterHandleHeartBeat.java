@@ -5,18 +5,17 @@ import com.dfire.common.util.DateUtil;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.RpcHeartBeatMessage;
 import com.dfire.protocol.RpcRequest;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
-import lombok.extern.slf4j.Slf4j;
 
 
 /**
  * @author xiaosuda
  * @date 2018/4/13
  */
-@Slf4j
 public class MasterHandleHeartBeat {
 
     public void handleHeartBeat(MasterContext masterContext, Channel channel, RpcRequest.Request request) {
@@ -34,7 +33,7 @@ public class MasterHandleHeartBeat {
             heartBeatInfo.setManualRunning(heartBeatMessage.getManualRunningsList());
             heartBeatInfo.setTimestamp(DateUtil.longToDate(heartBeatMessage.getTimestamp()));
             worker.setHeartBeatInfo(heartBeatInfo);
-            log.debug("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
+            SocketLog.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }

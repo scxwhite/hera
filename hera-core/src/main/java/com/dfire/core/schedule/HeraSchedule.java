@@ -1,8 +1,10 @@
 package com.dfire.core.schedule;
 
 import com.dfire.core.netty.master.MasterContext;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.HeraLog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -11,25 +13,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @time: Created in 14:04 2018/1/12
  * @desc
  */
-@Slf4j
+@Component
 public class HeraSchedule {
 
     private AtomicBoolean running = new AtomicBoolean(false);
 
+    @Autowired
     private MasterContext masterContext;
 
-    private ApplicationContext applicationContext;
-
-    public HeraSchedule(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
 
     public void startup() {
         if (!running.compareAndSet(false, true)) {
             return;
         }
-        log.info("begin to start master context");
-        masterContext = new MasterContext(applicationContext);
+        HeraLog.info("begin to start master context");
         masterContext.init();
     }
 

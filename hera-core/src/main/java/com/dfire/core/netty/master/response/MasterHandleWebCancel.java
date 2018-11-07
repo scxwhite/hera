@@ -8,9 +8,9 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.queue.JobElement;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import io.netty.channel.Channel;
-import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
  * @time: Created in 下午3:58 2018/5/11
  * @desc 取消任务，master查询出任务所在的worker channel,发起取消任务请求
  */
-@Slf4j
 public class MasterHandleWebCancel {
 
     public RpcWebResponse.WebResponse handleWebCancel(MasterContext masterContext, RpcWebRequest.WebRequest request) {
@@ -74,11 +73,11 @@ public class MasterHandleWebCancel {
                         .setStatus(ResponseStatus.Status.OK)
                         .build();
 
-                log.info("send web cancel response, actionId = " + debugId);
+                SocketLog.info("send web cancel response, actionId = " + debugId);
             }
         }
 
-        if (webResponse != null) {
+        if (webResponse == null) {
             webResponse = RpcWebResponse.WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
@@ -108,7 +107,7 @@ public class MasterHandleWebCancel {
                     .setStatus(ResponseStatus.Status.OK)
                     .build();
 
-            log.info("任务仍在手动队列中，从队列删除该任务{}", heraJobHistory.getJobId());
+            SocketLog.info("任务仍在手动队列中，从队列删除该任务{}", heraJobHistory.getJobId());
         } else {
             for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
                 if (workHolder.getManningRunning().containsKey(historyId)) {
@@ -120,13 +119,13 @@ public class MasterHandleWebCancel {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    log.info("远程从删除该任务{}", heraJobHistory.getJobId());
+                    SocketLog.info("远程从删除该任务{}", heraJobHistory.getJobId());
                     webResponse = RpcWebResponse.WebResponse.newBuilder()
                             .setRid(request.getRid())
                             .setOperate(request.getOperate())
                             .setStatus(ResponseStatus.Status.OK)
                             .build();
-                    log.info("send web cancel response, actionId = " + historyId);
+                    SocketLog.info("send web cancel response, actionId = " + historyId);
                 }
             }
         }
@@ -160,7 +159,7 @@ public class MasterHandleWebCancel {
                     .setOperate(request.getOperate())
                     .setStatus(ResponseStatus.Status.OK)
                     .build();
-            log.info("任务仍在调度队列中，从队列删除该任务{}", actionId);
+            SocketLog.info("任务仍在调度队列中，从队列删除该任务{}", actionId);
 
         } else {
             for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
@@ -173,13 +172,13 @@ public class MasterHandleWebCancel {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    log.info("远程删除该任务{}", actionId);
+                    SocketLog.info("远程删除该任务{}", actionId);
                     webResponse = RpcWebResponse.WebResponse.newBuilder()
                             .setRid(request.getRid())
                             .setOperate(request.getOperate())
                             .setStatus(ResponseStatus.Status.OK)
                             .build();
-                    log.info("send web cancel response, actionId = " + jobId);
+                    SocketLog.info("send web cancel response, actionId = " + jobId);
                 }
             }
         }
@@ -196,9 +195,6 @@ public class MasterHandleWebCancel {
         heraJobHistory.setStatus(StatusEnum.FAILED.toString());
         heraJobHistory.setIllustrate("任务取消");
         context.getHeraJobHistoryService().update(heraJobHistory);
-
-
-
         context.getHeraJobActionService().updateStatus(HeraAction.builder().id(actionId).status(StatusEnum.FAILED.toString()).build());
         return webResponse;
     }

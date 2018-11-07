@@ -1,10 +1,8 @@
 package com.dfire.api;
 
+import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.HeraJob;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -35,11 +33,11 @@ public class ZeusToHera {
     private String driver = "com.mysql.jdbc.Driver";
     private Connection heraConnection = null;
     private Connection zeusConnection = null;
-    private final String env = "daily";
+    private final String env = "publish";
     private final boolean isAll = true;
 
     private String tableName = "hera_group";
-    private Class<?> clazz = HeraGroup.class;
+    private Class<?> clazz = HeraFile.class;
 
     private List<Integer> jobs = Arrays.asList(6625, 6628, 971);
 
@@ -60,6 +58,8 @@ public class ZeusToHera {
             tableName = "_group";
         } else if (clazz == HeraJob.class) {
             tableName = "_job";
+        } else if (clazz == HeraFile.class) {
+            tableName = "_file";
         }
 
 
@@ -79,14 +79,14 @@ public class ZeusToHera {
 
     @Test
     public void parallelTest() throws SQLException, IOException {
-        PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job where auto = 1");
+        PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job where auto = 1 and schedule_type = 0");
 
         ResultSet resultSet = statement.executeQuery();
 
         while (resultSet.next()) {
             String id = resultSet.getString("id");
             CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpGet httpGet = new HttpGet("http://10.1.28.81:8080/hera/scheduleCenter/execute?id=" + id +"&owner=biadmin");
+            HttpGet httpGet = new HttpGet("http://10.1.28.81:8080/hera/scheduleCenter/execute?id=" + id + "&owner=biadmin");
             httpClient.execute(httpGet);
             System.out.println("--------------------------" + id + ": ok--------------------------");
         }
@@ -123,6 +123,7 @@ public class ZeusToHera {
         PreparedStatement heraPs;
         PreparedStatement preparedStatement = heraConnection.prepareStatement(deleteSql.toString());
         preparedStatement.executeUpdate();
+        int cnt = 0;
         while (resultSet.next()) {
             Map<String, String> res = new HashMap<>();
             insertSql.delete(0, insertSql.length());
@@ -144,7 +145,7 @@ public class ZeusToHera {
                     .append(valueStr.substring(0, valueStr.length() - 1)).append(")").append(";");
 
             heraPs = heraConnection.prepareStatement(insertSql.toString());
-            System.out.println("执行结果：" + heraPs.executeUpdate());
+            System.out.println("序号：" + (++cnt) + "执行结果：" + heraPs.executeUpdate());
         }
     }
 

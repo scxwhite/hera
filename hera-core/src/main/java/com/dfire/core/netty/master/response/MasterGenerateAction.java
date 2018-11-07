@@ -7,7 +7,6 @@ import com.dfire.protocol.RpcWebRequest;
 import com.dfire.protocol.RpcWebResponse;
 
 /**
- *
  * @author xiaosuda
  * @date 2018/7/12
  */
@@ -15,7 +14,7 @@ public class MasterGenerateAction {
 
     public RpcWebResponse.WebResponse generateActionByJobId(MasterContext context, RpcWebRequest.WebRequest request) {
 
-         boolean result = context.getMaster().generateSingleAction(Integer.parseInt(request.getId()));
+        boolean result = context.getMaster().generateSingleAction(Integer.parseInt(request.getId()));
 
         return RpcWebResponse.WebResponse.newBuilder()
                 .setRid(request.getRid())

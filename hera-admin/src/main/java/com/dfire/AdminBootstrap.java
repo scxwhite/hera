@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 /**
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = "com.dfire")
 @MapperScan(basePackages = "com.dfire.*.mapper")
 @SpringBootApplication
+@EnableScheduling
 @ServletComponentScan(value = "com.dfire.config")
 public class AdminBootstrap {
 

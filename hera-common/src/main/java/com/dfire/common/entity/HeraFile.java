@@ -32,7 +32,7 @@ public class HeraFile {
     private String content;
 
     /**
-     * 1 shell 2 hive
+     * 1 文件夹 2 文件
      */
     private String type;
 

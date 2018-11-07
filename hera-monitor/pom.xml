@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-common</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
 

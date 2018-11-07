@@ -5,10 +5,10 @@ import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.util.AtomicIncrease;
-import com.dfire.protocol.*;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
+import com.dfire.protocol.*;
 import com.dfire.protocol.RpcResponse.Response;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
  * @time: Created in 下午2:26 2018/4/25
  * @desc master向worker发送执行job的指令
  */
-@Slf4j
 public class MasterExecuteJob {
 
     public Future<Response> executeJob(final MasterContext context, final MasterWorkHolder holder, ExecuteKind kind, final String id) {
@@ -61,7 +60,7 @@ public class MasterExecuteJob {
             try {
                 latch.await(3, TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
-                    log.error("手动任务信号丢失，三小时未收到work返回：{}", jobId);
+                    SocketLog.error("手动任务信号丢失，三小时未收到work返回：{}", jobId);
                 }
             } finally {
                 holder.getManningRunning().remove(jobId);
@@ -102,7 +101,7 @@ public class MasterExecuteJob {
             try {
                 latch.await(3, TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
-                    log.error("自动调度任务信号丢失，三小时未收到work返回：{}", actionHistoryId);
+                    SocketLog.error("自动调度任务信号丢失，三小时未收到work返回：{}", actionHistoryId);
                     //TODO 可以做一些处理
                 }
             } finally {
@@ -146,7 +145,7 @@ public class MasterExecuteJob {
             try {
                 latch.await(3, TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
-                    log.error("debug任务信号丢失，3小时未收到work返回：{}", id);
+                    SocketLog.error("debug任务信号丢失，3小时未收到work返回：{}", id);
                 }
             } finally {
                 holder.getDebugRunning().remove(id);
@@ -154,11 +153,8 @@ public class MasterExecuteJob {
             return responseListener.getResponse();
         });
 
-        /**
-         * writeAndFlush 和 write有和区别，为何使用write workerHandler无法接收数据
-         */
         holder.getChannel().writeAndFlush(socketMessage);
-        log.info("master send debug command to worker,rid = " + request.getRid() + ",debugId = " + id);
+        SocketLog.info("master send debug command to worker,rid = " + request.getRid() + ",debugId = " + id);
         return future;
     }
 }

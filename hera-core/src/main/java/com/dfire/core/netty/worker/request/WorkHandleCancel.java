@@ -6,6 +6,7 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import com.google.protobuf.InvalidProtocolBufferException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,6 @@ import java.util.concurrent.Future;
  * @time: Created in 下午10:57 2018/5/11
  * @desc worker端执行接受到master hander端的取消任务指令的时候，开始执行取消任务逻辑
  */
-@Slf4j
 public class WorkHandleCancel {
 
     public Future<RpcResponse.Response> handleCancel(final WorkContext workContext, final RpcRequest.Request request) {
@@ -52,7 +52,7 @@ public class WorkHandleCancel {
         HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(historyId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         final String jobId = history.getJobId();
-        log.info("worker receive cancel manual job, actionId =" + jobId);
+        SocketLog.info("worker receive cancel manual job, actionId =" + jobId);
         if (!workContext.getManualRunning().containsKey(history.getId())) {
             return workContext.getWorkThreadPool().submit(() -> RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
@@ -81,9 +81,8 @@ public class WorkHandleCancel {
      */
     private Future<RpcResponse.Response> cancelSchedule(WorkContext workContext, RpcRequest.Request request, String historyId) {
         HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(historyId);
-        final String jobId = heraJobHistory.getJobId();
         String actionId = heraJobHistory.getActionId();
-        log.info("worker receive cancel schedule job, actionId =" + actionId);
+        SocketLog.info("worker receive cancel schedule job, actionId =" + actionId);
         if (!workContext.getRunning().containsKey(actionId)) {
             return workContext.getWorkThreadPool().submit(() -> RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())

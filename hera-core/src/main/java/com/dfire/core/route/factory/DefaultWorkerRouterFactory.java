@@ -25,7 +25,6 @@ public class DefaultWorkerRouterFactory implements WorkerRouterFactory {
             default:
                 new WorkerRouterFirst();
         }
-
         return null;
     }
 }

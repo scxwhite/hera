@@ -4,7 +4,7 @@ import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.vo.RestfulResponse;
-import graph.JobRelation;
+import com.dfire.graph.JobRelation;
 
 import java.util.List;
 

@@ -6,14 +6,16 @@ import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
+import com.dfire.logs.HeraLog;
 import io.netty.channel.Channel;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -27,16 +29,18 @@ import java.util.concurrent.*;
  * @desc hera调度器执行上下文
  */
 
-@Slf4j
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
+@Order(2)
 public class MasterContext {
 
+    @Autowired
     private Master master;
 
     private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<>();
+    @Autowired
     private ApplicationContext applicationContext;
 
 
@@ -56,19 +60,15 @@ public class MasterContext {
      */
     protected Timer masterTimer = null;
 
-    public MasterContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
-
     public void init() {
-        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
+        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 10, TimeUnit.MILLISECONDS);
         this.getQuartzSchedulerService().start();
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);
         masterServer = new MasterServer(handler);
         masterServer.start(HeraGlobalEnvironment.getConnectPort());
-        master = new Master(this);
-        log.info("end init master content success ");
+        master.init(this);
+        HeraLog.info("end init master content success ");
     }
 
     public void destroy() {
@@ -80,13 +80,13 @@ public class MasterContext {
         if (this.getQuartzSchedulerService() != null) {
             try {
                 this.getQuartzSchedulerService().shutdown();
-                log.info("quartz schedule shutdown success");
+                HeraLog.info("quartz schedule shutdown success");
             } catch (Exception e) {
                 e.printStackTrace();
-                log.error("quartz schedule shutdown error");
+                HeraLog.error("quartz schedule shutdown error");
             }
         }
-        log.info("destroy master context success");
+        HeraLog.info("destroy master context success");
     }
 
     public synchronized Map<Integer, HeraHostGroupVo> getHostGroupCache() {
@@ -140,7 +140,7 @@ public class MasterContext {
         try {
             hostGroupCache = getHeraHostGroupService().getAllHostGroupInfo();
         } catch (Exception e) {
-            log.info("refresh host group error");
+            HeraLog.info("refresh host group error");
         }
     }
 

@@ -1,5 +1,6 @@
 package com.dfire.core.netty.master;
 
+import com.dfire.logs.HeraLog;
 import com.dfire.protocol.RpcSocketMessage;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -11,7 +12,6 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
  * @time: Created in 10:34 2018/1/10
  * @desc
  */
-@Slf4j
 public class MasterServer {
 
     private ServerBootstrap serverBootstrap;
@@ -63,9 +62,9 @@ public class MasterServer {
             e.printStackTrace();
         }
         if (channelFuture.isSuccess()) {
-            log.info("start master server success");
+            HeraLog.info("start master server success");
         } else if (!channelFuture.isSuccess()) {
-
+            HeraLog.error("start master server success");
         }
 
         return true;
@@ -74,7 +73,7 @@ public class MasterServer {
     public synchronized boolean shutdown() {
         bossGroup.shutdownGracefully();
         workGroup.shutdownGracefully();
-        log.info("stop master server gracefully");
+        HeraLog.info("stop master server gracefully");
         return true;
     }
 

@@ -6,9 +6,9 @@ import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.HeraSchedule;
 import com.dfire.core.util.NetUtils;
+import com.dfire.logs.HeraLog;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
  * @time: Created in 20:47 2018/1/10
  * @desc 基于数据库实现的分布式锁方案，后面优化成基于redis实现分布式锁
  */
-@Slf4j
 @Component
 public class DistributeLock {
 
@@ -39,7 +38,10 @@ public class DistributeLock {
     @Autowired
     private WorkClient workClient;
 
+    @Autowired
     private HeraSchedule heraSchedule;
+
+    private final long timeout = 1000 * 60 * 5L;
 
 
     static {
@@ -52,7 +54,6 @@ public class DistributeLock {
 
     @PostConstruct
     public void init() {
-        heraSchedule = new HeraSchedule(applicationContext);
         TimerTask checkLockTask = new TimerTask() {
             @Override
             public void run(Timeout timeout) {
@@ -81,28 +82,30 @@ public class DistributeLock {
         if (host.equals(heraLock.getHost().trim())) {
             heraLock.setServerUpdate(new Date());
             heraLockService.update(heraLock);
-            log.info("hold lock and update time");
+            HeraLog.info("hold lock and update time");
             heraSchedule.startup();
         } else {
             long currentTime = System.currentTimeMillis();
             long lockTime = heraLock.getServerUpdate().getTime();
             long interval = currentTime - lockTime;
-            if (interval > 1000 * 60 * 5L && isPreemptionHost()) {
-                Integer lock = heraLockService.changeLock(host, new Date(), new Date(), heraLock.getHost());
+            if (interval > timeout && isPreemptionHost()) {
+                Date date = new Date();
+                Integer lock = heraLockService.changeLock(host, date, date, heraLock.getHost());
                 if (lock != null && lock > 0) {
-                    log.error("master 发生切换,{} 抢占成功", host);
+                    HeraLog.error("master 发生切换,{} 抢占成功", host);
                     heraSchedule.startup();
                     heraLock.setHost(host);
+                    //TODO  接入master切换通知
+
                 } else {
-                    log.info("master抢占失败，由其它worker抢占成功");
+                    HeraLog.info("master抢占失败，由其它worker抢占成功");
                 }
-                //TODO  接入通知
             } else {
                 //非主节点，调度器不执行
                 heraSchedule.shutdown();
             }
         }
-
+        //TODO  是否考虑master不执行work服务
         workClient.init(applicationContext);
 
         try {
@@ -117,7 +120,7 @@ public class DistributeLock {
         if (preemptionHostList.contains(host)) {
             return true;
         } else {
-            log.info(host + " is not in master group " + preemptionHostList.toString());
+            HeraLog.info(host + " is not in master group " + preemptionHostList.toString());
             return false;
         }
     }

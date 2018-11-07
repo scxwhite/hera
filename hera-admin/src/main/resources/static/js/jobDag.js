@@ -32,7 +32,7 @@ function keypath(type) {
     var data = {jobId: node, type: type};
 
     var success = function (data) {
-        // Create a new directed graph
+        // Create a new directed com.dfire.graph
         if (data.success == false) {
             alert("不存在该任务节点");
             return;
@@ -56,7 +56,7 @@ function keypath(type) {
             .translate([($('svg').width() - g.graph().width * initialScale) / 2, 20])
             .scale(initialScale)
             .event(svg);
-        //svg.attr('height', g.graph().height * initialScale + 40);
+        //svg.attr('height', g.com.dfire.graph().height * initialScale + 40);
     }
 
     jQuery.ajax({

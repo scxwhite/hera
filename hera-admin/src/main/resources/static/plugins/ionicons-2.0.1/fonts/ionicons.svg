@@ -334,13 +334,13 @@ d="M3 263c-2 2 -3 6 -3 9c0 9 8 16 17 16v0h286v0c9 0 17 -7 17 -16c0 -3 -1 -6 -3 -
 d="M265 125l-105 -100c-6 -6 -14 -9 -23 -9s-16 3 -22 9l-106 100c-12 12 -12 31 0 43s34 12 46 0l50 -48v217c0 17 14 31 32 31s32 -14 32 -31v-217l50 48c12 12 34 12 46 0s12 -31 0 -43z" />
     <glyph glyph-name="ion-arrow-expand" unicode="&#xf25e;" horiz-adv-x="320" 
 d="M178 238l64 64l-50 50h128v-128l-50 50l-64 -64zM178 146l28 28l64 -64l50 50v-128h-128l50 50zM142 146l-64 -64l50 -50h-128v128l50 -50l64 64zM142 238l-28 -28l-64 64l-50 -50v128h128l-50 -50z" />
-    <glyph glyph-name="ion-arrow-graph-down-left" unicode="&#xf25f;" 
+    <glyph glyph-name="ion-arrow-com.dfire.graph-down-left" unicode="&#xf25f;"
 d="M0 64v160l61 -61l131 141l107 -112l149 128l-149 -203l-107 107l-94 -98l62 -62h-160z" />
-    <glyph glyph-name="ion-arrow-graph-down-right" unicode="&#xf260;" 
+    <glyph glyph-name="ion-arrow-com.dfire.graph-down-right" unicode="&#xf260;"
 d="M288 64l62 62l-94 98l-107 -107l-149 203l149 -128l107 112l131 -141l61 61v-160h-160z" />
-    <glyph glyph-name="ion-arrow-graph-up-left" unicode="&#xf261;" 
+    <glyph glyph-name="ion-arrow-com.dfire.graph-up-left" unicode="&#xf261;"
 d="M160 320l-62 -62l94 -98l107 107l149 -203l-149 128l-107 -112l-131 141l-61 -61v160h160z" />
-    <glyph glyph-name="ion-arrow-graph-up-right" unicode="&#xf262;" 
+    <glyph glyph-name="ion-arrow-com.dfire.graph-up-right" unicode="&#xf262;"
 d="M288 320h160v-160l-61 61l-131 -141l-107 112l-149 -128l149 203l107 -107l94 98z" />
     <glyph glyph-name="ion-arrow-left-a" unicode="&#xf106;" horiz-adv-x="384" 
 d="M0 192l192 192v-112h192v-160h-192v-112z" />
@@ -1678,7 +1678,7 @@ c-1 -15 -2 -22 -3 -29s5 -8 2 -23c-6 -29 -9 -18 -12 -36c-8 -46 -20 -30 -20 -54c0 
     <glyph glyph-name="ion-person" unicode="&#xf213;" horiz-adv-x="384" 
 d="M384 0h-192h-192s0 26 2 40c2 11 17 25 81 49c63 23 60 12 60 55c0 28 -14 11 -23 64c-4 21 -6 7 -14 40c-4 17 3 19 2 27s-2 16 -4 33c-2 21 18 76 88 76s90 -55 88 -76c-2 -17 -3 -25 -4 -33s6 -10 2 -27c-8 -33 -10 -19 -14 -40c-9 -53 -23 -36 -23 -64
 c0 -43 -3 -32 60 -55c64 -24 79 -38 81 -49c2 -14 2 -40 2 -40z" />
-    <glyph glyph-name="ion-pie-graph" unicode="&#xf2a5;" 
+    <glyph glyph-name="ion-pie-com.dfire.graph" unicode="&#xf2a5;"
 d="M1 192c0 5 -1 11 -1 16c0 115 93 208 208 208c5 0 11 -1 16 -1v-32v-191h-191h-32zM78 46c-26 32 -42 71 -45 114h223v223c43 -3 82 -19 114 -45c47 -38 78 -96 78 -162c0 -115 -93 -208 -208 -208c-66 0 -124 31 -162 78z" />
     <glyph glyph-name="ion-pin" unicode="&#xf2a6;" horiz-adv-x="224" 
 d="M188 220c20 -10 36 -31 36 -55c0 -17 -3 -21 -15 -21h-81l-12 -176h-8l-12 176h-81c-12 0 -15 5 -15 21c0 24 16 45 36 55v0c1 0 3 1 4 2c7 4 12 11 14 19l18 118v5c0 7 -4 10 -10 13v0c-1 0 -1 1 -2 1c-7 3 -12 9 -12 17c0 20 6 21 18 21h92c12 0 18 -1 18 -21

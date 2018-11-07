@@ -1,6 +1,7 @@
 package com.dfire.controller;
 
 import com.alibaba.fastjson.JSONArray;
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraGroupVo;
@@ -19,7 +20,6 @@ import com.dfire.config.UnCheckLogin;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.protocol.JobExecuteKind;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,7 +43,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Controller
 @RequestMapping("/scheduleCenter")
-@Slf4j
 public class ScheduleCenterController extends BaseHeraController {
 
     @Autowired
@@ -64,6 +63,14 @@ public class ScheduleCenterController extends BaseHeraController {
     private WorkClient workClient;
     @Autowired
     private HeraHostGroupService heraHostGroupService;
+
+    private ThreadPoolExecutor poolExecutor;
+
+    {
+        poolExecutor = new ThreadPoolExecutor(
+                1, Runtime.getRuntime().availableProcessors() * 4, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("updateJobThread"), new ThreadPoolExecutor.AbortPolicy());
+        poolExecutor.allowCoreThreadTimeOut(true);
+    }
 
     private final String JOB = "job";
     private final String GROUP = "group";
@@ -87,7 +94,6 @@ public class ScheduleCenterController extends BaseHeraController {
     @ResponseBody
     public HeraJobVo getJobMessage(Integer jobId) {
         HeraJob job = heraJobService.findById(jobId);
-        log.info("job 明细 {}", job.getId());
         HeraJobVo heraJobVo = BeanConvertUtils.convert(job);
         heraJobVo.setInheritConfig(getInheritConfig(job.getGroupId()));
         HeraJobMonitor monitor = heraJobMonitorService.findByJobId(jobId);
@@ -114,11 +120,12 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/getGroupMessage", method = RequestMethod.GET)
     @ResponseBody
-    public HeraGroupVo getGroupMessage(Integer groupId) {
-        HeraGroup group = heraGroupService.findById(groupId);
+    public HeraGroupVo getGroupMessage(String groupId) {
+        Integer id = getGroupId(groupId);
+        HeraGroup group = heraGroupService.findById(id);
         HeraGroupVo groupVo = BeanConvertUtils.convert(group);
         groupVo.setInheritConfig(getInheritConfig(groupVo.getParent()));
-        groupVo.setUIdS(getuIds(groupId));
+        groupVo.setUIdS(getuIds(id));
         return groupVo;
     }
 
@@ -144,13 +151,13 @@ public class ScheduleCenterController extends BaseHeraController {
             Date date = new Date();
             Long targetId = Long.parseLong(String.valueOf(id));
             List<HeraPermission> permissions = new ArrayList<>(uIdS.size());
-            for (int i = 0; i < uIdS.size(); i++) {
+            for (Object uId : uIdS) {
                 HeraPermission heraPermission = new HeraPermission();
                 heraPermission.setType(typeStr);
                 heraPermission.setGmtModified(date);
                 heraPermission.setGmtCreate(date);
                 heraPermission.setTargetId(targetId);
-                heraPermission.setUid((String) uIdS.get(i));
+                heraPermission.setUid((String) uId);
                 permissions.add(heraPermission);
             }
 
@@ -200,10 +207,10 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         TriggerTypeEnum triggerTypeEnum = null;
-        if (triggerType == 1) {
-            triggerTypeEnum = TriggerTypeEnum.MANUAL;
-        } else if (triggerType == 2) {
+        if (triggerType == 2) {
             triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
+        } else {
+            triggerTypeEnum = TriggerTypeEnum.MANUAL;
         }
 
         HeraAction heraAction = heraJobActionService.findById(actionId);
@@ -220,7 +227,7 @@ public class ScheduleCenterController extends BaseHeraController {
         actionHistory.setJobId(heraAction.getJobId());
         actionHistory.setActionId(heraAction.getId());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
-        actionHistory.setOperator(owner);
+        actionHistory.setOperator(owner.equals(HeraGlobalEnvironment.getAdmin()) ? heraJob.getOwner() : owner);
         actionHistory.setIllustrate(owner);
         actionHistory.setStatus(StatusEnum.RUNNING.toString());
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
@@ -265,7 +272,8 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse updateGroupMessage(HeraGroupVo groupVo) {
+    public RestfulResponse updateGroupMessage(HeraGroupVo groupVo, String groupId) {
+        groupVo.setId(getGroupId(groupId));
         if (!hasPermission(groupVo.getId(), GROUP)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
@@ -276,29 +284,31 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse deleteJob(Integer id, Boolean isGroup) {
-        if (!hasPermission(id, isGroup ? GROUP : JOB)) {
+    public RestfulResponse deleteJob(String id, Boolean isGroup) {
+        Integer xId = getGroupId(id);
+        if (!hasPermission(xId, isGroup ? GROUP : JOB)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
         boolean res;
-        String check = checkDependencies(id, isGroup);
+        String check = checkDependencies(xId, isGroup);
         if (StringUtils.isNotBlank(check)) {
             return new RestfulResponse(false, check);
         }
 
         if (isGroup) {
-            res = heraGroupService.delete(id) > 0;
+            res = heraGroupService.delete(xId) > 0;
             return new RestfulResponse(res, res ? "删除成功" : "系统异常,请联系管理员");
 
         }
-        res = heraJobService.delete(id) > 0;
-        updateJobToMaster(res, id);
+        res = heraJobService.delete(xId) > 0;
+        updateJobToMaster(res, xId);
         return new RestfulResponse(res, res ? "删除成功" : "系统异常,请联系管理员");
     }
 
     @RequestMapping(value = "/addJob", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse addJob(HeraJob heraJob) {
+    public RestfulResponse addJob(HeraJob heraJob, String parentId) {
+        heraJob.setGroupId(getGroupId(parentId));
         if (!hasPermission(heraJob.getGroupId(), GROUP)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
@@ -324,7 +334,8 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/addGroup", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse addJob(HeraGroup heraGroup) {
+    public RestfulResponse addJob(HeraGroup heraGroup, String parentId) {
+        heraGroup.setParent(getGroupId(parentId));
         if (!hasPermission(heraGroup.getParent(), GROUP)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
@@ -375,9 +386,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/getHostGroupIds", method = RequestMethod.GET)
     @ResponseBody
     public List<HeraHostGroup> getHostGroupIds() {
-        List<HeraHostGroup> all = heraHostGroupService.getAll();
-
-        return all;
+        return heraHostGroupService.getAll();
     }
 
     /**
@@ -430,8 +439,6 @@ public class ScheduleCenterController extends BaseHeraController {
 
     private void updateJobToMaster(boolean result, Integer id) {
         if (result) {
-            ThreadPoolExecutor poolExecutor = new ThreadPoolExecutor(
-                    1, 1, 10L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("updateJob"), new ThreadPoolExecutor.AbortPolicy());
             poolExecutor.execute(() -> {
                 try {
                     workClient.updateJobFromWeb(String.valueOf(id));
@@ -441,21 +448,17 @@ public class ScheduleCenterController extends BaseHeraController {
                     e.printStackTrace();
                 }
             });
-            poolExecutor.shutdown();
         }
     }
 
 
     private Map<String, String> getInheritConfig(Integer groupId) {
-        log.info("group_id = {}", groupId);
-        HeraGroup group;
-        Map<String, String> configMap = new HashMap<>();
-        while (groupId != null && groupId != 0) {
-            group = heraGroupService.findConfigById(groupId);
-            if (group.getConfigs() != null) {
-                configMap.putAll(StringUtil.convertStringToMap(group.getConfigs()));
-            }
+        HeraGroup group = heraGroupService.findConfigById(groupId);
+        Map<String, String> configMap = new HashMap<>(64);
+        while (group != null && groupId != null && groupId != 0) {
+            configMap.putAll(StringUtil.convertStringToMap(group.getConfigs()));
             groupId = group.getParent();
+            group = heraGroupService.findConfigById(groupId);
         }
         return configMap;
     }
@@ -506,56 +509,55 @@ public class ScheduleCenterController extends BaseHeraController {
 
     private String checkDependencies(Integer id, boolean isGroup) {
         List<HeraJob> allJobs = heraJobService.findAllDependencies();
-        List<HeraJob> jobList = new ArrayList<>();
 
         if (isGroup) {
-            jobList = heraJobService.findByPid(id);
-        } else {
-            jobList.add(heraJobService.findById(id));
-        }
-        StringBuilder openJob = new StringBuilder("任务处于开启状态:[ ");
-        boolean canDelete = true;
-        for (HeraJob job : jobList) {
-            if (job.getAuto() == 1) {
+            List<HeraJob> jobList = heraJobService.findByPid(id);
+            StringBuilder openJob = new StringBuilder("无法删除存在任务的目录:[ ");
+            for (HeraJob job : jobList) {
                 openJob.append(job.getId()).append(" ");
-                if (canDelete) {
-                    canDelete = false;
-                }
             }
-        }
-        openJob.append("]");
-        if (!canDelete) {
-            return openJob.toString();
-        }
-        canDelete = true;
-        boolean isFirst;
-        StringBuilder dependenceJob = new StringBuilder("任务依赖: ");
-        for (HeraJob job : jobList) {
-            isFirst = true;
+            openJob.append("]");
+            if (jobList.size() > 0) {
+                return openJob.toString();
+            }
+            return null;
+        } else {
+            HeraJob job = heraJobService.findById(id);
+            if (job.getAuto() == 1) {
+                return "无法删除正在开启的任务";
+            }
+
+            boolean canDelete = true;
+            boolean isFirst = true;
+
+            String deleteJob = String.valueOf(job.getId());
+            StringBuilder dependenceJob = new StringBuilder("任务依赖: ");
+            String[] dependenceJobs;
             for (HeraJob allJob : allJobs) {
                 if (StringUtils.isNotBlank(allJob.getDependencies())) {
-                    if (allJob.getDependencies().contains(String.valueOf(job.getId())) || allJob.getDependencies().contains("," + job.getId()) || allJob.getDependencies().contains(job.getId() + ",")) {
-                        if (canDelete) {
-                            canDelete = false;
-                        }
-                        if (isFirst) {
-                            isFirst = false;
-                            dependenceJob.append("[").append(job.getId()).append(" -> ").append(allJob.getId()).append(" ");
-                        } else {
-                            dependenceJob.append(allJob.getId()).append(" ");
+                    dependenceJobs = allJob.getDependencies().split(",");
+                    for (String jobId : dependenceJobs) {
+                        if (jobId.equals(deleteJob)) {
+                            if (canDelete) {
+                                canDelete = false;
+                            }
+                            if (isFirst) {
+                                isFirst = false;
+                                dependenceJob.append("[").append(job.getId()).append(" -> ").append(allJob.getId()).append(" ");
+                            } else {
+                                dependenceJob.append(allJob.getId()).append(" ");
+                            }
+                            break;
                         }
                     }
                 }
             }
-            if (!isFirst) {
-                dependenceJob.append("]").append("\n");
+            dependenceJob.append("]").append("\n");
+            if (!canDelete) {
+                return dependenceJob.toString();
             }
+            return null;
         }
-
-        if (!canDelete) {
-            return dependenceJob.toString();
-        }
-        return null;
     }
 
 
@@ -563,6 +565,21 @@ public class ScheduleCenterController extends BaseHeraController {
     @ResponseBody
     public JsonResponse getJobImpactOrProgress(Integer jobId, Integer type) {
         return heraJobService.findCurrentJobGraph(jobId, type);
+    }
+
+    private Integer getGroupId(String group) {
+        String groupNum = group;
+        if (group.startsWith(Constants.GROUP_PREFIX)) {
+            groupNum = group.split("_")[1];
+        }
+        Integer res;
+        try {
+            res = Integer.parseInt(groupNum);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("无法识别的groupId：" + group);
+        }
+
+        return res;
     }
 
 }

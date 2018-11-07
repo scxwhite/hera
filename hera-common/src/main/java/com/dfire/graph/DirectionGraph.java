@@ -1,4 +1,4 @@
-package graph;
+package com.dfire.graph;
 
 import lombok.Data;
 
@@ -23,11 +23,11 @@ public class DirectionGraph<T> implements Serializable {
     /**
      * srcEdge 表示图的边
      */
-    private ArrayList<Integer> srcEdge[];
+    private ArrayList<Integer>[] srcEdge;
     /**
      * tarEdge 表示图的边
      */
-    private ArrayList<Integer> tarEdge[];
+    private ArrayList<Integer>[] tarEdge;
     /**
      * 根据node节点的nodeName找下标
      */

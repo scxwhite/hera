@@ -1,7 +1,6 @@
 package com.dfire.core.netty.worker;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
@@ -10,7 +9,8 @@ import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.netty.worker.request.*;
-import com.dfire.core.schedule.ScheduleInfoLog;
+import com.dfire.logs.HeraLog;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.JobExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.RpcSocketMessage;
@@ -33,7 +33,6 @@ import io.netty.util.Timeout;
 import io.netty.util.Timer;
 import io.netty.util.TimerTask;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +49,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @time: Created in 10:34 2018/1/10
  * @desc
  */
-@Slf4j
 @Data
 @Component
 public class WorkClient {
@@ -61,6 +59,7 @@ public class WorkClient {
     private ScheduledExecutorService service;
     public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
     private AtomicBoolean clientSwitch = new AtomicBoolean(false);
+
     /**
      * ProtobufVarint32FrameDecoder:  针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
      * <pre>
@@ -70,7 +69,7 @@ public class WorkClient {
      *  * | 0xAC02 |  (300 bytes)  |      |  (300 bytes)  |
      *  * +--------+---------------+      +---------------+
      * </pre>
-     *
+     * <p>
      * ProtobufVarint32LengthFieldPrepender: 对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
      * <pre>
      * * BEFORE DECODE (300 bytes)       AFTER DECODE (302 bytes)
@@ -82,7 +81,7 @@ public class WorkClient {
      */
     public void init(ApplicationContext applicationContext) {
         if (!clientSwitch.compareAndSet(false, true)) {
-            return ;
+            return;
         }
         workContext.setWorkClient(this);
         workContext.setApplicationContext(applicationContext);
@@ -101,7 +100,7 @@ public class WorkClient {
                                 .addLast(new WorkHandler(workContext));
                     }
                 });
-        log.info("init work client success ");
+        HeraLog.info("init work client success ");
 
         workClientTimer.newTimeout(new TimerTask() {
 
@@ -116,22 +115,21 @@ public class WorkClient {
                         channelFuture.addListener((future) -> {
                             if (!future.isSuccess()) {
                                 failCount++;
-                                log.error("send heart beat failed ,failCount :" + failCount);
+                                SocketLog.error("send heart beat failed ,failCount :" + failCount);
                             } else {
                                 failCount = 0;
-                                log.debug("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
+                                SocketLog.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
                             }
                             if (failCount > 10) {
                                 future.cancel(true);
-                                log.debug("cancel connect server ,failCount:" + failCount);
+                                SocketLog.warn("cancel connect server ,failCount:" + failCount);
                             }
                         });
                     } else {
-                        log.info("server channel can not find on " + DistributeLock.host);
+                        SocketLog.error("server channel can not find on " + DistributeLock.host);
                     }
                 } catch (Exception e) {
-                    log.info("heart beat send failed ：" + failCount);
-                    log.error("heart beat error:", e);
+                    SocketLog.error("heart beat error:", e);
                 } finally {
                     workClientTimer.newTimeout(this, (failCount + 1) * HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
                 }
@@ -146,14 +144,13 @@ public class WorkClient {
                     if (logContent == null) {
                         logContent = "";
                     }
-                    log.error(new StringBuilder("log output error!\n")
-                            .append("[actionId:").append(his.getJobId())
-                            .append(", hisId:").append(his.getId())
-                            .append(", logLength:")
-                            .append(logContent.length()).append("]")
-                            .toString(), e);
+                    HeraLog.error("log output error!\n" +
+                            "[actionId:" + his.getJobId() +
+                            ", hisId:" + his.getId() +
+                            ", logLength:" +
+                            logContent.length() + "]", e);
                 } catch (Exception ex) {
-                    log.error("log exception error!");
+                    HeraLog.error("log exception error!");
                 }
             }
 
@@ -165,14 +162,13 @@ public class WorkClient {
                     if (logContent == null) {
                         logContent = "";
                     }
-                    log.error(new StringBuilder("log output error!\n")
-                            .append("[fileId:").append(history.getFileId())
-                            .append(", hisId:").append(history.getId())
-                            .append(", logLength:")
-                            .append(logContent.length()).append("]")
-                            .toString(), e);
+                    HeraLog.error("log output error!\n" +
+                            "[fileId:" + history.getFileId() +
+                            ", hisId:" + history.getId() +
+                            ", logLength:" +
+                            logContent.length() + "]", e);
                 } catch (Exception ex) {
-                    log.error("log exception error!");
+                    HeraLog.error("log exception error!");
                 }
             }
 
@@ -207,8 +203,7 @@ public class WorkClient {
                         }
                     }
                 } catch (Exception e) {
-                    log.error(JSONObject.toJSONString(e));
-                    throw new RuntimeException(e);
+                    HeraLog.error("job log flush exception:{}", e.toString());
                 } finally {
                     workClientTimer.newTimeout(this, 5, TimeUnit.SECONDS);
                 }
@@ -238,7 +233,7 @@ public class WorkClient {
             try {
                 if (future.isSuccess()) {
                     workContext.setServerChannel(future.channel());
-                    log.info(workContext.getServerChannel().toString());
+                    SocketLog.info(workContext.getServerChannel().toString());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -257,7 +252,7 @@ public class WorkClient {
             throw new RuntimeException("connect server failed " + host,
                     connectFuture.cause());
         }
-        ScheduleInfoLog.info("connect server success");
+        SocketLog.info("connect server success");
     }
 
     /**
@@ -341,14 +336,14 @@ public class WorkClient {
     public void executeJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse response = new WorkerHandleWebExecute().handleWebExecute(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            log.error("netty manual web request get jobStatus error");
+            SocketLog.error(response.getErrorText());
         }
     }
 
     public String cancelJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
-            log.error("取消任务失败");
+            SocketLog.error(webResponse.getErrorText());
         }
         return "取消任务成功";
     }
@@ -356,14 +351,14 @@ public class WorkClient {
     public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse webResponse = new WorkHandleWebUpdate().handleUpdate(workContext, jobId).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
-            log.error("cancel from web exception");
+            SocketLog.error(webResponse.getErrorText());
         }
     }
 
     public String generateActionFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse response = new WorkerHandleWebAction().handleWebAction(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            log.error("generate action error");
+            SocketLog.error("generate action error");
             return "生成版本失败";
         }
         return "生成版本成功";

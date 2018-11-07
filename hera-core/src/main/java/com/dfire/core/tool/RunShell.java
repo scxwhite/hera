@@ -1,7 +1,7 @@
 package com.dfire.core.tool;
 
+import com.dfire.logs.SocketLog;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +14,6 @@ import java.util.List;
  * @author xiaosuda
  * @date 2018/8/6
  */
-@Slf4j
 @Data
 public class RunShell {
     private List<String> commands;
@@ -35,9 +34,7 @@ public class RunShell {
             process = builder.start();
             exitCode = process.waitFor();
             return exitCode;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return exitCode;
@@ -47,7 +44,7 @@ public class RunShell {
         if (exitCode == 0) {
             return readFromInputStream(process.getInputStream());
         } else {
-            log.error(readFromInputStream(process.getErrorStream()));
+            SocketLog.error(readFromInputStream(process.getErrorStream()));
         }
         return null;
     }

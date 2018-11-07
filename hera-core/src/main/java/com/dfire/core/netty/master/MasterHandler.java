@@ -2,6 +2,7 @@ package com.dfire.core.netty.master;
 
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.*;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import io.netty.channel.Channel;
@@ -19,7 +20,6 @@ import java.util.concurrent.*;
  * @time: Created in 1:34 2018/1/4
  * @desc SocketMessage为rpc消息体
  */
-@Slf4j
 @ChannelHandler.Sharable
 public class MasterHandler extends ChannelInboundHandlerAdapter {
 
@@ -67,9 +67,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                             Future<ChannelResponse> future = completionService.take();
                             ChannelResponse response = future.get();
                             response.channel.writeAndFlush(wrapper(response.webResponse));
-                            log.info("master send response success");
+                            SocketLog.info("master send response success");
                         } catch (Exception e) {
-                            log.error("master handler future take error");
+                            SocketLog.error("master handler future take error");
                             throw new RuntimeException(e);
                         }
                     }
@@ -91,7 +91,6 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 break;
             case WEB_REQUEST:
                 final RpcWebRequest.WebRequest webRequest = RpcWebRequest.WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                log.info("master receive message :{}", webRequest.getOperate().getNumber());
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
                         completionService.submit(() ->
@@ -114,7 +113,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                                 new ChannelResponse(channel, masterGenerateAction.generateActionByJobId(masterContext, webRequest)));
                         break;
                     default:
-                        log.error("unknown operate error:{}", webRequest.getOperate());
+                        SocketLog.error("unknown operate error:{}", webRequest.getOperate());
                         break;
                 }
                 break;
@@ -129,7 +128,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 }
                 break;
             default:
-                log.error("unknown request type : {}", socketMessage.getKind());
+                SocketLog.error("unknown request type : {}", socketMessage.getKind());
                 break;
         }
 
@@ -141,12 +140,12 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         Channel channel = ctx.channel();
         masterContext.getWorkMap().put(channel, new MasterWorkHolder(ctx.channel()));
         SocketAddress remoteAddress = channel.remoteAddress();
-        log.info("worker client channel registered connect success : {}", remoteAddress.toString());
+        SocketLog.info("worker client channel registered connect success : {}", remoteAddress.toString());
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        log.error("worker miss connection !!!");
+        SocketLog.error("worker miss connection !!!");
         masterContext.getMaster().workerDisconnectProcess(ctx.channel());
         super.channelUnregistered(ctx);
 
@@ -156,7 +155,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         SocketAddress remoteAddress = channel.remoteAddress();
-        log.info("worker client channel active success : {}", remoteAddress.toString());
+        SocketLog.info("worker client channel active success : {}", remoteAddress.toString());
     }
 
     @Override
