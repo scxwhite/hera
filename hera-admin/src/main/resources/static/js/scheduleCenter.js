@@ -1030,6 +1030,7 @@ function cancelJob(historyId, jobId) {
     var parameter = {historyId: historyId, jobId: jobId};
     $.get(url, parameter, function (data) {
         layer.msg(data);
+        // location.reload();
     });
 
 }
