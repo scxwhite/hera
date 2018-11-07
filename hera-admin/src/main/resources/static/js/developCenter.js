@@ -349,7 +349,7 @@ $(function () {
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
-                successMsg(data);
+                layer.msg(data.msg);
             }
         });
 
