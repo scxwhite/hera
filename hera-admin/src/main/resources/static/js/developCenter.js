@@ -134,20 +134,24 @@ $(function () {
                 var id = treeNode.id;
                 var name = treeNode.name;
                 var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
+                tabData = JSON.parse(localStorage.getItem('tabData'));
                 tabObj = $("#tabContainer").tabs({
                     data: tabDetail,
                     showIndex: 0,
                     loadAll: true
                 });
-                tabObj = $("#tabContainer").data("tabs").changeText(id,name);
-                //更改localStorage内的值
-                tabData = JSON.parse(localStorage.getItem('tabData'));
-                console.log(tabData);
-                for(var i =0;i<tabData.length;i++){
-                    if(tabData[i].id===id){
-                        tabData.splice(i,1);
-                        break;
+                if(isInArray(tabData,tabDetail)){
+                    tabObj = $("#tabContainer").data("tabs").changeText(id,name);
+                    //更改localStorage内的值
+                    console.log(tabData);
+                    for(var i =0;i<tabData.length;i++){
+                        if(tabData[i].id===id){
+                            tabData.splice(i,1);
+                            break;
+                        }
                     }
+                }else{
+                    tabObj = $('#tabContainer').data('tabs').addTab(tabDetail);
                 }
                 if(!treeNode.isParent){
                     tabData.push(tabDetail);
