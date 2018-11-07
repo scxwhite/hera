@@ -29,3 +29,6 @@ target/
 .DS_Store
 Thumbs.db
 .idea
+
+# other edit
+*.vscode
