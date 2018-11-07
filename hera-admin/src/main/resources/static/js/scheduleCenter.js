@@ -10,8 +10,7 @@ $(function () {
     var codeMirror, inheritConfigCM, selfConfigCM;
     var editor = $('#editor');
     var setting = {
-        view: {
-        },
+        view: {},
         data: {
             simpleData: {
                 enable: true,
@@ -207,10 +206,10 @@ $(function () {
                 jobId: focusId
             },
             type: "post",
-            success:function (res) {
+            success: function (res) {
                 layer.msg(res);
             },
-            error:function (err) {
+            error: function (err) {
                 layer.msg(err);
             }
         })
@@ -497,7 +496,13 @@ $(function () {
     });
     //删除
     $('[name="delete"]').on('click', function () {
-        if (confirm("确认删除 :" + focusItem.name + "?")) {
+
+        layer.confirm("确认删除 :" + focusItem.name + "?", {
+            icon: 0,
+            skin: 'msg-class',
+            btn: ['确定', '取消'],
+            anim: 0
+        }, function (index, layero) {
             $.ajax({
                 url: base_url + "/scheduleCenter/deleteJob.do",
                 data: {
@@ -506,16 +511,21 @@ $(function () {
                 },
                 type: "post",
                 success: function (data) {
+                    layer.msg(data.msg);
                     if (data.success == true) {
                         treeObj.removeNode(selected);
                         setDefaultSelectNode(focusItem.groupId);
                         leftClick();
                     }
-                    alert(data.msg);
 
                 }
             });
-        }
+            layer.close(index)
+        }, function (index) {
+            layer.close(index)
+        });
+
+
     });
 
     function changeGroupStyle(status) {
@@ -696,13 +706,13 @@ $(function () {
                 triggerType: triggerType
             },
             success: function (res) {
-                if(res.success===true){
+                if (res.success === true) {
                     layer.msg('执行成功');
-                }else{
+                } else {
                     layer.msg('执行失败')
                 }
             },
-            error:function (err) {
+            error: function (err) {
                 layer.msg(err);
             }
         });
@@ -741,7 +751,6 @@ $(function () {
     function OnRightClick() {
 
     }
-
 
 
     var zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
@@ -821,11 +830,11 @@ $(function () {
             e.stopPropagation();
             $('#timeModal').modal('toggle');
             var para = $.trim($('#timeChange').val());
-            var min = para.substr(2,1);
-            var hour = para.substr(4,1);
-            var day = para.substr(6,1);
-            var month = para.substr(8,1);
-            var week = para.substr(10,1);
+            var min = para.substr(2, 1);
+            var hour = para.substr(4, 1);
+            var day = para.substr(6, 1);
+            var month = para.substr(8, 1);
+            var week = para.substr(10, 1);
             $('#inputMin').val(min);
             $('#inputHour').val(hour);
             $('#inputDay').val(day);
@@ -839,7 +848,7 @@ $(function () {
             var day = $.trim($('#inputDay').val());
             var month = $.trim($('#inputMonth').val());
             var week = $.trim($('#inputWeek').val());
-            var para = '0 '+ min+' '+hour+' '+day+' '+month+' '+week;
+            var para = '0 ' + min + ' ' + hour + ' ' + day + ' ' + month + ' ' + week;
             $('#timeChange').val(para);
             $('#timeModal').modal('toggle');
         })

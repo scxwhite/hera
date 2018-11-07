@@ -227,7 +227,7 @@ public class ScheduleCenterController extends BaseHeraController {
         actionHistory.setJobId(heraAction.getJobId());
         actionHistory.setActionId(heraAction.getId());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
-        actionHistory.setOperator(owner.equals(HeraGlobalEnvironment.getAdmin()) ?  heraJob.getOwner() : owner);
+        actionHistory.setOperator(owner.equals(HeraGlobalEnvironment.getAdmin()) ? heraJob.getOwner() : owner);
         actionHistory.setIllustrate(owner);
         actionHistory.setStatus(StatusEnum.RUNNING.toString());
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
@@ -509,56 +509,55 @@ public class ScheduleCenterController extends BaseHeraController {
 
     private String checkDependencies(Integer id, boolean isGroup) {
         List<HeraJob> allJobs = heraJobService.findAllDependencies();
-        List<HeraJob> jobList = new ArrayList<>();
 
         if (isGroup) {
-            jobList = heraJobService.findByPid(id);
-        } else {
-            jobList.add(heraJobService.findById(id));
-        }
-        StringBuilder openJob = new StringBuilder("任务处于开启状态:[ ");
-        boolean canDelete = true;
-        for (HeraJob job : jobList) {
-            if (job.getAuto() == 1) {
+            List<HeraJob> jobList = heraJobService.findByPid(id);
+            StringBuilder openJob = new StringBuilder("无法删除存在任务的目录:[ ");
+            for (HeraJob job : jobList) {
                 openJob.append(job.getId()).append(" ");
-                if (canDelete) {
-                    canDelete = false;
-                }
             }
-        }
-        openJob.append("]");
-        if (!canDelete) {
-            return openJob.toString();
-        }
-        canDelete = true;
-        boolean isFirst;
-        StringBuilder dependenceJob = new StringBuilder("任务依赖: ");
-        for (HeraJob job : jobList) {
-            isFirst = true;
+            openJob.append("]");
+            if (jobList.size() > 0) {
+                return openJob.toString();
+            }
+            return null;
+        } else {
+            HeraJob job = heraJobService.findById(id);
+            if (job.getAuto() == 1) {
+                return "无法删除正在开启的任务";
+            }
+
+            boolean canDelete = true;
+            boolean isFirst = true;
+
+            String deleteJob = String.valueOf(job.getId());
+            StringBuilder dependenceJob = new StringBuilder("任务依赖: ");
+            String[] dependenceJobs;
             for (HeraJob allJob : allJobs) {
                 if (StringUtils.isNotBlank(allJob.getDependencies())) {
-                    if (allJob.getDependencies().contains(String.valueOf(job.getId())) || allJob.getDependencies().contains("," + job.getId()) || allJob.getDependencies().contains(job.getId() + ",")) {
-                        if (canDelete) {
-                            canDelete = false;
-                        }
-                        if (isFirst) {
-                            isFirst = false;
-                            dependenceJob.append("[").append(job.getId()).append(" -> ").append(allJob.getId()).append(" ");
-                        } else {
-                            dependenceJob.append(allJob.getId()).append(" ");
+                    dependenceJobs = allJob.getDependencies().split(",");
+                    for (String jobId : dependenceJobs) {
+                        if (jobId.equals(deleteJob)) {
+                            if (canDelete) {
+                                canDelete = false;
+                            }
+                            if (isFirst) {
+                                isFirst = false;
+                                dependenceJob.append("[").append(job.getId()).append(" -> ").append(allJob.getId()).append(" ");
+                            } else {
+                                dependenceJob.append(allJob.getId()).append(" ");
+                            }
+                            break;
                         }
                     }
                 }
             }
-            if (!isFirst) {
-                dependenceJob.append("]").append("\n");
+            dependenceJob.append("]").append("\n");
+            if (!canDelete) {
+                return dependenceJob.toString();
             }
+            return null;
         }
-
-        if (!canDelete) {
-            return dependenceJob.toString();
-        }
-        return null;
     }
 
 

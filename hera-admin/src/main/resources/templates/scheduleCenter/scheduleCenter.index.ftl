@@ -14,12 +14,31 @@
 
 <style type="text/css">
 
+    body .msg-class .layui-layer-title {
+        background: #202c32;
+        color: #fff;
+        border: none;
+    }
+
+    body .msg-class .layui-layer-btn {
+        border-top: 1px solid #E9E7E7
+    }
+
+    body .msg-class .layui-layer-btn a {
+        background: #333;
+    }
+
+    body .msg-class .layui-layer-btn .layui-layer-btn1 {
+        background: #999;
+    }
+
     .box, .content {
         margin-bottom: 0;
         padding-bottom: 0;
         margin-top: 0;
         padding-top: 0;
     }
+
     div #rMenu {
         position: absolute;
         visibility: hidden;
@@ -57,6 +76,7 @@
         background-color: #eee;
         border: 1px solid #ddd;
     }
+
     .form-control-static {
         overflow: hidden;
     }
@@ -112,42 +132,42 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">组id:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="id">1</label>-->
+                                            <#--<label class="form-control-static" name="id">1</label>-->
                                                 <input class="form-control" type="text" name="id" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">名称:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="name">activity_import</label>-->
+                                            <#--<label class="form-control-static" name="name">activity_import</label>-->
                                                 <input class="form-control" type="text" name="name" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">所有人:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="owner">类型</label>-->
+                                            <#--<label class="form-control-static" name="owner">类型</label>-->
                                                 <input class="form-control" type="text" name="owner" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">描述:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="description">导数据</label>-->
+                                            <#--<label class="form-control-static" name="description">导数据</label>-->
                                                 <input class="form-control" type="text" name="description" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">关注人员:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="focusUser"></label>-->
+                                            <#--<label class="form-control-static" name="focusUser"></label>-->
                                                 <input class="form-control" type="text" name="focusUser" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-4">管理员:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="uidS"></label>-->
+                                            <#--<label class="form-control-static" name="uidS"></label>-->
                                                 <input class="form-control" type="text" name="uidS" readonly>
                                             </div>
                                         </div>
@@ -170,44 +190,45 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">任务id:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="id"></label>-->
-                                                    <input class="form-control" type="text" name="id" readonly>
+                                            <#--<label class="form-control-static" name="id"></label>-->
+                                                <input class="form-control" type="text" name="id" readonly>
 
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">名称:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="name">哈哈</label>-->
+                                            <#--<label class="form-control-static" name="name">哈哈</label>-->
                                                 <input class="form-control" type="text" name="name" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">任务类型:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="runType"></label>-->
+                                            <#--<label class="form-control-static" name="runType"></label>-->
                                                 <input class="form-control" type="text" name="runType" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3"> 自动调度:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="label" name="auto"></label>-->
-                                                    <input class="form-control" type="text" name="auto" readonly>
+                                            <#--<label class="label" name="auto"></label>-->
+                                                <input class="form-control" type="text" name="auto" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">任务优先级:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="runPriorityLevel"></label>-->
-                                                <input class="form-control" type="text" name="runPriorityLevel" readonly>
+                                            <#--<label class="form-control-static" name="runPriorityLevel"></label>-->
+                                                <input class="form-control" type="text" name="runPriorityLevel"
+                                                       readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3"><label class="tip">*</label>描述:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static"></label>-->
-                                                    <input class="form-control" type="text" name="" readonly>
+                                            <#--<label class="form-control-static"></label>-->
+                                                <input class="form-control" type="text" name="" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -215,49 +236,51 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">调度类型:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="scheduleType"></label>-->
+                                            <#--<label class="form-control-static" name="scheduleType"></label>-->
                                                 <input class="form-control" type="text" name="scheduleType" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group" id="dependencies">
                                             <label class="control-label input-sm col-sm-3">依赖任务:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="dependencies"></label>-->
+                                            <#--<label class="form-control-static" name="dependencies"></label>-->
                                                 <input class="form-control" type="text" name="dependencies" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group" id="heraDependencyCycle">
                                             <label class="control-label input-sm col-sm-3">依赖周期:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="heraDependencyCycle"></label>-->
-                                                <input class="form-control" type="text" name="heraDependencyCycle" readonly>
+                                            <#--<label class="form-control-static" name="heraDependencyCycle"></label>-->
+                                                <input class="form-control" type="text" name="heraDependencyCycle"
+                                                       readonly>
                                             </div>
                                         </div>
                                         <div class="form-group" id="cronExpression">
                                             <label class="control-label input-sm col-sm-3">定时表达式:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="cronExpression"></label>-->
-                                                    <input class="form-control" type="text" name="cronExpression" readonly>
+                                            <#--<label class="form-control-static" name="cronExpression"></label>-->
+                                                <input class="form-control" type="text" name="cronExpression" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">重试次数:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="rollBackTimes"></label>-->
+                                            <#--<label class="form-control-static" name="rollBackTimes"></label>-->
                                                 <input class="form-control" type="text" name="rollBackTimes" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">重试间隔:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="rollBackWaitTime"></label>-->
-                                                <input class="form-control" type="text" name="rollBackWaitTime" readonly>
+                                            <#--<label class="form-control-static" name="rollBackWaitTime"></label>-->
+                                                <input class="form-control" type="text" name="rollBackWaitTime"
+                                                       readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">预计时长:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static"></label>-->
+                                            <#--<label class="form-control-static"></label>-->
                                                 <input class="form-control" type="text" name="" readonly>
                                             </div>
                                         </div>
@@ -266,42 +289,42 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">所有人:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="owner"></label>-->
+                                            <#--<label class="form-control-static" name="owner"></label>-->
                                                 <input class="form-control" type="text" name="owner" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group ">
                                             <label class="control-label input-sm col-sm-3">重要联系人:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static"></label>-->
+                                            <#--<label class="form-control-static"></label>-->
                                                 <input class="form-control" type="text" name="" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">关注人员:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="focusUser"></label>-->
+                                            <#--<label class="form-control-static" name="focusUser"></label>-->
                                                 <input class="form-control" type="text" name="focusUser" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group ">
                                             <label class="control-label input-sm col-sm-3">管理员:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="uidS"></label>-->
+                                            <#--<label class="form-control-static" name="uidS"></label>-->
                                                 <input class="form-control" type="text" name="uidS" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group ">
                                             <label class="control-label input-sm col-sm-3">host组id:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static" name="hostGroupName"></label>-->
+                                            <#--<label class="form-control-static" name="hostGroupName"></label>-->
                                                 <input class="form-control" type="text" name="hostGroupName" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group ">
                                             <label class="control-label input-sm col-sm-3">host组名:</label>
                                             <div class="col-sm-8">
-                                                <#--<label class="form-control-static"></label>-->
+                                            <#--<label class="form-control-static"></label>-->
                                                 <input class="form-control" type="text" name="" readonly>
                                             </div>
                                         </div>
@@ -405,7 +428,8 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">定时表达式:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" name="cronExpression" id="timeChange">
+                                                <input class="form-control" type="text" name="cronExpression"
+                                                       id="timeChange">
 
                                             </div>
                                         </div>
@@ -531,7 +555,9 @@
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addAdmin">配置管理员</button>
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addAdmin">
+                                            配置管理员
+                                        </button>
 
                                     </li>
                                 <#--     <br>
@@ -560,7 +586,8 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="jobDag">依赖图</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="jobDag">依赖图
+                                    </button>
                                 </li>
                                 <br>
                                 <li>
@@ -594,7 +621,9 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="addAdmin">配置管理员</button>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="addAdmin">
+                                        配置管理员
+                                    </button>
 
                                 </li>
                                 <br>
@@ -783,7 +812,7 @@
 
             <div class="modal-footer">
                 <input multiple id="fileForm" name="fileForm" type="file" class="file-loading"
-                       >
+                >
                 <br>
                 <button class="btn btn-primary" id="closeUploadModal">关闭</button>
             </div>
@@ -812,7 +841,7 @@
     </div>
 </div>
 <div class="modal" id="addAdminModal" tabindex="-1" role="dialog" aria-labelledby="title">
-    <div class="modal-dialog" style="width: 600px" >
+    <div class="modal-dialog" style="width: 600px">
         <div class="modal-content">
 
             <div class="modal-header">
@@ -837,7 +866,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title">构造定时表达式</h4>
             </div>
             <div class="modal-body">
@@ -899,7 +929,6 @@
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exhide.min.js"></script>
-
 
 
 <script src="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.js"></script>
