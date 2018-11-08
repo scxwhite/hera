@@ -39,7 +39,7 @@
                         <!-- small box -->
                         <div class="small-box bg-aqua">
                             <div class="inner">
-                                <h3 id="allJobsNum"></h3>
+                                <h3 id="allJobsNum">&nbsp;</h3>
 
                                 <p>今日总任务数</p>
                             </div>
