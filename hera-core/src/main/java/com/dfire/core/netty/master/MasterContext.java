@@ -2,14 +2,13 @@ package com.dfire.core.netty.master;
 
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.service.*;
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
 import com.dfire.logs.HeraLog;
 import io.netty.channel.Channel;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -47,21 +46,25 @@ public class MasterContext {
     private Dispatcher dispatcher;
     private Map<Integer, HeraHostGroupVo> hostGroupCache;
     private Queue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, Comparator.comparing(JobElement::getPriorityLevel));
-    private Queue<JobElement> debugQueue = new ArrayBlockingQueue<>(1000);
-    private Queue<JobElement> manualQueue = new ArrayBlockingQueue<>(1000);
+    private Queue<JobElement> debugQueue = new LinkedBlockingQueue<>(1000);
+    private Queue<JobElement> manualQueue = new LinkedBlockingQueue<>(1000);
 
     private MasterHandler handler;
     private MasterServer masterServer;
-    private ExecutorService threadPool = Executors.newCachedThreadPool();
+    private ExecutorService threadPool;
 
     /**
      * todo 参数可配置
-     *
      */
-    protected Timer masterTimer = null;
+
+    protected ScheduledThreadPoolExecutor masterSchedule;
 
     public void init() {
-        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 10, TimeUnit.MILLISECONDS);
+        threadPool = new ThreadPoolExecutor(
+                0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-wait-response-thread"), new ThreadPoolExecutor.AbortPolicy());
+        masterSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("master-schedule-thread", true));
+        masterSchedule.setKeepAliveTime(5, TimeUnit.MINUTES);
+        masterSchedule.allowCoreThreadTimeOut(true);
         this.getQuartzSchedulerService().start();
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);
@@ -73,7 +76,7 @@ public class MasterContext {
 
     public void destroy() {
         threadPool.shutdown();
-        masterTimer.stop();
+        masterSchedule.shutdown();
         if (masterServer != null) {
             masterServer.shutdown();
         }
@@ -132,6 +135,7 @@ public class MasterContext {
     public HeraJobActionService getHeraJobActionService() {
         return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
     }
+
     public EmailService getEmailService() {
         return (EmailService) applicationContext.getBean("emailServiceImpl");
     }

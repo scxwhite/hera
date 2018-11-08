@@ -10,8 +10,7 @@ import com.dfire.protocol.JobExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.RpcWebOperate;
 import com.dfire.protocol.RpcWebRequest;
-import com.dfire.protocol.RpcWebResponse.*;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.protocol.RpcWebResponse.WebResponse;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -49,7 +48,11 @@ public class MasterHandleWebExecute {
             SocketLog.info("send web debug response, debugId = {}", debugId);
             return webResponse;
         }
-        return null;
+        return WebResponse.newBuilder()
+                .setRid(request.getRid())
+                .setErrorText("未识别的操作类型" + request.getEk())
+                .setStatus(ResponseStatus.Status.ERROR)
+                .build();
     }
 
 }

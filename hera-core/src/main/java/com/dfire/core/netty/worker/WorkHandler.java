@@ -4,10 +4,13 @@ import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
 import com.dfire.logs.SocketLog;
-import com.dfire.protocol.*;
+import com.dfire.protocol.RpcRequest.*;
+import com.dfire.protocol.RpcResponse.*;
+import com.dfire.protocol.RpcOperate.*;
+import com.dfire.protocol.RpcSocketMessage.*;
+import com.dfire.protocol.RpcWebResponse.*;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -17,9 +20,9 @@ import java.util.concurrent.*;
  * @time: Created in 1:32 2018/1/4
  * @desc SocketMessage为RPC消息体
  */
-public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.SocketMessage> {
+public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
-    private CompletionService<RpcResponse.Response> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
+    private CompletionService<Response> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
     private WorkContext workContext;
 
     public WorkHandler(final WorkContext workContext) {
@@ -30,8 +33,8 @@ public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.So
         executor.execute(() -> {
             while (true) {
                 try {
-                    Future<RpcResponse.Response> future = completionService.take();
-                    RpcResponse.Response response = future.get();
+                    Future<Response> future = completionService.take();
+                    Response response = future.get();
                     if (workContext.getServerChannel() != null) {
                         workContext.getServerChannel().writeAndFlush(wrapper(response));
                     }
@@ -54,36 +57,36 @@ public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.So
         listeners.add(listener);
     }
 
-    public RpcSocketMessage.SocketMessage wrapper(RpcResponse.Response response) {
-        return RpcSocketMessage.SocketMessage
+    public SocketMessage wrapper(Response response) {
+        return SocketMessage
                 .newBuilder()
-                .setKind(RpcSocketMessage.SocketMessage.Kind.RESPONSE)
+                .setKind(SocketMessage.Kind.RESPONSE)
                 .setBody(response.toByteString()).build();
     }
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcSocketMessage.SocketMessage socketMessage) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, SocketMessage socketMessage) throws Exception {
         switch (socketMessage.getKind()) {
             case REQUEST:
-                final RpcRequest.Request request = RpcRequest.Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                RpcOperate.Operate operate = request.getOperate();
-                if (operate == RpcOperate.Operate.Schedule || operate == RpcOperate.Operate.Manual || operate == RpcOperate.Operate.Debug) {
+                final Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                Operate operate = request.getOperate();
+                if (operate == Operate.Schedule || operate == Operate.Manual || operate == Operate.Debug) {
                     completionService.submit(() ->
                             new WorkExecuteJob().execute(workContext, request).get());
-                } else if (operate == RpcOperate.Operate.Cancel) {
+                } else if (operate == Operate.Cancel) {
                     completionService.submit(() ->
                             new WorkHandleCancel().handleCancel(workContext, request).get());
                 }
                 break;
             case RESPONSE:
-                final RpcResponse.Response response = RpcResponse.Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                final Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
                 break;
             case WEB_RESPONSE:
-                final RpcWebResponse.WebResponse webResponse = RpcWebResponse.WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                final WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }
