@@ -82,7 +82,6 @@ $(function () {
         rules: {
             userName: {
                 required: true,
-                minlength: 4,
                 maxlength: 18
             },
             password: {
@@ -94,7 +93,6 @@ $(function () {
         messages: {
             userName: {
                 required: "请输入登录账号.",
-                minlength: "登录账号不应低于4位",
                 maxlength: "登录账号不应超过18位"
             },
             password: {

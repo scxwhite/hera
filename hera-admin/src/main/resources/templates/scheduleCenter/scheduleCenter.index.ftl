@@ -593,7 +593,7 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="jobDag">依赖图
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="jobDag" data-toggle="modal">依赖图
                                     </button>
                                 </li>
                                 <br>
