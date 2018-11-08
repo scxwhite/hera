@@ -64,3 +64,6 @@ input {
     background: #ccc;
     z-index: 2;
 }
+.main-footer {
+    margin-left: 160px;
+}
