@@ -680,7 +680,7 @@ $(function () {
             mode: "sql",
             lineNumbers: true,
             autofocus: true,
-            theme: "base16-light",
+            theme: "lucario",
             readOnly: false
         });
         codeMirror.display.wrapper.style.height = 500 + "px";

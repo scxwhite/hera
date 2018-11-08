@@ -65,7 +65,6 @@ html, body {
     box-shadow: none;
     position: relative;
     height: 950px;
-    overflow: hidden;
 }
 #config{
     padding:10px;
