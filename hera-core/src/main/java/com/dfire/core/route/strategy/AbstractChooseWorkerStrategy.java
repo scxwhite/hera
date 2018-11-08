@@ -1,8 +1,7 @@
-package com.dfire.core.route;
+package com.dfire.core.route.strategy;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.HeartBeatInfo;
-import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 
 /**
@@ -10,16 +9,8 @@ import com.dfire.core.netty.master.MasterWorkHolder;
  * @time: Created in 上午11:09 2018/10/10
  * @desc 任务执行worker选择路由
  */
-public abstract class WorkerRouter {
+public abstract class AbstractChooseWorkerStrategy implements IStrategyWorker {
 
-    /**
-     * 根据可执行机器列表与机器组id选取worker
-     *
-     * @param hostGroupId
-     * @param masterContext
-     * @return
-     */
-    public abstract MasterWorkHolder selectWorker(int hostGroupId, MasterContext masterContext);
 
     /**
      * check ip 的worker能否选择为执行机器

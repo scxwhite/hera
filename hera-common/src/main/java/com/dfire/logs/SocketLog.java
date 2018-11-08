@@ -38,4 +38,8 @@ public class SocketLog {
     public static void warn(String format, Object... arguments) {
         log.warn(format, arguments);
     }
+
+    public static void error(String format,Throwable throwable){
+        log.error(format,throwable);
+    }
 }

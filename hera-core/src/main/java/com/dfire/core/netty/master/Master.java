@@ -22,8 +22,9 @@ import com.dfire.core.event.listenter.*;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
-import com.dfire.core.route.WorkerRouter;
-import com.dfire.core.route.factory.DefaultWorkerRouterFactory;
+import com.dfire.core.route.factory.StrategyWorkerEnum;
+import com.dfire.core.route.factory.StrategyWorkerFactory;
+import com.dfire.core.route.strategy.IStrategyWorker;
 import com.dfire.core.util.CronParse;
 import com.dfire.logs.DebugLog;
 import com.dfire.logs.HeraLog;
@@ -35,6 +36,7 @@ import com.dfire.protocol.RpcResponse;
 import io.netty.channel.Channel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.Order;
@@ -56,6 +58,7 @@ import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
  */
 @Component
 @Order(1)
+@Slf4j
 public class Master {
 
     private MasterContext masterContext;
@@ -145,7 +148,7 @@ public class Master {
                     }
                     ScheduleLog.info("scan waiting queueTask run");
                 } catch (Exception e) {
-                    ScheduleLog.error("scan waiting queueTask exception:{}", e.toString());
+                    ScheduleLog.error("scan waiting queueTask exception",e);
                 } finally {
                     masterContext.masterTimer.newTimeout(this, nextTime, TimeUnit.MILLISECONDS);
                 }
@@ -712,8 +715,8 @@ public class Master {
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
 
         int hostGroupId = jobElement == null ? HeraGlobalEnvironment.defaultWorkerGroup : jobElement.getHostGroupId();
-        WorkerRouter workerRouter = new DefaultWorkerRouterFactory().newWorkerRouter("first");
-        return workerRouter.selectWorker(hostGroupId, masterContext);
+        IStrategyWorker chooseWorkerStrategy = StrategyWorkerFactory.getStrategyWorker(StrategyWorkerEnum.FIRST);
+        return chooseWorkerStrategy.chooseWorker(hostGroupId, masterContext);
     }
 
     public void debug(HeraDebugHistoryVo debugHistory) {
