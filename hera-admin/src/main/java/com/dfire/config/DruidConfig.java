@@ -33,7 +33,6 @@ public class DruidConfig {
     @Primary
     public ServletRegistrationBean druidStatViewServlet() {
         ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(),"/druid/*");
-
         servletRegistrationBean.addInitParameter("loginUsername","hera");
         servletRegistrationBean.addInitParameter("loginPassword","admin");
         servletRegistrationBean.addInitParameter("resetEnable","false");
