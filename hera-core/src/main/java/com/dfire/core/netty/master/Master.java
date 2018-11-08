@@ -424,7 +424,7 @@ public class Master {
 
         if (!masterContext.getManualQueue().isEmpty()) {
             ScheduleLog.warn("manual队列任务：{}", masterContext.getManualQueue());
-            JobElement jobElement = masterContext.getScheduleQueue().peek();
+            JobElement jobElement = masterContext.getManualQueue().peek();
             MasterWorkHolder selectWork = getRunnableWork(jobElement);
             if (selectWork == null) {
                 ScheduleLog.warn("can not get work to execute job in master");
@@ -437,7 +437,7 @@ public class Master {
 
         if (!masterContext.getDebugQueue().isEmpty()) {
             ScheduleLog.warn("debug队列任务：{}", masterContext.getDebugQueue());
-            JobElement jobElement = masterContext.getScheduleQueue().peek();
+            JobElement jobElement = masterContext.getDebugQueue().peek();
             MasterWorkHolder selectWork = getRunnableWork(jobElement);
             if (selectWork == null) {
                 ScheduleLog.warn("can not get work to execute job in master");
