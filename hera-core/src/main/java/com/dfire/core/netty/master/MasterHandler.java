@@ -1,15 +1,19 @@
 package com.dfire.core.netty.master;
 
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.*;
 import com.dfire.logs.SocketLog;
-import com.dfire.protocol.*;
+import com.dfire.protocol.RpcOperate.Operate;
+import com.dfire.protocol.RpcRequest.Request;
+import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
+import com.dfire.protocol.RpcWebRequest.WebRequest;
+import com.dfire.protocol.RpcWebResponse.WebResponse;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
 import java.util.List;
@@ -23,7 +27,7 @@ import java.util.concurrent.*;
 @ChannelHandler.Sharable
 public class MasterHandler extends ChannelInboundHandlerAdapter {
 
-    private CompletionService<ChannelResponse> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
+    private CompletionService<ChannelResponse> completionService;
 
     /**
      * 调度器执行上下文信息
@@ -60,12 +64,17 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     public MasterHandler(MasterContext masterContext) {
         this.masterContext = masterContext;
-        Executor executor = Executors.newSingleThreadExecutor();
+        completionService = new ExecutorCompletionService<>(
+                new ThreadPoolExecutor(
+                        0, Integer.MAX_VALUE, 10L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-execute-thread", true), new ThreadPoolExecutor.AbortPolicy()));
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("master-deal-thread", true), new ThreadPoolExecutor.AbortPolicy());
         executor.execute(() -> {
                     while (true) {
                         try {
                             Future<ChannelResponse> future = completionService.take();
                             ChannelResponse response = future.get();
+                            SocketLog.info("准备将完成消息发送给work{}", response.webResponse.getStatus());
                             response.channel.writeAndFlush(wrapper(response.webResponse));
                             SocketLog.info("master send response success");
                         } catch (Exception e) {
@@ -84,13 +93,13 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         switch (socketMessage.getKind()) {
             //心跳
             case REQUEST:
-                RpcRequest.Request request = RpcRequest.Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                if (request.getOperate() == RpcOperate.Operate.HeartBeat) {
+                Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                if (request.getOperate() == Operate.HeartBeat) {
                     masterDoHeartBeat.handleHeartBeat(masterContext, channel, request);
                 }
                 break;
             case WEB_REQUEST:
-                final RpcWebRequest.WebRequest webRequest = RpcWebRequest.WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
                         completionService.submit(() ->
@@ -119,12 +128,12 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 break;
             case RESPONSE:
                 for (ResponseListener listener : listeners) {
-                    listener.onResponse(RpcResponse.Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                    listener.onResponse(Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
                 break;
             case WEB_RESPONSE:
                 for (ResponseListener listener : listeners) {
-                    listener.onWebResponse(RpcWebResponse.WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                    listener.onWebResponse(WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
                 }
                 break;
             default:
@@ -163,7 +172,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    private SocketMessage wrapper(RpcWebResponse.WebResponse response) {
+    private SocketMessage wrapper(WebResponse response) {
         return SocketMessage.newBuilder().setKind(SocketMessage.Kind.WEB_RESPONSE).setBody(response.toByteString()).build();
     }
 
@@ -179,10 +188,10 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
 
     private class ChannelResponse {
-        Channel     channel;
-        RpcWebResponse.WebResponse webResponse;
+        Channel channel;
+        WebResponse webResponse;
 
-        public ChannelResponse(Channel channel, RpcWebResponse.WebResponse webResponse) {
+        public ChannelResponse(Channel channel, WebResponse webResponse) {
             this.channel = channel;
             this.webResponse = webResponse;
         }
