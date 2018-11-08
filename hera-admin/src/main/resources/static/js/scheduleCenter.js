@@ -852,6 +852,20 @@ $(function () {
             $('#timeChange').val(para);
             $('#timeModal').modal('toggle');
         })
+        //隐藏树
+        $('#hideTreeBtn').click(function (e) {
+            e.stopPropagation();
+            if($(this).children().hasClass('fa-minus')){
+                $('#treeCon').removeClass('col-md-3 col-sm-3 col-lg-3').addClass('col-md-1 col-sm-1 col-lg-1');
+                $(this).children().removeClass('fa-minus').addClass('fa-plus');
+                $('#infoCon').removeClass('col-md-8 col-sm-8 col-lg-8').addClass('col-md-10 col-sm-10 col-lg-10');
+            }else{
+                $('#treeCon').removeClass('col-md-1 col-sm-1 col-lg-1').addClass('col-md-3 col-sm-3 col-lg-3');
+                $(this).children().removeClass('fa-plus').addClass('fa-minus');
+                $('#infoCon').removeClass('col-md-10 col-sm-10 col-lg-10').addClass('col-md-8 col-sm-8 col-lg-8');
+
+            }
+        })
     });
 });
 

@@ -108,8 +108,15 @@
 
         <section class="content">
             <div class="row">
-                <div class="col-md-3 col-sm-3 col-lg-3 colStyle">
+                <div class="col-md-3 col-sm-3 col-lg-3 colStyle" id="treeCon">
                     <div class="box box-primary height-self" style="overflow: auto;">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">调度中心</h3>
+                            <div class="box-tools">
+                                <button type="button" class="btn btn-box-tool" id="hideTreeBtn"><i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
                         <div class="box-body">
                             <div>
                                 <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词(空格分割)">
@@ -119,7 +126,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self" style="overflow: auto;">
+                <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self" style="overflow: auto;" id="infoCon">
 
                     <div class="box box-primary">
 
@@ -788,8 +795,6 @@
             <div class="modal-body">
                 <table class="table " id="runningLogDetailTable"></table>
             </div>
-
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
                 <button type="button" class="btn btn-info add-btn" name="refreshLog">刷新</button>
