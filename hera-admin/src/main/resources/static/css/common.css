@@ -79,7 +79,6 @@ input {
 .main-header .logo {
     width: 160px;
 }
-
-.main-footer {
+.main-header .navbar {
     margin-left: 160px;
 }
