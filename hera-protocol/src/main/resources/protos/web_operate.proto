@@ -22,4 +22,8 @@ enum WebOperate {
 
     //生成版本
     GenerateAction = 5;
+
+    //获得任务队列信息
+    GetJobQueueInfo = 6;
+
 }

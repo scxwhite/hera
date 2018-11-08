@@ -248,7 +248,7 @@
         Powered by <b>hera</b> 1.0.0（快照版本）
         <div class="pull-right hidden-xs">
             <strong>Copyright &copy; 2018-${.now?string('yyyy')} &nbsp;
-                <a href="#" target="_blank">lingxiao</a>
+                <a href="#" target="_blank">基础架构</a>
                 &nbsp;
                 <a href="" target="_blank">2dfire</a>
             </strong><!-- All rights reserved. -->

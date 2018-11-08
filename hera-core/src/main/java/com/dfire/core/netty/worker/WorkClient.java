@@ -247,7 +247,7 @@ public class WorkClient {
         };
         ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, HeraGlobalEnvironment.getConnectPort()));
         connectFuture.addListener(futureListener);
-        if (!latch.await(2, TimeUnit.SECONDS)) {
+        if (!latch.await(10, TimeUnit.SECONDS)) {
             connectFuture.removeListener(futureListener);
             connectFuture.cancel(true);
             throw new ExecutionException(new TimeoutException("connect server consumption of 2 seconds"));
@@ -368,5 +368,13 @@ public class WorkClient {
         return "生成版本成功";
     }
 
+    public String getJobQueueInfoFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse response = new WorkerHandleWebAction().handleWebAction(workContext, kind, id).get();
+        if (response.getStatus() == ResponseStatus.Status.ERROR) {
+            SocketLog.error("generate action error");
+            return "生成版本失败";
+        }
+        return "生成版本成功";
+    }
 
 }
