@@ -7,8 +7,6 @@ import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.schedule.HeraSchedule;
 import com.dfire.core.util.NetUtils;
 import com.dfire.logs.HeraLog;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -54,19 +52,14 @@ public class DistributeLock {
 
     @PostConstruct
     public void init() {
-        TimerTask checkLockTask = new TimerTask() {
-            @Override
-            public void run(Timeout timeout) {
-                try {
-                    checkLock();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    workClient.workClientTimer.newTimeout(this, 1, TimeUnit.MINUTES);
-                }
+
+        workClient.workSchedule.scheduleWithFixedDelay(() -> {
+            try {
+                checkLock();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        };
-        workClient.workClientTimer.newTimeout(checkLockTask, 5, TimeUnit.SECONDS);
+        }, 10, 60, TimeUnit.SECONDS);
     }
 
     public void checkLock() {
