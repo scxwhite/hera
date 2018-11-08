@@ -10,5 +10,8 @@ public class Constants {
     public final static String HERA_GROUP = "heraGroup";
 
     public final static String GROUP_PREFIX = "group_";
+    public final static String PRE_ENV = "pre";
+
+
 
 }
