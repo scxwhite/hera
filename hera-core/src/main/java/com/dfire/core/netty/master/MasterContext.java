@@ -61,7 +61,7 @@ public class MasterContext {
     protected Timer masterTimer = null;
 
     public void init() {
-        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 10, TimeUnit.MILLISECONDS);
+        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 500, TimeUnit.MILLISECONDS);
         this.getQuartzSchedulerService().start();
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);

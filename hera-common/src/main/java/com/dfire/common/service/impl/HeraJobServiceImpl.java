@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @author xiaosuda
  * @date 2018/11/7
  */
-@Service
+@Service("heraJobService")
 public class HeraJobServiceImpl implements HeraJobService {
 
     @Autowired
