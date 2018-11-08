@@ -5,6 +5,7 @@ import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.lock.DistributeLock;
@@ -57,9 +58,13 @@ public class WorkClient {
     private EventLoopGroup eventLoopGroup;
     private WorkContext workContext = new WorkContext();
     private ScheduledExecutorService service;
-    public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
     private AtomicBoolean clientSwitch = new AtomicBoolean(false);
-
+    public ScheduledThreadPoolExecutor workSchedule;
+    {
+        workSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("work-schedule-thread", true));
+        workSchedule.setKeepAliveTime(5, TimeUnit.MINUTES);
+        workSchedule.allowCoreThreadTimeOut(true);
+    }
     /**
      * ProtobufVarint32FrameDecoder:  针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
      * <pre>
@@ -83,6 +88,7 @@ public class WorkClient {
         if (!clientSwitch.compareAndSet(false, true)) {
             return;
         }
+
         workContext.setWorkClient(this);
         workContext.setApplicationContext(applicationContext);
         eventLoopGroup = new NioEventLoopGroup();
@@ -102,13 +108,13 @@ public class WorkClient {
                 });
         HeraLog.info("init work client success ");
 
-        workClientTimer.newTimeout(new TimerTask() {
+        workSchedule.schedule(new Runnable() {
 
             private WorkerHandlerHeartBeat workerHandlerHeartBeat = new WorkerHandlerHeartBeat();
             private int failCount = 0;
 
             @Override
-            public void run(Timeout timeout) {
+            public void run() {
                 try {
                     if (workContext.getServerChannel() != null) {
                         ChannelFuture channelFuture = workerHandlerHeartBeat.send(workContext);
@@ -131,12 +137,12 @@ public class WorkClient {
                 } catch (Exception e) {
                     SocketLog.error("heart beat error:", e);
                 } finally {
-                    workClientTimer.newTimeout(this, (failCount + 1) * HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
+                    workSchedule.schedule(this, (failCount + 1) * HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
                 }
             }
         }, HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
 
-        workClientTimer.newTimeout(new TimerTask() {
+        workSchedule.scheduleWithFixedDelay(new Runnable() {
             private void editLog(Job job, Exception e) {
                 try {
                     HeraJobHistoryVo his = job.getJobContext().getHeraJobHistory();
@@ -173,7 +179,7 @@ public class WorkClient {
             }
 
             @Override
-            public void run(Timeout timeout) {
+            public void run() {
 
                 try {
                     for (Job job : new HashSet<>(workContext.getRunning().values())) {
@@ -204,12 +210,10 @@ public class WorkClient {
                     }
                 } catch (Exception e) {
                     HeraLog.error("job log flush exception:{}", e.toString());
-                } finally {
-                    workClientTimer.newTimeout(this, 5, TimeUnit.SECONDS);
                 }
 
             }
-        }, 5, TimeUnit.SECONDS);
+        },0, 5, TimeUnit.SECONDS);
     }
 
     /**

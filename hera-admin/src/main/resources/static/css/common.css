@@ -67,3 +67,18 @@ input {
 .main-footer {
     margin-left: 160px;
 }
+.sidebar span{
+    font-weight: bold;
+}
+.content-wrapper{
+    margin-left: 160px;
+}
+.main-sidebar{
+    width: 160px;
+}
+.main-header .logo {
+    width: 160px;
+}
+.main-header .navbar {
+    margin-left: 160px;
+}
