@@ -39,3 +39,49 @@ div#rMenu ul li {
 .tip{
     color: red;
 }
+#jobDetail{
+    height: 200px;
+}
+#timeline {
+    position: relative;
+    margin-top: 10px;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid dimgray;
+    box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.75);
+}
+
+#timeline .selected {
+    font-weight: bold;
+    box-shadow: 0px 0px 3px 1px gray;
+}
+
+#timeline-collapse {
+    top: 100px
+}
+
+.styleA {
+    color: darkgreen;
+    background-color: lightgreen;
+}
+
+.styleB {
+    color: darkred;
+    background-color: mistyrose;
+}
+
+.styleC {
+    color: darkblue;
+    background-color: lightblue;
+}
+
+.timeline-unused-phase {
+    background: repeating-linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.85),
+            rgba(255, 255, 255, 0.85) 10px,
+            rgba(235, 235, 235, 0.85) 10px,
+            rgba(235, 235, 235, 0.85) 20px
+    );
+}

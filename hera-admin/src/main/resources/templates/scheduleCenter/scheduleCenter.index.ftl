@@ -593,7 +593,7 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="jobDag">依赖图
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="jobDag" data-toggle="modal">依赖图
                                     </button>
                                 </li>
                                 <br>
@@ -665,7 +665,6 @@
                             </ul>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
@@ -918,6 +917,38 @@
 
 <div class="response response-sch box box-success" id="responseCon">
     <p id="response"></p>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="jobDagModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="box-title">机器组管理</h3>
+        </div>
+        <div class="modal-body">
+
+            <form class="form-inline">
+
+                <div class="form-group">
+                    <label for="itemw">任务ID:</label>
+                    <input id="item" class="input-sm" style="width:80px; border: 1px solid #ccc;"/>
+                    <input class="btn btn-primary" type="button" value="上游任务链" onclick="keypath(0)"/>
+                    <input class="btn btn-primary" type="button" value="下游任务链" onclick="keypath(1)"/>
+                </div>
+                <div class="form-group">
+                    <input class="btn btn-primary" type="button" id="expandAll" value="展示全部">
+                </div>
+            </form>
+
+            </br>
+            <div class="row" style="margin: 0;">
+                <svg style="border: 3px solid dimgrey;height:700" class="col-lg-10">
+                    <g/>
+                </svg>
+                <textarea class="label-primary col-lg-2 col-sm-2 col-md-2" style="height: 400px;" id="jobDetail" readonly>任务信息</textarea>
+            </div>
+        </div>
+        </div>
 </div>
 
 <@netCommon.commonScript />
