@@ -99,9 +99,9 @@ public class SystemManageController {
      *
      * @return
      */
-    @RequestMapping(value = "/homePage/findAllJobStatusDetail", method = RequestMethod.GET)
+    @RequestMapping(value = "/homePage/getJobQueueInfo", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask getJobQueueInfo() {
+    public JsonResponse getJobQueueInfo() {
 
         return null;
     }
