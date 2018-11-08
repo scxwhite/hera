@@ -144,7 +144,7 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="" id="jobDetail"><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a>
+                        <li class="" id="jobDetailMenu"><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a>
                         </li>
                         <li class="" id="jobDag"><a href="${request.contextPath}/jobDag"><i
                                 class="fa fa-circle-o"></i>任务依赖图</a></li>
