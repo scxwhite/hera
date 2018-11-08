@@ -1,9 +1,7 @@
 package com.dfire.controller;
 
-import com.dfire.common.service.HeraUserService;
-import com.dfire.core.netty.master.MasterContext;
-import com.dfire.core.queue.JobElement;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.monitor.service.JobManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,10 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import org.springframework.web.context.request.async.WebAsyncTask;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -24,14 +19,13 @@ import java.util.Queue;
 @Controller
 public class SystemManageController {
 
-    @Autowired
-    HeraUserService heraUserService;
+
 
     @Autowired
-    MasterContext masterContext;
+    private JobManageService jobManageService;
 
     @Autowired
-    JobManageService jobManageService;
+    private WorkClient workClient;
 
     @RequestMapping("userManage")
     public String userManage() {
@@ -52,15 +46,6 @@ public class SystemManageController {
     public String jobDag() {
         return "jobManage/jobDag.index";
     }
-
-    @RequestMapping("/getTaskQueueStatus")
-    @ResponseBody
-    public Map getTaskQueueStatus() {
-        Map<String, Queue<JobElement>> res = new HashMap<>(4);
-        res.put("schedule", masterContext.getScheduleQueue());
-        return res;
-    }
-
 
     /**
      * 任务管理页面今日任务详情
@@ -107,6 +92,18 @@ public class SystemManageController {
     @ResponseBody
     public JsonResponse findAllJobStatusDetail() {
         return jobManageService.findAllJobStatusDetail();
+    }
+
+    /**
+     * 今日所有任务状态明细，线形图初始化
+     *
+     * @return
+     */
+    @RequestMapping(value = "/homePage/findAllJobStatusDetail", method = RequestMethod.GET)
+    @ResponseBody
+    public WebAsyncTask getJobQueueInfo() {
+
+        return null;
     }
 
 
