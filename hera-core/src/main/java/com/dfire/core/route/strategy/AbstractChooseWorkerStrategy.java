@@ -38,11 +38,11 @@ public abstract class AbstractChooseWorkerStrategy implements IStrategyWorker {
             return false;
         }
         HeartBeatInfo heartBeatInfo = worker.getHeartBeatInfo();
-        if(heartBeatInfo.getMemRate() == null || heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate()){
+        if(heartBeatInfo.getMemRate() == null || heartBeatInfo.getMemRate() > HeraGlobalEnvironment.getMaxMemRate()){
             MasterLog.warn(ResultReason.MEM_LIMIT.getMsg());
             return false;
         }
-        if(heartBeatInfo.getCpuLoadPerCore() == null || heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()){
+        if(heartBeatInfo.getCpuLoadPerCore() == null || heartBeatInfo.getCpuLoadPerCore() > HeraGlobalEnvironment.getMaxCpuLoadPerCore()){
             MasterLog.warn(ResultReason.LOAD_LIMIT.getMsg());
             return false;
         }
