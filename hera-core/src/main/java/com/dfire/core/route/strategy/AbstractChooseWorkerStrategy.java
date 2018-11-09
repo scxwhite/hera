@@ -4,7 +4,9 @@ import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.route.check.ResultReason;
+import com.dfire.logs.MasterLog;
 import com.dfire.logs.ScheduleLog;
+import com.dfire.logs.WorkerLog;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -23,24 +25,25 @@ public abstract class AbstractChooseWorkerStrategy implements IStrategyWorker {
      */
     public boolean checkResource(String host, MasterWorkHolder worker) {
         if(worker == null){
-            ScheduleLog.warn(ResultReason.NULL_WORKER.getMsg());
+            MasterLog.warn(ResultReason.NULL_WORKER.getMsg());
             return false;
         }
         if(worker.getHeartBeatInfo() == null){
-            ScheduleLog.warn(ResultReason.NULL_HEART.getMsg());
+            MasterLog.warn(ResultReason.NULL_HEART.getMsg());
             return false;
         }
-        if(!worker.getHeartBeatInfo().getHost().trim().equals(host.trim())){
-            ScheduleLog.warn(ResultReason.HOSTS_ERROR.getMsg());
+        String heartHost = worker.getHeartBeatInfo().getHost().trim();
+        if(!heartHost.equals(host.trim())){
+            ScheduleLog.warn(ResultReason.HOSTS_ERROR.getMsg()+"{},{}",heartHost,host.trim());
             return false;
         }
         HeartBeatInfo heartBeatInfo = worker.getHeartBeatInfo();
         if(heartBeatInfo.getMemRate() == null || heartBeatInfo.getMemRate() < HeraGlobalEnvironment.getMaxMemRate()){
-            ScheduleLog.warn(ResultReason.MEM_LIMIT.getMsg());
+            MasterLog.warn(ResultReason.MEM_LIMIT.getMsg());
             return false;
         }
         if(heartBeatInfo.getCpuLoadPerCore() == null || heartBeatInfo.getCpuLoadPerCore() < HeraGlobalEnvironment.getMaxCpuLoadPerCore()){
-            ScheduleLog.warn(ResultReason.LOAD_LIMIT.getMsg());
+            MasterLog.warn(ResultReason.LOAD_LIMIT.getMsg());
             return false;
         }
 
@@ -48,7 +51,7 @@ public abstract class AbstractChooseWorkerStrategy implements IStrategyWorker {
         Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getSystemMemUsed()) / HeraGlobalEnvironment.getPerTaskUseMem();
         int sum = heartBeatInfo.getDebugRunning().size() + heartBeatInfo.getManualRunning().size() + heartBeatInfo.getRunning().size();
         if(sum > assignTaskNum.intValue()){
-            ScheduleLog.warn(ResultReason.TASK_LIMIT.getMsg());
+            MasterLog.warn(ResultReason.TASK_LIMIT.getMsg());
             return false;
         }
         return true;
