@@ -3,7 +3,6 @@ package com.dfire.core.route.strategy;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterWorkHolder;
-import com.dfire.core.route.check.CheckResult;
 import com.dfire.core.route.check.ResultReason;
 import com.dfire.logs.ScheduleLog;
 
