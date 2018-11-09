@@ -591,14 +591,25 @@ $(function () {
     //关闭日志
     logTabContainer.on('click','span',function(e){
         e.stopPropagation();
-        var li = $(this).parent();
-        var width = li.width();
-        logTabContainer.tabsLength -=width;
-        var debugId=li.attr('his-id');
-        localStorage.removeItem('log'+debugId);
-        li.remove();
-        clearInterval(rightTimer);
+        $('#cancelSrueModal').modal('show');
+        var _this = $(this);
+        $('#sureCancelBtn').click(function (e) {
+            e.stopPropagation();
+            $('#cancelSrueModal').modal('hide');
+            var li = _this.parent();
+            var width = li.width();
+            logTabContainer.tabsLength -=width;
+            var debugId=li.attr('his-id');
+            localStorage.removeItem('log'+debugId);
+            li.remove();
+            clearInterval(rightTimer);
+            var url = base_url + "/developCenter/cancelJob.do";
+            var parameter = {id: debugId};
+            $.get(url, parameter, function (data) {
+                layer.msg(data);
+            });
 
+        })
     })
 
     /**
@@ -744,6 +755,8 @@ $(function () {
         showPrevNext(tabContainer);
         tabInitLength(logTabContainer);
         showPrevNext(logTabContainer);
+
+
     });
     //初始化log
     function logInit(){
