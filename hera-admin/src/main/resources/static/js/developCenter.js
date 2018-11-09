@@ -31,8 +31,6 @@ $(function () {
         edit:{
             enable:true,
             editNameSelectAll: true,
-            // showRemoveBtn: showRemoveBtn,
-            // showRenameBtn: showRenameBtn
         }
     };
 

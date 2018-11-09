@@ -111,7 +111,10 @@
                 <div class="col-md-3 col-sm-3 col-lg-3 colStyle" id="treeCon">
                     <div class="box box-primary height-self" style="overflow: auto;">
                         <div class="box-header with-border">
-                            <h3 class="box-title">调度中心</h3>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#" aria-controls="home" role="tab" data-toggle="tab">我的调度任务</a></li>
+                                <li role="presentation"><a href="#" aria-controls="profile" role="tab" data-toggle="tab">全部调度任务</a></li>
+                            </ul>
                             <div class="box-tools">
                                 <button type="button" class="btn btn-box-tool" id="hideTreeBtn"><i class="fa fa-minus"></i>
                                 </button>
