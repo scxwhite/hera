@@ -35,4 +35,6 @@ message HeartBeatMessage {
 
     //总内存大小，默认4096M
     float mem_total = 4096;
+
+    int32 cores = 8;
 }

@@ -1,11 +1,7 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.entity.vo.PageHelper;
-import com.dfire.common.vo.JobStatus;
-import com.dfire.common.vo.LogContent;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;

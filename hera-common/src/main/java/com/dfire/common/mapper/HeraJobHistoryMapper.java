@@ -5,7 +5,6 @@ import com.dfire.common.entity.vo.PageHelper;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
-import com.dfire.common.vo.JobStatus;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -41,6 +40,7 @@ public interface HeraJobHistoryMapper {
 
     /**
      * 更新日志
+     *
      * @param heraJobHistory
      * @return
      */
@@ -49,6 +49,7 @@ public interface HeraJobHistoryMapper {
 
     /**
      * 更新状态
+     *
      * @param heraJobHistory
      * @return
      */
@@ -57,6 +58,7 @@ public interface HeraJobHistoryMapper {
 
     /**
      * 更新日志和状态
+     *
      * @param heraJobHistory
      * @return
      */
@@ -74,6 +76,7 @@ public interface HeraJobHistoryMapper {
 
     /**
      * 根据ID查询日志逆袭
+     *
      * @param id
      * @return
      */

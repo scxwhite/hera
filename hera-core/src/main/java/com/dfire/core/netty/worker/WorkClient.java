@@ -134,7 +134,7 @@ public class WorkClient {
                             }
                         });
                     } else {
-                        SocketLog.error("server channel can not find on " + DistributeLock.host);
+                        SocketLog.error("server channel can not find on " + WorkContext.host);
                     }
                 } catch (Exception e) {
                     SocketLog.error("heart beat error:", e);
@@ -388,6 +388,7 @@ public class WorkClient {
                     .memRate(beatMessage.getMemRate())
                     .memTotal(beatMessage.getMemTotal())
                     .host(beatMessage.getHost())
+                    .cores(beatMessage.getCores())
                     .build());
         }
 

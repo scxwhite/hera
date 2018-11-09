@@ -872,6 +872,11 @@ public final class RpcHeartBeatMessage {
      * <code>float mem_total = 4096;</code>
      */
     float getMemTotal();
+
+    /**
+     * <code>int32 cores = 8;</code>
+     */
+    int getCores();
   }
   /**
    * Protobuf type {@code HeartBeatMessage}
@@ -894,6 +899,7 @@ public final class RpcHeartBeatMessage {
       host_ = "";
       cpuLoadPerCore_ = 0F;
       memTotal_ = 0F;
+      cores_ = 0;
     }
 
     @Override
@@ -973,6 +979,11 @@ public final class RpcHeartBeatMessage {
             case 61: {
 
               cpuLoadPerCore_ = input.readFloat();
+              break;
+            }
+            case 64: {
+
+              cores_ = input.readInt32();
               break;
             }
             case 32773: {
@@ -1243,6 +1254,15 @@ public final class RpcHeartBeatMessage {
       return memTotal_;
     }
 
+    public static final int CORES_FIELD_NUMBER = 8;
+    private int cores_;
+    /**
+     * <code>int32 cores = 8;</code>
+     */
+    public int getCores() {
+      return cores_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -1275,6 +1295,9 @@ public final class RpcHeartBeatMessage {
       }
       if (cpuLoadPerCore_ != 0F) {
         output.writeFloat(7, cpuLoadPerCore_);
+      }
+      if (cores_ != 0) {
+        output.writeInt32(8, cores_);
       }
       if (memTotal_ != 0F) {
         output.writeFloat(4096, memTotal_);
@@ -1326,6 +1349,10 @@ public final class RpcHeartBeatMessage {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(7, cpuLoadPerCore_);
       }
+      if (cores_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(8, cores_);
+      }
       if (memTotal_ != 0F) {
         size += com.google.protobuf.CodedOutputStream
           .computeFloatSize(4096, memTotal_);
@@ -1368,6 +1395,8 @@ public final class RpcHeartBeatMessage {
           Float.floatToIntBits(getMemTotal())
           == Float.floatToIntBits(
               other.getMemTotal()));
+      result = result && (getCores()
+          == other.getCores());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -1405,6 +1434,8 @@ public final class RpcHeartBeatMessage {
       hash = (37 * hash) + MEM_TOTAL_FIELD_NUMBER;
       hash = (53 * hash) + Float.floatToIntBits(
           getMemTotal());
+      hash = (37 * hash) + CORES_FIELD_NUMBER;
+      hash = (53 * hash) + getCores();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1550,6 +1581,8 @@ public final class RpcHeartBeatMessage {
 
         memTotal_ = 0F;
 
+        cores_ = 0;
+
         return this;
       }
 
@@ -1594,6 +1627,7 @@ public final class RpcHeartBeatMessage {
         result.host_ = host_;
         result.cpuLoadPerCore_ = cpuLoadPerCore_;
         result.memTotal_ = memTotal_;
+        result.cores_ = cores_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1681,6 +1715,9 @@ public final class RpcHeartBeatMessage {
         }
         if (other.getMemTotal() != 0F) {
           setMemTotal(other.getMemTotal());
+        }
+        if (other.getCores() != 0) {
+          setCores(other.getCores());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -2340,6 +2377,32 @@ public final class RpcHeartBeatMessage {
         onChanged();
         return this;
       }
+
+      private int cores_ ;
+      /**
+       * <code>int32 cores = 8;</code>
+       */
+      public int getCores() {
+        return cores_;
+      }
+      /**
+       * <code>int32 cores = 8;</code>
+       */
+      public Builder setCores(int value) {
+        
+        cores_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 cores = 8;</code>
+       */
+      public Builder clearCores() {
+        
+        cores_ = 0;
+        onChanged();
+        return this;
+      }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFieldsProto3(unknownFields);
@@ -2416,13 +2479,14 @@ public final class RpcHeartBeatMessage {
       "\n\007x.proto\"\221\001\n\027AllHeartBeatInfoMessage\0224\n" +
       "\006values\030\001 \003(\0132$.AllHeartBeatInfoMessage." +
       "ValuesEntry\032@\n\013ValuesEntry\022\013\n\003key\030\001 \001(\t\022" +
-      " \n\005value\030\002 \001(\0132\021.HeartBeatMessage:\0028\001\"\265\001" +
+      " \n\005value\030\002 \001(\0132\021.HeartBeatMessage:\0028\001\"\304\001" +
       "\n\020HeartBeatMessage\022\020\n\010runnings\030\001 \003(\t\022\025\n\r" +
       "debugRunnings\030\002 \003(\t\022\026\n\016manualRunnings\030\003 " +
       "\003(\t\022\021\n\ttimestamp\030\004 \001(\003\022\020\n\010mem_rate\030\005 \001(\002" +
       "\022\014\n\004host\030\006 \001(\t\022\031\n\021cpu_load_per_core\030\007 \001(" +
-      "\002\022\022\n\tmem_total\030\200  \001(\002B+\n\022com.dfire.proto" +
-      "colB\023RpcHeartBeatMessageH\001b\006proto3"
+      "\002\022\022\n\tmem_total\030\200  \001(\002\022\r\n\005cores\030\010 \001(\005B+\n\022" +
+      "com.dfire.protocolB\023RpcHeartBeatMessageH" +
+      "\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2453,7 +2517,7 @@ public final class RpcHeartBeatMessage {
     internal_static_HeartBeatMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_HeartBeatMessage_descriptor,
-        new String[] { "Runnings", "DebugRunnings", "ManualRunnings", "Timestamp", "MemRate", "Host", "CpuLoadPerCore", "MemTotal", });
+        new String[] { "Runnings", "DebugRunnings", "ManualRunnings", "Timestamp", "MemRate", "Host", "CpuLoadPerCore", "MemTotal", "Cores", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

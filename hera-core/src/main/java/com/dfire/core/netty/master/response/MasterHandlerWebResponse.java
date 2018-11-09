@@ -10,6 +10,7 @@ import com.dfire.core.event.base.Events;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
+import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
@@ -179,7 +180,7 @@ public class MasterHandlerWebResponse {
         Map<String, HeartBeatMessage> allInfo = new HashMap<>(context.getWorkMap().size());
         context.getWorkMap().values().forEach(workHolder -> {
             HeartBeatInfo beatInfo = workHolder.getHeartBeatInfo();
-            if (beatInfo != null && !StringUtils.equals(DistributeLock.host, beatInfo.getHost())) {
+            if (beatInfo != null && !StringUtils.equals(WorkContext.host, beatInfo.getHost())) {
                 allInfo.put(Constants.WORK_PREFIX + beatInfo.getHost(), HeartBeatMessage.newBuilder()
                         .addAllDebugRunnings(beatInfo.getDebugRunning())
                         .addAllRunnings(beatInfo.getRunning())
@@ -189,6 +190,7 @@ public class MasterHandlerWebResponse {
                         .setCpuLoadPerCore(beatInfo.getCpuLoadPerCore())
                         .setTimestamp(beatInfo.getTimestamp().getTime())
                         .setHost(beatInfo.getHost())
+                        .setCores(beatInfo.getCores())
                         .build());
 
             }
@@ -209,7 +211,7 @@ public class MasterHandlerWebResponse {
         CpuLoadPerCoreJob loadPerCoreJob = new CpuLoadPerCoreJob();
         loadPerCoreJob.run();
 
-        allInfo.put(Constants.MASTER_PREFIX + DistributeLock.host, HeartBeatMessage.newBuilder()
+        allInfo.put(Constants.MASTER_PREFIX + WorkContext.host, HeartBeatMessage.newBuilder()
                 .addAllDebugRunnings(masterDebugQueue)
                 .addAllRunnings(masterScheduleQueue)
                 .addAllManualRunnings(masterManualQueue)
@@ -217,7 +219,8 @@ public class MasterHandlerWebResponse {
                 .setMemTotal(memUseRateJob.getMemTotal())
                 .setCpuLoadPerCore(loadPerCoreJob.getLoadPerCore())
                 .setTimestamp(System.currentTimeMillis())
-                .setHost(DistributeLock.host)
+                .setHost(WorkContext.host)
+                .setCores(WorkContext.cpuCoreNum)
                 .build());
 
         return WebResponse.newBuilder()
