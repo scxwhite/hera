@@ -165,6 +165,19 @@
     <p id="response"></p>
 </div>
 
+<div class="modal fade" tabindex="-1" role="dialog" id="cancelSrueModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>确认取消任务吗?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">不了</button>
+                <button type="button" class="btn btn-primary" id="sureCancelBtn">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <@netCommon.commonScript />
 <script src="${request.contextPath}/plugins/codemirror/lib/codemirror.js"></script>
 <script src="${request.contextPath}/plugins/codemirror/mode/shell/shell.js"></script>

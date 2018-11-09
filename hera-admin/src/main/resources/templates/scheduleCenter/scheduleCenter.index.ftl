@@ -111,7 +111,10 @@
                 <div class="col-md-3 col-sm-3 col-lg-3 colStyle" id="treeCon">
                     <div class="box box-primary height-self" style="overflow: auto;">
                         <div class="box-header with-border">
-                            <h3 class="box-title">调度中心</h3>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#" aria-controls="home" role="tab" data-toggle="tab">我的调度任务</a></li>
+                                <li role="presentation"><a href="#" aria-controls="profile" role="tab" data-toggle="tab">全部调度任务</a></li>
+                            </ul>
                             <div class="box-tools">
                                 <button type="button" class="btn btn-box-tool" id="hideTreeBtn"><i class="fa fa-minus"></i>
                                 </button>
@@ -135,45 +138,35 @@
                             <form class="form-horizontal form-group-sm">
 
                                 <div class="row">
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">组id:</label>
-                                            <div class="col-sm-8">
-                                            <#--<label class="form-control-static" name="id">1</label>-->
+                                            <label class="control-label input-sm col-sm-1">组id:</label>
+                                            <div class="col-sm-3">
                                                 <input class="form-control" type="text" name="id" readonly>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">名称:</label>
-                                            <div class="col-sm-8">
-                                            <#--<label class="form-control-static" name="name">activity_import</label>-->
+                                            <label class="control-label input-sm col-sm-1">名称:</label>
+                                            <div class="col-sm-3">
                                                 <input class="form-control" type="text" name="name" readonly>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">所有人:</label>
-                                            <div class="col-sm-8">
+                                            <label class="control-label input-sm col-sm-1">所有人:</label>
+                                            <div class="col-sm-3">
                                             <#--<label class="form-control-static" name="owner">类型</label>-->
                                                 <input class="form-control" type="text" name="owner" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">描述:</label>
-                                            <div class="col-sm-8">
+                                            <label class="control-label input-sm col-sm-1">描述:</label>
+                                            <div class="col-sm-3">
                                             <#--<label class="form-control-static" name="description">导数据</label>-->
                                                 <input class="form-control" type="text" name="description" readonly>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">关注人员:</label>
-                                            <div class="col-sm-8">
+                                            <label class="control-label input-sm col-sm-1">关注人员:</label>
+                                            <div class="col-sm-3">
                                             <#--<label class="form-control-static" name="focusUser"></label>-->
                                                 <input class="form-control" type="text" name="focusUser" readonly>
                                             </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-4">管理员:</label>
-                                            <div class="col-sm-8">
+                                            <label class="control-label input-sm col-sm-1">管理员:</label>
+                                            <div class="col-sm-3">
                                             <#--<label class="form-control-static" name="uidS"></label>-->
                                                 <input class="form-control" type="text" name="uidS" readonly>
                                             </div>
