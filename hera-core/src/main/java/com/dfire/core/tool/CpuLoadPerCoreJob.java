@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class CpuLoadPerCoreJob {
 
-    private float loadPerCore = 100f;
+    private float loadPerCore = 1f;
 
     private final String loadCommand = "uptime";
     private final String keys = "load average:";
@@ -19,7 +19,7 @@ public class CpuLoadPerCoreJob {
 
     public void run() {
         if (!HeraGlobalEnvironment.isLinuxSystem()) {
-            return ;
+            return;
         }
         RunShell runShell = new RunShell(loadCommand);
 

@@ -6,6 +6,7 @@ import jdk.nashorn.internal.objects.annotations.Constructor;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class QuartzSchedulerService {
     public Properties setQuartzProperties() throws IOException {
         HeraLog.info("start init quartz properties");
         Properties prop = new Properties();
-        prop.put("org.quartz.scheduler.instanceName", "DefaultQuartzScheduler");
+        prop.put("org.quartz.scheduler.instanceName", "heraQuartzScheduler");
         prop.put("org.quartz.scheduler.rmi.export", "false");
         prop.put("org.quartz.scheduler.rmi.proxy", "false");
         prop.put("org.quartz.scheduler.wrapJobExecutionInUserTransaction", "false");

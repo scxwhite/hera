@@ -1,6 +1,7 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.kv.Tuple;
@@ -131,4 +132,5 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public List<HeraAction> getTodayAction() {
         return heraJobActionMapper.selectTodayAction(DateUtil.getTodayStringForAction());
     }
+
 }

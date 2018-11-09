@@ -2,7 +2,8 @@ package com.dfire.core.netty.master;
 
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.netty.listener.ResponseListener;
-import com.dfire.core.netty.master.response.*;
+import com.dfire.core.netty.master.response.MasterHandleHeartBeat;
+import com.dfire.core.netty.master.response.MasterHandlerWebResponse;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.RpcOperate.Operate;
 import com.dfire.protocol.RpcRequest.Request;
@@ -34,32 +35,11 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
      */
     private MasterContext masterContext;
 
-    /**
-     * 开发中心执行任务时候，masterHandler在read到SocketMessage处理逻辑
-     */
-    private MasterHandleWebDebug masterHandleWebDebug = new MasterHandleWebDebug();
 
     /**
      * 主节点接收到心跳，masterHandler在read到HeartBeat处理逻辑
      */
     private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
-
-    /**
-     * master接受到worker取消执行任务请求的处理逻辑
-     */
-    private MasterHandleWebCancel masterHandleCancelJob = new MasterHandleWebCancel();
-
-    /**
-     * 调度中心执行任务时候，masterHandler在read到SocketMessage的任务处理消息的时候的处理逻辑
-     */
-    private MasterHandleWebExecute masterHandleWebExecute = new MasterHandleWebExecute();
-
-    /**
-     * 生成单个任务action
-     */
-    private MasterGenerateAction masterGenerateAction = new MasterGenerateAction();
-
-    private MasterHandleWebUpdate masterHandleWebUpdate = new MasterHandleWebUpdate();
 
 
     public MasterHandler(MasterContext masterContext) {
@@ -103,23 +83,28 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.handleWebExecute(masterContext, webRequest)));
                         break;
                     case CancelJob:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterHandleCancelJob.handleWebCancel(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.handleWebCancel(masterContext, webRequest)));
                         break;
                     case UpdateJob:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterHandleWebUpdate.handleWebUpdate(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.handleWebUpdate(masterContext, webRequest)));
                         break;
                     case ExecuteDebug:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.handleWebDebug(masterContext, webRequest)));
                         break;
                     case GenerateAction:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterGenerateAction.generateActionByJobId(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.generateActionByJobId(masterContext, webRequest)));
+                        break;
+
+                    case GetAllHeartBeatInfo:
+                        completionService.submit(() ->
+                                new ChannelResponse(channel, MasterHandlerWebResponse.buildJobQueueInfo(masterContext, webRequest)));
                         break;
                     default:
                         SocketLog.error("unknown operate error:{}", webRequest.getOperate());

@@ -7,6 +7,7 @@ import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.tool.RunShell;
+import com.dfire.core.util.NetUtils;
 import io.netty.channel.Channel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,11 +44,7 @@ public class WorkContext {
     private static final String loadStr = "cat /proc/cpuinfo |grep processor | wc -l";
 
     static {
-        try {
-            host = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        host = NetUtils.getLocalAddress();
         if (HeraGlobalEnvironment.isLinuxSystem()) {
             RunShell shell = new RunShell(loadStr);
             Integer exitCode = shell.run();

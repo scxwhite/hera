@@ -9,13 +9,17 @@ import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.lock.DistributeLock;
-import com.dfire.core.netty.worker.request.*;
+import com.dfire.core.message.HeartBeatInfo;
+import com.dfire.core.netty.worker.request.WorkerHandleWebRequest;
+import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.SocketLog;
-import com.dfire.protocol.JobExecuteKind;
+import com.dfire.protocol.JobExecuteKind.*;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.RpcSocketMessage;
+import com.dfire.protocol.RpcHeartBeatMessage.*;
 import com.dfire.protocol.RpcWebResponse;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -29,10 +33,6 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.Timer;
-import io.netty.util.TimerTask;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -40,7 +40,9 @@ import org.springframework.stereotype.Component;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -132,7 +134,7 @@ public class WorkClient {
                             }
                         });
                     } else {
-                        SocketLog.error("server channel can not find on " + DistributeLock.host);
+                        SocketLog.error("server channel can not find on " + WorkContext.host);
                     }
                 } catch (Exception e) {
                     SocketLog.error("heart beat error:", e);
@@ -337,15 +339,15 @@ public class WorkClient {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public void executeJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        RpcWebResponse.WebResponse response = new WorkerHandleWebExecute().handleWebExecute(workContext, kind, id).get();
+    public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse response = WorkerHandleWebRequest.handleWebExecute(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
             SocketLog.error(response.getErrorText());
         }
     }
 
-    public String cancelJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        RpcWebResponse.WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
+    public String cancelJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse webResponse = WorkerHandleWebRequest.handleCancel(workContext, kind, id).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
             SocketLog.error(webResponse.getErrorText());
         }
@@ -353,14 +355,14 @@ public class WorkClient {
     }
 
     public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {
-        RpcWebResponse.WebResponse webResponse = new WorkHandleWebUpdate().handleUpdate(workContext, jobId).get();
+        RpcWebResponse.WebResponse webResponse = WorkerHandleWebRequest.handleUpdate(workContext, jobId).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
             SocketLog.error(webResponse.getErrorText());
         }
     }
 
-    public String generateActionFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        RpcWebResponse.WebResponse response = new WorkerHandleWebAction().handleWebAction(workContext, kind, id).get();
+    public String generateActionFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse response = WorkerHandleWebRequest.handleWebAction(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
             SocketLog.error("generate action error");
             return "生成版本失败";
@@ -368,13 +370,29 @@ public class WorkClient {
         return "生成版本成功";
     }
 
-    public String getJobQueueInfoFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        RpcWebResponse.WebResponse response = new WorkerHandleWebAction().handleWebAction(workContext, kind, id).get();
+    public Map<String, HeartBeatInfo> getJobQueueInfoFromWeb() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
+        RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getJobQueueInfoFromMaster(workContext).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error("generate action error");
-            return "生成版本失败";
+            SocketLog.error("获取心跳信息失败:{}", response.getErrorText());
+            return null;
         }
-        return "生成版本成功";
+        Map<String, HeartBeatMessage> map = AllHeartBeatInfoMessage.parseFrom(response.getBody()).getValuesMap();
+        Map<String, HeartBeatInfo> infoMap = new HashMap<>(map.size());
+        for (Map.Entry<String, HeartBeatMessage> entry : map.entrySet()) {
+            HeartBeatMessage beatMessage = entry.getValue();
+            infoMap.put(entry.getKey(), HeartBeatInfo.builder()
+                    .cpuLoadPerCore(beatMessage.getCpuLoadPerCore())
+                    .debugRunning(beatMessage.getDebugRunningsList())
+                    .manualRunning(beatMessage.getManualRunningsList())
+                    .running(beatMessage.getRunningsList())
+                    .memRate(beatMessage.getMemRate())
+                    .memTotal(beatMessage.getMemTotal())
+                    .host(beatMessage.getHost())
+                    .cores(beatMessage.getCores())
+                    .build());
+        }
+
+        return infoMap;
     }
 
 }

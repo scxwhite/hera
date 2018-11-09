@@ -106,7 +106,7 @@ public final class RpcOperate {
 
     public final int getNumber() {
       if (this == UNRECOGNIZED) {
-        throw new java.lang.IllegalArgumentException(
+        throw new IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
@@ -115,7 +115,7 @@ public final class RpcOperate {
     /**
      * @deprecated Use {@link #forNumber(int)} instead.
      */
-    @java.lang.Deprecated
+    @Deprecated
     public static Operate valueOf(int value) {
       return forNumber(value);
     }
@@ -153,7 +153,7 @@ public final class RpcOperate {
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
         getDescriptor() {
-      return com.dfire.protocol.RpcOperate.getDescriptor().getEnumTypes().get(0);
+      return RpcOperate.getDescriptor().getEnumTypes().get(0);
     }
 
     private static final Operate[] VALUES = values();
@@ -161,7 +161,7 @@ public final class RpcOperate {
     public static Operate valueOf(
         com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
       if (desc.getType() != getDescriptor()) {
-        throw new java.lang.IllegalArgumentException(
+        throw new IllegalArgumentException(
           "EnumValueDescriptor is not for this type.");
       }
       if (desc.getIndex() == -1) {
@@ -187,7 +187,7 @@ public final class RpcOperate {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    java.lang.String[] descriptorData = {
+    String[] descriptorData = {
       "\n\roperate.proto*I\n\007Operate\022\r\n\tHeartBeat\020" +
       "\000\022\014\n\010Schedule\020\001\022\n\n\006Cancel\020\002\022\t\n\005Debug\020\003\022\n" +
       "\n\006Manual\020\004B\"\n\022com.dfire.protocolB\nRpcOpe" +

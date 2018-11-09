@@ -59,6 +59,7 @@ hera:
    maxCpuLoadPerCore : 3.0   #cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量，默认3.0
    scanRate : 1000        #队列扫描频率(毫秒)
    systemMemUsed : 4000  # 系统占用内存
+   requestTimeout: 10000 # 异步请求超时时间
    perTaskUseMem : 400          # 每个任务使用内存300M
    heartBeat : 3           # 心跳传递时间频率
    downloadDir : /opt/logs/spring-boot
