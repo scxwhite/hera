@@ -972,6 +972,7 @@ function cancelJob(historyId) {
     var parameter = {id: historyId};
     $.get(url, parameter, function (data) {
         layer.msg(data);
+        $('#debugLog [name="refreshLog"]').trigger('click');
     });
 }
 
