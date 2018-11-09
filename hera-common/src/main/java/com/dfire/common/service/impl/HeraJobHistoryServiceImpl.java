@@ -86,4 +86,9 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
         res.put("total", size);
         return res;
     }
+
+    @Override
+    public List<HeraJobHistory> findTodayJobHistory() {
+        return heraJobHistoryMapper.findTodayJobHistory();
+    }
 }

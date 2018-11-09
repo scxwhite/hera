@@ -217,6 +217,8 @@ public class BeanConvertUtils {
         heraAction.setId(jobStatus.getActionId());
         heraAction.setStatus(jobStatus.getStatus() == null ? null : jobStatus.getStatus().toString());
         heraAction.setHistoryId(jobStatus.getHistoryId());
+        heraAction.setStartTime(jobStatus.getStartTime());
+        heraAction.setLastEndTime(jobStatus.getEndTime());
         heraAction.setReadyDependency(StringUtil.convertMapToString(jobStatus.getReadyDependency()));
         return heraAction;
     }

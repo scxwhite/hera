@@ -85,5 +85,9 @@ public interface HeraJobHistoryMapper {
 
     @Select("select id,action_id,job_id,start_time,end_time,execute_host,operator,status,trigger_type,illustrate,host_group_id from hera_action_history where job_id = #{jobId} order by id desc limit #{offset,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER} ")
     List<HeraJobHistory> selectByPage(PageHelper pageHelper);
+
+
+    @Select("select job_id,start_time,end_time,status from hera_action_history where left(start_time,10) >= CURDATE()")
+    List<HeraJobHistory> findTodayJobHistory();
 }
 

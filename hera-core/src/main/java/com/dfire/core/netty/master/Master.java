@@ -596,6 +596,7 @@ public class Master {
         JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
         jobStatus.setHistoryId(heraJobHistory.getId());
         jobStatus.setStatus(StatusEnum.RUNNING);
+        jobStatus.setStartTime(new Date());
         masterContext.getHeraJobActionService().updateStatus(jobStatus);
         heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);
         masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
@@ -639,6 +640,7 @@ public class Master {
             heraJobHistory.setStatus(StatusEnum.SUCCESS.toString());
             masterContext.getDispatcher().forwardEvent(successEvent);
         }
+        jobStatus.setEndTime(new Date());
         masterContext.getHeraJobActionService().updateStatus(jobStatus);
         if (runCount < (retryCount + 1) && !success && !isCancelJob) {
             DebugLog.info("--------------------------失败任务，准备重试--------------------------");
@@ -831,12 +833,10 @@ public class Master {
      * @param channel channel
      */
     public void workerDisconnectProcess(Channel channel) {
-
         String ip = getIpFromChannel(channel);
         SocketLog.error("work:{}断线", ip);
         MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);
         masterContext.getWorkMap().remove(channel);
-
         if (workHolder != null) {
             List<String> scheduleTask = workHolder.getHeartBeatInfo().getRunning();
 

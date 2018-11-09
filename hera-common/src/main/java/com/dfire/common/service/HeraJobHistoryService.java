@@ -47,4 +47,7 @@ public interface HeraJobHistoryService {
     HeraJobHistory findLogById(Integer id);
 
     Map<String, Object> findLogByPage(PageHelper pageHelper);
+
+    List<HeraJobHistory> findTodayJobHistory();
+
 }
