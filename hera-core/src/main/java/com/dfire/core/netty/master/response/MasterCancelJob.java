@@ -21,24 +21,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
- * @time: Created in 下午3:58 2018/5/11
- * @desc 取消任务，master查询出任务所在的worker channel,发起取消任务请求
+ *
+ * 取消任务统一管理类
+ * @author xiaosuda
+ * @date 2018/11/9
  */
-public class MasterHandleWebCancel {
-
-    public RpcWebResponse.WebResponse handleWebCancel(MasterContext masterContext, RpcWebRequest.WebRequest request) {
-        if (request.getEk() == JobExecuteKind.ExecuteKind.ScheduleKind) {
-            return handleScheduleCancel(masterContext, request);
-        } else if (request.getEk() == JobExecuteKind.ExecuteKind.ManualKind) {
-            return handleManualCancel(masterContext, request);
-        } else if (request.getEk() == JobExecuteKind.ExecuteKind.DebugKind) {
-            return handleDebugCancel(masterContext, request);
-        }
-        return null;
-    }
-
-    private RpcWebResponse.WebResponse handleDebugCancel(MasterContext context, RpcWebRequest.WebRequest request) {
+public class MasterCancelJob {
+    public static RpcWebResponse.WebResponse handleDebugCancel(MasterContext context, RpcWebRequest.WebRequest request) {
         RpcWebResponse.WebResponse webResponse = null;
         String debugId = request.getId();
         HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
@@ -74,6 +63,7 @@ public class MasterHandleWebCancel {
                         .build();
 
                 SocketLog.info("send web cancel response, actionId = " + debugId);
+                break;
             }
         }
 
@@ -94,7 +84,7 @@ public class MasterHandleWebCancel {
 
     }
 
-    private RpcWebResponse.WebResponse handleManualCancel(MasterContext context, RpcWebRequest.WebRequest request) {
+    public static RpcWebResponse.WebResponse handleManualCancel(MasterContext context, RpcWebRequest.WebRequest request) {
         RpcWebResponse.WebResponse webResponse = null;
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
@@ -146,7 +136,7 @@ public class MasterHandleWebCancel {
         return webResponse;
     }
 
-    private RpcWebResponse.WebResponse handleScheduleCancel(MasterContext context, RpcWebRequest.WebRequest request) {
+    public static RpcWebResponse.WebResponse handleScheduleCancel(MasterContext context, RpcWebRequest.WebRequest request) {
         RpcWebResponse.WebResponse webResponse = null;
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
@@ -200,7 +190,7 @@ public class MasterHandleWebCancel {
     }
 
 
-    private boolean remove(Iterator<JobElement> iterator, String id) {
+    private static boolean remove(Iterator<JobElement> iterator, String id) {
         JobElement jobElement;
         while (iterator.hasNext()) {
             jobElement = iterator.next();

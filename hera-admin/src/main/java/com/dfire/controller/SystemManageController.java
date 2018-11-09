@@ -1,8 +1,12 @@
 package com.dfire.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.monitor.service.JobManageService;
+import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 16:52 2018/1/13
@@ -18,7 +25,6 @@ import org.springframework.web.context.request.async.WebAsyncTask;
  */
 @Controller
 public class SystemManageController {
-
 
 
     @Autowired
@@ -101,9 +107,16 @@ public class SystemManageController {
      */
     @RequestMapping(value = "/homePage/getJobQueueInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse getJobQueueInfo() {
+    public WebAsyncTask getJobQueueInfo() {
 
-        return null;
+        return new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
+            try {
+                return workClient.getJobQueueInfoFromWeb();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
     }
 
 

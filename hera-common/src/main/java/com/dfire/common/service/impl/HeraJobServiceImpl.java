@@ -218,7 +218,7 @@ public class HeraJobServiceImpl implements HeraJobService {
     private Map<String, GraphNode> buildHistoryMap() {
         List<HeraAction> actionHistories = heraJobActionService.getTodayAction();
         String start, end, status, jobId, duration;
-        Map<String, GraphNode> map = new HashMap<>();
+        Map<String, GraphNode> map = new HashMap<>(actionHistories.size());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (HeraAction actionHistory : actionHistories) {
             start = actionHistory.getStartTime() == null ? "none" : actionHistory.getStartTime().toString();
@@ -233,13 +233,11 @@ public class HeraJobServiceImpl implements HeraJobService {
                     e.printStackTrace();
                 }
             }
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("任务状态：").append(status).append("\n");
-            sb.append("执行时间：").append(start).append("\n");
-            sb.append("结束时间：").append(end).append("\n");
-            sb.append("耗时：").append(duration).append("\n");
-            map.put(actionHistory.getJobId() + "", new GraphNode(Integer.parseInt(jobId), sb.toString()));
+            map.put(actionHistory.getJobId() + "", new GraphNode<>(Integer.parseInt(jobId),
+                    "任务状态：" + status + "\n" +
+                            "执行时间：" + start + "\n" +
+                            "结束时间：" + end + "\n" +
+                            "耗时：" + duration + "\n"));
         }
         return map;
     }
@@ -255,14 +253,14 @@ public class HeraJobServiceImpl implements HeraJobService {
      * @param node       当前头节点
      * @param graph      所有任务的关系图
      * @param type       展示类型  0:任务进度分析   1：影响分析
-     * @return Map<String                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                               Object>
+     * @return Map<String                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               Object>
      */
     private Map<String, Object> buildCurrJobGraph(Map<String, GraphNode> historyMap, GraphNode node, DirectionGraph graph, Integer type) {
         String start = "2dfire_task_start_signal";
         Map<String, Object> res = new HashMap<>();
         List<Edge> edgeList = new ArrayList<>();
         Queue<GraphNode> nodeQueue = new LinkedList<>();
-        GraphNode headNode = new GraphNode(0, start);
+        GraphNode headNode = new GraphNode<>(0, start);
         res.put("headNode", headNode);
         nodeQueue.add(node);
         edgeList.add(new Edge(headNode, node));
