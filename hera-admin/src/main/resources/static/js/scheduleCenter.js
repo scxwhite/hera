@@ -765,7 +765,7 @@ $(function () {
         treeObj.refresh();//调用api自带的refresh函数。
     }
 
-    var zTree, rMenu;
+    var zTree, rMenu,zAllTree;
 
 
     $(document).ready(function () {

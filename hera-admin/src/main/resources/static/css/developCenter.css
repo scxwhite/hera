@@ -166,3 +166,7 @@ html, body {
 .log-container .next-tab{
     right: 0;
 }
+.form-control{
+    background: #2c4762;
+    color: #ffffff;
+}

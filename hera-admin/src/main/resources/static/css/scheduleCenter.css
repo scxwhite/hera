@@ -85,3 +85,7 @@ div#rMenu ul li {
             rgba(235, 235, 235, 0.85) 20px
     );
 }
+#jobLog .form-control{
+    background: #2c4762;
+    color: #ffffff;
+}
