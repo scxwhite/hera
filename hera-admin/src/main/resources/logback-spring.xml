@@ -85,6 +85,34 @@
         </encoder>
     </appender>
 
+    <appender name="masterLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/hera.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/bak/hera.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 10 days worth of history -->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${PATTERN}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
+    <appender name="workerLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/hera.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/bak/hera.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 10 days worth of history -->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${PATTERN}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
 
     <!--控制台打印资源加载信息-->
     <root>
@@ -94,6 +122,14 @@
     </root>
 
 
+    <logger name="com.dfire.logs.MasterLog" additivity="true">
+        <level value="WARN"/>
+        <appender-ref ref="masterLog"/>
+    </logger>
+    <logger name="com.dfire.logs.WorkerLog" additivity="true">
+        <level value="WARN"/>
+        <appender-ref ref="workerLog"/>
+    </logger>
     <logger name="com.dfire.logs.ScheduleLog" additivity="true">
         <level value="INFO"/>
         <appender-ref ref="scheduleLog"/>
