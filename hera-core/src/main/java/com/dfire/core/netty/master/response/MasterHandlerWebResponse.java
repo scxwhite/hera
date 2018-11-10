@@ -179,7 +179,7 @@ public class MasterHandlerWebResponse {
         Map<String, HeartBeatMessage> allInfo = new HashMap<>(context.getWorkMap().size());
         context.getWorkMap().values().forEach(workHolder -> {
             HeartBeatInfo beatInfo = workHolder.getHeartBeatInfo();
-            if (beatInfo != null && !StringUtils.equals(WorkContext.host, beatInfo.getHost())) {
+            if (beatInfo != null) {
                 allInfo.put(Constants.WORK_PREFIX + beatInfo.getHost(), HeartBeatMessage.newBuilder()
                         .addAllDebugRunnings(beatInfo.getDebugRunning())
                         .addAllRunnings(beatInfo.getRunning())
