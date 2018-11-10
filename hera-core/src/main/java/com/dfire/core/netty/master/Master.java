@@ -448,7 +448,7 @@ public class Master {
 
     }
 
-    private void printThreadPoolLog() {
+    public void printThreadPoolLog() {
         String sb = "当前线程池信息" + "[ActiveCount: " + executeJobPool.getActiveCount() + "," +
                 "CompletedTaskCount：" + executeJobPool.getCompletedTaskCount() + "," +
                 "PoolSize:" + executeJobPool.getPoolSize() + "," +

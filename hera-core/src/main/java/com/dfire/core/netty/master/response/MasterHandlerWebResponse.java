@@ -175,7 +175,8 @@ public class MasterHandlerWebResponse {
      * @return WebResponse
      */
     public static WebResponse buildJobQueueInfo(MasterContext context, WebRequest request) {
-
+        //输出线程池信息
+        context.getMaster().printThreadPoolLog();
         Map<String, HeartBeatMessage> allInfo = new HashMap<>(context.getWorkMap().size());
         context.getWorkMap().values().forEach(workHolder -> {
             HeartBeatInfo beatInfo = workHolder.getHeartBeatInfo();
