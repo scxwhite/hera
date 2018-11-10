@@ -1,8 +1,6 @@
 package com.dfire.core.netty.worker.request;
 
-import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.netty.util.AtomicIncrease;
-import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
@@ -36,10 +34,10 @@ public class WorkerHandlerHeartBeat {
                 .setCores(WorkContext.cpuCoreNum)
                 .build();
         RpcRequest.Request request = RpcRequest.Request.newBuilder().
-                        setRid(AtomicIncrease.getAndIncrement()).
-                        setOperate(RpcOperate.Operate.HeartBeat).
-                        setBody(hbm.toByteString()).
-                        build();
+                setRid(AtomicIncrease.getAndIncrement()).
+                setOperate(RpcOperate.Operate.HeartBeat).
+                setBody(hbm.toByteString()).
+                build();
         RpcSocketMessage.SocketMessage message = RpcSocketMessage.SocketMessage.newBuilder().
                 setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST).
                 setBody(request.toByteString()).

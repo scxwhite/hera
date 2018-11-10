@@ -31,7 +31,7 @@ public class MasterHandleHeartBeat {
             heartBeatInfo.setRunning(heartBeatMessage.getRunningsList());
             heartBeatInfo.setDebugRunning(heartBeatMessage.getDebugRunningsList());
             heartBeatInfo.setManualRunning(heartBeatMessage.getManualRunningsList());
-            heartBeatInfo.setTimestamp(DateUtil.longToDate(heartBeatMessage.getTimestamp()));
+            heartBeatInfo.setTimestamp(heartBeatMessage.getTimestamp());
             heartBeatInfo.setCores(heartBeatMessage.getCores());
             worker.setHeartBeatInfo(heartBeatInfo);
             SocketLog.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));

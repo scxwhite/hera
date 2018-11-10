@@ -6,7 +6,6 @@ import jdk.nashorn.internal.objects.annotations.Constructor;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -79,7 +78,7 @@ public class QuartzSchedulerService {
         try {
             JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-            if(jobDetail != null) {
+            if (jobDetail != null) {
                 scheduler.deleteJob(jobKey);
             }
             HeraLog.warn("remove action {} from quartz", actionId);

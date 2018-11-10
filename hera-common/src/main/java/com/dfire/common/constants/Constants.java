@@ -12,9 +12,9 @@ public class Constants {
 
     public final static String PRE_ENV = "pre";
 
-    public final static String WORK_PREFIX = "work_";
+    public final static String WORK_PREFIX = "worker-";
 
-    public final static String MASTER_PREFIX = "master_";
+    public final static String MASTER_PREFIX = "master-";
 
 
 }

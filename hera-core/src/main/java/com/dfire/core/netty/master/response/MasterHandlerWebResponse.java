@@ -7,7 +7,6 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.event.HeraJobMaintenanceEvent;
 import com.dfire.core.event.base.Events;
-import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.worker.WorkContext;
@@ -188,7 +187,7 @@ public class MasterHandlerWebResponse {
                         .setMemRate(beatInfo.getMemRate())
                         .setMemTotal(beatInfo.getMemTotal())
                         .setCpuLoadPerCore(beatInfo.getCpuLoadPerCore())
-                        .setTimestamp(beatInfo.getTimestamp().getTime())
+                        .setTimestamp(beatInfo.getTimestamp())
                         .setHost(beatInfo.getHost())
                         .setCores(beatInfo.getCores())
                         .build());

@@ -35,9 +35,6 @@ import com.dfire.protocol.JobExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.RpcResponse;
 import io.netty.channel.Channel;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.Order;
@@ -163,8 +160,8 @@ public class Master {
                 if (workHolder.getHeartBeatInfo() == null) {
                     continue;
                 }
-                Date workTime = workHolder.getHeartBeatInfo().getTimestamp();
-                if (workTime == null || now.getTime() - workTime.getTime() > 1000 * 60L) {
+                Long workTime = workHolder.getHeartBeatInfo().getTimestamp();
+                if (workTime == null || now.getTime() - workTime > 1000 * 60L) {
                     workHolder.getChannel().close();
                     removeChannel.add(channel);
                 }

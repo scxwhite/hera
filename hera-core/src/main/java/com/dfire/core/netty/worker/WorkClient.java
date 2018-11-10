@@ -8,16 +8,16 @@ import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
-import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.worker.request.WorkerHandleWebRequest;
 import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.SocketLog;
-import com.dfire.protocol.JobExecuteKind.*;
+import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.ResponseStatus;
+import com.dfire.protocol.RpcHeartBeatMessage.AllHeartBeatInfoMessage;
+import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
 import com.dfire.protocol.RpcSocketMessage;
-import com.dfire.protocol.RpcHeartBeatMessage.*;
 import com.dfire.protocol.RpcWebResponse;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.bootstrap.Bootstrap;
@@ -389,6 +389,7 @@ public class WorkClient {
                     .memTotal(beatMessage.getMemTotal())
                     .host(beatMessage.getHost())
                     .cores(beatMessage.getCores())
+                    .timestamp(beatMessage.getTimestamp())
                     .build());
         }
 
