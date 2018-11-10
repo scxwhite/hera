@@ -34,7 +34,7 @@ public abstract class AbstractChooseWorkerStrategy implements IStrategyWorker {
         }
         String heartHost = worker.getHeartBeatInfo().getHost().trim();
         if(!heartHost.equals(host.trim())){
-            ScheduleLog.warn(ResultReason.HOSTS_ERROR.getMsg()+"{},{}",heartHost,host.trim());
+            MasterLog.warn(ResultReason.HOSTS_ERROR.getMsg()+"{},{}",heartHost,host.trim());
             return false;
         }
         HeartBeatInfo heartBeatInfo = worker.getHeartBeatInfo();
