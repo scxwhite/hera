@@ -4,11 +4,11 @@ import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
 import com.dfire.logs.SocketLog;
-import com.dfire.protocol.RpcRequest.*;
-import com.dfire.protocol.RpcResponse.*;
-import com.dfire.protocol.RpcOperate.*;
-import com.dfire.protocol.RpcSocketMessage.*;
-import com.dfire.protocol.RpcWebResponse.*;
+import com.dfire.protocol.RpcOperate.Operate;
+import com.dfire.protocol.RpcRequest.Request;
+import com.dfire.protocol.RpcResponse.Response;
+import com.dfire.protocol.RpcSocketMessage.SocketMessage;
+import com.dfire.protocol.RpcWebResponse.WebResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -35,12 +35,10 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                 try {
                     Future<Response> future = completionService.take();
                     Response response = future.get();
-                    if (workContext.getServerChannel() != null) {
-                        workContext.getServerChannel().writeAndFlush(wrapper(response));
-                    }
-                    SocketLog.info("worker get response thread success");
+                    workContext.getServerChannel().writeAndFlush(wrapper(response));
+                    SocketLog.info("worker send response,rid={}", response.getRid());
                 } catch (Exception e) {
-                    SocketLog.error("worker handler take future exception");
+                    SocketLog.error("worker handler take future exception,{}", e);
                     throw new RuntimeException(e);
                 }
             }

@@ -407,7 +407,6 @@ public class Master {
     public boolean scan() {
         boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
-            ScheduleLog.warn("schedule队列任务：{}", masterContext.getScheduleQueue());
             JobElement jobElement = masterContext.getScheduleQueue().peek();
             MasterWorkHolder workHolder = getRunnableWork(jobElement);
             if (workHolder == null) {
@@ -420,7 +419,6 @@ public class Master {
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
-            ScheduleLog.warn("manual队列任务：{}", masterContext.getManualQueue());
             JobElement jobElement = masterContext.getManualQueue().peek();
             MasterWorkHolder selectWork = getRunnableWork(jobElement);
             if (selectWork == null) {
@@ -433,7 +431,6 @@ public class Master {
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
-            ScheduleLog.warn("debug队列任务：{}", masterContext.getDebugQueue());
             JobElement jobElement = masterContext.getDebugQueue().peek();
             MasterWorkHolder selectWork = getRunnableWork(jobElement);
             if (selectWork == null) {

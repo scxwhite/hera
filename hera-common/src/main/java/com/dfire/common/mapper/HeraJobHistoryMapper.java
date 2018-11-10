@@ -53,7 +53,7 @@ public interface HeraJobHistoryMapper {
      * @param heraJobHistory
      * @return
      */
-    @Update("update hera_action_history set status = #{status}, end_time = #{endTime} where id = #{id}")
+    @Update("update hera_action_history set status = #{status} where id = #{id}")
     int updateHeraJobHistoryStatus(HeraJobHistory heraJobHistory);
 
     /**
