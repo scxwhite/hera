@@ -79,12 +79,14 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                 break;
             case RESPONSE:
                 final Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                SocketLog.info("receiver socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
                 break;
             case WEB_RESPONSE:
-                final WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                SocketLog.info("receiver socket info from master {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }

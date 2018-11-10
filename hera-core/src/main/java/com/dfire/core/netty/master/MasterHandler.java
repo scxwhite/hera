@@ -112,13 +112,17 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 }
                 break;
             case RESPONSE:
+                Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                SocketLog.info("receiver socket info from work {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
                 for (ResponseListener listener : listeners) {
-                    listener.onResponse(Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                    listener.onResponse(response);
                 }
                 break;
             case WEB_RESPONSE:
+                WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                SocketLog.info("receiver socket info from work {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
                 for (ResponseListener listener : listeners) {
-                    listener.onWebResponse(WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                    listener.onWebResponse(webResponse);
                 }
                 break;
             default:
