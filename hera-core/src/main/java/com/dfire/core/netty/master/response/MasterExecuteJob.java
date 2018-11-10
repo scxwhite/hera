@@ -8,12 +8,12 @@ import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
-import com.dfire.protocol.RpcSocketMessage.*;
-import com.dfire.protocol.RpcRequest.*;
-import com.dfire.protocol.RpcOperate.*;
-import com.dfire.protocol.RpcExecuteMessage.*;
-import com.dfire.protocol.RpcDebugMessage.*;
+import com.dfire.protocol.RpcDebugMessage.DebugMessage;
+import com.dfire.protocol.RpcExecuteMessage.ExecuteMessage;
+import com.dfire.protocol.RpcOperate.Operate;
+import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
+import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -27,22 +27,25 @@ import java.util.concurrent.TimeUnit;
 public class MasterExecuteJob {
 
     public Future<Response> executeJob(final MasterContext context, final MasterWorkHolder holder, ExecuteKind kind, final String id) {
-        if (kind == ExecuteKind.DebugKind) {
-            return executeDebugJob(context, holder, id);
-        } else if (kind == ExecuteKind.ScheduleKind) {
-            return executeScheduleJob(context, holder, id);
-        } else if (kind == ExecuteKind.ManualKind) {
-            return executeManualJob(context, holder, id);
+        switch (kind) {
+            case ScheduleKind:
+                return executeScheduleJob(context, holder, id);
+            case ManualKind:
+                return executeManualJob(context, holder, id);
+            case DebugKind:
+                return executeDebugJob(context, holder, id);
+            default:
+                return null;
         }
-        return null;
     }
 
 
     /**
-     *  请求work 执行手动任务
+     * 请求work 执行手动任务
+     *
      * @param context MasterContext
-     * @param holder MasterWorkHolder
-     * @param jobId String
+     * @param holder  MasterWorkHolder
+     * @param jobId   String
      * @return Future
      */
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder holder, String jobId) {
@@ -50,15 +53,19 @@ public class MasterExecuteJob {
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Manual)
-                .setBody(ExecuteMessage.newBuilder().setActionId(jobId).build().toByteString())
+                .setBody(ExecuteMessage
+                        .newBuilder()
+                        .setActionId(jobId)
+                        .build().toByteString())
                 .build(), holder, jobId, TriggerTypeEnum.MANUAL);
     }
 
 
     /**
-     *  请求work 执行调度任务/恢复任务
-     * @param context MasterContext
-     * @param holder MasterWorkHolder
+     * 请求work 执行调度任务/恢复任务
+     *
+     * @param context         MasterContext
+     * @param holder          MasterWorkHolder
      * @param actionHistoryId String
      * @return Future
      */
@@ -68,17 +75,21 @@ public class MasterExecuteJob {
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Schedule)
-                .setBody(ExecuteMessage.newBuilder().setActionId(actionId).build().toByteString())
+                .setBody(ExecuteMessage
+                        .newBuilder()
+                        .setActionId(actionId)
+                        .build().toByteString())
                 .build(), holder, actionId, TriggerTypeEnum.SCHEDULE);
 
     }
 
 
     /**
-     *  请求work 执行开发中心任务
+     * 请求work 执行开发中心任务
+     *
      * @param context MasterContext
-     * @param holder MasterWorkHolder
-     * @param id String
+     * @param holder  MasterWorkHolder
+     * @param id      String
      * @return Future
      */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder holder, String id) {
@@ -96,9 +107,10 @@ public class MasterExecuteJob {
 
     /**
      * 向work发送执行任务的命令 并等待work返回结果
-     * @param context MasterContext
-     * @param request Request
-     * @param holder MasterWorkHolder
+     *
+     * @param context  MasterContext
+     * @param request  Request
+     * @param holder   MasterWorkHolder
      * @param actionId String
      * @param typeEnum TriggerTypeEnum
      * @return Future
