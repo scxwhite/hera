@@ -64,11 +64,6 @@ public class WorkerHandleWebRequest {
     }
 
     private static Future<WebResponse> buildMessage(WebRequest request, WorkContext workContext, String errorMsg) {
-        SocketMessage socketMessage = SocketMessage.newBuilder()
-                .setKind(SocketMessage.Kind.WEB_REQUEST)
-                .setBody(request.toByteString())
-                .build();
-
         Future<WebResponse> future = workContext.getWorkThreadPool().submit(() -> {
             CountDownLatch latch = new CountDownLatch(1);
             WorkResponseListener responseListener = new WorkResponseListener(request, workContext, false, latch, null);
@@ -79,7 +74,10 @@ public class WorkerHandleWebRequest {
             }
             return responseListener.getWebResponse();
         });
-        workContext.getServerChannel().writeAndFlush(socketMessage);
+        workContext.getServerChannel().writeAndFlush(SocketMessage.newBuilder()
+                .setKind(SocketMessage.Kind.WEB_REQUEST)
+                .setBody(request.toByteString())
+                .build());
         return future;
 
     }

@@ -33,7 +33,7 @@ public class ZeusToHera {
     private String driver = "com.mysql.jdbc.Driver";
     private Connection heraConnection = null;
     private Connection zeusConnection = null;
-    private final String env = "publish";
+    private final String env = "daily";
     private final boolean isAll = true;
 
     private String tableName = "hera_group";

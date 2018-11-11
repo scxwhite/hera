@@ -203,7 +203,7 @@ public class WorkExecuteJob {
                     .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
-            ScheduleLog.info("send execute message, actionId = " + jobId);
+            ScheduleLog.info("send execute message, resId = {} actionId = {}", request.getRid(), jobId);
             return response;
         });
 
