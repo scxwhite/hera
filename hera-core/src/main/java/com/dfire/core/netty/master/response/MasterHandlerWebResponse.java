@@ -22,7 +22,6 @@ import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
 import com.dfire.protocol.RpcWebOperate.WebOperate;
 import com.dfire.protocol.RpcWebRequest.WebRequest;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -135,7 +134,7 @@ public class MasterHandlerWebResponse {
      * @return WebResponse
      */
     public static WebResponse generateActionByJobId(MasterContext context, WebRequest request) {
-        boolean result = context.getMaster().generateSingleAction(Integer.parseInt(request.getId()));
+        boolean result = Constants.ALL_JOB_ID.equals(request.getId()) ? context.getMaster().generateBatchAction() : context.getMaster().generateSingleAction(Integer.parseInt(request.getId()));
         return WebResponse.newBuilder()
                 .setRid(request.getRid())
                 .setOperate(WebOperate.ExecuteJob)

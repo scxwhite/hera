@@ -103,8 +103,7 @@ public class Master {
     private void batchActionCheck() {
         masterContext.masterSchedule.scheduleWithFixedDelay(() -> {
             try {
-                ScheduleLog.info("全量任务版本生成");
-                generateAction(false, null);
+                generateBatchAction();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -137,7 +136,7 @@ public class Master {
                     }
                     ScheduleLog.info("scan waiting queueTask run");
                 } catch (Exception e) {
-                    ScheduleLog.error("scan waiting queueTask exception",e);
+                    ScheduleLog.error("scan waiting queueTask exception", e);
                 } finally {
                     masterContext.masterSchedule.schedule(this, nextTime, TimeUnit.MILLISECONDS);
                 }
@@ -170,13 +169,17 @@ public class Master {
     }
 
 
-
     public boolean generateSingleAction(Integer jobId) {
         ScheduleLog.info("单个任务版本生成：{}", jobId);
         return generateAction(true, jobId);
     }
 
-    public synchronized boolean generateAction(boolean isSingle, Integer jobId) {
+    public boolean generateBatchAction() {
+        ScheduleLog.info("全量任务版本生成");
+        return generateAction(false, null);
+    }
+
+    private synchronized boolean generateAction(boolean isSingle, Integer jobId) {
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
         int executeHour = DateUtil.getCurrentHour(calendar);
@@ -227,7 +230,7 @@ public class Master {
                     }
                 }
             }
-            ScheduleLog.info("generate all action success");
+            ScheduleLog.info("[单个任务:{}，任务id:{}]generate action success", isSingle, jobId);
             return true;
         }
         return false;

@@ -29,5 +29,7 @@ public class Constants {
 
     public final static String RIGHT_BRACKET = ")";
 
+    public final static String ALL_JOB_ID = "-1024";
+
 
 }
