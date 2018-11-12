@@ -1,6 +1,5 @@
 package com.dfire.core.tool;
 
-import com.dfire.logs.SocketLog;
 import lombok.Data;
 
 import java.io.BufferedReader;
@@ -44,9 +43,8 @@ public class RunShell {
         if (exitCode == 0) {
             return readFromInputStream(process.getInputStream());
         } else {
-            SocketLog.error(readFromInputStream(process.getErrorStream()));
+            return readFromInputStream(process.getErrorStream());
         }
-        return null;
     }
 
     private String readFromInputStream(InputStream inputStream) throws IOException {
