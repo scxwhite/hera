@@ -1,5 +1,6 @@
 package com.dfire.core.netty.worker;
 
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
@@ -22,7 +23,13 @@ import java.util.concurrent.*;
  */
 public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
-    private CompletionService<Response> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
+    private CompletionService<Response> completionService = new ExecutorCompletionService<>(
+            new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L,
+                    TimeUnit.SECONDS,
+                    new SynchronousQueue<>(),
+                    new NamedThreadFactory("worker-send:", false),
+                    new ThreadPoolExecutor.AbortPolicy()));
+
     private WorkContext workContext;
 
     public WorkHandler(final WorkContext workContext) {
@@ -44,6 +51,8 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
             }
         });
     }
+
+
 
     private List<ResponseListener> listeners = new CopyOnWriteArrayList<>();
 

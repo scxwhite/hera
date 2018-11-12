@@ -46,9 +46,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         this.masterContext = masterContext;
         completionService = new ExecutorCompletionService<>(
                 new ThreadPoolExecutor(
-                        0, Integer.MAX_VALUE, 10L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-execute-thread", true), new ThreadPoolExecutor.AbortPolicy()));
+                        0, Integer.MAX_VALUE, 30L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-execute", false), new ThreadPoolExecutor.AbortPolicy()));
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
-                1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("master-deal-thread", true), new ThreadPoolExecutor.AbortPolicy());
+                1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("master-deal", false), new ThreadPoolExecutor.AbortPolicy());
         executor.execute(() -> {
                     while (true) {
                         try {
