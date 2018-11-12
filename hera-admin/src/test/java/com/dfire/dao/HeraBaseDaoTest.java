@@ -316,7 +316,7 @@ public class HeraBaseDaoTest {
                 MasterContext masterContext = (MasterContext) masterContextField.get(heraSchedule);
                 if(masterContext != null) {
                     Master master = masterContext.getMaster();
-                    master.generateAction(false, null);
+                    master.generateBatchAction();
                 }
             }
         } catch (NoSuchFieldException e) {
