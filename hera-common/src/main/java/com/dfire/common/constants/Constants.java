@@ -17,4 +17,14 @@ public class Constants {
     public final static String MASTER_PREFIX = "master-";
 
 
+    public final static String STATUS_FAILED = "failed";
+
+    public final static String STATUS_RUNNING = "running";
+
+    public final static String STATUS_SUCCESS = "success";
+
+    public final static String STATUS_WAIT = "wait";
+
+
+
 }

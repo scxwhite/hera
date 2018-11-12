@@ -1,5 +1,6 @@
 package com.dfire.core.netty.master;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.DateUtil;
@@ -22,13 +23,13 @@ import java.util.*;
  * master 端负责执行的任务
  * 定时版本生成、清理、漏跑检查等操作
  * 晚点启动
+ *
  * @author <a href="mailto:huoguo@2dfire.com">火锅</a>
  * @time 2018/11/6
  */
 @Component()
 @Order(5)
 public class MasterTimerSchedule {
-
 
 
     @Autowired
@@ -44,7 +45,6 @@ public class MasterTimerSchedule {
         String currDate = DateUtil.getNowStringForAction();
         Dispatcher dispatcher = masterContext.getDispatcher();
         if (dispatcher != null) {
-            //TODO  应该使用最新状态
             Map<Long, HeraAction> actionMapNew = masterContext.getMaster().getHeraActionMap();
             Long tmp = Long.parseLong(currDate) - 15000000;
             if (actionMapNew != null && actionMapNew.size() > 0) {
@@ -69,16 +69,16 @@ public class MasterTimerSchedule {
             if (StringUtils.isNotBlank(dependencies)) {
                 List<String> jobDependList = Arrays.asList(dependencies.split(","));
                 boolean isAllComplete = true;
+                HeraAction heraAction;
+                String status;
                 if (jobDependList.size() > 0) {
                     for (String jobDepend : jobDependList) {
                         Long jobDep = Long.parseLong(jobDepend);
                         if (actionMapNew.get(jobDep) != null) {
-                            HeraAction action = actionMapNew.get(jobDep);
-                            if (action != null) {
-                                String status = action.getStatus();
-                                if (status == null || status.equals("wait")) {
-                                    isAllComplete = false;
-                                } else if (status.equals(StatusEnum.FAILED.toString())) {
+                            heraAction = actionMapNew.get(jobDep);
+                            if (heraAction != null) {
+                                status = heraAction.getStatus();
+                                if (Constants.STATUS_WAIT.equals(status) || Constants.STATUS_FAILED.equals(status)) {
                                     isAllComplete = false;
                                 }
                             }

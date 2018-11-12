@@ -17,6 +17,6 @@ public interface IStrategyWorker {
      * @param masterContext
      * @return
      */
-    public MasterWorkHolder chooseWorker(int hostGroupId, MasterContext masterContext);
+    MasterWorkHolder chooseWorker(int hostGroupId, MasterContext masterContext);
 
 }

@@ -68,7 +68,6 @@ public class Master {
 
     public void init(MasterContext masterContext) {
         this.masterContext = masterContext;
-        heraActionMap = new HashMap<>();
         executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("master-execute-job-thread"), new ThreadPoolExecutor.AbortPolicy());
         executeJobPool.allowCoreThreadTimeOut(true);
@@ -80,8 +79,8 @@ public class Master {
         masterContext.getDispatcher().addDispatcherListener(new HeraJobFailListener(masterContext));
         masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
         masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
-
         List<HeraAction> allJobList = masterContext.getHeraJobActionService().getTodayAction();
+        heraActionMap = new HashMap<>(allJobList.size());
         allJobList.forEach(heraAction -> masterContext.getDispatcher().
                 addJobHandler(new JobHandler(String.valueOf(heraAction.getId()), this, masterContext)));
         masterContext.getDispatcher().forwardEvent(Events.Initialize);
@@ -109,7 +108,7 @@ public class Master {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 5, 60, TimeUnit.MINUTES);
+        }, 1, 60, TimeUnit.MINUTES);
     }
 
 
@@ -177,7 +176,7 @@ public class Master {
         return generateAction(true, jobId);
     }
 
-    private synchronized boolean generateAction(boolean isSingle, Integer jobId) {
+    public synchronized boolean generateAction(boolean isSingle, Integer jobId) {
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
         int executeHour = DateUtil.getCurrentHour(calendar);
@@ -611,10 +610,6 @@ public class Master {
         }
         boolean success = response != null && response.getStatusEnum() == ResponseStatus.Status.OK;
         ScheduleLog.info("job_id 执行结果" + actionId + "---->" + (response == null ? "空指针" : response.getStatusEnum().toString()));
-        if (success && (heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.SCHEDULE
-                || heraJobHistoryVo.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER)) {
-            jobStatus.setReadyDependency(new HashMap<>(0));
-        }
         if (!success) {
             jobStatus.setStatus(StatusEnum.FAILED);
             HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(heraJobHistoryVo.getId());
@@ -629,10 +624,15 @@ public class Master {
                 masterContext.getDispatcher().forwardEvent(event);
             }
         } else {
+            jobStatus.setReadyDependency(new HashMap<>(0));
             jobStatus.setStatus(StatusEnum.SUCCESS);
             HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, triggerType, heraJobHistory.getId());
             heraJobHistory.setStatus(StatusEnum.SUCCESS.toString());
             masterContext.getDispatcher().forwardEvent(successEvent);
+        }
+        HeraAction heraAction = heraActionMap.get(Long.parseLong(actionId));
+        if (heraAction != null) {
+            heraAction.setStatus(success ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString());
         }
         jobStatus.setEndTime(new Date());
         masterContext.getHeraJobActionService().updateStatus(jobStatus);

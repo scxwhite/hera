@@ -1,5 +1,6 @@
 package com.dfire.common.service.impl;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraActionVo;
@@ -32,7 +33,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         HeraAction action = heraJobActionMapper.findById(heraAction);
         if (action != null) {
             //如果该任务不是在运行中
-            if (action.getStatus() == null || !StatusEnum.RUNNING.toString().equals(action.getStatus())) {
+            if (!Constants.STATUS_RUNNING.equals(action.getStatus())) {
                 heraAction.setStatus(action.getStatus());
                 heraAction.setHistoryId(action.getHistoryId());
                 heraAction.setReadyDependency(action.getReadyDependency());
