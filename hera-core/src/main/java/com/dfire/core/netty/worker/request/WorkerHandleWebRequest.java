@@ -26,7 +26,7 @@ public class WorkerHandleWebRequest {
                 .setOperate(WebOperate.ExecuteJob)
                 .setEk(kind)
                 .setId(id)
-                .build(), workContext, "执行任务超出3小时未得到master消息返回:" + id);
+                .build(), workContext, "[执行]-任务超出3小时未得到master消息返回:" + id);
     }
 
     public static Future<WebResponse> handleWebAction(final WorkContext workContext, ExecuteKind kind, String id) {
@@ -35,7 +35,7 @@ public class WorkerHandleWebRequest {
                 .setOperate(WebOperate.GenerateAction)
                 .setEk(kind)
                 .setId(id)
-                .build(), workContext, "更新action超出3小时未得到master消息返回:" + id);
+                .build(), workContext, "[更新]-action超出3小时未得到master消息返回:" + id);
     }
 
     public static Future<WebResponse> handleCancel(final WorkContext workContext, ExecuteKind kind, String id) {
@@ -44,7 +44,7 @@ public class WorkerHandleWebRequest {
                 .setOperate(WebOperate.CancelJob)
                 .setEk(kind)
                 .setId(id)
-                .build(), workContext, "取消任务超出3小时未得到master消息返回：" + id);
+                .build(), workContext, "[取消]-任务超出3小时未得到master消息返回：" + id);
     }
 
     public static Future<WebResponse> handleUpdate(final WorkContext workContext, String jobId) {
@@ -53,7 +53,7 @@ public class WorkerHandleWebRequest {
                 .setOperate(WebOperate.UpdateJob)
                 .setEk(ExecuteKind.ManualKind)
                 .setId(jobId)
-                .build(), workContext, "更新job超出3小时未得到master消息返回：" + jobId);
+                .build(), workContext, "[更新]-job超出3小时未得到master消息返回：" + jobId);
     }
 
     public static Future<WebResponse> getJobQueueInfoFromMaster(WorkContext workContext) {

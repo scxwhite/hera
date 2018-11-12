@@ -64,7 +64,7 @@ public class WorkClient {
     private AtomicBoolean clientSwitch = new AtomicBoolean(false);
     public ScheduledThreadPoolExecutor workSchedule;
     {
-        workSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("work-schedule-thread", true));
+        workSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("work-schedule", false));
         workSchedule.setKeepAliveTime(5, TimeUnit.MINUTES);
         workSchedule.allowCoreThreadTimeOut(true);
     }
