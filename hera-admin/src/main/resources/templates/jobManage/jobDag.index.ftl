@@ -54,9 +54,6 @@
     </style>
 
     <style id="css">
-        body {
-            font: 300 14px 'Helvetica Neue', Helvetica;
-        }
 
         .node rect {
             stroke: #333;
