@@ -19,48 +19,51 @@ public class HeraGlobalEnvironment {
     public static String preemptionMasterGroup;
 
     @Getter
+    private static long requestTimeout = 60 * 1000L;
+
+    @Getter
     private static String env;
 
     @Getter
-    private static Float   maxMemRate;
+    private static Float maxMemRate;
     @Getter
-    private static Float   maxCpuLoadPerCore;
+    private static Float maxCpuLoadPerCore;
     @Getter
-    private static Float   perTaskUseMem;
+    private static Float perTaskUseMem;
     @Getter
-    private static Float   systemMemUsed;
+    private static Float systemMemUsed;
     @Getter
     private static Integer scanRate;
     @Getter
     private static Integer connectPort;
     @Getter
-    private static String  downloadDir;
+    private static String downloadDir;
     @Getter
     private static Integer maxParallelNum;
     @Getter
     private static Integer heartBeat;
     @Getter
-    private static String  admin;
+    private static String admin;
     @Getter
     private static Integer taskTimeout;
     @Getter
-    private static String  sparkAddress;
+    private static String sparkAddress;
     @Getter
-    private static String  sparkDriver;
+    private static String sparkDriver;
     @Getter
-    private static String  sparkUser;
+    private static String sparkUser;
     @Getter
-    private static String  sparkPassword;
+    private static String sparkPassword;
     @Getter
-    private static String  sparkMaster;
+    private static String sparkMaster;
     @Getter
-    private static String  sparkDriverMemory;
+    private static String sparkDriverMemory;
     @Getter
-    private static String  sparkDriverCores;
+    private static String sparkDriverCores;
     @Getter
-    private static String  sparkExecutorMemory;
+    private static String sparkExecutorMemory;
     @Getter
-    private static String  sparkExecutorCores;
+    private static String sparkExecutorCores;
 
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
@@ -140,6 +143,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.maxCpuLoadPerCore}")
     public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
         HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+    }
+
+    @Value("${hera.requestTimeout}")
+    public void setTimeout(Long requestTimeout) {
+        HeraGlobalEnvironment.requestTimeout = requestTimeout;
     }
 
     @Value("${spark.address}")

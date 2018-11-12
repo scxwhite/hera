@@ -4,11 +4,10 @@ import com.dfire.common.entity.HeraLock;
 import com.dfire.common.service.HeraHostRelationService;
 import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.schedule.HeraSchedule;
 import com.dfire.core.util.NetUtils;
 import com.dfire.logs.HeraLog;
-import io.netty.util.Timeout;
-import io.netty.util.TimerTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -26,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class DistributeLock {
 
-    public static String host = "localhost";
 
     @Autowired
     private HeraHostRelationService hostGroupService;
@@ -43,43 +41,29 @@ public class DistributeLock {
 
     private final long timeout = 1000 * 60 * 5L;
 
-
-    static {
-        try {
-            host = NetUtils.getLocalAddress();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @PostConstruct
     public void init() {
-        TimerTask checkLockTask = new TimerTask() {
-            @Override
-            public void run(Timeout timeout) {
-                try {
-                    checkLock();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    workClient.workClientTimer.newTimeout(this, 1, TimeUnit.MINUTES);
-                }
+
+        workClient.workSchedule.scheduleWithFixedDelay(() -> {
+            try {
+                checkLock();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        };
-        workClient.workClientTimer.newTimeout(checkLockTask, 5, TimeUnit.SECONDS);
+        }, 10, 60, TimeUnit.SECONDS);
     }
 
     public void checkLock() {
         HeraLock heraLock = heraLockService.findById("online");
         if (heraLock == null) {
             heraLock = HeraLock.builder()
-                    .host(host)
+                    .host(WorkContext.host)
                     .serverUpdate(new Date())
                     .build();
             heraLockService.insert(heraLock);
         }
 
-        if (host.equals(heraLock.getHost().trim())) {
+        if (WorkContext.host.equals(heraLock.getHost().trim())) {
             heraLock.setServerUpdate(new Date());
             heraLockService.update(heraLock);
             HeraLog.info("hold lock and update time");
@@ -90,11 +74,11 @@ public class DistributeLock {
             long interval = currentTime - lockTime;
             if (interval > timeout && isPreemptionHost()) {
                 Date date = new Date();
-                Integer lock = heraLockService.changeLock(host, date, date, heraLock.getHost());
+                Integer lock = heraLockService.changeLock(WorkContext.host, date, date, heraLock.getHost());
                 if (lock != null && lock > 0) {
-                    HeraLog.error("master 发生切换,{} 抢占成功", host);
+                    HeraLog.error("master 发生切换,{} 抢占成功", WorkContext.host);
                     heraSchedule.startup();
-                    heraLock.setHost(host);
+                    heraLock.setHost(WorkContext.host);
                     //TODO  接入master切换通知
 
                 } else {
@@ -117,10 +101,10 @@ public class DistributeLock {
 
     private boolean isPreemptionHost() {
         List<String> preemptionHostList = hostGroupService.findPreemptionGroup(1);
-        if (preemptionHostList.contains(host)) {
+        if (preemptionHostList.contains(WorkContext.host)) {
             return true;
         } else {
-            HeraLog.info(host + " is not in master group " + preemptionHostList.toString());
+            HeraLog.info(WorkContext.host + " is not in master group " + preemptionHostList.toString());
             return false;
         }
     }

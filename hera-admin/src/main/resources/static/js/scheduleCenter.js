@@ -6,7 +6,7 @@ $(function () {
     var focusId = -1;
     var focusItem = null;
     var isGroup;
-    var treeObj;
+    var treeObj,allTreeObj;
     var dependTreeObj;
     var selected;
     var triggerType;
@@ -41,7 +41,12 @@ $(function () {
      * @param id    节点ID
      */
     function setCurrentId(id) {
-        localStorage.setItem("defaultId", id);
+        if($('#jobTree').css('display')==='block'){
+            localStorage.setItem("defaultId", id);
+        }else{
+            localStorage.setItem("allDefaultId", id);
+
+        }
     }
 
     /**
@@ -49,13 +54,18 @@ $(function () {
      * @param id    节点ID
      */
     function setDefaultSelectNode(id) {
-
-        if (id != undefined && id != null) {
-            var node = treeObj.getNodeByParam("id", id);
-            expandParent(node, treeObj);
-            treeObj.selectNode(node);
-            leftClick();
-        }
+            if (id != undefined && id != null) {
+                if(id.indexOf('group')!==-1){
+                    var node = treeObj.getNodeByParam("parent", id);
+                    expandParent(node, treeObj);
+                    treeObj.selectNode(node);
+                }else{
+                    var node = treeObj.getNodeByParam("id", id);
+                    expandParent(node, treeObj);
+                    treeObj.selectNode(node);
+                }
+                leftClick();
+            }
     }
 
     /**
@@ -516,8 +526,10 @@ $(function () {
                 success: function (data) {
                     layer.msg(data.msg);
                     if (data.success == true) {
+                        var parent = selected.getParentNode();
                         treeObj.removeNode(selected);
-                        setDefaultSelectNode(focusItem.groupId);
+                        expandParent(parent, treeObj);
+                        treeObj.selectNode(parent);
                         leftClick();
                     }
 
@@ -590,7 +602,11 @@ $(function () {
     }
 
     function leftClick() {
-        selected = zTree.getSelectedNodes()[0];
+        if($('#jobTree').css('display')==='block'){
+            selected = zTree.getSelectedNodes()[0];
+        }else{
+            selected = zAllTree.getSelectedNodes()[0];
+        }
         var id = selected.id;
         var dir = selected.directory;
         focusId = id;
@@ -760,7 +776,7 @@ $(function () {
 
     //修正zTree的图标，让文件节点显示文件夹图标
     function fixIcon() {
-        $.fn.zTree.init($("#jobTree"), setting, zNodes);
+        $.fn.zTree.init($("#jobTree"), setting, zNodes.myJob);
         treeObj = $.fn.zTree.getZTreeObj("jobTree");
         treeObj.refresh();//调用api自带的refresh函数。
     }
@@ -769,13 +785,35 @@ $(function () {
 
 
     $(document).ready(function () {
-        $.fn.zTree.init($("#jobTree"), setting, zNodes);
+        $('#allScheBtn').click(function (e) {
+            e.stopPropagation();
+            console.log('click');
+            $('#jobTree').hide();
+            $('#allTree').show();
+            $(this).parent().addClass('active');
+            $('#myScheBtn').parent().removeClass('active');
+            $.fn.zTree.init($("#allTree"), setting, zNodes.allJob);
+            zAllTree = $.fn.zTree.getZTreeObj("allTree");
+            treeObj = $.fn.zTree.getZTreeObj("allTree");
+            setDefaultSelectNode(localStorage.getItem("allDefaultId"));
+        });
+        $.fn.zTree.init($("#jobTree"), setting, zNodes.myJob);
         zTree = $.fn.zTree.getZTreeObj("jobTree");
+        treeObj = $.fn.zTree.getZTreeObj("jobTree");
+        $('#myScheBtn').click(function (e) {
+            e.stopPropagation();
+            console.log('my');
+            $('#jobTree').show();
+            $('#allTree').hide();
+            $(this).parent().addClass('active');
+            $('#allScheBtn').parent().removeClass('active');
+            treeObj = $.fn.zTree.getZTreeObj("jobTree");
+        });
         rMenu = $("#rMenu");
         $.each($(".content .row .height-self"), function (i, n) {
             $(n).css("height", (screenHeight - 50) + "px");
         });
-        fixIcon();//调用修复图标的方法。方法如下：
+        // fixIcon();//调用修复图标的方法。方法如下：
         codeMirror = CodeMirror.fromTextArea(editor[0], {
             mode: "text/x-sh",
             lineNumbers: true,
@@ -814,7 +852,6 @@ $(function () {
         inheritConfigCM.setSize('auto', 'auto');
         selfConfigCM.setSize('auto', 'auto');
         setDefaultSelectNode(localStorage.getItem("defaultId"));
-
         $.ajax({
             url: base_url + "/scheduleCenter/getHostGroupIds",
             type: "get",
@@ -876,9 +913,6 @@ $(function () {
             }
         })
         // keypath();
-        $('#jobDag').addClass('active');
-        $('#jobDag').parent().addClass('menu-open');
-        $('#jobManage').addClass('active');
 
         $('#nextNode').on("click", function () {
             var expand = $('#expand').val();

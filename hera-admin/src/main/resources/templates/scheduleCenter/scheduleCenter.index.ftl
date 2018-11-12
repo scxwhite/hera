@@ -81,10 +81,6 @@
         overflow: hidden;
     }
 
-    body {
-        font: 300 14px 'Helvetica Neue', Helvetica;
-    }
-
     .node rect {
         stroke: #333;
         fill: #fff;
@@ -112,10 +108,10 @@
                     <div class="box box-primary height-self" style="overflow: auto;">
                         <div class="box-header with-border">
                             <ul class="nav nav-tabs" role="tablist">
-                                <li role="presentation" class="active"><a href="#" aria-controls="home" role="tab" data-toggle="tab">我的调度任务</a></li>
-                                <li role="presentation"><a href="#" aria-controls="profile" role="tab" data-toggle="tab">全部调度任务</a></li>
+                                <li role="presentation" class="active"><a href="#" role="tab"id="myScheBtn">我的调度任务</a></li>
+                                <li role="presentation"><a href="#" role="tab"id="allScheBtn">全部调度任务</a></li>
                             </ul>
-                            <div class="box-tools">
+                            <div class="box-tools" >
                                 <button type="button" class="btn btn-box-tool" id="hideTreeBtn"><i class="fa fa-minus"></i>
                                 </button>
                             </div>
@@ -124,6 +120,7 @@
                             <div>
                                 <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词(空格分割)">
                                 <ul id="jobTree" class="ztree"></ul>
+                                <ul id="allTree" class="ztree"></ul>
                             </div>
                         </div>
                     </div>

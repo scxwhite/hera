@@ -1,15 +1,20 @@
 package com.dfire.core.netty.master;
 
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.netty.listener.ResponseListener;
-import com.dfire.core.netty.master.response.*;
+import com.dfire.core.netty.master.response.MasterHandleHeartBeat;
+import com.dfire.core.netty.master.response.MasterHandlerWebResponse;
 import com.dfire.logs.SocketLog;
-import com.dfire.protocol.*;
+import com.dfire.protocol.RpcOperate.Operate;
+import com.dfire.protocol.RpcRequest.Request;
+import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
+import com.dfire.protocol.RpcWebRequest.WebRequest;
+import com.dfire.protocol.RpcWebResponse.WebResponse;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.net.SocketAddress;
 import java.util.List;
@@ -23,51 +28,35 @@ import java.util.concurrent.*;
 @ChannelHandler.Sharable
 public class MasterHandler extends ChannelInboundHandlerAdapter {
 
-    private CompletionService<ChannelResponse> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
+    private CompletionService<ChannelResponse> completionService;
 
     /**
      * 调度器执行上下文信息
      */
     private MasterContext masterContext;
 
-    /**
-     * 开发中心执行任务时候，masterHandler在read到SocketMessage处理逻辑
-     */
-    private MasterHandleWebDebug masterHandleWebDebug = new MasterHandleWebDebug();
 
     /**
      * 主节点接收到心跳，masterHandler在read到HeartBeat处理逻辑
      */
     private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
 
-    /**
-     * master接受到worker取消执行任务请求的处理逻辑
-     */
-    private MasterHandleWebCancel masterHandleCancelJob = new MasterHandleWebCancel();
-
-    /**
-     * 调度中心执行任务时候，masterHandler在read到SocketMessage的任务处理消息的时候的处理逻辑
-     */
-    private MasterHandleWebExecute masterHandleWebExecute = new MasterHandleWebExecute();
-
-    /**
-     * 生成单个任务action
-     */
-    private MasterGenerateAction masterGenerateAction = new MasterGenerateAction();
-
-    private MasterHandleWebUpdate masterHandleWebUpdate = new MasterHandleWebUpdate();
-
 
     public MasterHandler(MasterContext masterContext) {
         this.masterContext = masterContext;
-        Executor executor = Executors.newSingleThreadExecutor();
+        completionService = new ExecutorCompletionService<>(
+                new ThreadPoolExecutor(
+                        0, Integer.MAX_VALUE, 10L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-execute-thread", true), new ThreadPoolExecutor.AbortPolicy()));
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("master-deal-thread", true), new ThreadPoolExecutor.AbortPolicy());
         executor.execute(() -> {
                     while (true) {
                         try {
                             Future<ChannelResponse> future = completionService.take();
                             ChannelResponse response = future.get();
+                            SocketLog.info("准备将完成消息发送给work{}", response.webResponse.getStatus());
                             response.channel.writeAndFlush(wrapper(response.webResponse));
-                            SocketLog.info("master send response success");
+                            SocketLog.info("master send response success, rid={}", response.webResponse.getRid());
                         } catch (Exception e) {
                             SocketLog.error("master handler future take error");
                             throw new RuntimeException(e);
@@ -84,33 +73,38 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         switch (socketMessage.getKind()) {
             //心跳
             case REQUEST:
-                RpcRequest.Request request = RpcRequest.Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                if (request.getOperate() == RpcOperate.Operate.HeartBeat) {
+                Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                if (request.getOperate() == Operate.HeartBeat) {
                     masterDoHeartBeat.handleHeartBeat(masterContext, channel, request);
                 }
                 break;
             case WEB_REQUEST:
-                final RpcWebRequest.WebRequest webRequest = RpcWebRequest.WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                final WebRequest webRequest = WebRequest.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterHandleWebExecute.handleWebExecute(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.handleWebExecute(masterContext, webRequest)));
                         break;
                     case CancelJob:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterHandleCancelJob.handleWebCancel(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.handleWebCancel(masterContext, webRequest)));
                         break;
                     case UpdateJob:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterHandleWebUpdate.handleWebUpdate(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.handleWebUpdate(masterContext, webRequest)));
                         break;
                     case ExecuteDebug:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterHandleWebDebug.handleWebDebug(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.handleWebDebug(masterContext, webRequest)));
                         break;
                     case GenerateAction:
                         completionService.submit(() ->
-                                new ChannelResponse(channel, masterGenerateAction.generateActionByJobId(masterContext, webRequest)));
+                                new ChannelResponse(channel, MasterHandlerWebResponse.generateActionByJobId(masterContext, webRequest)));
+                        break;
+
+                    case GetAllHeartBeatInfo:
+                        completionService.submit(() ->
+                                new ChannelResponse(channel, MasterHandlerWebResponse.buildJobQueueInfo(masterContext, webRequest)));
                         break;
                     default:
                         SocketLog.error("unknown operate error:{}", webRequest.getOperate());
@@ -118,13 +112,17 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 }
                 break;
             case RESPONSE:
+                Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                SocketLog.info("receiver socket info from work {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
                 for (ResponseListener listener : listeners) {
-                    listener.onResponse(RpcResponse.Response.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                    listener.onResponse(response);
                 }
                 break;
             case WEB_RESPONSE:
+                WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                SocketLog.info("receiver socket info from work {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
                 for (ResponseListener listener : listeners) {
-                    listener.onWebResponse(RpcWebResponse.WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build());
+                    listener.onWebResponse(webResponse);
                 }
                 break;
             default:
@@ -163,7 +161,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         super.exceptionCaught(ctx, cause);
     }
 
-    private SocketMessage wrapper(RpcWebResponse.WebResponse response) {
+    private SocketMessage wrapper(WebResponse response) {
         return SocketMessage.newBuilder().setKind(SocketMessage.Kind.WEB_RESPONSE).setBody(response.toByteString()).build();
     }
 
@@ -179,10 +177,10 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
 
     private class ChannelResponse {
-        Channel     channel;
-        RpcWebResponse.WebResponse webResponse;
+        Channel channel;
+        WebResponse webResponse;
 
-        public ChannelResponse(Channel channel, RpcWebResponse.WebResponse webResponse) {
+        public ChannelResponse(Channel channel, WebResponse webResponse) {
             this.channel = channel;
             this.webResponse = webResponse;
         }

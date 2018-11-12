@@ -39,82 +39,82 @@ $(function () {
             isParent = e.data.isParent,
             nodes = zTree.getSelectedNodes(),
             treeNode = nodes[0];
-            hideRMenu();
-            var selected = zTree.getSelectedNodes()[0];
-            var id = selected['id'];
-            addCount++;
-            if(e.data.type===1){
-                //new folder
-                var name = "文件夹" + addCount;
-                var parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
+        hideRMenu();
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+        addCount++;
+        if(e.data.type===1){
+            //new folder
+            var name = "文件夹" + addCount;
+            var parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
 
-                $.ajax({
-                    url: base_url + "/developCenter/addFile.do",
-                    type: "get",
-                    async: false,
-                    data: parameter,
-                    success: function (data) {
-                        if (treeNode) {
-                            treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name:name});
-                        } else {
-                            treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
-                        }
-                        if (treeNode) {
-                            zTree.editName(treeNode[0]);
-                        } else {
-                            layer.msg("叶子节点被锁定，无法增加子节点");
-                        }
+            $.ajax({
+                url: base_url + "/developCenter/addFile.do",
+                type: "get",
+                async: false,
+                data: parameter,
+                success: function (data) {
+                    if (treeNode) {
+                        treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name:name});
+                    } else {
+                        treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
                     }
-                });
-            } else if(e.data.type===2){
-                var name = addCount + ".hive";
-
-                var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-                console.log(zTree)
-                $.ajax({
-                    url: base_url + "/developCenter/addFile.do",
-                    type: "get",
-                    async: false,
-                    data: parameter,
-                    success: function (data) {
-                        console.log(data)
-                        if (treeNode) {
-                            treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name: name});
-                        } else {
-                            treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
-                        }
-                        if (treeNode) {
-                            zTree.editName(treeNode[0]);
-                        } else {
-                            layer.msg("叶子节点被锁定，无法增加子节点");
-                        }
+                    if (treeNode) {
+                        zTree.editName(treeNode[0]);
+                    } else {
+                        layer.msg("叶子节点被锁定，无法增加子节点");
                     }
-                });
+                }
+            });
+        } else if(e.data.type===2){
+            var name = addCount + ".hive";
 
-            }else if(e.data.type===3){
-                //new .sh file
-                var name = addCount + ".sh";
-                var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-
-                $.ajax({
-                    url: base_url + "/developCenter/addFile.do",
-                    type: "get",
-                    async: false,
-                    data: parameter,
-                    success: function (data) {
-                        if (treeNode) {
-                            treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name: name});
-                        } else {
-                            treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
-                        }
-                        if (treeNode) {
-                            zTree.editName(treeNode[0]);
-                        } else {
-                            layer.msg("叶子节点被锁定，无法增加子节点");
-                        }
+            var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+            console.log(zTree)
+            $.ajax({
+                url: base_url + "/developCenter/addFile.do",
+                type: "get",
+                async: false,
+                data: parameter,
+                success: function (data) {
+                    console.log(data)
+                    if (treeNode) {
+                        treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name: name});
+                    } else {
+                        treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
                     }
-                });
-            }
+                    if (treeNode) {
+                        zTree.editName(treeNode[0]);
+                    } else {
+                        layer.msg("叶子节点被锁定，无法增加子节点");
+                    }
+                }
+            });
+
+        }else if(e.data.type===3){
+            //new .sh file
+            var name = addCount + ".sh";
+            var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+
+            $.ajax({
+                url: base_url + "/developCenter/addFile.do",
+                type: "get",
+                async: false,
+                data: parameter,
+                success: function (data) {
+                    if (treeNode) {
+                        treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name: name});
+                    } else {
+                        treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
+                    }
+                    if (treeNode) {
+                        zTree.editName(treeNode[0]);
+                    } else {
+                        layer.msg("叶子节点被锁定，无法增加子节点");
+                    }
+                }
+            });
+        }
 
     };
     //修改文件名后回调
@@ -353,7 +353,7 @@ $(function () {
                 layer.msg(err);
             }
         });
-     });
+    });
 
     /**
      * 树形菜单右击事件

@@ -1,6 +1,7 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.vo.JobStatus;

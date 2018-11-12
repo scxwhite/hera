@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public class HeartBeatInfo {
 
     private List<String> debugRunning;
 
-    private Date timestamp;
+    private Long timestamp;
 
     private String host;
 

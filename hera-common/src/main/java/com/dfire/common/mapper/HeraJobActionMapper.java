@@ -1,6 +1,7 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
@@ -46,4 +47,5 @@ public interface HeraJobActionMapper {
     Integer updateStatusAndReadDependency(HeraAction heraAction);
     @Select("select * from hera_action where id >= #{today}")
     List<HeraAction> selectTodayAction(String today);
+
 }

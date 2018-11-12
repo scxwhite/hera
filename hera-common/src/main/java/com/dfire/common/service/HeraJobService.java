@@ -7,6 +7,7 @@ import com.dfire.common.vo.RestfulResponse;
 import com.dfire.graph.JobRelation;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -34,7 +35,7 @@ public interface HeraJobService {
      *
      * @return
      */
-    List<HeraJobTreeNodeVo> buildJobTree();
+    Map<String, List<HeraJobTreeNodeVo>> buildJobTree(String owner);
 
     boolean changeSwitch(Integer id);
 

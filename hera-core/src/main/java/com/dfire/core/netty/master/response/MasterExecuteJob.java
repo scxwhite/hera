@@ -1,143 +1,121 @@
 package com.dfire.core.netty.master.response;
 
-import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.util.AtomicIncrease;
+import com.dfire.logs.HeraLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
-import com.dfire.protocol.*;
+import com.dfire.protocol.RpcDebugMessage.DebugMessage;
+import com.dfire.protocol.RpcExecuteMessage.ExecuteMessage;
+import com.dfire.protocol.RpcOperate.Operate;
+import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
+import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
- * @time: Created in 下午2:26 2018/4/25
- * @desc master向worker发送执行job的指令
+ * @author xiaosuda
+ * @date 2018/11/10
  */
 public class MasterExecuteJob {
 
     public Future<Response> executeJob(final MasterContext context, final MasterWorkHolder holder, ExecuteKind kind, final String id) {
-        if (kind == ExecuteKind.DebugKind) {
-            return executeDebugJob(context, holder, id);
-        } else if (kind == ExecuteKind.ScheduleKind) {
-            return executeScheduleJob(context, holder, id);
-        } else if (kind == ExecuteKind.ManualKind) {
-            return executeManualJob(context, holder, id);
+        switch (kind) {
+            case ScheduleKind:
+                return executeScheduleJob(context, holder, id);
+            case ManualKind:
+                return executeManualJob(context, holder, id);
+            case DebugKind:
+                return executeDebugJob(context, holder, id);
+            default:
+                return null;
         }
-        return null;
     }
 
+
     /**
-     * 执行手动任务，向channel发送执行job命令，等待worker响应，响应ok,则添加监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     * 请求work 执行手动任务
      *
-     * @param context
-     * @param holder
-     * @param jobId
-     * @return
+     * @param context MasterContext
+     * @param holder  MasterWorkHolder
+     * @param jobId   String
+     * @return Future
      */
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder holder, String jobId) {
         holder.getManningRunning().put(jobId, false);
-
-        RpcExecuteMessage.ExecuteMessage message = RpcExecuteMessage.ExecuteMessage.newBuilder().setActionId(jobId).build();
-        final RpcRequest.Request request = RpcRequest.Request.newBuilder()
+        return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
-                .setOperate(RpcOperate.Operate.Manual)
-                .setBody(message.toByteString())
-                .build();
-        RpcSocketMessage.SocketMessage socketMessage = RpcSocketMessage.SocketMessage.newBuilder()
-                .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
-                .setBody(request.toByteString())
-                .build();
-        Future<Response> future = context.getThreadPool().submit(() -> {
-            final CountDownLatch latch = new CountDownLatch(1);
-            MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
-            context.getHandler().addListener(responseListener);
-            try {
-                latch.await(3, TimeUnit.HOURS);
-                if (!responseListener.getReceiveResult()) {
-                    SocketLog.error("手动任务信号丢失，三小时未收到work返回：{}", jobId);
-                }
-            } finally {
-                holder.getManningRunning().remove(jobId);
-            }
-            return responseListener.getResponse();
-        });
-        holder.getChannel().writeAndFlush(socketMessage);
-        return future;
+                .setOperate(Operate.Manual)
+                .setBody(ExecuteMessage
+                        .newBuilder()
+                        .setActionId(jobId)
+                        .build().toByteString())
+                .build(), holder, jobId, TriggerTypeEnum.MANUAL);
     }
 
+
     /**
-     * 执行自动调度任务，向master端channel发送执行job命令，添加请求监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     * 请求work 执行调度任务/恢复任务
      *
-     * @param context
-     * @param holder
-     * @param actionHistoryId
-     * @return
+     * @param context         MasterContext
+     * @param holder          MasterWorkHolder
+     * @param actionHistoryId String
+     * @return Future
      */
     private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String actionHistoryId) {
-
-        HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(actionHistoryId);
-        final String actionId = heraJobHistory.getActionId();
+        final String actionId = context.getHeraJobHistoryService().findById(actionHistoryId).getActionId();
         holder.getRunning().put(actionId, false);
-        RpcExecuteMessage.ExecuteMessage message = RpcExecuteMessage.ExecuteMessage.newBuilder().setActionId(actionId).build();
-        final RpcRequest.Request request = RpcRequest.Request.newBuilder()
+        return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
-                .setOperate(RpcOperate.Operate.Schedule)
-                .setBody(message.toByteString())
-                .build();
-        RpcSocketMessage.SocketMessage socketMessage = RpcSocketMessage.SocketMessage.newBuilder()
-                .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
-                .setBody(request.toByteString())
-                .build();
-        Future<Response> future = context.getThreadPool().submit(() -> {
-            final CountDownLatch latch = new CountDownLatch(1);
-            MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
-            context.getHandler().addListener(responseListener);
-            try {
-                latch.await(3, TimeUnit.HOURS);
-                if (!responseListener.getReceiveResult()) {
-                    SocketLog.error("自动调度任务信号丢失，三小时未收到work返回：{}", actionHistoryId);
-                    //TODO 可以做一些处理
-                }
-            } finally {
-                holder.getRunning().remove(actionId);
-            }
-            return responseListener.getResponse();
-        });
-        holder.getChannel().writeAndFlush(socketMessage);
-        return future;
+                .setOperate(Operate.Schedule)
+                .setBody(ExecuteMessage
+                        .newBuilder()
+                        .setActionId(actionId)
+                        .build().toByteString())
+                .build(), holder, actionId, TriggerTypeEnum.SCHEDULE);
 
     }
 
+
     /**
-     * 执行开发中心脚本，向master端channel发送执行job命令，添加请求监听器，继续等待任务完成消息，响应失败，返回失败退出码
+     * 请求work 执行开发中心任务
      *
-     * @param context
-     * @param holder
-     * @param id
-     * @return
+     * @param context MasterContext
+     * @param holder  MasterWorkHolder
+     * @param id      String
+     * @return Future
      */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder holder, String id) {
         holder.getDebugRunning().put(id, false);
-        RpcDebugMessage.DebugMessage message = RpcDebugMessage.DebugMessage
-                .newBuilder()
-                .setDebugId(id)
-                .build();
-        final RpcRequest.Request request = RpcRequest.Request.newBuilder()
+        return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
-                .setOperate(RpcOperate.Operate.Debug)
-                .setBody(message.toByteString())
-                .build();
-        RpcSocketMessage.SocketMessage socketMessage = RpcSocketMessage.SocketMessage
-                .newBuilder()
-                .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
-                .setBody(request.toByteString())
-                .build();
+                .setOperate(Operate.Debug)
+                .setBody(DebugMessage
+                        .newBuilder()
+                        .setDebugId(id)
+                        .build().toByteString())
+                .build(), holder, id, TriggerTypeEnum.DEBUG);
+
+    }
+
+    /**
+     * 向work发送执行任务的命令 并等待work返回结果
+     *
+     * @param context  MasterContext
+     * @param request  Request
+     * @param holder   MasterWorkHolder
+     * @param actionId String
+     * @param typeEnum TriggerTypeEnum
+     * @return Future
+     */
+
+    private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, String actionId, TriggerTypeEnum typeEnum) {
         Future<Response> future = context.getThreadPool().submit(() -> {
             final CountDownLatch latch = new CountDownLatch(1);
             MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
@@ -145,16 +123,35 @@ public class MasterExecuteJob {
             try {
                 latch.await(3, TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
-                    SocketLog.error("debug任务信号丢失，3小时未收到work返回：{}", id);
+                    SocketLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
                 }
             } finally {
-                holder.getDebugRunning().remove(id);
+                switch (typeEnum) {
+                    case MANUAL:
+                        holder.getManningRunning().remove(actionId);
+                        break;
+                    case SCHEDULE:
+                        holder.getRunning().remove(actionId);
+                        break;
+                    case MANUAL_RECOVER:
+                        holder.getRunning().remove(actionId);
+                        break;
+                    case DEBUG:
+                        holder.getDebugRunning().remove(actionId);
+                        break;
+                    default:
+                        HeraLog.error("未识别的任务执行类型{}", typeEnum);
+                }
             }
             return responseListener.getResponse();
         });
-
-        holder.getChannel().writeAndFlush(socketMessage);
-        SocketLog.info("master send debug command to worker,rid = " + request.getRid() + ",debugId = " + id);
+        holder.getChannel().writeAndFlush(SocketMessage
+                .newBuilder()
+                .setKind(SocketMessage.Kind.REQUEST)
+                .setBody(request.toByteString())
+                .build());
+        SocketLog.info("master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId);
         return future;
+
     }
 }

@@ -31,7 +31,7 @@ public class QuartzSchedulerService {
     public Properties setQuartzProperties() throws IOException {
         HeraLog.info("start init quartz properties");
         Properties prop = new Properties();
-        prop.put("org.quartz.scheduler.instanceName", "DefaultQuartzScheduler");
+        prop.put("org.quartz.scheduler.instanceName", "heraQuartzScheduler");
         prop.put("org.quartz.scheduler.rmi.export", "false");
         prop.put("org.quartz.scheduler.rmi.proxy", "false");
         prop.put("org.quartz.scheduler.wrapJobExecutionInUserTransaction", "false");
@@ -78,7 +78,7 @@ public class QuartzSchedulerService {
         try {
             JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-            if(jobDetail != null) {
+            if (jobDetail != null) {
                 scheduler.deleteJob(jobKey);
             }
             HeraLog.warn("remove action {} from quartz", actionId);

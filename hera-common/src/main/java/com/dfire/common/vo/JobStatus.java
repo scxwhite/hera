@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -27,6 +28,10 @@ public class JobStatus {
     private StatusEnum status;
 
     private String historyId;
+
+    private Date startTime;
+
+    private Date endTime;
 
     /**
      * 依赖的Job的状态：key 依赖的版本号ID，value 依赖的Job的完成时间

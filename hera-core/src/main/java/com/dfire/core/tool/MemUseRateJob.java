@@ -3,7 +3,6 @@ package com.dfire.core.tool;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.logs.SocketLog;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -46,8 +45,8 @@ public class MemUseRateJob {
      */
     public void readMemUsed() {
         if (!HeraGlobalEnvironment.isLinuxSystem()) {
-            rate = 0.6f;
-            memTotal = 4096f;
+            rate = 0.1f;
+            memTotal = 10240f;
             return;
         }
         File file = new File(MEM_INFO_PATH);

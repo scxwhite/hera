@@ -39,4 +39,8 @@ public class ScheduleLog {
         log.warn(format, arguments);
     }
 
+    public static void error(String format,Throwable throwable){
+        log.error(format,throwable);
+    }
+
 }

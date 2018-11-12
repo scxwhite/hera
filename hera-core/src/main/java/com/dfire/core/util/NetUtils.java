@@ -2,6 +2,7 @@ package com.dfire.core.util;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 /**
@@ -11,6 +12,8 @@ import java.util.Enumeration;
  */
 public class NetUtils {
 
+    private static final String LOCAL_HOST = "127.0.0.1";
+
     /**
      * 获得局域网IP
      * @return
@@ -18,6 +21,10 @@ public class NetUtils {
     public static String getLocalAddress() {
         String secondAddress = null;
         try {
+            secondAddress = InetAddress.getLocalHost().getHostAddress();
+            if(!LOCAL_HOST.equals(secondAddress)){
+                return secondAddress;
+            }
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
                 NetworkInterface anInterface = en.nextElement();
                 for (Enumeration<InetAddress> addresses = anInterface.getInetAddresses(); addresses.hasMoreElements(); ) {
@@ -35,10 +42,10 @@ public class NetUtils {
             if (secondAddress != null) {
                 return secondAddress;
             }
-            return InetAddress.getLocalHost().getHostAddress();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        throw new NullPointerException("----------------- Not FOUND REAL IP -------------------");
     }
+
 }
