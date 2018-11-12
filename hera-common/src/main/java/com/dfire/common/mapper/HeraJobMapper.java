@@ -34,6 +34,11 @@ public interface HeraJobMapper {
     @Lang(HeraSelectLangDriver.class)
     List<HeraJob> getAll();
 
+
+    @Select("select id,group_id,name,owner from hera_job")
+    @Lang(HeraSelectLangDriver.class)
+    List<HeraJob> selectAll();
+
     @Select("select * from hera_job where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
     HeraJob findById(HeraJob heraJob);

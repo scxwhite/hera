@@ -627,12 +627,12 @@ public class Master {
             jobStatus.setReadyDependency(new HashMap<>(0));
             jobStatus.setStatus(StatusEnum.SUCCESS);
             HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, triggerType, heraJobHistory.getId());
-            heraJobHistory.setStatus(StatusEnum.SUCCESS.toString());
+            heraJobHistory.setStatus(Constants.STATUS_SUCCESS);
             masterContext.getDispatcher().forwardEvent(successEvent);
         }
         HeraAction heraAction = heraActionMap.get(Long.parseLong(actionId));
         if (heraAction != null) {
-            heraAction.setStatus(success ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString());
+            heraAction.setStatus(success ? Constants.STATUS_SUCCESS : Constants.STATUS_FAILED);
         }
         jobStatus.setEndTime(new Date());
         masterContext.getHeraJobActionService().updateStatus(jobStatus);

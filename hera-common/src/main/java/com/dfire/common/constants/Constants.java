@@ -25,6 +25,9 @@ public class Constants {
 
     public final static String STATUS_WAIT = "wait";
 
+    public final static String LEFT_BRACKET = "(";
+
+    public final static String RIGHT_BRACKET = ")";
 
 
 }

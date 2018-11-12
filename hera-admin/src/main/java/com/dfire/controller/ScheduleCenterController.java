@@ -84,8 +84,8 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
-    public List<HeraJobTreeNodeVo> initJobTree() {
-        return heraJobService.buildJobTree();
+    public Map<String,List<HeraJobTreeNodeVo>> initJobTree() {
+        return heraJobService.buildJobTree(getOwner());
     }
 
     @RequestMapping(value = "/getJobMessage", method = RequestMethod.GET)

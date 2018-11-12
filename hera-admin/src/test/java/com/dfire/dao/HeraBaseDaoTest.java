@@ -246,11 +246,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraJobDaoTest() {
-        List<HeraJobTreeNodeVo> list = heraJobService.buildJobTree();
-        System.out.println(list.size());
-        String s = "91";
-        String[] a = s.split(",");
-        System.out.println(a.length);
+
     }
 
     @Test

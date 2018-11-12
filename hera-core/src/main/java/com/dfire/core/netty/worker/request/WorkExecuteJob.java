@@ -1,5 +1,6 @@
 package com.dfire.core.netty.worker.request;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.model.HeraJobBean;
@@ -87,7 +88,7 @@ public class WorkExecuteJob {
                 exception = e;
                 history.getLog().appendHeraException(e);
             } finally {
-                String res = exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString();
+                String res = exitCode == 0 ? Constants.STATUS_SUCCESS :  Constants.STATUS_FAILED;
                 //更新状态和日志
                 workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
                         HeraJobHistory.builder()
