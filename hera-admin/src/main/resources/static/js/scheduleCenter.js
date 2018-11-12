@@ -473,8 +473,8 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                "&script=" + encodeURIComponent(codeMirror.getValue()) +
-                "&id=" + focusId,
+                    "&script=" + encodeURIComponent(codeMirror.getValue()) +
+                    "&id=" + focusId,
                 type: "post",
                 success: function (data) {
                     leftClick();
@@ -487,7 +487,7 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
                 data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                "&resource=" + "&groupId=" + focusId,
+                    "&resource=" + "&groupId=" + focusId,
                 type: "post",
                 success: function (data) {
                     leftClick();
