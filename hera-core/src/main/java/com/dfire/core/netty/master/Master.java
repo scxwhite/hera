@@ -27,10 +27,7 @@ import com.dfire.core.route.factory.StrategyWorkerEnum;
 import com.dfire.core.route.factory.StrategyWorkerFactory;
 import com.dfire.core.route.strategy.IStrategyWorker;
 import com.dfire.core.util.CronParse;
-import com.dfire.logs.DebugLog;
-import com.dfire.logs.HeraLog;
-import com.dfire.logs.ScheduleLog;
-import com.dfire.logs.SocketLog;
+import com.dfire.logs.*;
 import com.dfire.protocol.JobExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.RpcResponse;
@@ -700,10 +697,18 @@ public class Master {
      */
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
 
-        int hostGroupId = jobElement == null ? HeraGlobalEnvironment.defaultWorkerGroup : jobElement.getHostGroupId();
+
+        Integer hostGroupId = jobElement.getHostGroupId();
+        if(hostGroupId == null){
+            MasterLog.error("groupId is Null-> {}",jobElement);
+            return null;
+        }
+
         IStrategyWorker chooseWorkerStrategy = StrategyWorkerFactory.getStrategyWorker(StrategyWorkerEnum.FIRST);
         return chooseWorkerStrategy.chooseWorker(hostGroupId, masterContext);
     }
+
+
 
     public void debug(HeraDebugHistoryVo debugHistory) {
         JobElement element = JobElement.builder()
