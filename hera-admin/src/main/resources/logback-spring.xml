@@ -118,7 +118,7 @@
         <file>${logPath}/heart.log</file>
         <Append>true</Append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/bak/worker.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>${logPath}/bak/heart.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
             <!-- keep 10 days worth of history -->
             <maxHistory>3</maxHistory>
         </rollingPolicy>
