@@ -42,6 +42,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 .filter(key -> jobContext.getProperties().getProperty(key) != null && ((key.startsWith("instance.") || key.startsWith("secret."))))
                 .forEach(k -> envMap.put(k, jobContext.getProperties().getProperty(k)));
         envMap.put("instance.workDir", jobContext.getWorkDir());
+        envMap.put("LC_CTYPE","zh_CN.UTF-8");
 
         List<String> commands = getCommandList();
 
