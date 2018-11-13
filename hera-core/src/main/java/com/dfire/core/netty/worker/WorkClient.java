@@ -127,7 +127,7 @@ public class WorkClient {
                                 SocketLog.error("send heart beat failed ,failCount :" + failCount);
                             } else {
                                 failCount = 0;
-                                SocketLog.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
+                                HeraLog.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
                             }
                             if (failCount > 10) {
                                 future.cancel(true);
