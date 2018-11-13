@@ -1,11 +1,10 @@
 package com.dfire.core.netty.master.response;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dfire.common.util.DateUtil;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
-import com.dfire.logs.SocketLog;
+import com.dfire.logs.HeartLog;
 import com.dfire.protocol.RpcHeartBeatMessage;
 import com.dfire.protocol.RpcRequest;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -34,7 +33,7 @@ public class MasterHandleHeartBeat {
             heartBeatInfo.setTimestamp(heartBeatMessage.getTimestamp());
             heartBeatInfo.setCores(heartBeatMessage.getCores());
             worker.setHeartBeatInfo(heartBeatInfo);
-            SocketLog.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
+            HeartLog.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
