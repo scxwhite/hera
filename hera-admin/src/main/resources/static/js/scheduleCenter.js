@@ -532,7 +532,6 @@ $(function () {
                         treeObj.selectNode(parent);
                         leftClick();
                     }
-
                 }
             });
             layer.close(index)

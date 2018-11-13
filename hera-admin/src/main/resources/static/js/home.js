@@ -31,6 +31,26 @@ $(function () {
         series: []
     };
 
+    var ramOption = {
+        tooltip : {
+            formatter: "{a} <br/>{b} : {c}%"
+        },
+        toolbox: {
+            feature: {
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        series: [
+            {
+                name: '业务指标',
+                type: 'gauge',
+                detail: {formatter:'{value}%'},
+                data: [{value: 50, name: '内存使用率'}]
+            }
+        ]
+    };
+
 
     //job top ten
     jQuery.ajax({
@@ -67,7 +87,13 @@ $(function () {
             initLineJobStatus(data.data);
         }
     })
-
+    //内存仪表板
+    function initRamGauge() {
+        ramOption.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
+        var myChart=echarts.init(document.getElementById('ramGauge'));
+        myChart.setOption(ramOption, true);
+    }
+    initRamGauge()
     function initLineJobStatus(data) {
         initOption();
         option.title.subtext = data['xAxis'][0] + "~" + data['xAxis'][data['xAxis'].length - 1];
