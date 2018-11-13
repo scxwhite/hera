@@ -25,7 +25,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
     public ProcessJob(JobContext jobContext) {
         super(jobContext);
-        envMap = new HashMap<>(System.getenv());
+        envMap = new HashMap<>();
     }
 
     /**

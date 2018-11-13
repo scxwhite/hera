@@ -5,6 +5,8 @@ import lombok.Data;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xiaosuda
@@ -28,7 +30,22 @@ public class RunShell {
     public Integer run() {
         builder = new ProcessBuilder(commands);
         builder.directory(new File(directory));
+        Map<String, String> map = System.getenv();
+
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            System.out.println(entry.getKey() +" : " + entry.getValue());
+        }
+        System.out.println("---------------------");
+        for (Map.Entry<String, String> entry : builder.environment().entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue());
+        }
+        System.out.println("---------------------");
+
+        builder.environment().put("file.encoding","UTF-8");
+        builder.environment().put("fs.encoding","UTF-8");
+        builder.environment().put("lang","UTF-8");
         builder.environment().clear();
+        builder.environment().putAll(map);
         try {
             process = builder.start();
             exitCode = process.waitFor();
