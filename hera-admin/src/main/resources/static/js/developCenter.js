@@ -621,8 +621,8 @@ $(function () {
             $.get(url, parameter, function (data) {
                 layer.msg(data);
             });
-
         })
+        showPrevNext(logTabContainer);
     })
 
     /**
@@ -792,10 +792,19 @@ $(function () {
     //计算tabs长度是否超过container
     function showPrevNext(tabContainer){
         tabContainer.tabContainerWidth =  tabContainer.width();
+        console.log(tabContainer.tabContainerWidth);
         if(tabContainer.tabsLength > tabContainer.tabContainerWidth){
+            tabContainer.siblings('.prev-next-con').children('.prev-tab').removeClass('hide');
+            tabContainer.siblings('.prev-next-con').children('.next-tab').removeClass('hide');
             tabContainer.siblings('.prev-next-con').children('.prev-tab').addClass('show');
             tabContainer.siblings('.prev-next-con').children('.next-tab').addClass('show');
             tabContainer.children('ul').css({"padding-left": "30px"});
+        }else if(tabContainer.tabsLength < tabContainer.tabContainerWidth){
+            tabContainer.siblings('.prev-next-con').children('.prev-tab').removeClass('show');
+            tabContainer.siblings('.prev-next-con').children('.next-tab').removeClass('show');
+            tabContainer.siblings('.prev-next-con').children('.prev-tab').addClass('hide');
+            tabContainer.siblings('.prev-next-con').children('.next-tab').addClass('hide');
+            tabContainer.children('ul').css({"padding-left": "0"});
         }
     }
 
