@@ -78,6 +78,7 @@ public class WorkerHandleWebRequest {
                 .setKind(SocketMessage.Kind.WEB_REQUEST)
                 .setBody(request.toByteString())
                 .build());
+        SocketLog.info("send web request to master rid ={}", request.getRid());
         return future;
 
     }

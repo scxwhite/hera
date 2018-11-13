@@ -110,7 +110,9 @@ public class ScheduleCenterController extends BaseHeraController {
 
         HeraHostGroup hostGroup = heraHostGroupService.findById(job.getHostGroupId());
         focusUsers.append("]");
-        heraJobVo.setHostGroupName(hostGroup.getName());
+        if (hostGroup != null) {
+            heraJobVo.setHostGroupName(hostGroup.getName());
+        }
         heraJobVo.setUIdS(getuIds(jobId));
         heraJobVo.setFocusUser(focusUsers.toString());
         return heraJobVo;

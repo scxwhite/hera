@@ -39,7 +39,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
     public int run() throws Exception {
         int exitCode = -999;
         jobContext.getProperties().getAllProperties().keySet().stream()
-                .filter(key -> jobContext.getProperties().getProperty(key) != null && (key.startsWith("instance.") || key.startsWith("secret.")))
+                .filter(key -> jobContext.getProperties().getProperty(key) != null && ((key.startsWith("instance.") || key.startsWith("secret."))))
                 .forEach(k -> envMap.put(k, jobContext.getProperties().getProperty(k)));
         envMap.put("instance.workDir", jobContext.getWorkDir());
 
@@ -50,6 +50,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             String[] splitCommand = partitionCommandLine(command);
             ProcessBuilder builder = new ProcessBuilder(splitCommand);
             builder.directory(new File(jobContext.getWorkDir()));
+            builder.environment().clear();
             builder.environment().putAll(envMap);
             try {
                 process = builder.start();
@@ -157,6 +158,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 String st = "sudo sh -c \"cd; pstree " + pid + " -p | grep -o '([0-9]*)' | awk -F'[()]' '{print \\$2}' | xargs kill -9\"";
                 String[] commands = {"sudo", "sh", "-c", st};
                 ProcessBuilder processBuilder = new ProcessBuilder(commands);
+                processBuilder.environment().clear();
                 try {
                     process = processBuilder.start();
                     log("kill process tree success");
