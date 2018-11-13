@@ -700,15 +700,7 @@ public class Master {
      * @return
      */
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
-
-
         Integer hostGroupId = jobElement.getHostGroupId();
-        if(hostGroupId == null){
-            MasterLog.error("groupId is Null-> {}",jobElement);
-            return null;
-        }
-
-        IStrategyWorker chooseWorkerStrategy = StrategyWorkerFactory.getStrategyWorker(StrategyWorkerEnum.FIRST);
         return chooseWorkerStrategy.chooseWorker(hostGroupId, masterContext);
     }
 
