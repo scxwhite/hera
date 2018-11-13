@@ -62,12 +62,16 @@ public class Master {
     private Map<Long, HeraAction> heraActionMap = new HashMap<>();
     private ThreadPoolExecutor executeJobPool;
 
+    private IStrategyWorker chooseWorkerStrategy;
+
+
     public Map<Long, HeraAction> getHeraActionMap() {
         return heraActionMap;
     }
 
     public void init(MasterContext masterContext) {
         this.masterContext = masterContext;
+        chooseWorkerStrategy = StrategyWorkerFactory.getStrategyWorker(StrategyWorkerEnum.FIRST);
         executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("master-execute-job-thread"), new ThreadPoolExecutor.AbortPolicy());
         executeJobPool.allowCoreThreadTimeOut(true);
@@ -253,7 +257,7 @@ public class Master {
                 if (StringUtils.isNotBlank(cron)) {
                     boolean isCronExp = CronParse.Parser(cron, cronDate, list);
                     if (!isCronExp) {
-                        ScheduleLog.error("cron parse error,cron = " + cron);
+                        ScheduleLog.error("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
                         continue;
                     }
                     list.forEach(str -> {
@@ -701,7 +705,6 @@ public class Master {
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
 
         int hostGroupId = jobElement == null ? HeraGlobalEnvironment.defaultWorkerGroup : jobElement.getHostGroupId();
-        IStrategyWorker chooseWorkerStrategy = StrategyWorkerFactory.getStrategyWorker(StrategyWorkerEnum.FIRST);
         return chooseWorkerStrategy.chooseWorker(hostGroupId, masterContext);
     }
 
@@ -744,6 +747,7 @@ public class Master {
             return;
         }
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
+            //TODO  后面要修改为actionID
             element.setJobId(heraJobHistory.getId());
             masterContext.getManualQueue().offer(element);
         } else {

@@ -122,7 +122,7 @@ public class HeraJobServiceImpl implements HeraJobService {
                 .collect(Collectors.toList());
 
         Set<HeraJobTreeNodeVo> groupNods = new HashSet<>();
-
+        //TODO  bug 组属于owner 没做
         myNodeVos.forEach(node -> {
             HeraJobTreeNodeVo groupVo = groupMap.get(node.getParent());
             while(groupVo != null && !groupNods.contains(groupVo)) {

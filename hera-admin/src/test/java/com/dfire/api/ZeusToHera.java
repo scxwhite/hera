@@ -33,11 +33,11 @@ public class ZeusToHera {
     private String driver = "com.mysql.jdbc.Driver";
     private Connection heraConnection = null;
     private Connection zeusConnection = null;
-    private final String env = "daily";
+    private final String env = "daily1";
     private final boolean isAll = true;
 
     private String tableName = "hera_group";
-    private Class<?> clazz = HeraFile.class;
+    private Class<?> clazz = HeraGroup.class;
 
     private List<Integer> jobs = Arrays.asList(6625, 6628, 971);
 

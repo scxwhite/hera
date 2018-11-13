@@ -46,14 +46,13 @@ public class MasterHandlerWebResponse {
 
             HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
             HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-            String jobId = history.getJobId();
             context.getMaster().run(history);
             WebResponse webResponse = WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            SocketLog.info("send web execute response, actionId = {} ", jobId);
+            SocketLog.info("send web execute response, actionId = {} ",  history.getJobId());
             return webResponse;
         } else if (request.getEk() == ExecuteKind.DebugKind) {
             String debugId = request.getId();
