@@ -18,6 +18,7 @@ import com.dfire.core.HeraException;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.Events;
+import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
 import com.dfire.core.message.HeartBeatInfo;
@@ -27,12 +28,16 @@ import com.dfire.core.route.factory.StrategyWorkerEnum;
 import com.dfire.core.route.factory.StrategyWorkerFactory;
 import com.dfire.core.route.strategy.IStrategyWorker;
 import com.dfire.core.util.CronParse;
-import com.dfire.logs.*;
+import com.dfire.logs.DebugLog;
+import com.dfire.logs.HeraLog;
+import com.dfire.logs.ScheduleLog;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.JobExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.RpcResponse;
 import io.netty.channel.Channel;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -87,14 +92,14 @@ public class Master {
         masterContext.getDispatcher().forwardEvent(Events.Initialize);
         masterContext.refreshHostGroupCache();
         HeraLog.info("refresh hostGroup cache");
-
-
         // 1.生成版本
         batchActionCheck();
         // 2.扫描任务
         waitingQueueCheck();
         // 3.心跳检查
         heartCheck();
+        // 4.漏跑检测
+        lostJobCheck();
 
     }
 
@@ -105,12 +110,82 @@ public class Master {
         masterContext.masterSchedule.scheduleWithFixedDelay(() -> {
             try {
                 generateBatchAction();
+                if (DateTime.now().getHourOfDay() == 8) {
+                    clearInvalidAction();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }, 1, 60, TimeUnit.MINUTES);
     }
 
+
+    /**
+     * 漏泡检测，清理schedule线程，1小时调度一次,超过15分钟，job开始检测漏泡
+     */
+    private void lostJobCheck() {
+        masterContext.masterSchedule.scheduleWithFixedDelay(() -> {
+            ScheduleLog.info("refresh host group success, start roll back");
+            masterContext.refreshHostGroupCache();
+            String currDate = DateUtil.getNowStringForAction();
+            Dispatcher dispatcher = masterContext.getDispatcher();
+            if (dispatcher != null) {
+                Map<Long, HeraAction> actionMapNew = heraActionMap;
+                Long tmp = Long.parseLong(currDate) - 15000000;
+                if (actionMapNew != null && actionMapNew.size() > 0) {
+                    List<Long> actionIdList = new ArrayList<>();
+                    for (Long actionId : actionMapNew.keySet()) {
+                        if (actionId < tmp) {
+                            rollBackLostJob(actionId, actionMapNew, actionIdList);
+                        }
+                    }
+                    ScheduleLog.info("roll back action count:" + actionIdList.size());
+                }
+                ScheduleLog.info("clear job scheduler ok");
+            }
+        }, 30, 30, TimeUnit.MINUTES);
+
+    }
+
+    private void rollBackLostJob(Long actionId, Map<Long, HeraAction> actionMapNew, List<Long> actionIdList) {
+        HeraAction lostJob = actionMapNew.get(actionId);
+        if (lostJob != null) {
+            String dependencies = lostJob.getDependencies();
+            if (StringUtils.isNotBlank(dependencies)) {
+                List<String> jobDependList = Arrays.asList(dependencies.split(","));
+                boolean isAllComplete = true;
+                HeraAction heraAction;
+                String status;
+                if (jobDependList.size() > 0) {
+                    for (String jobDepend : jobDependList) {
+                        Long jobDep = Long.parseLong(jobDepend);
+                        if (actionMapNew.get(jobDep) != null) {
+                            heraAction = actionMapNew.get(jobDep);
+                            if (heraAction != null) {
+                                status = heraAction.getStatus();
+                                if (Constants.STATUS_WAIT.equals(status) || Constants.STATUS_FAILED.equals(status)) {
+                                    isAllComplete = false;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (isAllComplete) {
+                    addRollBackJob(actionIdList, actionId);
+                }
+            } else { //独立任务情况
+                addRollBackJob(actionIdList, actionId);
+            }
+        }
+    }
+
+    private void addRollBackJob(List<Long> actionIdList, Long actionId) {
+        if (!actionIdList.contains(actionId)) {
+            masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId.toString()));
+            actionIdList.add(actionId);
+            ScheduleLog.info("roll back lost actionId :" + actionId);
+        }
+    }
 
     /**
      * 扫描任务等待队列，可获得worker的任务将执行
@@ -280,6 +355,43 @@ public class Master {
                 }
             }
         }
+    }
+
+
+    private void clearInvalidAction() {
+        ScheduleLog.warn("开始进行版本清理");
+        Dispatcher dispatcher = masterContext.getDispatcher();
+        Long currDate = Long.parseLong(DateUtil.getNowStringForAction());
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, +1);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd0000000000");
+        Long nextDay = Long.parseLong(simpleDateFormat.format(calendar.getTime()));
+        Long tmp = currDate - 15000000;
+        Map<Long, HeraAction> actionMapNew = heraActionMap;
+        //移除未生成的调度
+        List<AbstractHandler> handlers = dispatcher.getJobHandlers();
+        List<JobHandler> shouldRemove = new ArrayList<>();
+        if (handlers != null && handlers.size() > 0) {
+            handlers.forEach(handler -> {
+                JobHandler jobHandler = (JobHandler) handler;
+                String actionId = jobHandler.getActionId();
+                Long aid = Long.parseLong(actionId);
+                if (Long.parseLong(actionId) < tmp) {
+                    masterContext.getQuartzSchedulerService().deleteJob(actionId);
+                } else if (aid >= currDate && aid < nextDay) {
+                    if (!actionMapNew.containsKey(aid)) {
+                        masterContext.getQuartzSchedulerService().deleteJob(actionId);
+                        masterContext.getHeraJobActionService().delete(actionId);
+                    }
+                }
+                if (!DateUtil.isToday(actionId)) {
+                    shouldRemove.add(jobHandler);
+                }
+            });
+        }
+        //移除 过期 失效的handler
+        shouldRemove.forEach(dispatcher::removeJobHandler);
+        ScheduleLog.warn("版本清理完成");
     }
 
     /**
@@ -760,7 +872,7 @@ public class Master {
     private boolean checkJobExists(HeraJobHistoryVo heraJobHistory) {
         String actionId = heraJobHistory.getActionId();
         String historyId = heraJobHistory.getId();
-        if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER) {
+        if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER || heraJobHistory.getTriggerType() == TriggerTypeEnum.SCHEDULE) {
             /**
              *  check调度器等待队列是否有此任务在排队
              */
