@@ -64,10 +64,6 @@ public class Master {
     private IStrategyWorker chooseWorkerStrategy;
 
 
-    public Map<Long, HeraAction> getHeraActionMap() {
-        return heraActionMap;
-    }
-
     public void init(MasterContext masterContext) {
         this.masterContext = masterContext;
         chooseWorkerStrategy = StrategyWorkerFactory.getStrategyWorker(StrategyWorkerEnum.FIRST);
@@ -84,8 +80,11 @@ public class Master {
         masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
         List<HeraAction> allJobList = masterContext.getHeraJobActionService().getTodayAction();
         heraActionMap = new HashMap<>(allJobList.size());
-        allJobList.forEach(heraAction -> masterContext.getDispatcher().
-                addJobHandler(new JobHandler(String.valueOf(heraAction.getId()), this, masterContext)));
+        allJobList.forEach(heraAction -> {
+            masterContext.getDispatcher().
+                    addJobHandler(new JobHandler(heraAction.getId(), this, masterContext));
+            heraActionMap.put(Long.valueOf(heraAction.getId()), heraAction);
+        });
         masterContext.getDispatcher().forwardEvent(Events.Initialize);
         masterContext.refreshHostGroupCache();
         HeraLog.info("refresh hostGroup cache");
