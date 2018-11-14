@@ -31,7 +31,6 @@ public class RunShell {
     public Integer run() {
         builder = new ProcessBuilder(commands);
         builder.directory(new File(directory));
-        builder.environment().putAll(System.getenv());
         builder.environment().putAll(HeraGlobalEnvironment.userEnvMap);
 
         try {
