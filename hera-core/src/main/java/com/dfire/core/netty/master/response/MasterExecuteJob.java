@@ -1,6 +1,7 @@
 package com.dfire.core.netty.master.response;
 
 import com.dfire.common.enums.TriggerTypeEnum;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
@@ -15,6 +16,7 @@ import com.dfire.protocol.RpcOperate.Operate;
 import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
+import io.netty.channel.ChannelFuture;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -146,12 +148,29 @@ public class MasterExecuteJob {
             }
             return responseListener.getResponse();
         });
-        holder.getChannel().writeAndFlush(SocketMessage
+
+        ChannelFuture channelFuture = holder.getChannel().writeAndFlush(SocketMessage
                 .newBuilder()
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build());
-        TaskLog.info("5.MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().remoteAddress());
+
+        boolean success = false;
+        try {
+            success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Throwable cause = channelFuture.cause();
+        if (cause != null) {
+            TaskLog.error("send execute job exception {}", cause);
+            return null;
+        } else if (success) {
+            TaskLog.info("5.MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().remoteAddress());
+        } else {
+            TaskLog.error("5.MasterExecuteJob:master send debug command to worker timeout,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().remoteAddress());
+            return null;
+        }
         return future;
 
     }

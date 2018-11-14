@@ -1,6 +1,7 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.MasterHandleHeartBeat;
 import com.dfire.core.netty.master.response.MasterHandlerWebResponse;
@@ -12,10 +13,7 @@ import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import com.dfire.protocol.RpcWebRequest.WebRequest;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.*;
 
 import java.net.SocketAddress;
 import java.util.List;
@@ -51,16 +49,33 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
                 1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("master-deal", false), new ThreadPoolExecutor.AbortPolicy());
         executor.execute(() -> {
+                    Future<ChannelResponse> future;
+                    ChannelResponse response;
+                    ChannelFuture channelFuture;
+                    boolean success;
+                    Throwable cause;
                     while (true) {
                         try {
-                            Future<ChannelResponse> future = completionService.take();
-                            ChannelResponse response = future.get();
+                            future = completionService.take();
+                            response = future.get();
                             TaskLog.info("3-1.MasterHandler-->master prepare send status : {}", response.webResponse.getStatus());
-                            response.channel.writeAndFlush(wrapper(response.webResponse));
-                            TaskLog.info("3-2.MasterHandler:2-->master send response success, requestId={}", response.webResponse.getRid());
+                            channelFuture = response.channel.writeAndFlush(wrapper(response.webResponse));
+                            success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
+                            cause = channelFuture.cause();
+                            if (cause != null) {
+                                throw cause;
+                            }
+                            if (success) {
+                                TaskLog.info("3-2.MasterHandler:2-->master send response success, requestId={}", response.webResponse.getRid());
+                            } else {
+                                TaskLog.error("3-2.MasterHandler:2-->master send response success timeout, requestId={}", response.webResponse.getRid());
+                            }
                         } catch (Exception e) {
-                            SocketLog.error("master handler future take error");
+                            SocketLog.error("master handler future take error:{}", e);
                             throw new RuntimeException(e);
+                        } catch (Throwable throwable) {
+                            SocketLog.error("master handler future take throwable{}", throwable);
+                            throwable.printStackTrace();
                         }
                     }
                 }

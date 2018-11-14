@@ -1,11 +1,14 @@
 package com.dfire.core.netty.master.response;
 
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.*;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -36,13 +39,29 @@ public class MasterHandleCancelJob {
             final CountDownLatch latch = new CountDownLatch(1);
             MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
             context.getHandler().addListener(responseListener);
-            latch.await(3, TimeUnit.HOURS);
+            latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
                 SocketLog.error("取消任务信号消失，三小时未收到work返回：{}", jobId);
             }
             return responseListener.getResponse();
         });
-        channel.writeAndFlush(socketMessage);
+        ChannelFuture channelFuture = channel.writeAndFlush(socketMessage);
+        boolean success = false;
+        try {
+            success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Throwable cause = channelFuture.cause();
+        if (cause != null) {
+            SocketLog.error("send cancel job exception {}", cause);
+            return null;
+        } else if (success) {
+            SocketLog.info("send cancel job success {}", request.getRid());
+        } else {
+            SocketLog.info("send cancel job timeout {}", request.getRid());
+            return null;
+        }
         return future;
     }
 }

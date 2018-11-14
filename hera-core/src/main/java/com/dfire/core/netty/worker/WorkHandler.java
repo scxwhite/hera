@@ -1,6 +1,7 @@
 package com.dfire.core.netty.worker;
 
 import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
@@ -11,6 +12,7 @@ import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -39,20 +41,36 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
         Executor executor = Executors.newSingleThreadExecutor();
 
         executor.execute(() -> {
+            boolean success;
+            Response response;
+            Future<Response> future;
+            ChannelFuture channelFuture;
+            Throwable cause;
             while (true) {
                 try {
-                    Future<Response> future = completionService.take();
-                    Response response = future.get();
-                    workContext.getServerChannel().writeAndFlush(wrapper(response));
+                    future = completionService.take();
+                    response = future.get();
+                    channelFuture = workContext.getServerChannel().writeAndFlush(wrapper(response));
+                    success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
+                    cause = channelFuture.cause();
+                    if (cause != null) {
+                        throw cause;
+                    }
                     TaskLog.info("1.WorkHandler: worker send response,rid={}", response.getRid());
+                    if (!success) {
+                        TaskLog.error("1.WorkHandler: worker send response timeout,rid={}", response.getRid());
+
+                    }
                 } catch (Exception e) {
                     SocketLog.error("worker handler take future exception,{}", e);
                     throw new RuntimeException(e);
+                } catch (Throwable throwable) {
+                    SocketLog.error("worker handler take future exception,{}", throwable);
+                    throwable.printStackTrace();
                 }
             }
         });
     }
-
 
 
     private List<ResponseListener> listeners = new CopyOnWriteArrayList<>();
@@ -109,20 +127,20 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx)  {
+    public void channelActive(ChannelHandlerContext ctx) {
         SocketLog.info("客户端与服务端连接开启");
         ctx.fireChannelActive();
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx)  {
+    public void channelInactive(ChannelHandlerContext ctx) {
         SocketLog.warn("客户端与服务端连接关闭");
         workContext.setServerChannel(null);
         ctx.fireChannelInactive();
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx)  {
+    public void channelReadComplete(ChannelHandlerContext ctx) {
     }
 
     @Override

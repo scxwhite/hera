@@ -25,6 +25,9 @@ public class HeraGlobalEnvironment {
     private static long requestTimeout = 60 * 1000L;
 
     @Getter
+    private static long channelTimeout =  1000L;
+
+    @Getter
     private static String env;
 
     @Getter
@@ -151,6 +154,10 @@ public class HeraGlobalEnvironment {
     @Value("${hera.requestTimeout}")
     public void setTimeout(Long requestTimeout) {
         HeraGlobalEnvironment.requestTimeout = requestTimeout;
+    }
+    @Value("${hera.channelTimeout}")
+    public void setChannelTimeout(Long channelTimeout) {
+        HeraGlobalEnvironment.channelTimeout = channelTimeout;
     }
 
     @Value("${spark.address}")
