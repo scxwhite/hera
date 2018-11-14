@@ -216,15 +216,20 @@
     </dependencyManagement>
 
     <profiles>
-
+        <profile>
+            <id>dev</id>
+            <properties>
+                <env>dev</env>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
         <profile>
             <id>daily</id>
             <properties>
                 <env>daily</env>
             </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
         </profile>
         <profile>
             <id>publish</id>
