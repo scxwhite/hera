@@ -43,14 +43,14 @@ public class JobUtils {
                                      String workDir, ApplicationContext applicationContext) {
         jobContext.setDebugHistory(BeanConvertUtils.convert(heraDebugHistory));
         jobContext.setWorkDir(workDir);
-        //todo 脚本中的变量替换
+
         HierarchyProperties hierarchyProperties = new HierarchyProperties(new HashMap<>());
         String script = heraDebugHistory.getScript();
         List<Map<String, String>> resources = new ArrayList<>();
         script = resolveScriptResource(resources, script, applicationContext);
         jobContext.setResources(resources);
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
-        //todo 权限控制判断，暂时不做
+
         HeraFileService heraFileService = (HeraFileService) applicationContext.getBean("heraFileService");
         String owner = heraFileService.findById(heraDebugHistory.getFileId()).getOwner();
         HeraProfileService heraProfileService = (HeraProfileService) applicationContext.getBean("heraProfileService");

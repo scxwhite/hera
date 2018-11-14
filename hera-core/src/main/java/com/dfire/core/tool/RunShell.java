@@ -1,12 +1,13 @@
 package com.dfire.core.tool;
 
+import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.Data;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 /**
  * @author xiaosuda
@@ -30,22 +31,9 @@ public class RunShell {
     public Integer run() {
         builder = new ProcessBuilder(commands);
         builder.directory(new File(directory));
-        Map<String, String> map = System.getenv();
+        builder.environment().putAll(System.getenv());
+        builder.environment().putAll(HeraGlobalEnvironment.userEnvMap);
 
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            System.out.println(entry.getKey() +" : " + entry.getValue());
-        }
-        System.out.println("---------------------");
-        for (Map.Entry<String, String> entry : builder.environment().entrySet()) {
-            System.out.println(entry.getKey() + ":" + entry.getValue());
-        }
-        System.out.println("---------------------");
-
-        builder.environment().put("file.encoding","UTF-8");
-        builder.environment().put("fs.encoding","UTF-8");
-        builder.environment().put("lang","UTF-8");
-        builder.environment().clear();
-        builder.environment().putAll(map);
         try {
             process = builder.start();
             exitCode = process.waitFor();
@@ -79,8 +67,9 @@ public class RunShell {
     }
 
     public static void main(String[] args) throws IOException {
-        RunShell runShell = new RunShell(args[0]);
-        runShell.run();
-        System.out.println(runShell.getResult());
+        RunShell shell = new RunShell("sh x.sh");
+        shell.setDirectory("/Users/qqr/Downloads/");
+        shell.run();
+        System.out.println(shell.getResult());
     }
 }

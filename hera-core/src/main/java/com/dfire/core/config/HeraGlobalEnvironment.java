@@ -4,6 +4,9 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author xiaosuda
  * @date 2018/4/16
@@ -200,6 +203,11 @@ public class HeraGlobalEnvironment {
      */
     private static boolean linuxSystem = true;
 
+    /**
+     * 用户环境变量
+     */
+    public static Map<String,String> userEnvMap = new HashMap<>();
+
     static {
         String os = System.getProperties().getProperty("os.name");
         if (os != null) {
@@ -207,6 +215,8 @@ public class HeraGlobalEnvironment {
                 linuxSystem = false;
             }
         }
+        // 全局配置，支持中文不乱
+        userEnvMap.put("LANG","zh_CN.UTF-8");
     }
 
     public static boolean isLinuxSystem() {

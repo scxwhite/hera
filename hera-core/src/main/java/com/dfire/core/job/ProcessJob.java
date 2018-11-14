@@ -2,6 +2,7 @@ package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.util.HierarchyProperties;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.exception.HeraCaughtExceptionHandler;
 import com.dfire.logs.HeraLog;
 
@@ -25,7 +26,8 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
     public ProcessJob(JobContext jobContext) {
         super(jobContext);
-        envMap = new HashMap<>(System.getenv());
+        envMap = System.getenv();
+        envMap.putAll(HeraGlobalEnvironment.userEnvMap);
     }
 
     /**
@@ -39,10 +41,9 @@ public abstract class ProcessJob extends AbstractJob implements Job {
     public int run() throws Exception {
         int exitCode = -999;
         jobContext.getProperties().getAllProperties().keySet().stream()
-                .filter(key -> jobContext.getProperties().getProperty(key) != null && ((key.startsWith("instance.") || key.startsWith("secret."))))
+                .filter(key -> jobContext.getProperties().getProperty(key) != null && (key.startsWith("secret.")))
                 .forEach(k -> envMap.put(k, jobContext.getProperties().getProperty(k)));
-//        envMap.put("instance.workDir", jobContext.getWorkDir());
-//        envMap.put("LANG","zh_CN.UTF-8");
+
 
         List<String> commands = getCommandList();
 
@@ -51,7 +52,6 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             String[] splitCommand = partitionCommandLine(command);
             ProcessBuilder builder = new ProcessBuilder(splitCommand);
             builder.directory(new File(jobContext.getWorkDir()));
-            builder.environment().clear();
             builder.environment().putAll(envMap);
             try {
                 process = builder.start();
@@ -159,7 +159,6 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 String st = "sudo sh -c \"cd; pstree " + pid + " -p | grep -o '([0-9]*)' | awk -F'[()]' '{print \\$2}' | xargs kill -9\"";
                 String[] commands = {"sudo", "sh", "-c", st};
                 ProcessBuilder processBuilder = new ProcessBuilder(commands);
-                processBuilder.environment().clear();
                 try {
                     process = processBuilder.start();
                     log("kill process tree success");
