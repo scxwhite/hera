@@ -12,6 +12,7 @@ import com.dfire.core.job.Job;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.worker.request.WorkerHandleWebRequest;
 import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
+import com.dfire.logs.HeartLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
@@ -127,7 +128,7 @@ public class WorkClient {
                                 SocketLog.error("send heart beat failed ,failCount :" + failCount);
                             } else {
                                 failCount = 0;
-                                HeraLog.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
+                                HeartLog.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
                             }
                             if (failCount > 10) {
                                 future.cancel(true);
