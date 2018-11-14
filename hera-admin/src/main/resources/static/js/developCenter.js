@@ -150,6 +150,7 @@ $(function () {
                     }
                 }else{
                     tabObj = $('#tabContainer').data('tabs').addTab(tabDetail);
+                    setScript(id)
                 }
                 if(!treeNode.isParent){
                     tabData.push(tabDetail);
