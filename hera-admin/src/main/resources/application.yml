@@ -26,7 +26,7 @@ druid:
     username: twodfire  #数据库用户名
     password: 123456      #数据库密码
     driver-class-name: com.mysql.jdbc.Driver  #数据库驱动
-    url: jdbc:mysql://common101.my.2dfire-daily.com:3306/lineage_db?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+    url: jdbc:mysql://common101.my.2dfire-daily.com:3306/lineage?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     initial-size: 5    #初始化连接池数量
     min-idle: 1        #最小生存连接数
     max-active: 16     #最大连接池数量
@@ -87,9 +87,12 @@ mail:
 logging:
   config: classpath:logback-spring.xml
   path: /opt/logs/spring-boot
-  allLevel: info
   level:
-      com.dfire.common.mapper: error
+    root: INFO
+    org.springframework: ERROR
+    com.dfire.common.mapper: ERROR
+
+
 mybatis:
   configuration:
     mapUnderscoreToCamelCase: true
@@ -108,9 +111,16 @@ spark :
 ---
 spring:
   profiles: dev
+
+logging:
+  level:
+    com.dfire.logs.ScheduleLog: ERROR
+    com.dfire.logs.HeartLog: ERROR
+
 ---
 spring:
   profiles: daily
+
 ---
 spring:
   profiles: pre
