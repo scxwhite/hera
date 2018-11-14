@@ -52,12 +52,12 @@ public class MasterHandlerWebResponse {
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            SocketLog.info("send web execute response, actionId = {} ",  history.getJobId());
+            SocketLog.info("MasterHandlerWebResponse: send web execute response, actionId = {} ",  history.getJobId());
             return webResponse;
         } else if (request.getEk() == ExecuteKind.DebugKind) {
             String debugId = request.getId();
             HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
-            SocketLog.info("receive web debug response, debugId = " + debugId);
+            SocketLog.info("MasterHandlerWebResponse: receive web debug response, debugId = " + debugId);
             context.getMaster().debug(debugHistory);
 
             WebResponse webResponse = WebResponse.newBuilder()
@@ -65,7 +65,7 @@ public class MasterHandlerWebResponse {
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            SocketLog.info("send web debug response, debugId = {}", debugId);
+            SocketLog.info("MasterHandlerWebResponse : send web debug response, debugId = {}", debugId);
             return webResponse;
         }
         return WebResponse.newBuilder()

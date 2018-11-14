@@ -108,21 +108,21 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx)  {
         SocketLog.info("客户端与服务端连接开启");
         ctx.fireChannelActive();
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx)  {
         SocketLog.warn("客户端与服务端连接关闭");
         workContext.setServerChannel(null);
         ctx.fireChannelInactive();
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        SocketLog.info("worker complete read message ");
+    public void channelReadComplete(ChannelHandlerContext ctx)  {
+        SocketLog.info("WorkHandler:worker complete read message ");
     }
 
     @Override
