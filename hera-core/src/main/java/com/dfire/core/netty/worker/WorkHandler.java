@@ -122,7 +122,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx)  {
-        SocketLog.info("worker complete read message ");
+        SocketLog.info("WorkHandler:worker complete read message ");
     }
 
     @Override

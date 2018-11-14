@@ -150,7 +150,7 @@ public class MasterExecuteJob {
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build());
-        SocketLog.info("master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId);
+        SocketLog.info("MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId);
         return future;
 
     }
