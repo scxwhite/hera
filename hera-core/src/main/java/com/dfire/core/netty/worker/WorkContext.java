@@ -4,6 +4,7 @@ import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.tool.RunShell;
@@ -17,9 +18,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -39,7 +38,20 @@ public class WorkContext {
     private Map<String, Job> debugRunning = new ConcurrentHashMap<>();
     private WorkHandler handler;
     private WorkClient workClient;
-    private ExecutorService workThreadPool = Executors.newCachedThreadPool();
+    /**
+     * 处理web 异步请求
+     */
+    private ExecutorService workWebThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 10L, TimeUnit.MINUTES,
+            new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("worker-web"), new ThreadPoolExecutor.AbortPolicy());
+
+    /**
+     * 执行任务
+     */
+    private ExecutorService workExecuteThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 10L, TimeUnit.MINUTES,
+            new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("worker-execute"), new ThreadPoolExecutor.AbortPolicy());
+
+
+
     private ApplicationContext applicationContext;
     private static final String loadStr = "cat /proc/cpuinfo |grep processor | wc -l";
 
