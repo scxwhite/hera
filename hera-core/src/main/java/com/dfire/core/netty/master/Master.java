@@ -74,18 +74,22 @@ public class Master {
             masterContext.getDispatcher().addDispatcherListener(new HeraStopScheduleJobListener());
         }
         executeJobPool.execute(() -> {
+            HeraLog.info("-----------------------------init action,time: {}-----------------------------", System.currentTimeMillis());
             masterContext.getDispatcher().addDispatcherListener(new HeraAddJobListener(this, masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraJobFailListener(masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
             List<HeraAction> allJobList = masterContext.getHeraJobActionService().getTodayAction();
+            HeraLog.info("-----------------------------action size:{}, time {}-----------------------------", allJobList.size(), System.currentTimeMillis());
             heraActionMap = new HashMap<>(allJobList.size());
             allJobList.forEach(heraAction -> {
                 masterContext.getDispatcher().
                         addJobHandler(new JobHandler(heraAction.getId(), this, masterContext));
                 heraActionMap.put(Long.valueOf(heraAction.getId()), heraAction);
             });
+            HeraLog.info("-----------------------------add actions to handler success, time:{}-----------------------------", System.currentTimeMillis());
             masterContext.getDispatcher().forwardEvent(Events.Initialize);
+            HeraLog.info("-----------------------------dispatcher actions success, time{}-----------------------------", System.currentTimeMillis());
         });
         masterContext.refreshHostGroupCache();
         HeraLog.info("refresh hostGroup cache");
