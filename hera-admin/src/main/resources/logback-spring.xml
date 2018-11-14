@@ -128,6 +128,21 @@
         </encoder>
     </appender>
 
+    <appender name="scanLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/scanLog.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/bak/scan.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 10 days worth of history -->
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${PATTERN}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
+
+
 
     <!--控制台打印资源加载信息-->
     <root>
@@ -164,6 +179,11 @@
     <logger name="com.dfire.logs.DebugLog" additivity="true">
         <level value="INFO"/>
         <appender-ref ref="debugLog"/>
+    </logger>
+
+    <logger name="com.dfire.logs.ScanLog" additivity="true">
+        <level value="INFO"/>
+        <appender-ref ref="scanLog"/>
     </logger>
 
 

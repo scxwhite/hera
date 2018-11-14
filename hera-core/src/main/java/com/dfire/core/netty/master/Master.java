@@ -64,10 +64,6 @@ public class Master {
     private IStrategyWorker chooseWorkerStrategy;
 
 
-    public Map<Long, HeraAction> getHeraActionMap() {
-        return heraActionMap;
-    }
-
     public void init(MasterContext masterContext) {
         this.masterContext = masterContext;
         chooseWorkerStrategy = StrategyWorkerFactory.getStrategyWorker(StrategyWorkerEnum.FIRST);
