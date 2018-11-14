@@ -6,6 +6,7 @@ import com.dfire.protocol.RpcRequest;
 import com.dfire.protocol.RpcResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.concurrent.CountDownLatch;
@@ -18,6 +19,7 @@ import java.util.concurrent.CountDownLatch;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class MasterResponseListener extends ResponseListenerAdapter {
 
     private RpcRequest.Request request;

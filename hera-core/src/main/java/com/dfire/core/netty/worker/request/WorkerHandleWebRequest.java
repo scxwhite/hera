@@ -1,5 +1,6 @@
 package com.dfire.core.netty.worker.request;
 
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.listener.WorkResponseListener;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.core.netty.worker.WorkContext;
@@ -64,16 +65,17 @@ public class WorkerHandleWebRequest {
     }
 
     private static Future<WebResponse> buildMessage(WebRequest request, WorkContext workContext, String errorMsg) {
-        Future<WebResponse> future = workContext.getWorkThreadPool().submit(() -> {
+        Future<WebResponse> future = workContext.getWorkWebThreadPool().submit(() -> {
             CountDownLatch latch = new CountDownLatch(1);
             WorkResponseListener responseListener = new WorkResponseListener(request, workContext, false, latch, null);
             workContext.getHandler().addListener(responseListener);
-            latch.await(3, TimeUnit.HOURS);
+            latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
                 SocketLog.error(errorMsg);
             }
             return responseListener.getWebResponse();
         });
+
         workContext.getServerChannel().writeAndFlush(SocketMessage.newBuilder()
                 .setKind(SocketMessage.Kind.WEB_REQUEST)
                 .setBody(request.toByteString())
