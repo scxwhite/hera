@@ -14,6 +14,7 @@ import com.dfire.core.queue.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
 import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.ResponseStatus.Status;
@@ -52,12 +53,12 @@ public class MasterHandlerWebResponse {
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            SocketLog.info("MasterHandlerWebResponse: send web execute response, actionId = {} ",  history.getJobId());
+            TaskLog.info("MasterHandlerWebResponse: send web execute response, actionId = {} ",  history.getJobId());
             return webResponse;
         } else if (request.getEk() == ExecuteKind.DebugKind) {
             String debugId = request.getId();
             HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
-            SocketLog.info("MasterHandlerWebResponse: receive web debug response, debugId = " + debugId);
+            TaskLog.info("2-1.MasterHandlerWebResponse: receive web debug response, debugId = " + debugId);
             context.getMaster().debug(debugHistory);
 
             WebResponse webResponse = WebResponse.newBuilder()
@@ -65,7 +66,7 @@ public class MasterHandlerWebResponse {
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            SocketLog.info("MasterHandlerWebResponse : send web debug response, debugId = {}", debugId);
+            TaskLog.info("2-2.MasterHandlerWebResponse : send web debug response, debugId = {}", debugId);
             return webResponse;
         }
         return WebResponse.newBuilder()

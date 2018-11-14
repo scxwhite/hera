@@ -5,6 +5,7 @@ import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
 import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.RpcOperate.Operate;
 import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
@@ -43,7 +44,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                     Future<Response> future = completionService.take();
                     Response response = future.get();
                     workContext.getServerChannel().writeAndFlush(wrapper(response));
-                    SocketLog.info("worker send response,rid={}", response.getRid());
+                    TaskLog.info("1.WorkHandler: worker send response,rid={}", response.getRid());
                 } catch (Exception e) {
                     SocketLog.error("worker handler take future exception,{}", e);
                     throw new RuntimeException(e);
@@ -88,20 +89,20 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                 break;
             case RESPONSE:
                 final Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("receiver socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
+                TaskLog.info("4.WorkHandler:receiver: socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
                 break;
             case WEB_RESPONSE:
                 WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("receiver socket info from master {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
+                TaskLog.info("4.WorkHandler:receiver socket info from master {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }
                 break;
             default:
-                SocketLog.error("can not recognition ");
+                SocketLog.error("WorkHandler:can not recognition ");
                 break;
 
         }
@@ -122,7 +123,6 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx)  {
-        SocketLog.info("WorkHandler:worker complete read message ");
     }
 
     @Override

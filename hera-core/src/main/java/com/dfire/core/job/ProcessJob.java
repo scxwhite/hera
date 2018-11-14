@@ -5,6 +5,7 @@ import com.dfire.common.util.HierarchyProperties;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.exception.HeraCaughtExceptionHandler;
 import com.dfire.logs.HeraLog;
+import com.dfire.logs.TaskLog;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -138,7 +139,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             String arg = builder.toString();
             commands.add(arg);
         }
-        HeraLog.info("组装后的命令为：{}", JSONObject.toJSONString(commands));
+        TaskLog.info("ProcessJob :组装后的命令为：{}", JSONObject.toJSONString(commands));
         return commands.toArray(new String[commands.size()]);
     }
 

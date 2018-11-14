@@ -7,6 +7,7 @@ import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.RpcDebugMessage.DebugMessage;
 import com.dfire.protocol.RpcExecuteMessage.ExecuteMessage;
@@ -150,7 +151,7 @@ public class MasterExecuteJob {
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build());
-        SocketLog.info("MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId);
+        TaskLog.info("5.MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId);
         return future;
 
     }

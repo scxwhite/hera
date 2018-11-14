@@ -5,6 +5,7 @@ import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.MasterHandleHeartBeat;
 import com.dfire.core.netty.master.response.MasterHandlerWebResponse;
 import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.RpcOperate.Operate;
 import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
@@ -54,9 +55,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         try {
                             Future<ChannelResponse> future = completionService.take();
                             ChannelResponse response = future.get();
-                            SocketLog.info("MasterHandler:1-->master prepare send status : {}", response.webResponse.getStatus());
+                            TaskLog.info("3-1.MasterHandler-->master prepare send status : {}", response.webResponse.getStatus());
                             response.channel.writeAndFlush(wrapper(response.webResponse));
-                            SocketLog.info("MasterHandler:2-->master send response success, requestId={}", response.webResponse.getRid());
+                            TaskLog.info("3-2.MasterHandler:2-->master send response success, requestId={}", response.webResponse.getRid());
                         } catch (Exception e) {
                             SocketLog.error("master handler future take error");
                             throw new RuntimeException(e);
@@ -113,14 +114,14 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 break;
             case RESPONSE:
                 Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("receiver socket info from work {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
+                SocketLog.info("6.MasterHandler:receiver socket info from work {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
                 break;
             case WEB_RESPONSE:
                 WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("receiver socket info from work {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
+                SocketLog.info("6.MasterHandler:receiver socket info from work {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }

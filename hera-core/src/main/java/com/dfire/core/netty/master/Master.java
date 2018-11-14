@@ -782,7 +782,7 @@ public class Master {
             boolean success = response != null && response.getStatusEnum() == ResponseStatus.Status.OK;
             if (!success) {
                 exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
-                DebugLog.info("debug job error");
+                TaskLog.info("8.Master: debug job error");
                 history = masterContext.getHeraDebugHistoryService().findById(jobId);
                 HeraDebugFailEvent failEvent = HeraDebugFailEvent.builder()
                         .debugHistory(BeanConvertUtils.convert(history))
@@ -791,7 +791,7 @@ public class Master {
                         .build();
                 masterContext.getDispatcher().forwardEvent(failEvent);
             } else {
-                DebugLog.info("debug success");
+                TaskLog.info("7.Master: debug success");
                 HeraDebugSuccessEvent successEvent = HeraDebugSuccessEvent.builder()
                         .fileId(history.getFileId())
                         .history(BeanConvertUtils.convert(history))

@@ -80,7 +80,7 @@ public class WorkerHandleWebRequest {
                 .setKind(SocketMessage.Kind.WEB_REQUEST)
                 .setBody(request.toByteString())
                 .build());
-        SocketLog.info("WorkerHandleWebRequest: send web request to master requestId ={}", request.getRid());
+        SocketLog.info("1.WorkerHandleWebRequest: send web request to master requestId ={}", request.getRid());
         return future;
 
     }
