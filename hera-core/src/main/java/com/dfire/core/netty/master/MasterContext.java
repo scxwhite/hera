@@ -62,7 +62,7 @@ public class MasterContext {
     public void init() {
         threadPool = new ThreadPoolExecutor(
                 0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-wait-response"), new ThreadPoolExecutor.AbortPolicy());
-        masterSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("master-schedule", false));
+        masterSchedule = new ScheduledThreadPoolExecutor(5, new NamedThreadFactory("master-schedule", false));
         masterSchedule.setKeepAliveTime(5, TimeUnit.MINUTES);
         masterSchedule.allowCoreThreadTimeOut(true);
         this.getQuartzSchedulerService().start();
