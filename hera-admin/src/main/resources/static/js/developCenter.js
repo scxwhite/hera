@@ -589,15 +589,30 @@ $(function () {
     //关闭日志
     logTabContainer.on('click','span',function(e){
         e.stopPropagation();
-        $('#cancelSrueModal').modal('show');
         var _this = $(this);
+        var li = _this.parent();
+        var width = li.width();
+        var debugId=li.attr('his-id');
+        $.ajax({
+            url: base_url + "/developCenter/getLog.do",
+            type: "get",
+            data: {
+                id: debugId,
+            },
+            success: function (data) {
+                if(data.status === 'running') {
+                    $('#cancelSrueModal').modal('show');
+                }else{
+                    logTabContainer.tabsLength -=width;
+                    localStorage.removeItem('log'+debugId);
+                    li.remove();
+                }
+            }
+        })
         $('#sureCancelBtn').click(function (e) {
             e.stopPropagation();
             $('#cancelSrueModal').modal('hide');
-            var li = _this.parent();
-            var width = li.width();
             logTabContainer.tabsLength -=width;
-            var debugId=li.attr('his-id');
             localStorage.removeItem('log'+debugId);
             li.remove();
             clearInterval(rightTimer);

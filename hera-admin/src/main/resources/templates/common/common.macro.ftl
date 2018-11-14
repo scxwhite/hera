@@ -66,7 +66,7 @@
 
     <script src="${request.contextPath}/adminlte/plugins/daterangepicker/moment.min.js"></script>
     <script src="${request.contextPath}/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
-    <script src="${request.contextPath}/plugins/echarts/echarts.common.min.js"></script>
+    <script src="${request.contextPath}/plugins/echarts/echarts.js"></script>
     <script src="${request.contextPath}/plugins/echarts/macarons.js"></script>
     <script src="${request.contextPath}/plugins/echarts/shine.js"></script>
 
