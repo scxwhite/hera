@@ -28,10 +28,7 @@ import com.dfire.core.route.factory.StrategyWorkerEnum;
 import com.dfire.core.route.factory.StrategyWorkerFactory;
 import com.dfire.core.route.strategy.IStrategyWorker;
 import com.dfire.core.util.CronParse;
-import com.dfire.logs.DebugLog;
-import com.dfire.logs.HeraLog;
-import com.dfire.logs.ScheduleLog;
-import com.dfire.logs.SocketLog;
+import com.dfire.logs.*;
 import com.dfire.protocol.JobExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.RpcResponse;
@@ -210,9 +207,9 @@ public class Master {
                     } else {
                         nextTime = (nextTime + DELAY_TIME) > MAX_DELAY_TIME ? MAX_DELAY_TIME : nextTime + DELAY_TIME;
                     }
-                    ScheduleLog.info("scan waiting queueTask run");
+                    ScanLog.info("scan waiting queueTask run");
                 } catch (Exception e) {
-                    ScheduleLog.error("scan waiting queueTask exception", e);
+                    ScanLog.error("scan waiting queueTask exception", e);
                 } finally {
                     masterContext.masterSchedule.schedule(this, nextTime, TimeUnit.MILLISECONDS);
                 }
