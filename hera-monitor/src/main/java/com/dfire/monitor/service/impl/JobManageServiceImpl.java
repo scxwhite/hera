@@ -111,7 +111,7 @@ public class JobManageServiceImpl implements JobManageService {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -day);
         List<String> xAxis = new ArrayList<>(day);
-        for (int i = 0; i < day; i++) {
+        for (int i = 0; i <= day; i++) {
             curDate = DateUtil.getFormatterDate("yyyy-MM-dd", calendar.getTime());
             res.put(curDate, jobManagerMapper.findJobDetailByDate(curDate));
             xAxis.add(curDate);
