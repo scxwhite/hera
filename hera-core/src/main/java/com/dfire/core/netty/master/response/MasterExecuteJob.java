@@ -151,7 +151,7 @@ public class MasterExecuteJob {
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build());
-        TaskLog.info("5.MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId);
+        TaskLog.info("5.MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().remoteAddress());
         return future;
 
     }
