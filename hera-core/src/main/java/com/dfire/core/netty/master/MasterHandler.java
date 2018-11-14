@@ -54,9 +54,9 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         try {
                             Future<ChannelResponse> future = completionService.take();
                             ChannelResponse response = future.get();
-                            SocketLog.info("准备将完成消息发送给work{}", response.webResponse.getStatus());
+                            SocketLog.info("1-->master prepare send status : {}", response.webResponse.getStatus());
                             response.channel.writeAndFlush(wrapper(response.webResponse));
-                            SocketLog.info("master send response success, requestId={}", response.webResponse.getRid());
+                            SocketLog.info("2-->master send response success, requestId={}", response.webResponse.getRid());
                         } catch (Exception e) {
                             SocketLog.error("master handler future take error");
                             throw new RuntimeException(e);
