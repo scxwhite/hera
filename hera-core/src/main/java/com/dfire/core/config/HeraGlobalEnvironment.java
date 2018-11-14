@@ -216,6 +216,7 @@ public class HeraGlobalEnvironment {
             }
         }
         // 全局配置，支持中文不乱
+        userEnvMap.putAll(System.getenv());
         userEnvMap.put("LANG","zh_CN.UTF-8");
     }
 
