@@ -25,7 +25,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
     public ProcessJob(JobContext jobContext) {
         super(jobContext);
-        envMap = new HashMap<>();
+        envMap = new HashMap<>(System.getenv());
     }
 
     /**
@@ -42,7 +42,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 .filter(key -> jobContext.getProperties().getProperty(key) != null && ((key.startsWith("instance.") || key.startsWith("secret."))))
                 .forEach(k -> envMap.put(k, jobContext.getProperties().getProperty(k)));
 //        envMap.put("instance.workDir", jobContext.getWorkDir());
-        envMap.put("LANG","zh_CN.UTF-8");
+//        envMap.put("LANG","zh_CN.UTF-8");
 
         List<String> commands = getCommandList();
 
