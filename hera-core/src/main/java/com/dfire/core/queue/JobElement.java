@@ -40,4 +40,11 @@ public class JobElement {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "JobElement{" +
+                "jobId='" + jobId + '\'' +
+                ", hostGroupId=" + hostGroupId +
+                '}';
+    }
 }
