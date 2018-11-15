@@ -1,11 +1,11 @@
 package com.dfire.common.util;
 
 import com.dfire.common.kv.Tuple;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -35,15 +35,13 @@ public class ActionUtil {
     /**
      * 生成今天 Action版本的最晚时间
      */
-    public static final  int ACTION_CREATE_MAX_HOUR = 23;
+    public static final int ACTION_CREATE_MAX_HOUR = 23;
 
 
     /**
      * 生成今天 Action版本的最早时间
      */
-    public static final  int ACTION_CREATE_MIN_HOUR = 7;
-
-
+    public static final int ACTION_CREATE_MIN_HOUR = 7;
 
 
     public static String getTodayString() {
@@ -71,7 +69,7 @@ public class ActionUtil {
 
     }
 
-    public static String getActionVersionByTime(Date nowTime ){
+    public static String getActionVersionByTime(Date nowTime) {
         return new DateTime(nowTime).toString(ACTION_VERSION_PREFIX);
     }
 
@@ -114,4 +112,19 @@ public class ActionUtil {
     public static boolean isInitActionVersion(String actionId) {
         return ActionUtil.getInitActionVersion().compareTo(actionId) <= 0;
     }
+
+    public static boolean jobEquals(String actionA, String actionB) {
+        if (StringUtils.isBlank(actionA) || StringUtils.isBlank(actionB)) {
+            return false;
+        }
+        int lenA = actionA.length();
+        int lenB = actionB.length();
+        int len = 4;
+        if (lenA < len || lenB < len) {
+            return false;
+        }
+        return actionA.substring(lenA - len).equals(actionB.substring(lenB - len));
+    }
+
+
 }

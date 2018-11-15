@@ -287,8 +287,8 @@ public class Master {
                 }
                 shouldRemove.forEach(actionMap::remove);
             }
-            String  cronDate = ActionUtil.getActionVersionByTime(now);
-            generateScheduleJobAction(jobList,cronDate, actionMap);
+            String cronDate = ActionUtil.getActionVersionByTime(now);
+            generateScheduleJobAction(jobList, cronDate, actionMap);
             generateDependJobAction(jobList, actionMap, 0);
 
             if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
@@ -314,10 +314,11 @@ public class Master {
 
     /**
      * hera自动调度任务版本生成，版本id 18位当前时间 + actionId
+     *
      * @param jobList
      * @param actionMap
      */
-    public void generateScheduleJobAction(List<HeraJob> jobList, String  cronDate, Map<Long, HeraAction> actionMap) {
+    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap) {
         for (HeraJob heraJob : jobList) {
             if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 0) {
                 String cron = heraJob.getCronExpression();
@@ -659,10 +660,10 @@ public class Master {
     /**
      * 自动调度任务开始执行入口，向master端的channel写请求任务执行请求
      *
-     * @param workHolder workHolder
-     * @param actionId  actionId
-     * @param runCount runCount
-     * @param retryCount retryCount
+     * @param workHolder    workHolder
+     * @param actionId      actionId
+     * @param runCount      runCount
+     * @param retryCount    retryCount
      * @param retryWaitTime retryWaitTime
      */
     private void runScheduleJobContext(MasterWorkHolder workHolder, String actionId, int runCount, int retryCount, int retryWaitTime) {
@@ -855,7 +856,7 @@ public class Master {
             return;
         }
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
-           // element.setJobId(heraJobHistory.getId());
+            // element.setJobId(heraJobHistory.getId());
             masterContext.getManualQueue().offer(element);
         } else {
             JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
@@ -877,7 +878,7 @@ public class Master {
              *  check调度器等待队列是否有此任务在排队
              */
             for (JobElement jobElement : masterContext.getScheduleQueue()) {
-                if (jobElement.getJobId().equals(actionId)) {
+                if (ActionUtil.jobEquals(jobElement.getJobId(), actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
@@ -907,7 +908,7 @@ public class Master {
         } else if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
 
             for (JobElement jobElement : masterContext.getManualQueue()) {
-                if (jobElement.getJobId().equals(actionId)) {
+                if (ActionUtil.jobEquals(jobElement.getJobId(), actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
