@@ -1,3 +1,107 @@
+var info = {
+    "master_10.1.21.67":{
+        "machineInfo":[
+            {
+                "filesystem":"/dev/vda1",
+                "type":"ext4",
+                "size":"79G",
+                "used":"3.4G",
+                "avail":"72G",
+                "use":5,
+                "mountedOn":"/"
+            },
+            {
+                "filesystem":"/dev/vda1",
+                "type":"ext4",
+                "size":"79G",
+                "used":"3.4G",
+                "avail":"72G",
+                "use":5,
+                "mountedOn":"/"
+            }
+        ],
+        "osInfo":{
+            "user":0.3,
+            "system":0.1,
+            "mem":3,
+            "cpu":99.6,
+            "swap":100
+        },
+        "processMonitor":[
+            {
+                "pid":"6250",
+                "user":"root",
+                "viri":"1788m",
+                "res":"46m",
+                "cpu":"0.5%",
+                "mem":"20%",
+                "time":"13:01.92",
+                "command":"cmf-agent"
+            },
+            {
+                "pid":"6250",
+                "user":"root",
+                "viri":"1788m",
+                "res":"46m",
+                "cpu":"0.5%",
+                "mem":"20%",
+                "time":"13:01.92",
+                "command":"cmf-agent"
+            }
+        ]
+    },
+    "work_10.1.28.26":{
+        "machineInfo":[
+            {
+                "filesystem":"/dev/vda1",
+                "type":"ext4",
+                "size":"79G",
+                "used":"3.4G",
+                "avail":"72G",
+                "use":5,
+                "mountedOn":"/"
+            },
+            {
+                "filesystem":"/dev/vda1",
+                "type":"ext4",
+                "size":"79G",
+                "used":"3.4G",
+                "avail":"72G",
+                "use":5,
+                "mountedOn":"/"
+            }
+        ],
+        "osInfo":{
+            "user":0.3,
+            "system":0.1,
+            "mem":3,
+            "cpu":99.6,
+            "swap":100
+        },
+        "processMonitor":[
+            {
+                "pid":"6250",
+                "user":"root",
+                "viri":"1788m",
+                "res":"46m",
+                "cpu":"0.5%",
+                "mem":"20%",
+                "time":"13:01.92",
+                "command":"cmf-agent"
+            },
+            {
+                "pid":"6250",
+                "user":"root",
+                "viri":"1788m",
+                "res":"46m",
+                "cpu":"0.5%",
+                "mem":"20%",
+                "time":"13:01.92",
+                "command":"cmf-agent"
+            }
+        ]
+    }
+}
 $(function () {
     $('#home').addClass('active');
 
@@ -34,12 +138,6 @@ $(function () {
     var ramOption = {
         tooltip : {
             formatter: "{a} <br/>{b} : {c}%"
-        },
-        toolbox: {
-            feature: {
-                restore: {},
-                saveAsImage: {}
-            }
         },
         series: [
             {
@@ -88,12 +186,186 @@ $(function () {
         }
     })
     //内存仪表板
-    function initRamGauge() {
-        ramOption.series[0].data[0].value = (Math.random() * 100).toFixed(2) - 0;
-        var myChart=echarts.init(document.getElementById('ramGauge'));
-        myChart.setOption(ramOption, true);
+    function initMachine() {
+        // $.ajax()
+        //机器选择
+        for ( var i in info ){
+            $('#machineList').append('<option value="'+i+'">'+i+'</option>');
+        }
+        var machine = $('#machineList').val();
+        initInfo(info[machine]);
+        // console.log(info[machine])
+        function initInfo(machine){
+            //系统概况
+            ramOption.series[0].data[0].value = parseFloat(machine.osInfo.mem);
+            var myChart=echarts.init(document.getElementById('ramGauge'));
+            myChart.setOption(ramOption, true);
+            var option1 = {
+                value:parseFloat(machine.osInfo.user)*100,//百分比,必填
+                name:'用户占用',//必填
+                backgroundColor:null,
+                color:['#38a8da','#d4effa'],
+                fontSize:16,
+                domEle:document.getElementById("userPercent")//必填
+            },percentPie1 = new PercentPie(option1);
+            percentPie1.init();
+            var option2 = {
+                    value:parseFloat(machine.osInfo.system)*100,//百分比,必填
+                    name:'系统占用',//必填
+                    backgroundColor:null,
+                    color:['#38a8da','#d4effa'],
+                    fontSize:16,
+                    domEle:document.getElementById("SysPercent")//必填
+                },
+                percentPie2 = new PercentPie(option2);
+            percentPie2.init();
+
+            var option3 = {
+                    value:parseInt(machine.osInfo.cpu),//百分比,必填
+                    name:'CPU空闲',//必填
+                    backgroundColor:null,
+                    color:['#38a8da','#d4effa'],
+                    fontSize:16,
+                    domEle:document.getElementById("CPUPercent")//必填
+                },
+                percentPie3 = new PercentPie(option3);
+            percentPie3.init();
+
+            var option4 = {
+                    value:parseInt(machine.osInfo.swap),//百分比,必填
+                    name:'SWAP空闲',//必填
+                    backgroundColor:null,
+                    color:['#38a8da','#d4effa'],
+                    fontSize:16,
+                    domEle:document.getElementById("SwapPercent")//必填
+                },
+                percentPie4 = new PercentPie(option4);
+            percentPie4.init();
+            //进程监控
+            $('#processMonitor').bootstrapTable({
+                columns:[{
+                    field: 'pid',
+                    title: 'PID',
+                    width: 100
+                },{
+                    field: 'user',
+                    title: 'USER',
+                    width: 100
+                },{
+                    field: 'viri',
+                    title: 'VIRI',
+                    width: 100
+                },{
+                    field: 'res',
+                    title: 'RES',
+                    width: 100
+                },{
+                    field: 'cpu',
+                    title: 'CPU',
+                    formatter:function(value,row,index){
+                        value = parseFloat(value)
+                        value*=10;
+                        return '<div class="progress progress-xs"><div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="10" style="width: '+value+'%"><span class="sr-only">40% Complete (success)</span></div></div>'
+                    },
+                    width: 100
+
+                },{
+                    field: 'mem',
+                    title: 'MEM',
+                    formatter:function(value,row,index){
+                        return '<div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100" style="width: '+value+'"><span class="sr-only">40% Complete (success)</span></div></div>'
+                    },
+                    width: 100
+                },{
+                    field: 'time',
+                    title: 'TIME',
+                    width: 100
+                },{
+                    field: 'command',
+                    title: 'COMMAND',
+                    width: 100
+                }],
+                data: machine.processMonitor
+            })
+            //机器信息
+            var myChart=echarts.init(document.getElementById('machinePie'));
+            var option5 = {
+                title: {
+                    text: 'Customized Pie',
+                    left: 'center',
+                    top: 20,
+                    textStyle: {
+                        color: '#ccc'
+                    }
+                },
+
+                tooltip : {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+
+                visualMap: {
+                    show: false,
+                    min: 80,
+                    max: 600,
+                    inRange: {
+                        colorLightness: [0, 1]
+                    }
+                },
+                series : [
+                    {
+                        name:'访问来源',
+                        type:'pie',
+                        radius : '55%',
+                        center: ['50%', '50%'],
+                        data:[
+                            {value:335, name:'直接访问'},
+                            {value:310, name:'邮件营销'},
+                            {value:274, name:'联盟广告'},
+                            {value:235, name:'视频广告'},
+                            {value:400, name:'搜索引擎'}
+                        ].sort(function (a, b) { return a.value - b.value; }),
+                        roseType: 'radius',
+                        label: {
+                            normal: {
+                                textStyle: {
+                                    color: 'rgba(255, 255, 255, 0.3)'
+                                }
+                            }
+                        },
+                        labelLine: {
+                            normal: {
+                                lineStyle: {
+                                    color: 'rgba(255, 255, 255, 0.3)'
+                                },
+                                smooth: 0.2,
+                                length: 10,
+                                length2: 20
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                color: '#c23531',
+                                shadowBlur: 200,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+
+                        animationType: 'scale',
+                        animationEasing: 'elasticOut',
+                        animationDelay: function (idx) {
+                            return Math.random() * 200;
+                        }
+                    }
+                ]
+            };
+            myChart.setOption(option5, true);
+        }
+
     }
-    initRamGauge()
+    initMachine()
+
+
     function initLineJobStatus(data) {
         initOption();
         option.title.subtext = data['xAxis'][0] + "~" + data['xAxis'][data['xAxis'].length - 1];

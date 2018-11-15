@@ -1041,7 +1041,7 @@ function expandNextNode(nodeNum) {
             }
             currIndex++;
         } else {
-            alert("已经全部展示完毕！");
+            layer.msg("已经全部展示完毕！");
             break;
         }
     }
