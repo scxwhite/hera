@@ -813,7 +813,6 @@ public class Master {
      * @return
      */
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
-        Integer hostGroupId = jobElement.getHostGroupId();
         return chooseWorkerStrategy.chooseWorker(jobElement, masterContext);
     }
 
