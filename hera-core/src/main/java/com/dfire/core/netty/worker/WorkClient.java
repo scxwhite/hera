@@ -352,6 +352,7 @@ public class WorkClient {
         RpcWebResponse.WebResponse webResponse = WorkerHandleWebRequest.handleCancel(workContext, kind, id).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
             SocketLog.error(webResponse.getErrorText());
+            return webResponse.getErrorText();
         }
         return "取消任务成功";
     }
