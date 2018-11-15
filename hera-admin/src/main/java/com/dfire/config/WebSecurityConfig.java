@@ -65,7 +65,7 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
             if (StringUtils.isNotBlank(heraToken) && JwtUtils.verifyToken(heraToken)) {
                 return true;
             }
-            response.sendRedirect("login");
+            response.sendRedirect("/login");
             return false;
         }
 

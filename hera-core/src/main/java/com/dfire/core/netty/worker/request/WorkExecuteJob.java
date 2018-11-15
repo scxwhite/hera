@@ -18,7 +18,6 @@ import com.dfire.logs.ScheduleLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -54,15 +53,17 @@ public class WorkExecuteJob {
 
 
     private Future<RpcResponse.Response> manual(WorkContext workContext, RpcRequest.Request request) {
-        RpcExecuteMessage.ExecuteMessage message = null;
+        RpcExecuteMessage.ExecuteMessage message;
         try {
             message = RpcExecuteMessage.ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
+            return null;
         }
-        final String historyId = message.getActionId();
-        SocketLog.info("worker received master request to run manual job, historyId = {}", historyId);
-        final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(historyId));
+        final String actionId = message.getActionId();
+        SocketLog.info("worker received master request to run manual job, actionId = {}", actionId);
+        HeraAction heraAction = workContext.getHeraJobActionService().findById(actionId);
+        final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(heraAction.getHistoryId()));
         return workContext.getWorkExecuteThreadPool().submit(() -> {
             history.setExecuteHost(WorkContext.host);
             history.setStartTime(new Date());
@@ -77,8 +78,7 @@ public class WorkExecuteJob {
             HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getActionId());
             final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN),
                     jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
-            //TODO 存储actionId 不应该放historyID
-            workContext.getManualRunning().put(historyId, job);
+            workContext.getManualRunning().put(actionId, job);
 
             Integer exitCode = -1;
             Exception exception = null;
@@ -88,7 +88,7 @@ public class WorkExecuteJob {
                 exception = e;
                 history.getLog().appendHeraException(e);
             } finally {
-                String res = exitCode == 0 ? Constants.STATUS_SUCCESS :  Constants.STATUS_FAILED;
+                String res = exitCode == 0 ? Constants.STATUS_SUCCESS : Constants.STATUS_FAILED;
                 //更新状态和日志
                 workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
                         HeraJobHistory.builder()
@@ -98,9 +98,8 @@ public class WorkExecuteJob {
                                 .endTime(new Date())
                                 .build());
 
-                workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
-
-                workContext.getManualRunning().remove(historyId);
+                workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(actionId).status(res).build());
+                workContext.getManualRunning().remove(actionId);
             }
 
             ResponseStatus.Status status = ResponseStatus.Status.OK;
@@ -118,7 +117,7 @@ public class WorkExecuteJob {
                     .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
-            SocketLog.info("send execute message, historyId = {}", historyId);
+            SocketLog.info("send execute message, actionId = {}", actionId);
             return response;
         });
     }
@@ -172,7 +171,7 @@ public class WorkExecuteJob {
                 if (exitCode == 0) {
                     res = StatusEnum.SUCCESS.toString();
                     //action表更新放在work端  用于信号丢失的检测
-                   // workContext.getHeraJobActionService().updateStatusAndReadDependency(HeraAction.builder().id(history.getActionId()).status(res).readyDependency("{}").build());
+                    // workContext.getHeraJobActionService().updateStatusAndReadDependency(HeraAction.builder().id(history.getActionId()).status(res).readyDependency("{}").build());
                 } else {
                     res = StatusEnum.FAILED.toString();
                     //action表更新放在work端   用于信号丢失的检测

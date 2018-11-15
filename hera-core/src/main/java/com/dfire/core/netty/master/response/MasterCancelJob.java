@@ -89,8 +89,9 @@ public class MasterCancelJob {
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         String actionId = heraJobHistory.getActionId();
+        String jobId = heraJobHistory.getJobId();
         //手动执行队列 查找该job是否存在
-        if (remove(context.getManualQueue().iterator(), historyId)) {
+        if (remove(context.getManualQueue().iterator(), actionId)) {
             webResponse = RpcWebResponse.WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
@@ -100,10 +101,10 @@ public class MasterCancelJob {
             SocketLog.info("任务仍在手动队列中，从队列删除该任务{}", heraJobHistory.getJobId());
         } else {
             for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
-                if (workHolder.getManningRunning().contains(historyId)) {
+                if (workHolder.getManningRunning().contains(jobId)) {
                     Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
                             workHolder.getChannel(), JobExecuteKind.ExecuteKind.ManualKind, historyId);
-                    workHolder.getManningRunning().remove(historyId);
+                    workHolder.getManningRunning().remove(jobId);
                     try {
                         future.get(1, TimeUnit.MINUTES);
                     } catch (Exception e) {
@@ -153,10 +154,10 @@ public class MasterCancelJob {
 
         } else {
             for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
-                if (workHolder.getRunning().contains(actionId)) {
+                if (workHolder.getRunning().contains(jobId)) {
                     Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
                             workHolder.getChannel(), JobExecuteKind.ExecuteKind.ScheduleKind, historyId);
-                    workHolder.getRunning().remove(actionId);
+                    workHolder.getRunning().remove(jobId);
                     try {
                         future.get(1, TimeUnit.MINUTES);
                     } catch (Exception e) {

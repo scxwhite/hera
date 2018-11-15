@@ -181,9 +181,9 @@ public class MasterHandlerWebResponse {
             HeartBeatInfo beatInfo = workHolder.getHeartBeatInfo();
             if (beatInfo != null) {
                 allInfo.put(Constants.WORK_PREFIX + beatInfo.getHost(), HeartBeatMessage.newBuilder()
-                        .addAllDebugRunnings(workHolder.getDebugRunning())
-                        .addAllRunnings(workHolder.getRunning())
-                        .addAllManualRunnings(workHolder.getManningRunning())
+                        .addAllDebugRunnings(beatInfo.getDebugRunning())
+                        .addAllRunnings(beatInfo.getRunning())
+                        .addAllManualRunnings(beatInfo.getManualRunning())
                         .setMemRate(beatInfo.getMemRate())
                         .setMemTotal(beatInfo.getMemTotal())
                         .setCpuLoadPerCore(beatInfo.getCpuLoadPerCore())

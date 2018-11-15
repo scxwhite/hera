@@ -127,4 +127,17 @@ public class ActionUtil {
     }
 
 
+    public static String getJobId(String action) {
+        if (StringUtils.isBlank(action) ) {
+            return null;
+        }
+        int actionLen = action.length();
+        int len = 4;
+        if (actionLen < len ) {
+            return null;
+        }
+        return action.substring(actionLen - len);
+    }
+
+
 }

@@ -596,9 +596,8 @@ public class Master {
             RpcResponse.Response response = null;
             Future<RpcResponse.Response> future = null;
             try {
-                workHolder.getManningRunning().add(actionId);
                 future = new MasterExecuteJob().executeJob(masterContext, workHolder,
-                        JobExecuteKind.ExecuteKind.ManualKind, history.getId());
+                        JobExecuteKind.ExecuteKind.ManualKind, actionId);
                 response = future.get();
             } catch (Exception e) {
                 exception = e;
@@ -713,7 +712,6 @@ public class Master {
         RpcResponse.Response response = null;
         Future<RpcResponse.Response> future = null;
         try {
-            workHolder.getRunning().add(actionId);
             future = new MasterExecuteJob().executeJob(masterContext, workHolder,
                     ScheduleKind, actionId);
             response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
@@ -776,7 +774,6 @@ public class Master {
             RpcResponse.Response response = null;
             Future<RpcResponse.Response> future = null;
             try {
-                workHolder.getRunning().add(history.getFileId());
                 future = new MasterExecuteJob().executeJob(masterContext, workHolder, JobExecuteKind.ExecuteKind.DebugKind, jobId);
                 response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
             } catch (Exception e) {
@@ -873,6 +870,7 @@ public class Master {
     private boolean checkJobExists(HeraJobHistoryVo heraJobHistory) {
         // TODO 任务检测，不要使用for循环，后面改成hash查找
         String actionId = heraJobHistory.getActionId();
+        String jobId = heraJobHistory.getJobId();
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER || heraJobHistory.getTriggerType() == TriggerTypeEnum.SCHEDULE) {
             /**
              *  check调度器等待队列是否有此任务在排队
@@ -892,7 +890,7 @@ public class Master {
              *  check所有的worker中是否有此任务的id在执行，如果有，不进入队列等待
              */
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
-                if (workHolder.getRunning().contains(actionId)) {
+                if (workHolder.getRunning().contains(jobId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
@@ -904,14 +902,13 @@ public class Master {
                 }
             }
 
-
         } else if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
 
             for (JobElement jobElement : masterContext.getManualQueue()) {
                 if (ActionUtil.jobEquals(jobElement.getJobId(), actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                     heraJobHistory.setStartTime(new Date());
-                    heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
+                    heraJobHistory.setIllustrate(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
                     masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
@@ -920,12 +917,12 @@ public class Master {
             }
 
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
-                if (workHolder.getManningRunning().contains(actionId)) {
+                if (workHolder.getManningRunning().contains(jobId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
                     heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
+                    heraJobHistory.setIllustrate(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                     masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     return true;
                 }
