@@ -72,6 +72,7 @@ public class WorkerHandleWebRequest {
             latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
                 SocketLog.error(errorMsg);
+                workContext.getHandler().removeListener(responseListener);
             }
             return responseListener.getWebResponse();
         });
