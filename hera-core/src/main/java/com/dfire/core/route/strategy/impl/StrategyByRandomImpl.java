@@ -3,6 +3,7 @@ package com.dfire.core.route.strategy.impl;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
+import com.dfire.core.queue.JobElement;
 import com.dfire.core.route.strategy.AbstractChooseWorkerStrategy;
 import com.dfire.logs.ScheduleLog;
 import io.netty.util.internal.PlatformDependent;
@@ -32,10 +33,10 @@ public class StrategyByRandomImpl extends AbstractChooseWorkerStrategy {
 
 
     @Override
-    public MasterWorkHolder chooseWorker(int hostGroupId, MasterContext masterContext) {
+    public MasterWorkHolder chooseWorker(JobElement jobElement, MasterContext masterContext) {
         MasterWorkHolder workHolder = null;
         if (masterContext.getHostGroupCache() != null) {
-            HeraHostGroupVo hostGroupCache = masterContext.getHostGroupCache().get(hostGroupId);
+            HeraHostGroupVo hostGroupCache = masterContext.getHostGroupCache().get(jobElement.getHostGroupId());
             List<String> hosts = hostGroupCache.getHosts();
             if (hosts != null && hosts.size() > 0) {
                 int size = hosts.size();

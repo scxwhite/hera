@@ -814,7 +814,7 @@ public class Master {
      */
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
         Integer hostGroupId = jobElement.getHostGroupId();
-        return chooseWorkerStrategy.chooseWorker(hostGroupId, masterContext);
+        return chooseWorkerStrategy.chooseWorker(jobElement, masterContext);
     }
 
     public void debug(HeraDebugHistoryVo debugHistory) {
