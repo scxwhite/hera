@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import java.util.concurrent.CountDownLatch;
 
 /**
- *
  * @author xiaosuda
  * @date 2018/7/31
  */
@@ -31,13 +30,18 @@ public class MasterResponseListener extends ResponseListenerAdapter {
 
     @Override
     public void onResponse(RpcResponse.Response response) {
-        TaskLog.info("MasterResponseListener id1,id2:{},{}",response.getRid(),request.getRid());
+        TaskLog.info("MasterResponseListener id1,id2:{},{}", response.getRid(), request.getRid());
         if (response.getRid() == request.getRid()) {
-            TaskLog.info("master release lock for request :{}", response.getRid());
-            context.getHandler().removeListener(this);
-            this.response = response;
-            receiveResult = true;
-            latch.countDown();
+            try {
+                TaskLog.info("master release lock for request :{}", response.getRid());
+                context.getHandler().removeListener(this);
+                this.response = response;
+                receiveResult = true;
+            } catch (Exception e) {
+                TaskLog.error("release lock exception {}", e);
+            } finally {
+                latch.countDown();
+            }
         }
     }
 

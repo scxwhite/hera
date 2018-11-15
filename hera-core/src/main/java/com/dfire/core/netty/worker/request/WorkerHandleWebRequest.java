@@ -65,10 +65,10 @@ public class WorkerHandleWebRequest {
     }
 
     private static Future<WebResponse> buildMessage(WebRequest request, WorkContext workContext, String errorMsg) {
+        CountDownLatch latch = new CountDownLatch(1);
+        WorkResponseListener responseListener = new WorkResponseListener(request, workContext, false, latch, null);
+        workContext.getHandler().addListener(responseListener);
         Future<WebResponse> future = workContext.getWorkWebThreadPool().submit(() -> {
-            CountDownLatch latch = new CountDownLatch(1);
-            WorkResponseListener responseListener = new WorkResponseListener(request, workContext, false, latch, null);
-            workContext.getHandler().addListener(responseListener);
             latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
                 SocketLog.error(errorMsg);

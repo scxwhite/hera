@@ -35,10 +35,10 @@ public class MasterHandleCancelJob {
                 .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build();
+        final CountDownLatch latch = new CountDownLatch(1);
+        MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+        context.getHandler().addListener(responseListener);
         Future<RpcResponse.Response> future = context.getThreadPool().submit(() -> {
-            final CountDownLatch latch = new CountDownLatch(1);
-            MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
-            context.getHandler().addListener(responseListener);
             latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
                 SocketLog.error("取消任务信号消失，三小时未收到work返回：{}", jobId);

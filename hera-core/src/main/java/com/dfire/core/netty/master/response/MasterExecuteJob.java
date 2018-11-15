@@ -119,10 +119,10 @@ public class MasterExecuteJob {
      */
 
     private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, String actionId, TriggerTypeEnum typeEnum) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+        context.getHandler().addListener(responseListener);
         Future<Response> future = context.getThreadPool().submit(() -> {
-            final CountDownLatch latch = new CountDownLatch(1);
-            MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
-            context.getHandler().addListener(responseListener);
             try {
                 latch.await(3, TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {

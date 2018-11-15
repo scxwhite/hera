@@ -41,14 +41,14 @@ public class WorkContext {
     /**
      * 处理web 异步请求
      */
-    private ExecutorService workWebThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 10L, TimeUnit.MINUTES,
-            new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("worker-web"), new ThreadPoolExecutor.AbortPolicy());
+    private ExecutorService workWebThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 1L, TimeUnit.MINUTES,
+            new SynchronousQueue<>(), new NamedThreadFactory("worker-web"), new ThreadPoolExecutor.AbortPolicy());
 
     /**
      * 执行任务
      */
-    private ExecutorService workExecuteThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 10L, TimeUnit.MINUTES,
-            new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("worker-execute"), new ThreadPoolExecutor.AbortPolicy());
+    private ExecutorService workExecuteThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 1L, TimeUnit.MINUTES,
+            new SynchronousQueue<>(), new NamedThreadFactory("worker-execute"), new ThreadPoolExecutor.AbortPolicy());
 
 
 
