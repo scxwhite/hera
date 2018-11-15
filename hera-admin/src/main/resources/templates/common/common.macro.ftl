@@ -60,6 +60,7 @@
 
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.js"></script>
+	<#--<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/select-ajax.js"></script>-->
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 
     <script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.js"></script>
@@ -67,6 +68,7 @@
     <script src="${request.contextPath}/adminlte/plugins/daterangepicker/moment.min.js"></script>
     <script src="${request.contextPath}/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
     <script src="${request.contextPath}/plugins/echarts/echarts.js"></script>
+    <script src="${request.contextPath}/plugins/echarts/PercentPie.js"></script>
     <script src="${request.contextPath}/plugins/echarts/macarons.js"></script>
     <script src="${request.contextPath}/plugins/echarts/shine.js"></script>
 
