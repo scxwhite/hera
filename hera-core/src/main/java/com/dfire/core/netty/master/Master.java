@@ -593,7 +593,7 @@ public class Master {
             RpcResponse.Response response = null;
             Future<RpcResponse.Response> future = null;
             try {
-                workHolder.getManningRunning().put(actionId, false);
+                workHolder.getManningRunning().add(actionId);
                 future = new MasterExecuteJob().executeJob(masterContext, workHolder,
                         JobExecuteKind.ExecuteKind.ManualKind, history.getId());
                 response = future.get();
@@ -710,7 +710,7 @@ public class Master {
         RpcResponse.Response response = null;
         Future<RpcResponse.Response> future = null;
         try {
-            workHolder.getRunning().put(actionId, false);
+            workHolder.getRunning().add(actionId);
             future = new MasterExecuteJob().executeJob(masterContext, workHolder,
                     ScheduleKind, actionId);
             response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
@@ -773,7 +773,7 @@ public class Master {
             RpcResponse.Response response = null;
             Future<RpcResponse.Response> future = null;
             try {
-                workHolder.getRunning().put(history.getFileId(), false);
+                workHolder.getRunning().add(history.getFileId());
                 future = new MasterExecuteJob().executeJob(masterContext, workHolder, JobExecuteKind.ExecuteKind.DebugKind, jobId);
                 response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
             } catch (Exception e) {
@@ -891,7 +891,7 @@ public class Master {
              */
             for (Channel key : masterContext.getWorkMap().keySet()) {
                 MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
-                if (workHolder.getRunning().containsKey(actionId)) {
+                if (workHolder.getRunning().contains(actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
@@ -919,7 +919,7 @@ public class Master {
             }
 
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
-                if (workHolder.getManningRunning().containsKey(historyId)) {
+                if (workHolder.getManningRunning().contains(historyId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
