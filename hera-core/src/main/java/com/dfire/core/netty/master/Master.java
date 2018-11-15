@@ -870,7 +870,6 @@ public class Master {
     private boolean checkJobExists(HeraJobHistoryVo heraJobHistory) {
         // TODO 任务检测，不要使用for循环，后面改成hash查找
         String actionId = heraJobHistory.getActionId();
-        String historyId = heraJobHistory.getId();
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER || heraJobHistory.getTriggerType() == TriggerTypeEnum.SCHEDULE) {
             /**
              *  check调度器等待队列是否有此任务在排队
@@ -889,8 +888,7 @@ public class Master {
             /**
              *  check所有的worker中是否有此任务的id在执行，如果有，不进入队列等待
              */
-            for (Channel key : masterContext.getWorkMap().keySet()) {
-                MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
+            for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
                 if (workHolder.getRunning().contains(actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
@@ -907,7 +905,7 @@ public class Master {
         } else if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
 
             for (JobElement jobElement : masterContext.getManualQueue()) {
-                if (jobElement.getJobId().equals(historyId)) {
+                if (jobElement.getJobId().equals(actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
@@ -919,7 +917,7 @@ public class Master {
             }
 
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
-                if (workHolder.getManningRunning().contains(historyId)) {
+                if (workHolder.getManningRunning().contains(actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
@@ -1034,7 +1032,6 @@ public class Master {
                     "开发中心队列任务：" + workHolder.getHeartBeatInfo().getDebugRunning() + "<br>";
             SocketLog.error(content);
         }
-
     }
 
     private void startNewJob(HeraJobHistory heraJobHistory) {
