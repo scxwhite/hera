@@ -6,8 +6,6 @@ import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.util.AtomicIncrease;
-import com.dfire.logs.HeraLog;
-import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.RpcDebugMessage.DebugMessage;
@@ -51,7 +49,6 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder holder, String jobId) {
-        holder.getManningRunning().put(jobId, false);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Manual)
@@ -66,14 +63,12 @@ public class MasterExecuteJob {
     /**
      * 请求work 执行调度任务/恢复任务
      *
-     * @param context         MasterContext
-     * @param holder          MasterWorkHolder
-     * @param actionHistoryId String
+     * @param context  MasterContext
+     * @param holder   MasterWorkHolder
+     * @param actionId String
      * @return Future
      */
-    private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String actionHistoryId) {
-        final String actionId = context.getHeraJobHistoryService().findById(actionHistoryId).getActionId();
-        holder.getRunning().put(actionId, false);
+    private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String actionId) {
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Schedule)
@@ -95,7 +90,6 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder holder, String id) {
-        holder.getDebugRunning().put(id, false);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Debug)

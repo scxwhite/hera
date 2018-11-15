@@ -47,7 +47,7 @@ public class MasterCancelJob {
 
         for (Channel key : new HashSet<>(context.getWorkMap().keySet())) {
             MasterWorkHolder workHolder = context.getWorkMap().get(key);
-            if (workHolder.getDebugRunning().containsKey(debugId)) {
+            if (workHolder.getDebugRunning().contains(debugId)) {
                 Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
                         workHolder.getChannel(), JobExecuteKind.ExecuteKind.DebugKind, debugId);
                 workHolder.getDebugRunning().remove(debugId);
@@ -100,7 +100,7 @@ public class MasterCancelJob {
             SocketLog.info("任务仍在手动队列中，从队列删除该任务{}", heraJobHistory.getJobId());
         } else {
             for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
-                if (workHolder.getManningRunning().containsKey(historyId)) {
+                if (workHolder.getManningRunning().contains(historyId)) {
                     Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
                             workHolder.getChannel(), JobExecuteKind.ExecuteKind.ManualKind, historyId);
                     workHolder.getManningRunning().remove(historyId);
@@ -153,7 +153,7 @@ public class MasterCancelJob {
 
         } else {
             for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
-                if (workHolder.getRunning().containsKey(actionId)) {
+                if (workHolder.getRunning().contains(actionId)) {
                     Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
                             workHolder.getChannel(), JobExecuteKind.ExecuteKind.ScheduleKind, historyId);
                     workHolder.getRunning().remove(actionId);

@@ -595,6 +595,7 @@ public class Master {
             RpcResponse.Response response = null;
             Future<RpcResponse.Response> future = null;
             try {
+                workHolder.getManningRunning().add(actionId);
                 future = new MasterExecuteJob().executeJob(masterContext, workHolder,
                         JobExecuteKind.ExecuteKind.ManualKind, history.getId());
                 response = future.get();
@@ -641,7 +642,6 @@ public class Master {
      * @param actionId
      */
     private void runScheduleJob(MasterWorkHolder workHolder, String actionId) {
-        final MasterWorkHolder work = workHolder;
         this.executeJobPool.execute(() -> {
             int runCount = 0;
             int retryCount = 0;
@@ -652,20 +652,20 @@ public class Master {
                 retryCount = Integer.parseInt(properties.get("roll.back.times") == null ? "0" : properties.get("roll.back.times"));
                 retryWaitTime = Integer.parseInt(properties.get("roll.back.wait.time") == null ? "0" : properties.get("roll.back.wait.time"));
             }
-            runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
+            runScheduleJobContext(workHolder, actionId, runCount, retryCount, retryWaitTime);
         });
     }
 
     /**
      * 自动调度任务开始执行入口，向master端的channel写请求任务执行请求
      *
-     * @param work
-     * @param actionId
-     * @param runCount
-     * @param retryCount
-     * @param retryWaitTime
+     * @param workHolder workHolder
+     * @param actionId  actionId
+     * @param runCount runCount
+     * @param retryCount retryCount
+     * @param retryWaitTime retryWaitTime
      */
-    private void runScheduleJobContext(MasterWorkHolder work, String actionId, int runCount, int retryCount, int retryWaitTime) {
+    private void runScheduleJobContext(MasterWorkHolder workHolder, String actionId, int runCount, int retryCount, int retryWaitTime) {
 
         DebugLog.info("重试次数：{},重试时间：{},actionId:{}", retryCount, retryWaitTime, actionId);
         runCount++;
@@ -702,19 +702,19 @@ public class Master {
             heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行\n");
             triggerType = heraJobHistoryVo.getTriggerType();
         }
-        masterContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(heraJobHistoryVo));
         JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
         jobStatus.setHistoryId(heraJobHistory.getId());
         jobStatus.setStatus(StatusEnum.RUNNING);
         jobStatus.setStartTime(new Date());
         masterContext.getHeraJobActionService().updateStatus(jobStatus);
         heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);
-        masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
+        masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(heraJobHistoryVo));
         RpcResponse.Response response = null;
         Future<RpcResponse.Response> future = null;
         try {
-            future = new MasterExecuteJob().executeJob(masterContext, work,
-                    ScheduleKind, heraJobHistory.getId());
+            workHolder.getRunning().add(actionId);
+            future = new MasterExecuteJob().executeJob(masterContext, workHolder,
+                    ScheduleKind, actionId);
             response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
         } catch (Exception e) {
             ScheduleLog.error("schedule job run error :" + actionId, e);
@@ -755,7 +755,7 @@ public class Master {
         masterContext.getHeraJobActionService().updateStatus(jobStatus);
         if (runCount < (retryCount + 1) && !success && !isCancelJob) {
             DebugLog.info("--------------------------失败任务，准备重试--------------------------");
-            runScheduleJobContext(work, actionId, runCount, retryCount, retryWaitTime);
+            runScheduleJobContext(workHolder, actionId, runCount, retryCount, retryWaitTime);
         }
     }
 
@@ -775,6 +775,7 @@ public class Master {
             RpcResponse.Response response = null;
             Future<RpcResponse.Response> future = null;
             try {
+                workHolder.getRunning().add(history.getFileId());
                 future = new MasterExecuteJob().executeJob(masterContext, workHolder, JobExecuteKind.ExecuteKind.DebugKind, jobId);
                 response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
             } catch (Exception e) {
@@ -892,7 +893,7 @@ public class Master {
              */
             for (Channel key : masterContext.getWorkMap().keySet()) {
                 MasterWorkHolder workHolder = masterContext.getWorkMap().get(key);
-                if (workHolder.getRunning().containsKey(actionId)) {
+                if (workHolder.getRunning().contains(actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
@@ -920,7 +921,7 @@ public class Master {
             }
 
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
-                if (workHolder.getManningRunning().containsKey(historyId)) {
+                if (workHolder.getManningRunning().contains(historyId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().localAddress());
                     heraJobHistory.setStartTime(new Date());
                     heraJobHistory.setEndTime(new Date());
