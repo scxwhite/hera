@@ -55,7 +55,7 @@ hera:
    defaultWorkerGroup : 1 #默认worker的host组id
    preemptionMasterGroup : 1  #抢占master的host组id
    excludeFile: jar;war
-   maxMemRate : 0.65       #已使用内存占总内存的最大比例,默认0.75
+   maxMemRate : 0.80       #已使用内存占总内存的最大比例,默认0.75
    maxCpuLoadPerCore : 3.0   #cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量，默认3.0
    scanRate : 1000        #队列扫描频率(毫秒)
    systemMemUsed : 4000  # 系统占用内存

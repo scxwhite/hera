@@ -826,7 +826,6 @@ public class Master {
         debugHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 进入任务队列");
         masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         masterContext.getDebugQueue().offer(element);
-
     }
 
     /**
@@ -855,6 +854,7 @@ public class Master {
             return;
         }
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
+            //TODO 放ationID
             element.setJobId(heraJobHistory.getId());
             masterContext.getManualQueue().offer(element);
         } else {
