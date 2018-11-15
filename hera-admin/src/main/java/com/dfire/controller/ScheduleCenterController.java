@@ -206,7 +206,7 @@ public class ScheduleCenterController extends BaseHeraController {
             return new WebAsyncTask<>(() -> new RestfulResponse(false, ERROR_MSG));
         }
 
-        TriggerTypeEnum triggerTypeEnum = null;
+        TriggerTypeEnum triggerTypeEnum;
         if (triggerType == 2) {
             triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
         } else {
@@ -235,6 +235,7 @@ public class ScheduleCenterController extends BaseHeraController {
         actionHistory.setProperties(configs);
         heraJobHistoryService.insert(actionHistory);
         heraAction.setScript(heraJob.getScript());
+        heraAction.setHistoryId(actionHistory.getId());
         heraJobActionService.update(heraAction);
 
         WebAsyncTask<RestfulResponse> webAsyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {

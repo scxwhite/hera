@@ -581,20 +581,18 @@ public class Master {
      * 手动执行任务调度器执行逻辑，向master的channel写manual任务执行请求
      *
      * @param selectWork
-     * @param historyId
+     * @param actionId
      */
-    private void runManualJob(MasterWorkHolder selectWork, String historyId) {
+    private void runManualJob(MasterWorkHolder selectWork, String actionId) {
         final MasterWorkHolder workHolder = selectWork;
-        SocketLog.info("start run manual job, historyId = {}", historyId);
+        SocketLog.info("start run manual job, actionId = {}", actionId);
 
         this.executeJobPool.execute(() -> {
-            HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(historyId);
+            JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
+            HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(jobStatus.getHistoryId());
             HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
             historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
-            JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(history.getActionId());
-
             jobStatus.setStatus(StatusEnum.RUNNING);
-            jobStatus.setHistoryId(historyId);
             historyVo.setStatusEnum(jobStatus.getStatus());
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(historyVo));
 
@@ -610,18 +608,18 @@ public class Master {
                 if (future != null) {
                     future.cancel(true);
                 }
-                ScheduleLog.error("manual job run error" + historyId, e);
+                ScheduleLog.error("manual job run error {}", e);
                 jobStatus.setStatus(StatusEnum.FAILED);
                 history.setStatus(jobStatus.getStatus().toString());
                 masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
             }
             boolean success = response != null && response.getStatusEnum() != null && response.getStatusEnum() == ResponseStatus.Status.OK;
-            ScheduleLog.info("historyId 执行结果" + historyId + "---->" + response.getStatusEnum());
-
+            if (response != null) {
+                ScheduleLog.info("actionId 执行结果" + actionId + "---->" + response.getStatusEnum());
+            }
             if (!success) {
-                HeraException heraException = null;
                 if (exception != null) {
-                    heraException = new HeraException(exception);
+                    HeraException heraException = new HeraException(exception);
                     ScheduleLog.error("manual actionId = {} error, {}", history.getActionId(), heraException.getMessage());
                 }
                 ScheduleLog.info("actionId = {} manual execute failed", history.getActionId());
@@ -861,8 +859,7 @@ public class Master {
             return;
         }
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
-            //TODO 放ationID
-            element.setJobId(heraJobHistory.getId());
+           // element.setJobId(heraJobHistory.getId());
             masterContext.getManualQueue().offer(element);
         } else {
             JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
