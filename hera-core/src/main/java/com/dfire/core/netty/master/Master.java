@@ -524,38 +524,45 @@ public class Master {
         boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
             JobElement jobElement = masterContext.getScheduleQueue().poll();
-            MasterWorkHolder workHolder = getRunnableWork(jobElement);
-            if (workHolder == null) {
-                masterContext.getScheduleQueue().offer(jobElement);
-                ScheduleLog.warn("can not get work to execute job in master,job is:{}", jobElement.toString());
-            } else if (jobElement != null) {
-                runScheduleJob(workHolder, jobElement.getJobId());
-                hasTask = true;
+            if (jobElement != null) {
+                MasterWorkHolder workHolder = getRunnableWork(jobElement);
+                if (workHolder == null) {
+                    masterContext.getScheduleQueue().offer(jobElement);
+                    ScheduleLog.warn("can not get work to execute job in master,job is:{}", jobElement.toString());
+                } else {
+                    runScheduleJob(workHolder, jobElement.getJobId());
+                    hasTask = true;
+                }
             }
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
             JobElement jobElement = masterContext.getManualQueue().poll();
-            MasterWorkHolder selectWork = getRunnableWork(jobElement);
-            if (selectWork == null) {
-                masterContext.getManualQueue().offer(jobElement);
-                ScheduleLog.warn("can not get work to execute job in master,job is:{}", jobElement.toString());
-            } else if (jobElement != null) {
-                runManualJob(selectWork, jobElement.getJobId());
-                hasTask = true;
+            if (jobElement != null) {
+                MasterWorkHolder selectWork = getRunnableWork(jobElement);
+                if (selectWork == null) {
+                    masterContext.getManualQueue().offer(jobElement);
+                    ScheduleLog.warn("can not get work to execute job in master,job is:{}", jobElement.toString());
+                } else {
+                    runManualJob(selectWork, jobElement.getJobId());
+                    hasTask = true;
+                }
             }
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
             JobElement jobElement = masterContext.getDebugQueue().poll();
-            MasterWorkHolder selectWork = getRunnableWork(jobElement);
-            if (selectWork == null) {
-                masterContext.getDebugQueue().offer(jobElement);
-                ScheduleLog.warn("can not get work to execute job in master,job is:{}", jobElement.toString());
-            } else if (jobElement != null) {
-                runDebugJob(selectWork, jobElement.getJobId());
-                hasTask = true;
+            if (jobElement != null) {
+                MasterWorkHolder selectWork = getRunnableWork(jobElement);
+                if (selectWork == null) {
+                    masterContext.getDebugQueue().offer(jobElement);
+                    ScheduleLog.warn("can not get work to execute job in master,job is:{}", jobElement.toString());
+                } else {
+                    runDebugJob(selectWork, jobElement.getJobId());
+                    hasTask = true;
+                }
             }
+
         }
         return hasTask;
 
