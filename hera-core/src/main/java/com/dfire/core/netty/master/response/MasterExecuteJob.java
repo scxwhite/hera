@@ -126,7 +126,7 @@ public class MasterExecuteJob {
             try {
                 latch.await(3, TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
-                    SocketLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
+                    TaskLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
                 }
             } finally {
                 switch (typeEnum) {
@@ -143,7 +143,7 @@ public class MasterExecuteJob {
                         holder.getDebugRunning().remove(actionId);
                         break;
                     default:
-                        HeraLog.error("未识别的任务执行类型{}", typeEnum);
+                        TaskLog.error("未识别的任务执行类型{}", typeEnum);
                 }
             }
             return responseListener.getResponse();

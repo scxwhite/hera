@@ -2,6 +2,7 @@ package com.dfire.core.netty.listener;
 
 import com.dfire.core.netty.listener.adapter.ResponseListenerAdapter;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.RpcWebRequest;
 import com.dfire.protocol.RpcWebResponse;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ public class WorkResponseListener extends ResponseListenerAdapter {
     @Override
     public void onWebResponse(RpcWebResponse.WebResponse response) {
         if (request.getRid() == response.getRid()) {
+            TaskLog.info("work release lock for request :{}", response.getRid());
             workContext.getHandler().removeListener(this);
             webResponse = response;
             receiveResult = true;
