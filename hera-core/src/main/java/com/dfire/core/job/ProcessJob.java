@@ -139,7 +139,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             String arg = builder.toString();
             commands.add(arg);
         }
-        TaskLog.info("ProcessJob :组装后的命令为：{}", JSONObject.toJSONString(commands));
+        TaskLog.info("5.2 ProcessJob :组装后的命令为：{}", JSONObject.toJSONString(commands));
         return commands.toArray(new String[commands.size()]);
     }
 

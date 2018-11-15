@@ -31,6 +31,7 @@ public class MasterResponseListener extends ResponseListenerAdapter {
 
     @Override
     public void onResponse(RpcResponse.Response response) {
+        TaskLog.info("MasterResponseListener id1,id2:{},{}",response.getRid(),request.getRid());
         if (response.getRid() == request.getRid()) {
             TaskLog.info("master release lock for request :{}", response.getRid());
             context.getHandler().removeListener(this);

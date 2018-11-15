@@ -68,7 +68,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                             if (success) {
                                 TaskLog.info("3-2.MasterHandler:2-->master send response success, requestId={}", response.webResponse.getRid());
                             } else {
-                                TaskLog.error("3-2.MasterHandler:2-->master send response success timeout, requestId={}", response.webResponse.getRid());
+                                TaskLog.error("3-2.MasterHandler:2-->master send response timeout, requestId={}", response.webResponse.getRid());
                             }
                         } catch (Exception e) {
                             SocketLog.error("master handler future take error:{}", e);
