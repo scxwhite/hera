@@ -877,13 +877,14 @@ public class Master {
 
 
     private boolean checkJobExists(HeraJobHistoryVo heraJobHistory) {
+        // TODO 任务检测，不要使用for循环，后面改成hash查找
         String actionId = heraJobHistory.getActionId();
         String historyId = heraJobHistory.getId();
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER || heraJobHistory.getTriggerType() == TriggerTypeEnum.SCHEDULE) {
             /**
              *  check调度器等待队列是否有此任务在排队
              */
-            for (JobElement jobElement : new ArrayList<>(masterContext.getScheduleQueue())) {
+            for (JobElement jobElement : masterContext.getScheduleQueue()) {
                 if (jobElement.getJobId().equals(actionId)) {
                     heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
                     heraJobHistory.setStartTime(new Date());
