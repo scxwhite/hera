@@ -26,7 +26,7 @@ druid:
     username: twodfire  #数据库用户名
     password: 123456      #数据库密码
     driver-class-name: com.mysql.jdbc.Driver  #数据库驱动
-    url: jdbc:mysql://common101.my.2dfire-daily.com:3306/hera_test?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+    url: jdbc:mysql://common101.my.2dfire-daily.com:3306/lineage?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     initial-size: 5    #初始化连接池数量
     min-idle: 1        #最小生存连接数
     max-active: 16     #最大连接池数量
