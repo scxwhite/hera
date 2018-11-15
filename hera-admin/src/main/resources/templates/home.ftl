@@ -189,8 +189,7 @@
                                 <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                             </div>
                         </div>
-                        <div id="machineInfo"  class="box-body">
-                            <div id="machinePie"  style="height: 300px"></div>
+                        <div id="machineInfo"  class="box-body" style="height: 500px;">
                         </div>
                     </div>
                 </div>
