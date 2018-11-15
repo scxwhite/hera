@@ -89,9 +89,9 @@ public class MasterExecuteJob {
     /**
      * 请求work 执行开发中心任务
      *
-     * @param context MasterContext
-     * @param workHolder  MasterWorkHolder
-     * @param id      String
+     * @param context    MasterContext
+     * @param workHolder MasterWorkHolder
+     * @param id         String
      * @return Future
      */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder workHolder, String id) {
@@ -157,18 +157,23 @@ public class MasterExecuteJob {
                 .build());
 
         boolean success = false;
+        Throwable cause;
         try {
             success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            cause = channelFuture.cause();
+            if (cause != null) {
+                success = false;
+                throw cause;
+            }
+        } catch (Throwable throwable) {
+            TaskLog.error("send execute job exception {}", throwable);
+            throwable.printStackTrace();
         }
-        Throwable cause = channelFuture.cause();
-        if (cause != null) {
-            TaskLog.error("send execute job exception {}", cause);
-            return null;
-        } else if (success) {
+        if (success) {
             TaskLog.info("5.MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().remoteAddress());
         } else {
+            future.cancel(true);
+            context.getHandler().removeListener(responseListener);
             TaskLog.error("5.MasterExecuteJob:master send debug command to worker timeout,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().remoteAddress());
             return null;
         }
