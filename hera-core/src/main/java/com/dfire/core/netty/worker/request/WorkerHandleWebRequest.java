@@ -68,11 +68,7 @@ public class WorkerHandleWebRequest {
         CountDownLatch latch = new CountDownLatch(1);
         WorkResponseListener responseListener = new WorkResponseListener(request, workContext, false, latch, null);
         workContext.getHandler().addListener(responseListener);
-
         Future<WebResponse> future = workContext.getWorkWebThreadPool().submit(() -> {
-
-//            WorkResponseListener responseListener = new WorkResponseListener(request, workContext, false, latch, null);
-//            workContext.getHandler().addListener(responseListener);
             latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
                 SocketLog.error(errorMsg);
