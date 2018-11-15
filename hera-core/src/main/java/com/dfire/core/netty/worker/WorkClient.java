@@ -5,7 +5,7 @@ import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.DateUtil;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
@@ -392,7 +392,7 @@ public class WorkClient {
                     .host(beatMessage.getHost())
                     .cores(beatMessage.getCores())
                     .timestamp(beatMessage.getTimestamp())
-                    .date(DateUtil.getDefaultFormatterDate(new Date(beatMessage.getTimestamp())))
+                    .date(ActionUtil.getDefaultFormatterDate(new Date(beatMessage.getTimestamp())))
                     .build());
         }
 

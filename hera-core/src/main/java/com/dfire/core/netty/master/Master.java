@@ -128,7 +128,7 @@ public class Master {
         masterContext.masterSchedule.scheduleWithFixedDelay(() -> {
             ScheduleLog.info("refresh host group success, start roll back");
             masterContext.refreshHostGroupCache();
-            String currDate = DateUtil.getNowStringForAction();
+            String currDate = ActionUtil.getCurrActionVersion();
             Dispatcher dispatcher = masterContext.getDispatcher();
             if (dispatcher != null) {
                 Map<Long, HeraAction> actionMapNew = heraActionMap;
@@ -257,23 +257,21 @@ public class Master {
     }
 
     private synchronized boolean generateAction(boolean isSingle, Integer jobId) {
-        Calendar calendar = Calendar.getInstance();
-        Date now = calendar.getTime();
-        int executeHour = DateUtil.getCurrentHour(calendar);
+        DateTime dateTime = new DateTime();
+        Date now = dateTime.toDate();
+        int executeHour = dateTime.getHourOfDay();
         //凌晨生成版本，早上七点以后开始再次生成版本
-        boolean execute = executeHour == 0
-                || (executeHour > 7 && executeHour <= 23);
+        boolean execute = executeHour == 0 || (executeHour > ActionUtil.ACTION_CREATE_MIN_HOUR && executeHour <= ActionUtil.ACTION_CREATE_MAX_HOUR);
         if (execute || isSingle) {
-            String currString = DateUtil.getNowStringForAction();
-            if (executeHour == 23) {
-                Tuple<String, Date> nextDayString = DateUtil.getNextDayString();
+            String currString = ActionUtil.getCurrActionVersion();
+            if (executeHour == ActionUtil.ACTION_CREATE_MAX_HOUR) {
+                Tuple<String, Date> nextDayString = ActionUtil.getNextDayString();
                 //例如：今天 2018.07.17 23:50  currString = 2018.07.18 now = 2018.07.18 23:50
                 currString = nextDayString.getSource();
                 now = nextDayString.getTarget();
             }
             Map<Long, HeraAction> actionMap = new HashMap<>(heraActionMap.size());
             List<HeraJob> jobList = new ArrayList<>();
-            SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
             //批量生成
             if (!isSingle) {
                 jobList = masterContext.getHeraJobService().getAll();
@@ -289,10 +287,11 @@ public class Master {
                 }
                 shouldRemove.forEach(actionMap::remove);
             }
-            generateScheduleJobAction(jobList, now, dfDate, actionMap);
+            String  cronDate = ActionUtil.getActionVersionByTime(now);
+            generateScheduleJobAction(jobList,cronDate, actionMap);
             generateDependJobAction(jobList, actionMap, 0);
 
-            if (executeHour < 23) {
+            if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
                 heraActionMap = actionMap;
             }
 
@@ -314,18 +313,14 @@ public class Master {
     }
 
     /**
-     * hera自动调度任务版本生成，版本id 18位当前时间 + actionId,
-     *
+     * hera自动调度任务版本生成，版本id 18位当前时间 + actionId
      * @param jobList
-     * @param now
-     * @param format
      * @param actionMap
      */
-    public void generateScheduleJobAction(List<HeraJob> jobList, Date now, SimpleDateFormat format, Map<Long, HeraAction> actionMap) {
+    public void generateScheduleJobAction(List<HeraJob> jobList, String  cronDate, Map<Long, HeraAction> actionMap) {
         for (HeraJob heraJob : jobList) {
             if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 0) {
                 String cron = heraJob.getCronExpression();
-                String cronDate = format.format(now);
                 List<String> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(cron)) {
                     boolean isCronExp = CronParse.Parser(cron, cronDate, list);
@@ -362,7 +357,7 @@ public class Master {
     private void clearInvalidAction() {
         ScheduleLog.warn("开始进行版本清理");
         Dispatcher dispatcher = masterContext.getDispatcher();
-        Long currDate = Long.parseLong(DateUtil.getNowStringForAction());
+        Long currDate = Long.parseLong(ActionUtil.getCurrActionVersion());
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, +1);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd0000000000");
@@ -385,7 +380,7 @@ public class Master {
                         masterContext.getHeraJobActionService().delete(actionId);
                     }
                 }
-                if (!DateUtil.isToday(actionId)) {
+                if (!ActionUtil.isInitActionVersion(actionId)) {
                     shouldRemove.add(jobHandler);
                 }
             });
@@ -524,7 +519,6 @@ public class Master {
         boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
             JobElement jobElement = masterContext.getScheduleQueue().poll();
-            if (jobElement != null) {
                 MasterWorkHolder workHolder = getRunnableWork(jobElement);
                 if (workHolder == null) {
                     masterContext.getScheduleQueue().offer(jobElement);
@@ -533,7 +527,6 @@ public class Master {
                     runScheduleJob(workHolder, jobElement.getJobId());
                     hasTask = true;
                 }
-            }
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {

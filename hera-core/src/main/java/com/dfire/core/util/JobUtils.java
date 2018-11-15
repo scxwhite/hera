@@ -13,7 +13,7 @@ import com.dfire.common.service.HeraFileService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraProfileService;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.DateUtil;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.RenderHierarchyProperties;
 import com.dfire.core.job.*;
@@ -152,7 +152,7 @@ public class JobUtils {
                 if (StringUtils.isBlank(value)) {
                     if (history.getStatisticsEndTime() != null && history.getTimezone() != null) {
                         value = value.replace("${j_set}", history.getStatisticsEndTime().toString());
-                        value = value.replace("${j_est}", DateUtil.string2Timestamp(history.getStatisticsEndTime().toString(), history.getTimezone()) / 1000 + "");
+                        value = value.replace("${j_est}", ActionUtil.string2Timestamp(history.getStatisticsEndTime().toString(), history.getTimezone()) / 1000 + "");
                         varMap.put(key, value);
                     }
                 }

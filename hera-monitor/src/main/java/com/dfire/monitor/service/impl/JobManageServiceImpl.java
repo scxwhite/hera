@@ -1,6 +1,6 @@
 package com.dfire.monitor.service.impl;
 
-import com.dfire.common.util.DateUtil;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.monitor.domain.ActionTime;
 import com.dfire.monitor.domain.JobHistoryVo;
 import com.dfire.monitor.domain.JobStatusNum;
@@ -74,7 +74,7 @@ public class JobManageServiceImpl implements JobManageService {
 
         calendar.add(Calendar.DAY_OF_YEAR, -1);
         Date time = calendar.getTime();
-        String yesterday = DateUtil.getFormatterDate("yyyy-MM-dd", time);
+        String yesterday = ActionUtil.getFormatterDate("yyyy-MM-dd", time);
         for (ActionTime actionTime : jobTime) {
             actionTime.setYesterdayTime(jobManagerMapper.getYesterdayRunTime(actionTime.getJobId(), yesterday));
         }
@@ -112,7 +112,7 @@ public class JobManageServiceImpl implements JobManageService {
         calendar.add(Calendar.DAY_OF_YEAR, -day);
         List<String> xAxis = new ArrayList<>(day);
         for (int i = 0; i <= day; i++) {
-            curDate = DateUtil.getFormatterDate("yyyy-MM-dd", calendar.getTime());
+            curDate = ActionUtil.getFormatterDate("yyyy-MM-dd", calendar.getTime());
             res.put(curDate, jobManagerMapper.findJobDetailByDate(curDate));
             xAxis.add(curDate);
             calendar.add(Calendar.DAY_OF_YEAR, 1);
