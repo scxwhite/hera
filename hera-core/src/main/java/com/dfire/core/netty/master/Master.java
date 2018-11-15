@@ -519,14 +519,16 @@ public class Master {
         boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
             JobElement jobElement = masterContext.getScheduleQueue().poll();
+            if (jobElement != null) {
                 MasterWorkHolder workHolder = getRunnableWork(jobElement);
                 if (workHolder == null) {
                     masterContext.getScheduleQueue().offer(jobElement);
-                    ScheduleLog.warn("can not get work to execute job in master,job is:{}", jobElement.toString());
+                    ScheduleLog.warn("can not get work to execute Schedule job in master,job is:{}", jobElement.toString());
                 } else {
                     runScheduleJob(workHolder, jobElement.getJobId());
                     hasTask = true;
                 }
+            }
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
@@ -535,7 +537,7 @@ public class Master {
                 MasterWorkHolder selectWork = getRunnableWork(jobElement);
                 if (selectWork == null) {
                     masterContext.getManualQueue().offer(jobElement);
-                    ScheduleLog.warn("can not get work to execute job in master,job is:{}", jobElement.toString());
+                    ScheduleLog.warn("can not get work to execute ManualQueue job in master,job is:{}", jobElement.toString());
                 } else {
                     runManualJob(selectWork, jobElement.getJobId());
                     hasTask = true;
@@ -549,7 +551,7 @@ public class Master {
                 MasterWorkHolder selectWork = getRunnableWork(jobElement);
                 if (selectWork == null) {
                     masterContext.getDebugQueue().offer(jobElement);
-                    ScheduleLog.warn("can not get work to execute job in master,job is:{}", jobElement.toString());
+                    ScheduleLog.warn("can not get work to execute DebugQueue job in master,job is:{}", jobElement.toString());
                 } else {
                     runDebugJob(selectWork, jobElement.getJobId());
                     hasTask = true;
