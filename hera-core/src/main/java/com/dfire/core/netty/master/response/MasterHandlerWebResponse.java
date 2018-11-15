@@ -14,6 +14,7 @@ import com.dfire.core.queue.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
 import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.ResponseStatus.Status;
@@ -22,7 +23,6 @@ import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
 import com.dfire.protocol.RpcWebOperate.WebOperate;
 import com.dfire.protocol.RpcWebRequest.WebRequest;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 
@@ -47,19 +47,18 @@ public class MasterHandlerWebResponse {
 
             HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
             HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-            String jobId = history.getJobId();
             context.getMaster().run(history);
             WebResponse webResponse = WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            SocketLog.info("send web execute response, actionId = {} ", jobId);
+            TaskLog.info("MasterHandlerWebResponse: send web execute response, actionId = {} ",  history.getJobId());
             return webResponse;
         } else if (request.getEk() == ExecuteKind.DebugKind) {
             String debugId = request.getId();
             HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
-            SocketLog.info("receive web debug response, debugId = " + debugId);
+            TaskLog.info("2-1.MasterHandlerWebResponse: receive web debug response, debugId = " + debugId);
             context.getMaster().debug(debugHistory);
 
             WebResponse webResponse = WebResponse.newBuilder()
@@ -67,7 +66,7 @@ public class MasterHandlerWebResponse {
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            SocketLog.info("send web debug response, debugId = {}", debugId);
+            TaskLog.info("2-2.MasterHandlerWebResponse : send web debug response, debugId = {}", debugId);
             return webResponse;
         }
         return WebResponse.newBuilder()
@@ -135,7 +134,7 @@ public class MasterHandlerWebResponse {
      * @return WebResponse
      */
     public static WebResponse generateActionByJobId(MasterContext context, WebRequest request) {
-        boolean result = context.getMaster().generateSingleAction(Integer.parseInt(request.getId()));
+        boolean result = Constants.ALL_JOB_ID.equals(request.getId()) ? context.getMaster().generateBatchAction() : context.getMaster().generateSingleAction(Integer.parseInt(request.getId()));
         return WebResponse.newBuilder()
                 .setRid(request.getRid())
                 .setOperate(WebOperate.ExecuteJob)
@@ -182,9 +181,9 @@ public class MasterHandlerWebResponse {
             HeartBeatInfo beatInfo = workHolder.getHeartBeatInfo();
             if (beatInfo != null) {
                 allInfo.put(Constants.WORK_PREFIX + beatInfo.getHost(), HeartBeatMessage.newBuilder()
-                        .addAllDebugRunnings(beatInfo.getDebugRunning())
-                        .addAllRunnings(beatInfo.getRunning())
-                        .addAllManualRunnings(beatInfo.getManualRunning())
+                        .addAllDebugRunnings(workHolder.getDebugRunning())
+                        .addAllRunnings(workHolder.getRunning())
+                        .addAllManualRunnings(workHolder.getManningRunning())
                         .setMemRate(beatInfo.getMemRate())
                         .setMemTotal(beatInfo.getMemTotal())
                         .setCpuLoadPerCore(beatInfo.getCpuLoadPerCore())

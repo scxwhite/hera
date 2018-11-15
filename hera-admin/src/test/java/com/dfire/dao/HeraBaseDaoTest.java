@@ -6,6 +6,7 @@ import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.service.*;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.vo.RestfulResponse;
@@ -288,8 +289,8 @@ public class HeraBaseDaoTest {
                     Map<Long, HeraAction> actionMap = new HashMap<>();
 
                     List<HeraJob> heraJobList = heraJobService.getAll();
-
-                    master.generateScheduleJobAction(heraJobList, now, dfDate, actionMap);
+                    String  cronDate = ActionUtil.getActionVersionByTime(now);
+                    master.generateScheduleJobAction(heraJobList, cronDate, actionMap);
                     master.generateDependJobAction(heraJobList, actionMap, 0);
 
                 }
@@ -316,7 +317,7 @@ public class HeraBaseDaoTest {
                 MasterContext masterContext = (MasterContext) masterContextField.get(heraSchedule);
                 if(masterContext != null) {
                     Master master = masterContext.getMaster();
-                    master.generateAction(false, null);
+                    master.generateBatchAction();
                 }
             }
         } catch (NoSuchFieldException e) {

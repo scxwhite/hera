@@ -63,7 +63,7 @@ public class WorkExecuteJob {
         final String historyId = message.getActionId();
         SocketLog.info("worker received master request to run manual job, historyId = {}", historyId);
         final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(historyId));
-        return workContext.getWorkThreadPool().submit(() -> {
+        return workContext.getWorkExecuteThreadPool().submit(() -> {
             history.setExecuteHost(WorkContext.host);
             history.setStartTime(new Date());
             workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
@@ -144,7 +144,7 @@ public class WorkExecuteJob {
         final JobStatus jobStatus = workContext.getHeraJobActionService().findJobStatus(jobId);
         final HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(jobStatus.getHistoryId());
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-        return workContext.getWorkThreadPool().submit(() -> {
+        return workContext.getWorkExecuteThreadPool().submit(() -> {
             history.setExecuteHost(WorkContext.host);
             history.setStartTime(new Date());
             workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
@@ -226,7 +226,7 @@ public class WorkExecuteJob {
         }
         String debugId = debugMessage.getDebugId();
         HeraDebugHistoryVo history = workContext.getDebugHistoryService().findById(debugId);
-        return workContext.getWorkThreadPool().submit(() -> {
+        return workContext.getWorkExecuteThreadPool().submit(() -> {
             history.setExecuteHost(WorkContext.host);
             workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
 

@@ -1,14 +1,18 @@
 package com.dfire.core.netty.worker;
 
+import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
 import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.RpcOperate.Operate;
 import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -22,7 +26,13 @@ import java.util.concurrent.*;
  */
 public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
-    private CompletionService<Response> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
+    private CompletionService<Response> completionService = new ExecutorCompletionService<>(
+            new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L,
+                    TimeUnit.SECONDS,
+                    new SynchronousQueue<>(),
+                    new NamedThreadFactory("worker-send:", false),
+                    new ThreadPoolExecutor.AbortPolicy()));
+
     private WorkContext workContext;
 
     public WorkHandler(final WorkContext workContext) {
@@ -31,19 +41,37 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
         Executor executor = Executors.newSingleThreadExecutor();
 
         executor.execute(() -> {
+            boolean success;
+            Response response;
+            Future<Response> future;
+            ChannelFuture channelFuture;
+            Throwable cause;
             while (true) {
                 try {
-                    Future<Response> future = completionService.take();
-                    Response response = future.get();
-                    workContext.getServerChannel().writeAndFlush(wrapper(response));
-                    SocketLog.info("worker send response,rid={}", response.getRid());
+                    future = completionService.take();
+                    response = future.get();
+                    channelFuture = workContext.getServerChannel().writeAndFlush(wrapper(response));
+                    success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
+                    cause = channelFuture.cause();
+                    if (cause != null) {
+                        throw cause;
+                    }
+                    TaskLog.info("1.WorkHandler: worker send response,rid={}", response.getRid());
+                    if (!success) {
+                        TaskLog.error("1.WorkHandler: worker send response timeout,rid={}", response.getRid());
+
+                    }
                 } catch (Exception e) {
                     SocketLog.error("worker handler take future exception,{}", e);
                     throw new RuntimeException(e);
+                } catch (Throwable throwable) {
+                    SocketLog.error("worker handler take future exception,{}", throwable);
+                    throwable.printStackTrace();
                 }
             }
         });
     }
+
 
     private List<ResponseListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -79,41 +107,40 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                 break;
             case RESPONSE:
                 final Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("receiver socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
+                TaskLog.info("4.WorkHandler:receiver: socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
                 break;
             case WEB_RESPONSE:
                 WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("receiver socket info from master {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
+                TaskLog.info("4.WorkHandler:receiver socket info from master {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }
                 break;
             default:
-                SocketLog.error("can not recognition ");
+                SocketLog.error("WorkHandler:can not recognition ");
                 break;
 
         }
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         SocketLog.info("客户端与服务端连接开启");
         ctx.fireChannelActive();
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) {
         SocketLog.warn("客户端与服务端连接关闭");
         workContext.setServerChannel(null);
         ctx.fireChannelInactive();
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        SocketLog.info("worker complete read message ");
+    public void channelReadComplete(ChannelHandlerContext ctx) {
     }
 
     @Override

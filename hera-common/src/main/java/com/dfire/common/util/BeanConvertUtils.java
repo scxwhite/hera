@@ -51,6 +51,7 @@ public class BeanConvertUtils {
         heraJobHistoryVo.setProperties(StringUtil.convertStringToMap(heraJobHistory.getProperties()));
         heraJobHistoryVo.setStatusEnum(StatusEnum.parse(heraJobHistory.getStatus()));
         heraJobHistoryVo.setTriggerType(TriggerTypeEnum.parser(heraJobHistory.getTriggerType()));
+        heraJobHistoryVo.setHostGroupId(heraJobHistory.getHostGroupId());
         return heraJobHistoryVo;
 
     }

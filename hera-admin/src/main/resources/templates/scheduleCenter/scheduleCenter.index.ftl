@@ -529,24 +529,24 @@
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup">
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup" disabled>
                                             添加组
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit">编辑
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit" disabled>编辑
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addJob">
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addJob" disabled>
                                             添加任务
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete">
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete" disabled>
                                             删除
                                         </button>
                                     </li>
@@ -588,7 +588,7 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit">编辑
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit" disabled>编辑
                                     </button>
                                 </li>
                                 <br>
@@ -606,13 +606,13 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="switch">
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="switch" disabled>
                                         开启/关闭
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete">删除
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete" disabled>删除
                                     </button>
 
                                 </li>

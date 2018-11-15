@@ -1,12 +1,12 @@
 package com.dfire.core.netty.master.response;
 
 import com.dfire.common.enums.TriggerTypeEnum;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.util.AtomicIncrease;
-import com.dfire.logs.HeraLog;
-import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.RpcDebugMessage.DebugMessage;
 import com.dfire.protocol.RpcExecuteMessage.ExecuteMessage;
@@ -14,6 +14,7 @@ import com.dfire.protocol.RpcOperate.Operate;
 import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
+import io.netty.channel.ChannelFuture;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -48,7 +49,6 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder holder, String jobId) {
-        holder.getManningRunning().put(jobId, false);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Manual)
@@ -63,14 +63,12 @@ public class MasterExecuteJob {
     /**
      * 请求work 执行调度任务/恢复任务
      *
-     * @param context         MasterContext
-     * @param holder          MasterWorkHolder
-     * @param actionHistoryId String
+     * @param context  MasterContext
+     * @param holder   MasterWorkHolder
+     * @param actionId String
      * @return Future
      */
-    private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String actionHistoryId) {
-        final String actionId = context.getHeraJobHistoryService().findById(actionHistoryId).getActionId();
-        holder.getRunning().put(actionId, false);
+    private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder holder, String actionId) {
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Schedule)
@@ -92,7 +90,6 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder holder, String id) {
-        holder.getDebugRunning().put(id, false);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Debug)
@@ -116,14 +113,14 @@ public class MasterExecuteJob {
      */
 
     private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, String actionId, TriggerTypeEnum typeEnum) {
+        final CountDownLatch latch = new CountDownLatch(1);
+        MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+        context.getHandler().addListener(responseListener);
         Future<Response> future = context.getThreadPool().submit(() -> {
-            final CountDownLatch latch = new CountDownLatch(1);
-            MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
-            context.getHandler().addListener(responseListener);
             try {
                 latch.await(3, TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
-                    SocketLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
+                    TaskLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
                 }
             } finally {
                 switch (typeEnum) {
@@ -140,17 +137,34 @@ public class MasterExecuteJob {
                         holder.getDebugRunning().remove(actionId);
                         break;
                     default:
-                        HeraLog.error("未识别的任务执行类型{}", typeEnum);
+                        TaskLog.error("未识别的任务执行类型{}", typeEnum);
                 }
             }
             return responseListener.getResponse();
         });
-        holder.getChannel().writeAndFlush(SocketMessage
+
+        ChannelFuture channelFuture = holder.getChannel().writeAndFlush(SocketMessage
                 .newBuilder()
                 .setKind(SocketMessage.Kind.REQUEST)
                 .setBody(request.toByteString())
                 .build());
-        SocketLog.info("master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId);
+
+        boolean success = false;
+        try {
+            success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Throwable cause = channelFuture.cause();
+        if (cause != null) {
+            TaskLog.error("send execute job exception {}", cause);
+            return null;
+        } else if (success) {
+            TaskLog.info("5.MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().remoteAddress());
+        } else {
+            TaskLog.error("5.MasterExecuteJob:master send debug command to worker timeout,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().remoteAddress());
+            return null;
+        }
         return future;
 
     }

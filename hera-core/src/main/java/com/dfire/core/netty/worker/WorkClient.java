@@ -5,12 +5,14 @@ import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.worker.request.WorkerHandleWebRequest;
 import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
+import com.dfire.logs.HeartLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
@@ -63,7 +65,7 @@ public class WorkClient {
     private AtomicBoolean clientSwitch = new AtomicBoolean(false);
     public ScheduledThreadPoolExecutor workSchedule;
     {
-        workSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("work-schedule-thread", true));
+        workSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("work-schedule", false));
         workSchedule.setKeepAliveTime(5, TimeUnit.MINUTES);
         workSchedule.allowCoreThreadTimeOut(true);
     }
@@ -126,7 +128,7 @@ public class WorkClient {
                                 SocketLog.error("send heart beat failed ,failCount :" + failCount);
                             } else {
                                 failCount = 0;
-                                SocketLog.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
+                                HeartLog.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
                             }
                             if (failCount > 10) {
                                 future.cancel(true);
@@ -390,6 +392,7 @@ public class WorkClient {
                     .host(beatMessage.getHost())
                     .cores(beatMessage.getCores())
                     .timestamp(beatMessage.getTimestamp())
+                    .date(ActionUtil.getDefaultFormatterDate(new Date(beatMessage.getTimestamp())))
                     .build());
         }
 

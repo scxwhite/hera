@@ -1,6 +1,10 @@
 package com.dfire.controller;
 
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.vo.MachineInfoVo;
+import com.dfire.common.vo.OSInfoVo;
+import com.dfire.common.vo.ProcessMonitorVo;
+import com.dfire.common.vo.WorkInfoVo;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.monitor.service.JobManageService;
@@ -12,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -115,5 +121,43 @@ public class SystemManageController {
         });
     }
 
+    @RequestMapping(value = "/homePage/getAllWorkInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public WebAsyncTask getAllWorkInfo() {
+
+        return new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
+            HashMap<String, WorkInfoVo> workInfoHashMap = new HashMap<>(3);
+            WorkInfoVo workInfoVo = new WorkInfoVo();
+            MachineInfoVo machineInfoVo = new MachineInfoVo();
+            machineInfoVo.setAvail("72G");
+            machineInfoVo.setFilesystem("/dev/vda1");
+            machineInfoVo.setType("ext4");
+            machineInfoVo.setUsed("3.4G");
+            machineInfoVo.setSize("79G");
+            machineInfoVo.setUse(5f);
+            machineInfoVo.setMountedOn("/");
+            workInfoVo.setMachineInfo(Arrays.asList(machineInfoVo, machineInfoVo));
+            OSInfoVo osInfoVo = new OSInfoVo();
+            osInfoVo.setUser(0.3f);
+            osInfoVo.setSystem(0.1f);
+            osInfoVo.setSwap(100f);
+            osInfoVo.setCpu(99.6f);
+            workInfoVo.setOsInfo(osInfoVo);
+
+            ProcessMonitorVo processMonitorVo = new ProcessMonitorVo();
+            processMonitorVo.setCommand("cmf-agent");
+            processMonitorVo.setPid("6250");
+            processMonitorVo.setCpu("0.5%");
+            processMonitorVo.setMem("20%");
+            processMonitorVo.setRes("46m");
+            processMonitorVo.setTime("13:01.92");
+            processMonitorVo.setViri("1788m");
+            processMonitorVo.setUser("root");
+            workInfoVo.setProcessMonitor(Arrays.asList(processMonitorVo, processMonitorVo));
+            workInfoHashMap.put("master_10.1.21.67", workInfoVo);
+            workInfoHashMap.put("work_10.1.28.26", workInfoVo);
+            return workInfoHashMap;
+        });
+    }
 
 }

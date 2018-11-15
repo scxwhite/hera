@@ -2,14 +2,12 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraActionVo;
-import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.DateUtil;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -131,7 +129,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     @Override
     public List<HeraAction> getTodayAction() {
-        return heraJobActionMapper.selectTodayAction(DateUtil.getTodayStringForAction());
+        return heraJobActionMapper.selectTodayAction(ActionUtil.getInitActionVersion());
     }
 
 }

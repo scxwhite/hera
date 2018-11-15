@@ -16,7 +16,7 @@ import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.DateUtil;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -32,7 +32,6 @@ import com.dfire.logs.ScheduleLog;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.*;
 
@@ -395,7 +394,7 @@ public class JobHandler extends AbstractHandler {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
 
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
-                    if (Long.parseLong(actionId) < Long.parseLong( DateUtil.getNowStringForAction())) {
+                    if (Long.parseLong(actionId) < Long.parseLong( ActionUtil.getCurrActionVersion())) {
                         HeraJobHistory history = HeraJobHistory.builder()
                                 .illustrate(LogConstant.LOST_JOB_LOG)
                                 .actionId(heraActionVo.getId())
@@ -422,7 +421,7 @@ public class JobHandler extends AbstractHandler {
      */
 
     private void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
-        if (!DateUtil.isNow(actionId)) {
+        if (!ActionUtil.isCurrActionVersion(actionId)) {
             return;
         }
         JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);

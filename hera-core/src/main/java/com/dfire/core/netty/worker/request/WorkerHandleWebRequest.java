@@ -1,5 +1,6 @@
 package com.dfire.core.netty.worker.request;
 
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.listener.WorkResponseListener;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.core.netty.worker.WorkContext;
@@ -26,7 +27,7 @@ public class WorkerHandleWebRequest {
                 .setOperate(WebOperate.ExecuteJob)
                 .setEk(kind)
                 .setId(id)
-                .build(), workContext, "执行任务超出3小时未得到master消息返回:" + id);
+                .build(), workContext, "[执行]-任务超出3小时未得到master消息返回:" + id);
     }
 
     public static Future<WebResponse> handleWebAction(final WorkContext workContext, ExecuteKind kind, String id) {
@@ -35,7 +36,7 @@ public class WorkerHandleWebRequest {
                 .setOperate(WebOperate.GenerateAction)
                 .setEk(kind)
                 .setId(id)
-                .build(), workContext, "更新action超出3小时未得到master消息返回:" + id);
+                .build(), workContext, "[更新]-action超出3小时未得到master消息返回:" + id);
     }
 
     public static Future<WebResponse> handleCancel(final WorkContext workContext, ExecuteKind kind, String id) {
@@ -44,7 +45,7 @@ public class WorkerHandleWebRequest {
                 .setOperate(WebOperate.CancelJob)
                 .setEk(kind)
                 .setId(id)
-                .build(), workContext, "取消任务超出3小时未得到master消息返回：" + id);
+                .build(), workContext, "[取消]-任务超出3小时未得到master消息返回：" + id);
     }
 
     public static Future<WebResponse> handleUpdate(final WorkContext workContext, String jobId) {
@@ -53,7 +54,7 @@ public class WorkerHandleWebRequest {
                 .setOperate(WebOperate.UpdateJob)
                 .setEk(ExecuteKind.ManualKind)
                 .setId(jobId)
-                .build(), workContext, "更新job超出3小时未得到master消息返回：" + jobId);
+                .build(), workContext, "[更新]-job超出3小时未得到master消息返回：" + jobId);
     }
 
     public static Future<WebResponse> getJobQueueInfoFromMaster(WorkContext workContext) {
@@ -64,20 +65,23 @@ public class WorkerHandleWebRequest {
     }
 
     private static Future<WebResponse> buildMessage(WebRequest request, WorkContext workContext, String errorMsg) {
-        Future<WebResponse> future = workContext.getWorkThreadPool().submit(() -> {
-            CountDownLatch latch = new CountDownLatch(1);
-            WorkResponseListener responseListener = new WorkResponseListener(request, workContext, false, latch, null);
-            workContext.getHandler().addListener(responseListener);
-            latch.await(3, TimeUnit.HOURS);
+        CountDownLatch latch = new CountDownLatch(1);
+        WorkResponseListener responseListener = new WorkResponseListener(request, workContext, false, latch, null);
+        workContext.getHandler().addListener(responseListener);
+        Future<WebResponse> future = workContext.getWorkWebThreadPool().submit(() -> {
+            latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
                 SocketLog.error(errorMsg);
+                workContext.getHandler().removeListener(responseListener);
             }
             return responseListener.getWebResponse();
         });
+
         workContext.getServerChannel().writeAndFlush(SocketMessage.newBuilder()
                 .setKind(SocketMessage.Kind.WEB_REQUEST)
                 .setBody(request.toByteString())
                 .build());
+        SocketLog.info("1.WorkerHandleWebRequest: send web request to master requestId ={}", request.getRid());
         return future;
 
     }

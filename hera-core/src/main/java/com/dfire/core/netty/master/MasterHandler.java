@@ -1,20 +1,19 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.MasterHandleHeartBeat;
 import com.dfire.core.netty.master.response.MasterHandlerWebResponse;
 import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
 import com.dfire.protocol.RpcOperate.Operate;
 import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import com.dfire.protocol.RpcWebRequest.WebRequest;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.*;
 
 import java.net.SocketAddress;
 import java.util.List;
@@ -46,20 +45,37 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         this.masterContext = masterContext;
         completionService = new ExecutorCompletionService<>(
                 new ThreadPoolExecutor(
-                        0, Integer.MAX_VALUE, 10L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-execute-thread", true), new ThreadPoolExecutor.AbortPolicy()));
+                        0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-execute", false), new ThreadPoolExecutor.AbortPolicy()));
         ThreadPoolExecutor executor = new ThreadPoolExecutor(
-                1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("master-deal-thread", true), new ThreadPoolExecutor.AbortPolicy());
+                1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new NamedThreadFactory("master-deal", false), new ThreadPoolExecutor.AbortPolicy());
         executor.execute(() -> {
+                    Future<ChannelResponse> future;
+                    ChannelResponse response;
+                    ChannelFuture channelFuture;
+                    boolean success;
+                    Throwable cause;
                     while (true) {
                         try {
-                            Future<ChannelResponse> future = completionService.take();
-                            ChannelResponse response = future.get();
-                            SocketLog.info("准备将完成消息发送给work{}", response.webResponse.getStatus());
-                            response.channel.writeAndFlush(wrapper(response.webResponse));
-                            SocketLog.info("master send response success, rid={}", response.webResponse.getRid());
+                            future = completionService.take();
+                            response = future.get();
+                            TaskLog.info("3-1.MasterHandler:-->master prepare send status : {}", response.webResponse.getStatus());
+                            channelFuture = response.channel.writeAndFlush(wrapper(response.webResponse));
+                            success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
+                            cause = channelFuture.cause();
+                            if (cause != null) {
+                                throw cause;
+                            }
+                            if (success) {
+                                TaskLog.info("3-2.MasterHandler:-->master send response success, requestId={}", response.webResponse.getRid());
+                            } else {
+                                TaskLog.error("3-2.MasterHandler:2-->master send response timeout, requestId={}", response.webResponse.getRid());
+                            }
                         } catch (Exception e) {
-                            SocketLog.error("master handler future take error");
+                            SocketLog.error("master handler future take error:{}", e);
                             throw new RuntimeException(e);
+                        } catch (Throwable throwable) {
+                            SocketLog.error("master handler future take throwable{}", throwable);
+                            throwable.printStackTrace();
                         }
                     }
                 }
@@ -113,14 +129,14 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 break;
             case RESPONSE:
                 Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("receiver socket info from work {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
+                SocketLog.info("6.MasterHandler:receiver socket info from work {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onResponse(response);
                 }
                 break;
             case WEB_RESPONSE:
                 WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("receiver socket info from work {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
+                SocketLog.info("6.MasterHandler:receiver socket info from work {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
                 for (ResponseListener listener : listeners) {
                     listener.onWebResponse(webResponse);
                 }

@@ -2,8 +2,10 @@ package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.util.HierarchyProperties;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.exception.HeraCaughtExceptionHandler;
 import com.dfire.logs.HeraLog;
+import com.dfire.logs.TaskLog;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -25,7 +27,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
     public ProcessJob(JobContext jobContext) {
         super(jobContext);
-        envMap = new HashMap<>(System.getenv());
+        envMap = HeraGlobalEnvironment.userEnvMap;
     }
 
     /**
@@ -39,9 +41,9 @@ public abstract class ProcessJob extends AbstractJob implements Job {
     public int run() throws Exception {
         int exitCode = -999;
         jobContext.getProperties().getAllProperties().keySet().stream()
-                .filter(key -> jobContext.getProperties().getProperty(key) != null && (key.startsWith("instance.") || key.startsWith("secret.")))
+                .filter(key -> jobContext.getProperties().getProperty(key) != null && (key.startsWith("secret.")))
                 .forEach(k -> envMap.put(k, jobContext.getProperties().getProperty(k)));
-        envMap.put("instance.workDir", jobContext.getWorkDir());
+
 
         List<String> commands = getCommandList();
 
@@ -137,7 +139,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             String arg = builder.toString();
             commands.add(arg);
         }
-        HeraLog.info("组装后的命令为：{}", JSONObject.toJSONString(commands));
+        TaskLog.info("5.2 ProcessJob :组装后的命令为：{}", JSONObject.toJSONString(commands));
         return commands.toArray(new String[commands.size()]);
     }
 

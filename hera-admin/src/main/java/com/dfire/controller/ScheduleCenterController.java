@@ -110,7 +110,9 @@ public class ScheduleCenterController extends BaseHeraController {
 
         HeraHostGroup hostGroup = heraHostGroupService.findById(job.getHostGroupId());
         focusUsers.append("]");
-        heraJobVo.setHostGroupName(hostGroup.getName());
+        if (hostGroup != null) {
+            heraJobVo.setHostGroupName(hostGroup.getName());
+        }
         heraJobVo.setUIdS(getuIds(jobId));
         heraJobVo.setFocusUser(focusUsers.toString());
         return heraJobVo;
@@ -204,7 +206,7 @@ public class ScheduleCenterController extends BaseHeraController {
             return new WebAsyncTask<>(() -> new RestfulResponse(false, ERROR_MSG));
         }
 
-        TriggerTypeEnum triggerTypeEnum = null;
+        TriggerTypeEnum triggerTypeEnum;
         if (triggerType == 2) {
             triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
         } else {
@@ -233,6 +235,7 @@ public class ScheduleCenterController extends BaseHeraController {
         actionHistory.setProperties(configs);
         heraJobHistoryService.insert(actionHistory);
         heraAction.setScript(heraJob.getScript());
+        heraAction.setHistoryId(actionHistory.getId());
         heraJobActionService.update(heraAction);
 
         WebAsyncTask<RestfulResponse> webAsyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
@@ -369,6 +372,19 @@ public class ScheduleCenterController extends BaseHeraController {
         return asyncTask;
     }
 
+
+    @RequestMapping(value = "/generateAllVersion", method = RequestMethod.GET)
+    @ResponseBody
+    public WebAsyncTask<String> generateAllVersion() {
+        if (!isAdmin(getOwner())) {
+            return new WebAsyncTask<>(() -> ERROR_MSG);
+        }
+        WebAsyncTask<String> asyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () ->
+                workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, Constants.ALL_JOB_ID));
+        asyncTask.onTimeout(() -> "全量版本生成时间较长，请耐心等待下");
+        return asyncTask;
+    }
+
     /**
      * 获取任务历史版本
      *
@@ -466,7 +482,7 @@ public class ScheduleCenterController extends BaseHeraController {
         if (owner == null || id == null || type == null) {
             return false;
         }
-        if (HeraGlobalEnvironment.getAdmin().equals(owner)) {
+        if (isAdmin(owner)) {
             return true;
         }
         if (JOB.equals(type)) {
@@ -491,6 +507,10 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         return true;
+    }
+
+    private boolean isAdmin(String owner) {
+        return HeraGlobalEnvironment.getAdmin().equals(owner);
     }
 
 

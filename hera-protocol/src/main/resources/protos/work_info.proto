@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcWorkInfo";
+
+message AllWorkInfo {
+    map<string, WorkInfo> values= 1;
+}
+
+message WorkInfo {
+   OSInfo oSInfo = 1;
+   repeated MachineInfo machineInfo = 2;
+   repeated ProcessMonitor processMonitor = 3;
+}
+
+
+message OSInfo {
+   float user = 1;
+   float system = 2;
+   float mem = 3;
+   float cpu = 4;
+   float swap = 5;
+}
+
+message MachineInfo {
+    //文件系统分区
+   string filesystem = 1;
+   //文件类型
+   string type = 2;
+   //分区大小
+   string size = 3;
+   //分区已经使用大小
+   string used = 4;
+   //分区可用大小
+   string avail = 5;
+   //分区使用的比例
+   string use = 6;
+   //磁盘分区挂载的目录 即挂载点
+   string mountedOn = 7;
+}
+
+
+
+message ProcessMonitor {
+    string  pid = 1;
+    string  user = 2;
+    string  viri = 3;
+    string  res = 4;
+    string  cpu = 5;
+    string  mem = 6;
+    string  time = 7;
+    string  command = 8;
+}
