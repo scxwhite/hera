@@ -58,7 +58,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         try {
                             future = completionService.take();
                             response = future.get();
-                            TaskLog.info("3-1.MasterHandler-->master prepare send status : {}", response.webResponse.getStatus());
+                            TaskLog.info("3-1.MasterHandler:-->master prepare send status : {}", response.webResponse.getStatus());
                             channelFuture = response.channel.writeAndFlush(wrapper(response.webResponse));
                             success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
                             cause = channelFuture.cause();
@@ -66,7 +66,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                                 throw cause;
                             }
                             if (success) {
-                                TaskLog.info("3-2.MasterHandler:2-->master send response success, requestId={}", response.webResponse.getRid());
+                                TaskLog.info("3-2.MasterHandler:-->master send response success, requestId={}", response.webResponse.getRid());
                             } else {
                                 TaskLog.error("3-2.MasterHandler:2-->master send response timeout, requestId={}", response.webResponse.getRid());
                             }
