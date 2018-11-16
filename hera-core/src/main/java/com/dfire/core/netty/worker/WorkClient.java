@@ -37,6 +37,7 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
@@ -60,7 +61,8 @@ public class WorkClient {
 
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
-    private WorkContext workContext = new WorkContext();
+    @Autowired
+    private WorkContext workContext;
     private ScheduledExecutorService service;
     private AtomicBoolean clientSwitch = new AtomicBoolean(false);
     public ScheduledThreadPoolExecutor workSchedule;
