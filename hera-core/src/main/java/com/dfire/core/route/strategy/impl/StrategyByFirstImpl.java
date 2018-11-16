@@ -43,7 +43,7 @@ public class StrategyByFirstImpl extends AbstractChooseWorkerStrategy {
             }
         }
         if (workHolder != null) {
-            ScheduleLog.warn("select work is :{}", workHolder.getChannel().remoteAddress());
+            ScheduleLog.warn("select work is :{}", workHolder.getChannel().getRemoteAddress());
         }
         return workHolder;
     }

@@ -4,12 +4,13 @@ package com.dfire.core.netty.worker;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
-import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.ActionUtil;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.message.HeartBeatInfo;
+import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.netty.worker.request.WorkerHandleWebRequest;
 import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
 import com.dfire.logs.HeartLog;
@@ -64,11 +65,13 @@ public class WorkClient {
     private ScheduledExecutorService service;
     private AtomicBoolean clientSwitch = new AtomicBoolean(false);
     public ScheduledThreadPoolExecutor workSchedule;
+
     {
         workSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("work-schedule", false));
         workSchedule.setKeepAliveTime(5, TimeUnit.MINUTES);
         workSchedule.allowCoreThreadTimeOut(true);
     }
+
     /**
      * ProtobufVarint32FrameDecoder:  针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
      * <pre>
@@ -121,20 +124,14 @@ public class WorkClient {
             public void run() {
                 try {
                     if (workContext.getServerChannel() != null) {
-                        ChannelFuture channelFuture = workerHandlerHeartBeat.send(workContext);
-                        channelFuture.addListener((future) -> {
-                            if (!future.isSuccess()) {
-                                failCount++;
-                                SocketLog.error("send heart beat failed ,failCount :" + failCount);
-                            } else {
-                                failCount = 0;
-                                HeartLog.info("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
-                            }
-                            if (failCount > 10) {
-                                future.cancel(true);
-                                SocketLog.warn("cancel connect server ,failCount:" + failCount);
-                            }
-                        });
+                        boolean send = workerHandlerHeartBeat.send(workContext);
+                        if (!send) {
+                            failCount++;
+                            SocketLog.error("send heart beat failed ,failCount :" + failCount);
+                        } else {
+                            failCount = 0;
+                            HeartLog.info("send heart beat success:{}", workContext.getServerChannel().getRemoteAddress());
+                        }
                     } else {
                         SocketLog.error("server channel can not find on " + WorkContext.host);
                     }
@@ -217,7 +214,7 @@ public class WorkClient {
                 }
 
             }
-        },0, 5, TimeUnit.SECONDS);
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     /**
@@ -240,7 +237,7 @@ public class WorkClient {
         ChannelFutureListener futureListener = (future) -> {
             try {
                 if (future.isSuccess()) {
-                    workContext.setServerChannel(future.channel());
+                    workContext.setServerChannel(new NettyChannel(future.channel()));
                     SocketLog.info(workContext.getServerChannel().toString());
                 }
             } catch (Exception e) {

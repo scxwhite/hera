@@ -1,14 +1,13 @@
 package com.dfire.core.netty.master.response;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.core.exception.RemotingException;
+import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.logs.SocketLog;
-import com.dfire.logs.TaskLog;
 import com.dfire.protocol.*;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -21,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MasterHandleCancelJob {
 
-    public Future<RpcResponse.Response> cancel(final MasterContext context, Channel channel, JobExecuteKind.ExecuteKind kind, String jobId) {
+    public Future<RpcResponse.Response> cancel(final MasterContext context, HeraChannel channel, JobExecuteKind.ExecuteKind kind, String jobId) {
         RpcCancelMessage.CancelMessage cancelMessage = RpcCancelMessage.CancelMessage.newBuilder()
                 .setEk(kind)
                 .setId(jobId)
@@ -45,22 +44,12 @@ public class MasterHandleCancelJob {
             }
             return responseListener.getResponse();
         });
-        ChannelFuture channelFuture = channel.writeAndFlush(socketMessage);
-        boolean success = false;
         try {
-            success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Throwable cause = channelFuture.cause();
-        if (cause != null) {
-            SocketLog.error("send cancel job exception {}", cause);
-            return null;
-        } else if (success) {
             SocketLog.info("send cancel job success {}", request.getRid());
-        } else {
-            SocketLog.info("send cancel job timeout {}", request.getRid());
-            return null;
+            channel.writeAndFlush(socketMessage);
+        } catch (RemotingException e) {
+            e.printStackTrace();
+            SocketLog.error("send cancel job exception {}", request.getRid());
         }
         return future;
     }

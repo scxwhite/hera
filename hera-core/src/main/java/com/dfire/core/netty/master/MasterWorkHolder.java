@@ -1,6 +1,7 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.core.message.HeartBeatInfo;
+import com.dfire.core.netty.HeraChannel;
 import io.netty.channel.Channel;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ import java.util.Set;
 @Data
 public class MasterWorkHolder {
 
-    private Channel channel;
+    private HeraChannel channel;
 
     private Set<String> running = new HashSet<>();
 
@@ -26,7 +27,7 @@ public class MasterWorkHolder {
 
     private HeartBeatInfo heartBeatInfo;
 
-    public MasterWorkHolder(Channel channel) {
+    public MasterWorkHolder(HeraChannel channel) {
         this.channel = channel;
     }
 

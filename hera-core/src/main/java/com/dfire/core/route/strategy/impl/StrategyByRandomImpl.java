@@ -31,7 +31,6 @@ public class StrategyByRandomImpl extends AbstractChooseWorkerStrategy {
     }
 
 
-
     @Override
     public MasterWorkHolder chooseWorker(JobElement jobElement, MasterContext masterContext) {
         MasterWorkHolder workHolder = null;
@@ -54,7 +53,7 @@ public class StrategyByRandomImpl extends AbstractChooseWorkerStrategy {
             }
         }
         if (workHolder != null) {
-            ScheduleLog.warn("select work is :{}", workHolder.getChannel().remoteAddress());
+            ScheduleLog.warn("select work is :{}", workHolder.getChannel().getRemoteAddress());
         }
         return workHolder;
     }

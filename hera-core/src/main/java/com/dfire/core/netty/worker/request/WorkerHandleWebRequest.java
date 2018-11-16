@@ -1,6 +1,7 @@
 package com.dfire.core.netty.worker.request;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.WorkResponseListener;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.core.netty.worker.WorkContext;
@@ -10,7 +11,6 @@ import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import com.dfire.protocol.RpcWebOperate.WebOperate;
 import com.dfire.protocol.RpcWebRequest.WebRequest;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
-import io.netty.channel.ChannelFuture;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -77,31 +77,16 @@ public class WorkerHandleWebRequest {
             }
             return responseListener.getWebResponse();
         });
-        ChannelFuture channelFuture = workContext.getServerChannel().writeAndFlush(SocketMessage.newBuilder()
-                .setKind(SocketMessage.Kind.WEB_REQUEST)
-                .setBody(request.toByteString())
-                .build());
-
-        Throwable cause;
-        boolean success = false;
         try {
-            success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
-            cause = channelFuture.cause();
-            if (cause != null) {
-                success = false;
-                throw cause;
-            }
-        } catch (Throwable throwable) {
-            SocketLog.error("send message exception:{}", throwable);
-            throwable.printStackTrace();
-        }
-        if (success) {
+            workContext.getServerChannel().writeAndFlush(SocketMessage.newBuilder()
+                    .setKind(SocketMessage.Kind.WEB_REQUEST)
+                    .setBody(request.toByteString())
+                    .build());
             SocketLog.info("1.WorkerHandleWebRequest: send web request to master requestId ={}", request.getRid());
-        } else {
-            future.cancel(true);
+        } catch (RemotingException e) {
+            e.printStackTrace();
             workContext.getHandler().removeListener(responseListener);
-            SocketLog.error("1.WorkerHandleWebRequest: send web request to master timeout requestId ={}", request.getRid());
-            return null;
+            SocketLog.error("1.WorkerHandleWebRequest: send web request to master exception requestId ={}", request.getRid());
         }
         return future;
 

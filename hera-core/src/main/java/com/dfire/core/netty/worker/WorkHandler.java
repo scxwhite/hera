@@ -1,7 +1,7 @@
 package com.dfire.core.netty.worker;
 
 import com.dfire.common.util.NamedThreadFactory;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
@@ -12,7 +12,6 @@ import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -41,32 +40,17 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
         Executor executor = Executors.newSingleThreadExecutor();
 
         executor.execute(() -> {
-            boolean success;
-            Response response;
+            Response response = null;
             Future<Response> future;
-            ChannelFuture channelFuture;
-            Throwable cause;
             while (true) {
                 try {
                     future = completionService.take();
                     response = future.get();
-                    channelFuture = workContext.getServerChannel().writeAndFlush(wrapper(response));
-                    success = channelFuture.await(HeraGlobalEnvironment.getChannelTimeout());
-                    cause = channelFuture.cause();
-                    if (cause != null) {
-                        throw cause;
-                    }
+                    workContext.getServerChannel().writeAndFlush(wrapper(response));
                     TaskLog.info("1.WorkHandler: worker send response,rid={}", response.getRid());
-                    if (!success) {
-                        TaskLog.error("1.WorkHandler: worker send response timeout,rid={}", response.getRid());
-
-                    }
-                } catch (Exception e) {
-                    SocketLog.error("worker handler take future exception,{}", e);
-                    throw new RuntimeException(e);
-                } catch (Throwable throwable) {
-                    SocketLog.error("worker handler take future exception,{}", throwable);
-                    throwable.printStackTrace();
+                } catch (InterruptedException | ExecutionException | RemotingException e) {
+                    e.printStackTrace();
+                    TaskLog.error("1.WorkHandler: worker send response timeout,rid={}", response == null ? null : response.getRid());
                 }
             }
         });
