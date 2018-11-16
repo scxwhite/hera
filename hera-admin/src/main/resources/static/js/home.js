@@ -1,107 +1,3 @@
-var info = {
-    "master_10.1.21.67":{
-        "machineInfo":[
-            {
-                "filesystem":"/dev/vda1",
-                "type":"ext4",
-                "size":"79G",
-                "used":"3.4G",
-                "avail":"72G",
-                "use":5,
-                "mountedOn":"/"
-            },
-            {
-                "filesystem":"/dev/vda1",
-                "type":"ext4",
-                "size":"79G",
-                "used":"3.4G",
-                "avail":"72G",
-                "use":5,
-                "mountedOn":"/"
-            }
-        ],
-        "osInfo":{
-            "user":0.3,
-            "system":0.1,
-            "mem":3,
-            "cpu":99.6,
-            "swap":100
-        },
-        "processMonitor":[
-            {
-                "pid":"6250",
-                "user":"root",
-                "viri":"1788m",
-                "res":"46m",
-                "cpu":"0.5%",
-                "mem":"20%",
-                "time":"13:01.92",
-                "command":"cmf-agent"
-            },
-            {
-                "pid":"6250",
-                "user":"root",
-                "viri":"1788m",
-                "res":"46m",
-                "cpu":"0.5%",
-                "mem":"20%",
-                "time":"13:01.92",
-                "command":"cmf-agent"
-            }
-        ]
-    },
-    "work_10.1.28.26":{
-        "machineInfo":[
-            {
-                "filesystem":"/dev/vda1",
-                "type":"ext4",
-                "size":"79G",
-                "used":"3.4G",
-                "avail":"72G",
-                "use":5,
-                "mountedOn":"/"
-            },
-            {
-                "filesystem":"/dev/vda1",
-                "type":"ext4",
-                "size":"79G",
-                "used":"3.4G",
-                "avail":"72G",
-                "use":5,
-                "mountedOn":"/"
-            }
-        ],
-        "osInfo":{
-            "user":0.3,
-            "system":0.1,
-            "mem":3,
-            "cpu":99.6,
-            "swap":100
-        },
-        "processMonitor":[
-            {
-                "pid":"6250",
-                "user":"root",
-                "viri":"1788m",
-                "res":"46m",
-                "cpu":"0.5%",
-                "mem":"20%",
-                "time":"13:01.92",
-                "command":"cmf-agent"
-            },
-            {
-                "pid":"6250",
-                "user":"root",
-                "viri":"1788m",
-                "res":"46m",
-                "cpu":"0.5%",
-                "mem":"20%",
-                "time":"13:01.92",
-                "command":"cmf-agent"
-            }
-        ]
-    }
-}
 $(function () {
     $('#home').addClass('active');
 
@@ -185,115 +81,144 @@ $(function () {
             initLineJobStatus(data.data);
         }
     })
+    var info = {};
     //内存仪表板
     function initMachine() {
-        // $.ajax()
-        //机器选择
-        for ( var i in info ){
-            $('#machineList').append('<option value="'+i+'">'+i+'</option>');
+        $.ajax({
+            url: base_url + '/homePage/getAllWorkInfo',
+            type: 'get',
+            success: function (data) {
+                //机器选择
+                for ( var i in data ){
+                    $('#machineList').append('<option value="'+i+'">'+i+'</option>');
+                }
+                info=data;
+                var machine = $('#machineList').val();
+                initInfo(data[machine]);
+            }
+        })
+    }
+    function initInfo(machine){
+        //系统概况
+        ramOption.series[0].data[0].value = parseFloat(machine.osInfo.mem);
+        var myChart=echarts.init(document.getElementById('ramGauge'));
+        myChart.setOption(ramOption, true);
+
+        $('#userPercent').easyPieChart({
+            animate: 1000,
+            barColor: '#011935',
+            onStep: function(from, to, percent) {
+                $(this.el).find('.percent').text(Math.round(percent));
+            },
+            size:200,
+            lineWidth:10,
+            scaleColor: '#666'
+        });
+        $('#userPercent').data('easyPieChart').update(0);
+        $('#userPercent').data('easyPieChart').update(parseFloat(machine.osInfo.user)*100);
+
+        $('#SysPercent').easyPieChart({
+            animate: 1000,
+            barColor: '#009FAB',
+            onStep: function(from, to, percent) {
+                $(this.el).find('.percent').text(Math.round(percent));
+            },
+            size:200,
+            lineWidth:10,
+            scaleColor: '#666'
+        });
+        $('#SysPercent').data('easyPieChart').update(0);
+        $('#SysPercent').data('easyPieChart').update(parseFloat(machine.osInfo.system)*100);
+
+        $('#CPUPercent').easyPieChart({
+            animate: 1000,
+            barColor: '#1DB0B8',
+            onStep: function(from, to, percent) {
+                $(this.el).find('.percent').text(Math.round(percent));
+            },
+            size:200,
+            lineWidth:10,
+            scaleColor: '#666'
+        });
+        console.log($('#CPUPercent'))
+        $('#CPUPercent').data('easyPieChart').update(0);
+        $('#CPUPercent').data('easyPieChart').update(parseInt(machine.osInfo.cpu));
+
+        $('#SwapPercent').easyPieChart({
+            animate: 1000,
+            barColor: '#008891',
+            onStep: function(from, to, percent) {
+                $(this.el).find('.percent').text(Math.round(percent));
+            },
+            size:200,
+            lineWidth:10,
+            scaleColor: '#666'
+        });
+        $('#SwapPercent').data('easyPieChart').update(0);
+        $('#SwapPercent').data('easyPieChart').update(parseInt(machine.osInfo.swap));
+
+        //进程监控
+        $('#processMonitor').bootstrapTable({
+            columns:[{
+                field: 'pid',
+                title: 'PID',
+                width: 150
+            },{
+                field: 'user',
+                title: 'USER',
+                width: 150
+            },{
+                field: 'viri',
+                title: 'VIRI',
+                width: 150
+            },{
+                field: 'res',
+                title: 'RES',
+                width: 150
+            },{
+                field: 'cpu',
+                title: 'CPU',
+                formatter:function(value,row,index){
+                    value = parseFloat(value)
+                    value*=10;
+                    return '<div class="progress progress-xs"><div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="10" style="width: '+value+'%"><span class="sr-only">40% Complete (success)</span></div></div>'
+                },
+                width: 150
+
+            },{
+                field: 'mem',
+                title: 'MEM',
+                formatter:function(value,row,index){
+                    return '<div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100" style="width: '+value+'"><span class="sr-only">40% Complete (success)</span></div></div>'
+                },
+                width: 150
+            },{
+                field: 'time',
+                title: 'TIME',
+                width: 150
+            },{
+                field: 'command',
+                title: 'COMMAND',
+                width: 150
+            }],
+            data: machine.processMonitor
+        })
+        $('#processMonitor').bootstrapTable('hideLoading');
+        //机器信息
+        var machineInfo =machine.machineInfo;
+        $('#machineInfo').empty();
+        for(var i =0;i<machineInfo.length;i++){
+            $('#machineInfo').append('<div class="machine"><p class="filesystem">'+machineInfo[i].filesystem+'(已用'+machineInfo[i].used+'/可用'+machineInfo[i].avail+')</p><div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="'+machineInfo[i].use+'" aria-valuemin="0" aria-valuemax="100" style="width: '+machineInfo[i].use+'%"><span class="sr-only"></span></div></div></div>')
         }
-        var machine = $('#machineList').val();
-        initInfo(info[machine]);
-        // console.log(info[machine])
-        function initInfo(machine){
-            //系统概况
-            ramOption.series[0].data[0].value = parseFloat(machine.osInfo.mem);
-            var myChart=echarts.init(document.getElementById('ramGauge'));
-            myChart.setOption(ramOption, true);
-            var option1 = {
-                value:parseFloat(machine.osInfo.user)*100,//百分比,必填
-                name:'用户占用',//必填
-                backgroundColor:null,
-                color:['#38a8da','#d4effa'],
-                fontSize:16,
-                domEle:document.getElementById("userPercent")//必填
-            },percentPie1 = new PercentPie(option1);
-            percentPie1.init();
-            var option2 = {
-                    value:parseFloat(machine.osInfo.system)*100,//百分比,必填
-                    name:'系统占用',//必填
-                    backgroundColor:null,
-                    color:['#38a8da','#d4effa'],
-                    fontSize:16,
-                    domEle:document.getElementById("SysPercent")//必填
-                },
-                percentPie2 = new PercentPie(option2);
-            percentPie2.init();
-
-            var option3 = {
-                    value:parseInt(machine.osInfo.cpu),//百分比,必填
-                    name:'CPU空闲',//必填
-                    backgroundColor:null,
-                    color:['#38a8da','#d4effa'],
-                    fontSize:16,
-                    domEle:document.getElementById("CPUPercent")//必填
-                },
-                percentPie3 = new PercentPie(option3);
-            percentPie3.init();
-
-            var option4 = {
-                    value:parseInt(machine.osInfo.swap),//百分比,必填
-                    name:'SWAP空闲',//必填
-                    backgroundColor:null,
-                    color:['#38a8da','#d4effa'],
-                    fontSize:16,
-                    domEle:document.getElementById("SwapPercent")//必填
-                },
-                percentPie4 = new PercentPie(option4);
-            percentPie4.init();
-            //进程监控
-            $('#processMonitor').bootstrapTable({
-                columns:[{
-                    field: 'pid',
-                    title: 'PID',
-                    width: 100
-                },{
-                    field: 'user',
-                    title: 'USER',
-                    width: 100
-                },{
-                    field: 'viri',
-                    title: 'VIRI',
-                    width: 100
-                },{
-                    field: 'res',
-                    title: 'RES',
-                    width: 100
-                },{
-                    field: 'cpu',
-                    title: 'CPU',
-                    formatter:function(value,row,index){
-                        value = parseFloat(value)
-                        value*=10;
-                        return '<div class="progress progress-xs"><div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="10" style="width: '+value+'%"><span class="sr-only">40% Complete (success)</span></div></div>'
-                    },
-                    width: 100
-
-                },{
-                    field: 'mem',
-                    title: 'MEM',
-                    formatter:function(value,row,index){
-                        return '<div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100" style="width: '+value+'"><span class="sr-only">40% Complete (success)</span></div></div>'
-                    },
-                    width: 100
-                },{
-                    field: 'time',
-                    title: 'TIME',
-                    width: 100
-                },{
-                    field: 'command',
-                    title: 'COMMAND',
-                    width: 100
-                }],
-                data: machine.processMonitor
-            })
-            //机器信息
-
-        }
-
     }
     initMachine()
-
+    $('#machineList').change(function (e) {
+        e.stopPropagation();
+        var machine = $(this).val();
+        machine = info[machine];
+        console.log(machine)
+        initInfo(machine);
+    })
 
     function initLineJobStatus(data) {
         initOption();
