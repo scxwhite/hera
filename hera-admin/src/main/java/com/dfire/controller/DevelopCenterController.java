@@ -126,15 +126,13 @@ public class DevelopCenterController extends BaseHeraController {
      *
      * @param heraFile
      * @return
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
     @RequestMapping(value = "/debugSelectCode", method = RequestMethod.POST)
     @ResponseBody
     public WebAsyncTask<Map<String, Object>> debugSelectCode(@RequestBody HeraFile heraFile) {
 
         String owner = getOwner();
-        return new WebAsyncTask<>(10000, () -> {
+        return new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
             Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
             file.setContent(heraFile.getContent());

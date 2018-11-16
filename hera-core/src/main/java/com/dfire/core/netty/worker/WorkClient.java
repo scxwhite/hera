@@ -248,7 +248,7 @@ public class WorkClient {
         };
         ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, HeraGlobalEnvironment.getConnectPort()));
         connectFuture.addListener(futureListener);
-        if (!latch.await(10, TimeUnit.SECONDS)) {
+        if (!latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS)) {
             connectFuture.removeListener(futureListener);
             connectFuture.cancel(true);
             throw new ExecutionException(new TimeoutException("connect server consumption of 2 seconds"));

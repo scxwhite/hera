@@ -117,7 +117,7 @@ public class Master {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 1, 60, TimeUnit.MINUTES);
+        }, 0, 60, TimeUnit.MINUTES);
     }
 
 
@@ -185,7 +185,7 @@ public class Master {
                 !checkJobExists(HeraJobHistoryVo
                         .builder()
                         .actionId(String.valueOf(actionId))
-                        .jobId(ActionUtil.getJobId(String.valueOf(actionId)))
+                        .jobId(String.valueOf(ActionUtil.getJobId(String.valueOf(actionId))))
                         .build(), true)) {
             masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId.toString()));
             actionIdList.add(actionId);
@@ -258,8 +258,8 @@ public class Master {
     public boolean generateBatchAction() {
         ScheduleLog.info("全量任务版本生成");
         long begin = System.currentTimeMillis();
-        boolean flag =  generateAction(false, null);
-        ScheduleLog.info("生成版本时间:"+(System.currentTimeMillis()-begin)+" ms");
+        boolean flag = generateAction(false, null);
+        ScheduleLog.info("生成版本时间:" + (System.currentTimeMillis() - begin) + " ms");
         return flag;
     }
 
@@ -296,7 +296,7 @@ public class Master {
             }
             String cronDate = ActionUtil.getActionVersionByTime(now);
             generateScheduleJobAction(jobList, cronDate, actionMap);
-            generateDependJobAction(jobList, actionMap, 0);
+          //  generateDependJobAction(jobList, actionMap, 0);
 
             if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
                 heraActionMap = actionMap;
@@ -325,7 +325,7 @@ public class Master {
      * @param jobList
      * @param actionMap
      */
-    public void generateScheduleJobAction(List<HeraJob> jobList, String  cronDate, Map<Long, HeraAction> actionMap) {
+    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap) {
         List<HeraAction> insertActionList = new ArrayList<>();
         for (HeraJob heraJob : jobList) {
             if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 0) {
@@ -337,33 +337,33 @@ public class Master {
                         ScheduleLog.error("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
                         continue;
                     }
-                    insertActionList.addAll(createHeraAction(list,heraJob));
+                    insertActionList.addAll(createHeraAction(list, heraJob));
                 }
             }
         }
-        batchInsertList(insertActionList,actionMap);
+        batchInsertList(insertActionList, actionMap);
 
     }
 
     /**
      * 批量插入
+     *
      * @param insertActionList
      */
-    private void batchInsertList(List<HeraAction> insertActionList,Map<Long, HeraAction> actionMap ){
+    private void batchInsertList(List<HeraAction> insertActionList, Map<Long, HeraAction> actionMap) {
         // 每次批量的条数
         int batchNum = 500;
-        int step = batchNum;
+        int step = 0;
         int maxSize = insertActionList.size();
-        if(maxSize != 0){
-            for (int i = 0;i < maxSize;i = i+batchNum){
-                if((step + batchNum) > maxSize){
-                    step = maxSize ;
-                }else {
-                    step = step+batchNum;
+        if (maxSize != 0) {
+            for (int i = 0; i < maxSize; i = i + batchNum) {
+                if ((step + batchNum) > maxSize) {
+                    step = maxSize;
+                } else {
+                    step = step + batchNum;
                 }
-                List<HeraAction> insertList = insertActionList.subList(i,step);
-                masterContext.getHeraJobActionService().batchInsert(insertList);
-                for(HeraAction action : insertList){
+                System.out.println(i + "---------" + step);
+                for (HeraAction action : masterContext.getHeraJobActionService().batchInsert(insertActionList.subList(i, step))) {
                     actionMap.put(Long.parseLong(action.getId()), action);
                 }
             }
@@ -373,13 +373,14 @@ public class Master {
 
     /**
      * 生成action
+     *
      * @param list
      * @param heraJob
      * @return
      */
-    private List<HeraAction> createHeraAction(List<String> list,HeraJob heraJob){
+    private List<HeraAction> createHeraAction(List<String> list, HeraJob heraJob) {
         List<HeraAction> heraActionList = new ArrayList<>();
-        for(String str : list){
+        for (String str : list) {
             String actionDate = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "yyyyMMddHHmm");
             String actionCron = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "0 m H d M") + " ?";
             HeraAction heraAction = new HeraAction();
@@ -546,7 +547,7 @@ public class Master {
                                     insertActionList.add(actionNew);
                                 }
                             }
-                            batchInsertList(insertActionList,actionMap);
+                            batchInsertList(insertActionList, actionMap);
                         }
 
 

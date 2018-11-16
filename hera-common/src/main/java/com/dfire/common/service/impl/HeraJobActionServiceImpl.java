@@ -30,6 +30,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     @Override
     public List<HeraAction> batchInsert(List<HeraAction> heraActionList) {
+        System.out.println("batch size is :" + heraActionList.size());
         List<HeraAction> insertList = new ArrayList<>();
         List<HeraAction> updateList = new ArrayList<>();
 
