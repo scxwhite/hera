@@ -18,6 +18,13 @@ public interface HeraJobActionService {
 
     int insert(HeraAction heraAction);
 
+    /**
+     * 批量插入
+     * @param heraActionList
+     * @return
+     */
+    List<HeraAction>  batchInsert(List<HeraAction> heraActionList);
+
     int delete(String id);
 
     int update(HeraAction heraAction);

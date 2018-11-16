@@ -129,6 +129,20 @@ public class HeraBaseDaoTest {
 
     }
 
+    @Test
+    public void heraActionBatchDaoTest() {
+//        heraJobActionService.delete("1111111111111111111");
+
+//        heraJobActionService.insert(heraAction);
+        List<HeraAction> list = Arrays.asList(heraAction);
+
+        heraJobActionService.batchInsert(list);
+//
+//        HeraAction heraAction = heraJobActionService.findById("201806190000000002");
+//        System.out.println(heraAction.getJobDependencies());
+
+    }
+
 
     @Test
     public void heraPermissionDaoTest() {

@@ -12,6 +12,7 @@ import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,8 +27,34 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     @Autowired
     private HeraJobActionMapper heraJobActionMapper;
 
+
     @Override
-    public int insert(HeraAction heraAction) {
+    public List<HeraAction> batchInsert(List<HeraAction> heraActionList) {
+        List<HeraAction> insertList = new ArrayList<>();
+        List<HeraAction> updateList = new ArrayList<>();
+
+        for(HeraAction heraAction : heraActionList){
+            if (isNeedUpdateAction(heraAction)) {
+                updateList.add(heraAction);
+            } else {
+                insertList.add(heraAction);
+            }
+        }
+        if(insertList.size() != 0){
+            heraJobActionMapper.batchInsert(insertList);
+        }
+        if(updateList.size() != 0 ){
+            heraJobActionMapper.batchUpdate(updateList);
+        }
+        return heraActionList;
+    }
+
+    /**
+     * 判断是更新该是修改
+     * @param heraAction
+     * @return
+     */
+    private boolean isNeedUpdateAction(HeraAction heraAction){
         HeraAction action = heraJobActionMapper.findById(heraAction);
         if (action != null) {
             //如果该任务不是在运行中
@@ -40,8 +67,17 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 heraAction = action;
                 heraAction.setGmtModified(new Date());
             }
+            return true;
+        }
+        return false;
+
+    }
+
+    @Override
+    public int insert(HeraAction heraAction) {
+        if (isNeedUpdateAction(heraAction)) {
             return heraJobActionMapper.update(heraAction);
-        } else {
+        }else {
             return heraJobActionMapper.insert(heraAction);
         }
     }

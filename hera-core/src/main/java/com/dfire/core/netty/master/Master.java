@@ -322,7 +322,8 @@ public class Master {
      * @param jobList
      * @param actionMap
      */
-    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap) {
+    public void generateScheduleJobAction(List<HeraJob> jobList, String  cronDate, Map<Long, HeraAction> actionMap) {
+        List<HeraAction> insertActionList = new ArrayList<>();
         for (HeraJob heraJob : jobList) {
             if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 0) {
                 String cron = heraJob.getCronExpression();
@@ -333,29 +334,68 @@ public class Master {
                         ScheduleLog.error("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
                         continue;
                     }
-                    list.forEach(str -> {
-                        String actionDate = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "yyyyMMddHHmm");
-                        String actionCron = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "0 m H d M") + " ?";
-                        HeraAction heraAction = new HeraAction();
-                        BeanUtils.copyProperties(heraJob, heraAction);
-                        Long actionId = Long.parseLong(actionDate) * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()));
-                        heraAction.setId(actionId.toString());
-                        heraAction.setCronExpression(actionCron);
-                        heraAction.setGmtCreate(new Date());
-                        heraAction.setJobId(String.valueOf(heraJob.getId()));
-                        heraAction.setHistoryId(heraJob.getHistoryId());
-                        heraAction.setAuto(heraJob.getAuto());
-                        heraAction.setGmtModified(new Date());
-                        heraAction.setJobDependencies(null);
-                        heraAction.setDependencies(null);
-                        heraAction.setReadyDependency(null);
-                        heraAction.setHostGroupId(heraJob.getHostGroupId());
-                        masterContext.getHeraJobActionService().insert(heraAction);
-                        actionMap.put(Long.parseLong(heraAction.getId()), heraAction);
-                    });
+                    insertActionList.addAll(createHeraAction(list,heraJob));
                 }
             }
         }
+        batchInsertList(insertActionList,actionMap);
+
+    }
+
+    /**
+     * 批量插入
+     * @param insertActionList
+     */
+    private void batchInsertList(List<HeraAction> insertActionList,Map<Long, HeraAction> actionMap ){
+        // 每次批量的条数
+        int batchNum = 500;
+        int step = batchNum;
+        int maxSize = insertActionList.size();
+        if(maxSize != 0){
+            for (int i = 0;i < maxSize;i = i+batchNum){
+                if((step + batchNum) > maxSize){
+                    step = maxSize ;
+                }else {
+                    step = step+batchNum;
+                }
+                List<HeraAction> insertList = insertActionList.subList(i,step);
+                masterContext.getHeraJobActionService().batchInsert(insertList);
+                for(HeraAction action : insertList){
+                    actionMap.put(Long.parseLong(action.getId()), action);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 生成action
+     * @param list
+     * @param heraJob
+     * @return
+     */
+    private List<HeraAction> createHeraAction(List<String> list,HeraJob heraJob){
+        List<HeraAction> heraActionList = new ArrayList<>();
+        for(String str : list){
+            String actionDate = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "yyyyMMddHHmm");
+            String actionCron = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "0 m H d M") + " ?";
+            HeraAction heraAction = new HeraAction();
+            BeanUtils.copyProperties(heraJob, heraAction);
+            Long actionId = Long.parseLong(actionDate) * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()));
+            heraAction.setId(actionId.toString());
+            heraAction.setCronExpression(actionCron);
+            heraAction.setGmtCreate(new Date());
+            heraAction.setJobId(String.valueOf(heraJob.getId()));
+            heraAction.setHistoryId(heraJob.getHistoryId());
+            heraAction.setAuto(heraJob.getAuto());
+            heraAction.setGmtModified(new Date());
+            heraAction.setJobDependencies(null);
+            heraAction.setDependencies(null);
+            heraAction.setReadyDependency(null);
+            heraAction.setHostGroupId(heraJob.getHostGroupId());
+            heraActionList.add(heraAction);
+        }
+        return heraActionList;
     }
 
 
@@ -441,6 +481,7 @@ public class Master {
 
                     String actionMostDeps = "";
 
+
                     for (String dependency : dependencies) {
                         if (dependenciesMap.get(dependency) == null || dependenciesMap.get(dependency).size() == 0) {
                             isComplete = false;
@@ -465,7 +506,9 @@ public class Master {
                         continue;
                     } else {
                         List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
+
                         if (actionMostList != null && actionMostList.size() > 0) {
+                            List<HeraAction> insertActionList = new ArrayList<>();
                             for (HeraAction action : actionMostList) {
                                 StringBuilder actionDependencies = new StringBuilder(action.getId());
                                 Long longActionId = Long.parseLong(actionDependencies.toString());
@@ -497,10 +540,10 @@ public class Master {
                                 actionNew.setGmtModified(new Date());
                                 actionNew.setHostGroupId(heraJob.getHostGroupId());
                                 if (!actionMap.containsKey(actionId)) {
-                                    masterContext.getHeraJobActionService().insert(actionNew);
-                                    actionMap.put(Long.parseLong(actionNew.getId()), actionNew);
+                                    insertActionList.add(actionNew);
                                 }
                             }
+                            batchInsertList(insertActionList,actionMap);
                         }
 
 
