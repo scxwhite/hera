@@ -3,7 +3,6 @@ package com.dfire.core.job;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.core.tool.pool.JdbcDataSourcePool;
 import com.dfire.logs.HeraLog;
-import org.springframework.context.ApplicationContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -18,15 +17,13 @@ import java.util.List;
  */
 public class Spark2Job extends ProcessJob {
 
-    private ApplicationContext applicationContext;
 
     private JdbcDataSourcePool jdbcDataSourcePool = new JdbcDataSourcePool();
 
     private final int maxOutputNum = 2000;
 
-    public Spark2Job(JobContext jobContext, ApplicationContext applicationContext) {
+    public Spark2Job(JobContext jobContext) {
         super(jobContext);
-        this.applicationContext = applicationContext;
         jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "Spark2Job");
     }
 

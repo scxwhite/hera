@@ -15,8 +15,8 @@ import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.service.*;
-import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.ActionUtil;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -24,10 +24,10 @@ import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import com.dfire.core.job.CancelHadoopJob;
-import com.dfire.core.quartz.HeraQuartzJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
+import com.dfire.core.quartz.HeraQuartzJob;
 import com.dfire.logs.ScheduleLog;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +37,10 @@ import org.quartz.*;
 
 import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -68,7 +71,7 @@ public class JobHandler extends AbstractHandler {
         this.heraJobActionService = masterContext.getHeraJobActionService();
         this.heraUserService = masterContext.getHeraUserService();
         this.emailService = masterContext.getEmailService();
-        this.heraJobMonitorService = masterContext.getHeraMonitorService();
+        this.heraJobMonitorService = masterContext.getHeraJobMonitorService();
         this.cache = JobGroupCache.builder().actionId(actionId).heraJobActionService(heraJobActionService).build();
         this.master = master;
         this.masterContext = masterContext;
@@ -394,7 +397,7 @@ public class JobHandler extends AbstractHandler {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
 
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
-                    if (Long.parseLong(actionId) < Long.parseLong( ActionUtil.getCurrActionVersion())) {
+                    if (Long.parseLong(actionId) < Long.parseLong(ActionUtil.getCurrActionVersion())) {
                         HeraJobHistory history = HeraJobHistory.builder()
                                 .illustrate(LogConstant.LOST_JOB_LOG)
                                 .actionId(heraActionVo.getId())

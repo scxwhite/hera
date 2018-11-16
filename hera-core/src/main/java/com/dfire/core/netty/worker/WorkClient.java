@@ -37,7 +37,6 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.Data;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
@@ -91,13 +90,12 @@ public class WorkClient {
      *  * +---------------+               +--------+---------------+
      * </pre>
      */
-    public void init(ApplicationContext applicationContext) {
+    public void init() {
         if (!clientSwitch.compareAndSet(false, true)) {
             return;
         }
 
         workContext.setWorkClient(this);
-        workContext.setApplicationContext(applicationContext);
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
@@ -186,7 +184,7 @@ public class WorkClient {
                     for (Job job : new HashSet<>(workContext.getRunning().values())) {
                         try {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
-                            workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+                            workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
                             editDebugLog(job, e);
                         }
@@ -195,7 +193,7 @@ public class WorkClient {
                     for (Job job : new HashSet<>(workContext.getManualRunning().values())) {
                         try {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
-                            workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+                            workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
                             editLog(job, e);
                         }
@@ -204,7 +202,7 @@ public class WorkClient {
                     for (Job job : new HashSet<>(workContext.getDebugRunning().values())) {
                         try {
                             HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
-                            workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
+                            workContext.getHeraDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
                             editDebugLog(job, e);
                         }
@@ -273,9 +271,9 @@ public class WorkClient {
         HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
         history.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         history.setStatus(StatusEnum.FAILED);
-        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
+        workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
+        workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
 
 
     }
@@ -300,7 +298,7 @@ public class WorkClient {
         }
         history.setStatusEnum(StatusEnum.FAILED);
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(history));
+        workContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(history));
 
     }
 
@@ -323,9 +321,8 @@ public class WorkClient {
             history.setIllustrate("手动取消该任务");
         }
         history.setStatusEnum(StatusEnum.FAILED);
-        workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+        workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
 
     }
 

@@ -6,10 +6,8 @@ import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.schedule.HeraSchedule;
-import com.dfire.core.util.NetUtils;
 import com.dfire.logs.HeraLog;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -30,8 +28,6 @@ public class DistributeLock {
     private HeraHostRelationService hostGroupService;
     @Autowired
     private HeraLockService heraLockService;
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Autowired
     private WorkClient workClient;
@@ -80,7 +76,6 @@ public class DistributeLock {
                     heraSchedule.startup();
                     heraLock.setHost(WorkContext.host);
                     //TODO  接入master切换通知
-
                 } else {
                     HeraLog.info("master抢占失败，由其它worker抢占成功");
                 }
@@ -89,9 +84,7 @@ public class DistributeLock {
                 heraSchedule.shutdown();
             }
         }
-        //TODO  是否考虑master不执行work服务
-        workClient.init(applicationContext);
-
+        workClient.init();
         try {
             workClient.connect(heraLock.getHost());
         } catch (Exception e) {

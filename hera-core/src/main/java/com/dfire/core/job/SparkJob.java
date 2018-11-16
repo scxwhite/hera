@@ -3,10 +3,10 @@ package com.dfire.core.job;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.logs.HeraLog;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,13 +26,9 @@ public class SparkJob extends ProcessJob {
 
     public final String UDF_SQL_NAME = "hera_udf.sql";
 
-    private HeraFileService    heraFileService;
-    private ApplicationContext applicationContext;
 
-    public SparkJob(JobContext jobContext, ApplicationContext applicationContext) {
+    public SparkJob(JobContext jobContext) {
         super(jobContext);
-        this.applicationContext = applicationContext;
-        this.heraFileService = (HeraFileService) this.applicationContext.getBean("heraFileService");
         jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "SparkJob");
     }
 

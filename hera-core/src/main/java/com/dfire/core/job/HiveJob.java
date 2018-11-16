@@ -1,13 +1,10 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
-import com.dfire.common.service.HeraFileService;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.logs.HeraLog;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,7 +12,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,11 +21,9 @@ import java.util.List;
  */
 public class HiveJob extends ProcessJob {
 
-    private ApplicationContext applicationContext;
 
-    public HiveJob(JobContext jobContext, ApplicationContext applicationContext) {
+    public HiveJob(JobContext jobContext) {
         super(jobContext);
-        this.applicationContext = applicationContext;
         jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "HiveJob");
     }
 

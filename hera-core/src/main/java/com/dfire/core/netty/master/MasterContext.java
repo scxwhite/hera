@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -40,8 +39,27 @@ public class MasterContext {
 
     private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<>();
     @Autowired
-    private ApplicationContext applicationContext;
-
+    private HeraHostGroupService heraHostGroupService;
+    @Autowired
+    private HeraFileService heraFileService;
+    @Autowired
+    private QuartzSchedulerService quartzSchedulerService;
+    @Autowired
+    private HeraGroupService heraGroupService;
+    @Autowired
+    private HeraJobHistoryService heraJobHistoryService;
+    @Autowired
+    private HeraUserService heraUserService;
+    @Autowired
+    private HeraJobMonitorService heraJobMonitorService;
+    @Autowired
+    private HeraJobService heraJobService;
+    @Autowired
+    private HeraDebugHistoryService heraDebugHistoryService;
+    @Autowired
+    private HeraJobActionService heraJobActionService;
+    @Autowired
+    private EmailService emailService;
 
     private Dispatcher dispatcher;
     private Map<Integer, HeraHostGroupVo> hostGroupCache;
@@ -80,9 +98,9 @@ public class MasterContext {
         if (masterServer != null) {
             masterServer.shutdown();
         }
-        if (this.getQuartzSchedulerService() != null) {
+        if (quartzSchedulerService != null) {
             try {
-                this.getQuartzSchedulerService().shutdown();
+                quartzSchedulerService.shutdown();
                 HeraLog.info("quartz schedule shutdown success");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -96,49 +114,6 @@ public class MasterContext {
         return hostGroupCache;
     }
 
-    public HeraHostGroupService getHeraHostGroupService() {
-        return (HeraHostGroupService) applicationContext.getBean("heraHostGroupService");
-    }
-
-    public HeraFileService getHeraFileService() {
-        return (HeraFileService) applicationContext.getBean("heraFileService");
-    }
-
-    public QuartzSchedulerService getQuartzSchedulerService() {
-        return (QuartzSchedulerService) applicationContext.getBean("quartzSchedulerService");
-    }
-
-    public HeraGroupService getHeraGroupService() {
-        return (HeraGroupService) applicationContext.getBean("heraGroupService");
-    }
-
-    public HeraJobHistoryService getHeraJobHistoryService() {
-        return (HeraJobHistoryService) applicationContext.getBean("heraJobHistoryService");
-    }
-
-    public HeraUserService getHeraUserService() {
-        return (HeraUserService) applicationContext.getBean("heraUserService");
-    }
-
-    public HeraJobMonitorService getHeraMonitorService() {
-        return (HeraJobMonitorService) applicationContext.getBean("heraJobMonitorServiceImpl");
-    }
-
-    public HeraJobService getHeraJobService() {
-        return (HeraJobService) applicationContext.getBean("heraJobService");
-    }
-
-    public HeraDebugHistoryService getHeraDebugHistoryService() {
-        return (HeraDebugHistoryService) applicationContext.getBean("heraDebugHistoryService");
-    }
-
-    public HeraJobActionService getHeraJobActionService() {
-        return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
-    }
-
-    public EmailService getEmailService() {
-        return (EmailService) applicationContext.getBean("emailServiceImpl");
-    }
 
     public synchronized void refreshHostGroupCache() {
         try {

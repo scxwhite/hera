@@ -22,7 +22,7 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     @Autowired
     private HeraGroupMapper heraGroupMapper;
     @Autowired
-    private HeraJobMapper heraJobMapper;
+    private JobGroupGraphTool jobGroupGraphTool;
 
     @Override
     public HeraGroup getRootGroup() {
@@ -34,8 +34,7 @@ public class HeraGroupServiceImpl implements HeraGroupService {
 
     @Override
     public HeraJobBean getUpstreamJobBean(String actionId) {
-        //todo 完成层级属性封装
-        return JobGroupGraphTool.getUpstreamJobBean(actionId);
+        return jobGroupGraphTool.getUpstreamJobBean(actionId);
     }
 
 

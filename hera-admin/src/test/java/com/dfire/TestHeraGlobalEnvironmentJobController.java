@@ -75,7 +75,7 @@ public class TestHeraGlobalEnvironmentJobController {
     public void sendEmail() {
         try {
 
-            String [] emails = new String[3];
+            String[] emails = new String[3];
             emails[0] = "suchengxiang1241@dingtalk.com";
             emails[1] = "xiaosuda@2dfire.com";
             emails[2] = "1142819049@qq.com";
