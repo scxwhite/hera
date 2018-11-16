@@ -181,7 +181,12 @@ public class Master {
     }
 
     private void addRollBackJob(List<Long> actionIdList, Long actionId) {
-        if (!actionIdList.contains(actionId)) {
+        if (!actionIdList.contains(actionId) &&
+                !checkJobExists(HeraJobHistoryVo
+                        .builder()
+                        .actionId(String.valueOf(actionId))
+                        .jobId(ActionUtil.getJobId(String.valueOf(actionId)))
+                        .build(), true)) {
             masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId.toString()));
             actionIdList.add(actionId);
             ScheduleLog.info("roll back lost actionId :" + actionId);
@@ -193,7 +198,6 @@ public class Master {
      * 对于没有可运行机器的时，manual,debug任务重新offer到原队列
      */
     private void waitingQueueCheck() {
-
 
         masterContext.masterSchedule.schedule(new Runnable() {
             // scan频率递增的步长
@@ -849,7 +853,7 @@ public class Master {
                 .build();
         heraJobHistory.setStatusEnum(StatusEnum.RUNNING);
         //重复job检测
-        if (checkJobExists(heraJobHistory)) {
+        if (checkJobExists(heraJobHistory, false)) {
             return;
         }
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
@@ -867,7 +871,7 @@ public class Master {
     }
 
 
-    private boolean checkJobExists(HeraJobHistoryVo heraJobHistory) {
+    private boolean checkJobExists(HeraJobHistoryVo heraJobHistory, boolean checkOnly) {
         // TODO 任务检测，不要使用for循环，后面改成hash查找
         String actionId = heraJobHistory.getActionId();
         String jobId = heraJobHistory.getJobId();
@@ -877,12 +881,14 @@ public class Master {
              */
             for (JobElement jobElement : masterContext.getScheduleQueue()) {
                 if (ActionUtil.jobEquals(jobElement.getJobId(), actionId)) {
-                    heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
-                    heraJobHistory.setStartTime(new Date());
-                    heraJobHistory.setEndTime(new Date());
-                    heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
-                    heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+                    if (!checkOnly) {
+                        heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
+                        heraJobHistory.setStartTime(new Date());
+                        heraJobHistory.setEndTime(new Date());
+                        heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
+                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+                    }
                     return true;
                 }
             }
@@ -891,12 +897,14 @@ public class Master {
              */
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
                 if (workHolder.getRunning().contains(jobId)) {
-                    heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().getLocalAddress());
-                    heraJobHistory.setStartTime(new Date());
-                    heraJobHistory.setEndTime(new Date());
-                    heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
-                    heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+                    if (!checkOnly) {
+                        heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().getLocalAddress());
+                        heraJobHistory.setStartTime(new Date());
+                        heraJobHistory.setEndTime(new Date());
+                        heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
+                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+                    }
                     return true;
 
                 }
@@ -906,24 +914,28 @@ public class Master {
 
             for (JobElement jobElement : masterContext.getManualQueue()) {
                 if (ActionUtil.jobEquals(jobElement.getJobId(), actionId)) {
-                    heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
-                    heraJobHistory.setStartTime(new Date());
-                    heraJobHistory.setIllustrate(LogConstant.CHECK_MANUAL_QUEUE_LOG);
-                    heraJobHistory.setEndTime(new Date());
-                    heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+                    if (!checkOnly) {
+                        heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
+                        heraJobHistory.setStartTime(new Date());
+                        heraJobHistory.setIllustrate(LogConstant.CHECK_MANUAL_QUEUE_LOG);
+                        heraJobHistory.setEndTime(new Date());
+                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+                    }
                     return true;
                 }
             }
 
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
                 if (workHolder.getManningRunning().contains(jobId)) {
-                    heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().getLocalAddress());
-                    heraJobHistory.setStartTime(new Date());
-                    heraJobHistory.setEndTime(new Date());
-                    heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                    heraJobHistory.setIllustrate(LogConstant.CHECK_MANUAL_QUEUE_LOG);
-                    masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+                    if (!checkOnly) {
+                        heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().getLocalAddress());
+                        heraJobHistory.setStartTime(new Date());
+                        heraJobHistory.setEndTime(new Date());
+                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+                        heraJobHistory.setIllustrate(LogConstant.CHECK_MANUAL_QUEUE_LOG);
+                        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+                    }
                     return true;
                 }
             }
