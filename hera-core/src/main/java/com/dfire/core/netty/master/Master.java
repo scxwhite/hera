@@ -857,7 +857,6 @@ public class Master {
             return;
         }
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
-            // element.setJobId(heraJobHistory.getId());
             masterContext.getManualQueue().offer(element);
         } else {
             JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);

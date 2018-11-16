@@ -137,7 +137,6 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 SocketLog.error("unknown request type : {}", socketMessage.getKind());
                 break;
         }
-
         super.channelRead(ctx, msg);
     }
 

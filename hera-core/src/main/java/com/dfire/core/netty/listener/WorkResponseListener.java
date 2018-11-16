@@ -24,8 +24,7 @@ public class WorkResponseListener extends ResponseListenerAdapter {
 
 
     private RpcWebRequest.WebRequest request;
-    private WorkContext workContext;
-    private Boolean receiveResult;
+    private volatile Boolean receiveResult;
     private CountDownLatch latch;
     private RpcWebResponse.WebResponse webResponse;
 
@@ -33,8 +32,6 @@ public class WorkResponseListener extends ResponseListenerAdapter {
     public void onWebResponse(RpcWebResponse.WebResponse response) {
         if (request.getRid() == response.getRid()) {
             try {
-                TaskLog.info("work release lock for request :{}", response.getRid());
-                workContext.getHandler().removeListener(this);
                 webResponse = response;
                 receiveResult = true;
             } catch (Exception e) {

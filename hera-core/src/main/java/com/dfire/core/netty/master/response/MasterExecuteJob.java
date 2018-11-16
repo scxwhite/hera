@@ -120,7 +120,7 @@ public class MasterExecuteJob {
 
     private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, String actionId, TriggerTypeEnum typeEnum, String jobId) {
         final CountDownLatch latch = new CountDownLatch(1);
-        MasterResponseListener responseListener = new MasterResponseListener(request, context, false, latch, null);
+        MasterResponseListener responseListener = new MasterResponseListener(request, false, latch, null);
         context.getHandler().addListener(responseListener);
         Future<Response> future = context.getThreadPool().submit(() -> {
             try {
@@ -129,6 +129,7 @@ public class MasterExecuteJob {
                     TaskLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
                 }
             } finally {
+                context.getHandler().removeListener(responseListener);
                 switch (typeEnum) {
                     case MANUAL:
                         holder.getManningRunning().remove(jobId);
