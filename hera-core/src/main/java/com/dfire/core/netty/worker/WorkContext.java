@@ -10,6 +10,7 @@ import com.dfire.core.util.NetUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;
@@ -22,8 +23,21 @@ import java.util.concurrent.*;
  */
 @Data
 @NoArgsConstructor
+@Component
 public class WorkContext {
 
+    @Autowired
+    private HeraDebugHistoryService heraDebugHistoryService;
+    @Autowired
+    private HeraJobHistoryService heraJobHistoryService;
+    @Autowired
+    private HeraGroupService heraGroupService;
+    @Autowired
+    private HeraJobActionService heraJobActionService;
+    @Autowired
+    private HeraFileService heraFileService;
+    @Autowired
+    private HeraProfileService heraProfileService;
     public static String host;
     public static Integer cpuCoreNum;
     public String serverHost;
@@ -68,16 +82,4 @@ public class WorkContext {
     }
 
 
-    @Autowired
-    private HeraDebugHistoryService heraDebugHistoryService;
-    @Autowired
-    private HeraJobHistoryService heraJobHistoryService;
-    @Autowired
-    private HeraGroupService heraGroupService;
-    @Autowired
-    private HeraJobActionService heraJobActionService;
-    @Autowired
-    private HeraFileService heraFileService;
-    @Autowired
-    private HeraProfileService heraProfileService;
 }
