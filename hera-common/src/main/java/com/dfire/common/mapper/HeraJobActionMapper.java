@@ -1,10 +1,11 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraAction;
-import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.mybatis.action.HeraActionBatchInsertDriver;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
+import com.dfire.common.mybatis.action.HeraActionBatchUpdateDriver;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -18,7 +19,16 @@ public interface HeraJobActionMapper {
 
     @Insert("insert into hera_action (#{heraAction})")
     @Lang(HeraInsertLangDriver.class)
-    int insert(HeraAction heraAction);
+    int insert(HeraAction heraAction1);
+
+    @Insert("insert into hera_action (#{list})")
+    @Lang(HeraActionBatchInsertDriver.class)
+    int batchInsert(@Param("list") List<HeraAction> list);
+
+
+    @Insert("update hera_action (#{list})")
+    @Lang(HeraActionBatchUpdateDriver.class)
+    int batchUpdate(@Param("list") List<HeraAction> list);
 
     @Delete("delete from hera_action where id = #{id}")
     int delete(@Param("id") String id);
