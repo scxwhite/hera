@@ -34,10 +34,10 @@ public class NettyChannel implements HeraChannel {
                 throw cause;
             }
         } catch (Throwable e) {
-            throw new RemotingException(this, "Failed to send message to " + getRemoteAddress() + ", cause: " + e.getMessage(), e);
+            throw new RemotingException(this, getLocalAddress() + "Failed to send message to " + getRemoteAddress() + ", cause: " + e.getMessage(), e);
         }
         if (!success) {
-            throw new RemotingException(this, "Failed to send message to " + getRemoteAddress()
+            throw new RemotingException(this, getLocalAddress() + "Failed to send message to " + getRemoteAddress()
                     + "in timeout(" + timeout + "ms) limit");
         }
     }
