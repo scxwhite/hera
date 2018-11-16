@@ -257,7 +257,10 @@ public class Master {
 
     public boolean generateBatchAction() {
         ScheduleLog.info("全量任务版本生成");
-        return generateAction(false, null);
+        long begin = System.currentTimeMillis();
+        boolean flag =  generateAction(false, null);
+        ScheduleLog.info("生成版本时间:"+(System.currentTimeMillis()-begin)+" ms");
+        return flag;
     }
 
     private synchronized boolean generateAction(boolean isSingle, Integer jobId) {
