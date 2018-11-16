@@ -9,8 +9,9 @@ import com.dfire.common.kv.Tuple;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.SpringContextHolder;
 import com.dfire.common.vo.JobStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -20,8 +21,14 @@ import java.util.Map;
  * @time: Created in 下午5:16 2018/6/20
  * @desc 构建任务，组内存图
  */
+@Component
 public class JobGroupGraphTool {
 
+
+    @Autowired
+    private HeraGroupService heraGroupService;
+    @Autowired
+    private HeraJobActionService heraJobActionService;
 
     /**
      * 获取任务以及所在的上级组
@@ -29,9 +36,8 @@ public class JobGroupGraphTool {
      * @param actionId
      * @return
      */
-    public static HeraJobBean getUpstreamJobBean(String actionId) {
-        HeraJobActionService jobActionService = (HeraJobActionService) SpringContextHolder.getBean("heraJobActionService");
-        Tuple<HeraActionVo, JobStatus> tuple = jobActionService.findHeraActionVo(actionId);
+    public HeraJobBean getUpstreamJobBean(String actionId) {
+        Tuple<HeraActionVo, JobStatus> tuple = heraJobActionService.findHeraActionVo(actionId);
         if (tuple != null) {
             HeraJobBean jobBean = HeraJobBean.builder()
                     .heraActionVo(tuple.getSource())
@@ -49,8 +55,7 @@ public class JobGroupGraphTool {
      * @param groupId
      * @return
      */
-    public static HeraGroupBean getUpstreamGroupBean(Integer groupId) {
-        HeraGroupService heraGroupService = (HeraGroupService) SpringContextHolder.getBean("heraGroupService");
+    public HeraGroupBean getUpstreamGroupBean(Integer groupId) {
         HeraGroup heraGroup = heraGroupService.findById(groupId);
         HeraGroupBean result = HeraGroupBean.builder()
                 .groupVo(BeanConvertUtils.convert(heraGroup))
@@ -68,8 +73,7 @@ public class JobGroupGraphTool {
      *
      * @return
      */
-    public static HeraGroupBean buildGlobalJobGroupBean() {
-        HeraGroupService heraGroupService = (HeraGroupService) SpringContextHolder.getBean("heraGroupService");
+    public HeraGroupBean buildGlobalJobGroupBean() {
         HeraGroup rootGroup = heraGroupService.getRootGroup();
         HeraGroupBean rootGroupBean = getUpstreamGroupBean(rootGroup.getId());
         Map<String, HeraJobBean> allJobBeanMap = rootGroupBean.getAllSubJobBeans();
@@ -91,8 +95,7 @@ public class JobGroupGraphTool {
      *
      * @return
      */
-    public static HeraGroupBean buildGlobalGroupBean() {
-        HeraGroupService heraGroupService = (HeraGroupService) SpringContextHolder.getBean("heraGroupService");
+    public HeraGroupBean buildGlobalGroupBean() {
         HeraGroup rootGroup = heraGroupService.getRootGroup();
         return getUpstreamGroupBean(rootGroup.getId());
     }

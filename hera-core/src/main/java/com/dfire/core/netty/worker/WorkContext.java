@@ -1,9 +1,6 @@
 package com.dfire.core.netty.worker;
 
-import com.dfire.common.service.HeraDebugHistoryService;
-import com.dfire.common.service.HeraGroupService;
-import com.dfire.common.service.HeraJobActionService;
-import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.common.service.*;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
@@ -12,7 +9,7 @@ import com.dfire.core.tool.RunShell;
 import com.dfire.core.util.NetUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.Map;
@@ -49,7 +46,6 @@ public class WorkContext {
             new SynchronousQueue<>(), new NamedThreadFactory("worker-execute"), new ThreadPoolExecutor.AbortPolicy());
 
 
-    private ApplicationContext applicationContext;
     private static final String loadStr = "cat /proc/cpuinfo |grep processor | wc -l";
 
     static {
@@ -71,21 +67,17 @@ public class WorkContext {
 
     }
 
-    public HeraDebugHistoryService getDebugHistoryService() {
-        return (HeraDebugHistoryService) applicationContext.getBean("heraDebugHistoryService");
-    }
 
-    public HeraJobHistoryService getJobHistoryService() {
-        return (HeraJobHistoryService) applicationContext.getBean("heraJobHistoryService");
-    }
-
-    public HeraGroupService getHeraGroupService() {
-        return (HeraGroupService) applicationContext.getBean("heraGroupService");
-    }
-
-    public HeraJobActionService getHeraJobActionService() {
-        return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
-    }
-
-
+    @Autowired
+    private HeraDebugHistoryService heraDebugHistoryService;
+    @Autowired
+    private HeraJobHistoryService heraJobHistoryService;
+    @Autowired
+    private HeraGroupService heraGroupService;
+    @Autowired
+    private HeraJobActionService heraJobActionService;
+    @Autowired
+    private HeraFileService heraFileService;
+    @Autowired
+    private HeraProfileService heraProfileService;
 }

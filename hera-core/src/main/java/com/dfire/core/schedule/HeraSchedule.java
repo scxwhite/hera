@@ -3,7 +3,6 @@ package com.dfire.core.schedule;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.logs.HeraLog;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -49,7 +49,7 @@ public class WorkHandleCancel {
      * @return
      */
     private Future<RpcResponse.Response> cancelManual(WorkContext workContext, RpcRequest.Request request, String historyId) {
-        HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(historyId);
+        HeraJobHistory heraJobHistory = workContext.getHeraJobHistoryService().findById(historyId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
         final String jobId = history.getJobId();
         SocketLog.info("worker receive cancel manual job, actionId =" + jobId);
@@ -80,7 +80,7 @@ public class WorkHandleCancel {
      * @return
      */
     private Future<RpcResponse.Response> cancelSchedule(WorkContext workContext, RpcRequest.Request request, String historyId) {
-        HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(historyId);
+        HeraJobHistory heraJobHistory = workContext.getHeraJobHistoryService().findById(historyId);
         String actionId = heraJobHistory.getActionId();
         SocketLog.info("worker receive cancel schedule job, actionId =" + actionId);
         if (!workContext.getRunning().containsKey(actionId)) {
@@ -118,10 +118,10 @@ public class WorkHandleCancel {
                     .setStatusEnum(ResponseStatus.Status.ERROR)
                     .setErrorText("运行任务中查无此任务")
                     .build());
-            HeraDebugHistoryVo debugHistory = workContext.getDebugHistoryService().findById(debugId);
+            HeraDebugHistoryVo debugHistory = workContext.getHeraDebugHistoryService().findById(debugId);
             debugHistory.setStatus(StatusEnum.FAILED);
             debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-            workContext.getDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
+            workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
         } else {
             future = workContext.getWorkExecuteThreadPool().submit(() -> {
                 workContext.getWorkClient().cancelDebugJob(debugId);
