@@ -296,7 +296,7 @@ public class Master {
             }
             String cronDate = ActionUtil.getActionVersionByTime(now);
             generateScheduleJobAction(jobList, cronDate, actionMap);
-          //  generateDependJobAction(jobList, actionMap, 0);
+            generateDependJobAction(jobList, actionMap, 0);
 
             if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
                 heraActionMap = actionMap;
@@ -345,42 +345,85 @@ public class Master {
 
     }
 
-    /**
-     * 批量插入
-     *
-     * @param insertActionList
-     */
-    private void batchInsertList(List<HeraAction> insertActionList, Map<Long, HeraAction> actionMap) {
-        // 每次批量的条数
+
+    public static void main(String[] args) {
+        Set<Integer> ss = new HashSet();
         int batchNum = 500;
-        int step = 0;
-        int maxSize = insertActionList.size();
-        if (maxSize != 0) {
-            for (int i = 0; i < maxSize; i = i + batchNum) {
-                if ((step + batchNum) > maxSize) {
-                    step = maxSize;
-                } else {
-                    step = step + batchNum;
+        int step = batchNum;
+        int maxSize = 1009;
+        List<Integer>  insertActionList= new ArrayList<Integer>();
+        for(int i =0;i<maxSize;i++){
+            insertActionList.add(i);
+        }
+        if(maxSize != 0){
+            for (int i = 0;i < maxSize;i = i+batchNum){
+                List<Integer> insertList;
+                if((step + batchNum) > maxSize){
+                    insertList = insertActionList.subList(i,step);
+                    step = maxSize ;
+                }else {
+                    insertList = insertActionList.subList(i,step);
+                    step = step+batchNum;
                 }
-                System.out.println(i + "---------" + step);
-                for (HeraAction action : masterContext.getHeraJobActionService().batchInsert(insertActionList.subList(i, step))) {
-                    actionMap.put(Long.parseLong(action.getId()), action);
+                for(int m =0;m<insertList.size();m++){
+                    Integer s = insertList.get(m);
+                   if(ss.contains(s)){
+                       System.out.println(s);
+                   }else {
+                       ss.add(s);
+                   }
                 }
+                System.out.println(insertList.size() +":----------------");
             }
         }
     }
 
 
+
+    /**
+     * 批量插入
+     *
+     * @param insertActionList
+     */
+    private void batchInsertList(List<HeraAction> insertActionList,Map<Long, HeraAction> actionMap ){
+        // 每次批量的条数
+        int maxSize = insertActionList.size();
+        int batchNum = 500;
+        int step = batchNum > maxSize ? maxSize : batchNum;
+        if(maxSize != 0){
+            for (int i = 0;i < maxSize;i = i+batchNum){
+                List<HeraAction> insertList;
+                if((step + batchNum) > maxSize){
+                    insertList = insertActionList.subList(i,step);
+                    step = maxSize ;
+                }else {
+                    insertList = insertActionList.subList(i,step);
+                    step = step+batchNum;
+                }
+                masterContext.getHeraJobActionService().batchInsert(insertList);
+                for(HeraAction action : insertList){
+                    actionMap.put(Long.parseLong(action.getId()), action);
+                }
+
+            }
+        }
+    }
+
+
+
+
+
+    private static HashMap<Long,HeraAction> set = new HashMap<>();
+
     /**
      * 生成action
-     *
      * @param list
      * @param heraJob
      * @return
      */
-    private List<HeraAction> createHeraAction(List<String> list, HeraJob heraJob) {
+    private List<HeraAction> createHeraAction(List<String> list,HeraJob heraJob){
         List<HeraAction> heraActionList = new ArrayList<>();
-        for (String str : list) {
+        for(String str : list){
             String actionDate = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "yyyyMMddHHmm");
             String actionCron = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "0 m H d M") + " ?";
             HeraAction heraAction = new HeraAction();
@@ -449,6 +492,7 @@ public class Master {
     public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount) {
         retryCount++;
         int noCompleteCount = 0, retryId = -1;
+        List<HeraAction> insertActionList = new ArrayList<>();
         for (HeraJob heraJob : jobList) {
             //依赖任务生成版本
             if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 1) {
@@ -512,7 +556,6 @@ public class Master {
                         List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
 
                         if (actionMostList != null && actionMostList.size() > 0) {
-                            List<HeraAction> insertActionList = new ArrayList<>();
                             for (HeraAction action : actionMostList) {
                                 StringBuilder actionDependencies = new StringBuilder(action.getId());
                                 Long longActionId = Long.parseLong(actionDependencies.toString());
@@ -547,7 +590,7 @@ public class Master {
                                     insertActionList.add(actionNew);
                                 }
                             }
-                            batchInsertList(insertActionList, actionMap);
+
                         }
 
 
@@ -556,6 +599,8 @@ public class Master {
                 }
             }
         }
+        batchInsertList(insertActionList,actionMap);
+
         if (noCompleteCount > 0 && retryCount < 40) {
             generateDependJobAction(jobList, actionMap, retryCount);
         } else if (retryCount == 40 && noCompleteCount > 0) {

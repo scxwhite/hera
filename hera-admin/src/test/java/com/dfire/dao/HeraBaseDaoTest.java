@@ -134,6 +134,7 @@ public class HeraBaseDaoTest {
 //        heraJobActionService.delete("1111111111111111111");
 
 //        heraJobActionService.insert(heraAction);
+        HeraAction heraAction = heraJobActionService.findById("201806190000000002");
         List<HeraAction> list = Arrays.asList(heraAction);
 
         heraJobActionService.batchInsert(list);

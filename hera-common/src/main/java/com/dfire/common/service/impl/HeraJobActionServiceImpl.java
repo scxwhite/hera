@@ -12,9 +12,7 @@ import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -28,12 +26,14 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     private HeraJobActionMapper heraJobActionMapper;
 
 
+    private static Set<String> set = new HashSet<>();
+
     @Override
     public List<HeraAction> batchInsert(List<HeraAction> heraActionList) {
         System.out.println("batch size is :" + heraActionList.size());
         List<HeraAction> insertList = new ArrayList<>();
         List<HeraAction> updateList = new ArrayList<>();
-
+        int i = 0;
         for(HeraAction heraAction : heraActionList){
             if (isNeedUpdateAction(heraAction)) {
                 updateList.add(heraAction);
@@ -42,10 +42,17 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             }
         }
         if(insertList.size() != 0){
+
             heraJobActionMapper.batchInsert(insertList);
         }
         if(updateList.size() != 0 ){
-            heraJobActionMapper.batchUpdate(updateList);
+            Set<String> sets = new HashSet<>();
+            for(int m = 0 ;m< updateList.size(); m++){
+                HeraAction heraAction = updateList.get(m);
+                heraJobActionMapper.update(heraAction);
+            }
+
+//            heraJobActionMapper.batchUpdate(updateList);
         }
         return heraActionList;
     }
