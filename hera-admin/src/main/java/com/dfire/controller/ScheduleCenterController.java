@@ -173,13 +173,14 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/getJobOperator", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse getJobOperator(Integer jobId, boolean type) {
+    public JsonResponse getJobOperator(String jobId, boolean type) {
 
-        if (!hasPermission(jobId, type ? GROUP : JOB)) {
+        Integer groupId = getGroupId(jobId);
+        if (!hasPermission(groupId, type ? GROUP : JOB)) {
             return new JsonResponse(false, ERROR_MSG);
         }
 
-        List<HeraPermission> permissions = heraPermissionService.findByTargetId(jobId);
+        List<HeraPermission> permissions = heraPermissionService.findByTargetId(groupId);
         List<HeraUser> all = heraUserService.findAllName();
 
         if (all == null || permissions == null) {
