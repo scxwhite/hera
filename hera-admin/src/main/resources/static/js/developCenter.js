@@ -509,8 +509,6 @@ $(function () {
                 showRightNowLog(data.fileId,data.debugId);
             }
         });
-
-
     });
     //获得当前log
     function getRightNowLog(){
@@ -561,13 +559,14 @@ $(function () {
         logTabContainer.tabsLength += lis[lis.length - 1].clientWidth;
         showPrevNext(logTabContainer);
         ul.children('li:first').attr('his-id',debugId);
+
         //日志
         rightNowLogCon.children().first().remove();
         rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"log'+debugId+'\"></div>');
-        if(rightTimer){
-            clearInterval(rightTimer);
-        }
-        rightTimer=setInterval(getRightNowLog,2000);
+        // if(rightTimer){
+        //     clearInterval(rightTimer);
+        // }
+        var rightTimer=setInterval(getRightNowLog,2000);
     }
     //单击当前日志tab
     logTabContainer.on('click','li',function (e) {
