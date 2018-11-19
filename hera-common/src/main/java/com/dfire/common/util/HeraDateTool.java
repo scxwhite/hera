@@ -2,7 +2,6 @@ package com.dfire.common.util;
 
 import com.dfire.common.constants.TimeFormatConstant;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -33,6 +32,11 @@ public class HeraDateTool {
         calendar.add(field, amount);
         return this;
     }
+
+    public long getTime() {
+        return calendar.getTime().getTime() / 1000;
+    }
+
 
     public String format(String pattern) {
         SimpleDateFormat format = new SimpleDateFormat(pattern);

@@ -157,15 +157,11 @@ public class Master {
                 List<String> jobDependList = Arrays.asList(dependencies.split(","));
                 boolean isAllComplete = true;
                 HeraAction heraAction;
-                String status;
                 if (jobDependList.size() > 0) {
                     for (String jobDepend : jobDependList) {
                         heraAction = actionMapNew.get(Long.parseLong(jobDepend));
                         if (heraAction != null) {
-                            status = heraAction.getStatus();
-                            if (status == null || Constants.STATUS_WAIT.equals(status) || Constants.STATUS_FAILED.equals(status)) {
-                                isAllComplete = false;
-                            }
+                            isAllComplete = Constants.STATUS_SUCCESS.equals(heraAction.getStatus());
                         }
                     }
                 }
@@ -837,8 +833,9 @@ public class Master {
             event.setRollBackTime(retryWaitTime);
             event.setRunCount(runCount);
             if (jobHistory != null && jobHistory.getIllustrate() != null
-                    && jobHistory.getIllustrate().contains("手动取消该任务")) {
+                    && jobHistory.getIllustrate().contains("取消")) {
                 isCancelJob = true;
+                ScheduleLog.info("任务取消，取消重试:{}", jobHistory.getActionId());
             } else {
                 masterContext.getDispatcher().forwardEvent(event);
             }
