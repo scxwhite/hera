@@ -529,24 +529,24 @@
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup" disabled>
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup" >
                                             添加组
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit" disabled>编辑
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit" >编辑
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addJob" disabled>
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addJob" >
                                             添加任务
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete" disabled>
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete" >
                                             删除
                                         </button>
                                     </li>
