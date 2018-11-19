@@ -47,8 +47,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         }
         if(updateList.size() != 0 ){
             Set<String> sets = new HashSet<>();
-            for(int m = 0 ;m< updateList.size(); m++){
-                HeraAction heraAction = updateList.get(m);
+            for (HeraAction heraAction : updateList) {
                 heraJobActionMapper.update(heraAction);
             }
 
