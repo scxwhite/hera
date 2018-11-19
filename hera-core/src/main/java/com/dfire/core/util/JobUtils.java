@@ -93,9 +93,7 @@ public class JobUtils {
         String jobId = jobBean.getHeraActionVo().getId();
         String script = workContext.getHeraJobActionService().findHeraActionVo(jobId).getSource().getScript();
         String actionDate = history.getActionId().substring(0, 12) + "00";
-        if (StringUtils.isNotBlank(actionDate) && actionDate.length() == 14) {
-            script = RenderHierarchyProperties.render(script, actionDate);
-        }
+        script = RenderHierarchyProperties.render(script);
         if (jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Shell)
                 || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Hive)
                 || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Spark)) {
