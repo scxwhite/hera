@@ -982,7 +982,6 @@ public class Master {
                         heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
                         heraJobHistory.setStartTime(new Date());
                         heraJobHistory.setEndTime(new Date());
-                        heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
                         heraJobHistory.setStatusEnum(StatusEnum.FAILED);
                         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
@@ -998,7 +997,6 @@ public class Master {
                         heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().getLocalAddress());
                         heraJobHistory.setStartTime(new Date());
                         heraJobHistory.setEndTime(new Date());
-                        heraJobHistory.setIllustrate(LogConstant.CHECK_QUEUE_LOG);
                         heraJobHistory.setStatusEnum(StatusEnum.FAILED);
                         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
@@ -1014,7 +1012,6 @@ public class Master {
                     if (!checkOnly) {
                         heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                         heraJobHistory.setStartTime(new Date());
-                        heraJobHistory.setIllustrate(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                         heraJobHistory.setEndTime(new Date());
                         heraJobHistory.setStatusEnum(StatusEnum.FAILED);
                         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
@@ -1030,7 +1027,6 @@ public class Master {
                         heraJobHistory.setStartTime(new Date());
                         heraJobHistory.setEndTime(new Date());
                         heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                        heraJobHistory.setIllustrate(LogConstant.CHECK_MANUAL_QUEUE_LOG);
                         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
                     return true;
