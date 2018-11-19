@@ -151,7 +151,7 @@ public class Master {
 
     private void rollBackLostJob(Long actionId, Map<Long, HeraAction> actionMapNew, List<Long> actionIdList) {
         HeraAction lostJob = actionMapNew.get(actionId);
-        if (lostJob != null) {
+        if (lostJob != null && lostJob.getStatus() == null) {
             String dependencies = lostJob.getDependencies();
             if (StringUtils.isNotBlank(dependencies)) {
                 List<String> jobDependList = Arrays.asList(dependencies.split(","));
@@ -161,7 +161,9 @@ public class Master {
                     for (String jobDepend : jobDependList) {
                         heraAction = actionMapNew.get(Long.parseLong(jobDepend));
                         if (heraAction != null) {
-                            isAllComplete = Constants.STATUS_SUCCESS.equals(heraAction.getStatus());
+                            if (!(isAllComplete = Constants.STATUS_SUCCESS.equals(heraAction.getStatus()))) {
+                                break;
+                            }
                         }
                     }
                 }
