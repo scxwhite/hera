@@ -1,20 +1,14 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.mapper.HeraDebugHistoryMapper;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.HeraDateTool;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

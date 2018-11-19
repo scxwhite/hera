@@ -16,8 +16,11 @@ import java.util.Date;
  */
 public class HeraDateTool {
 
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private Calendar calendar = Calendar.getInstance();
+
+    public HeraDateTool() {
+        this(new Date());
+    }
 
     public HeraDateTool(Date date) {
         this.calendar.setTime(date);
@@ -38,9 +41,17 @@ public class HeraDateTool {
     }
 
 
+    public int get(int x) {
+        return calendar.get(x);
+    }
+
     public String format(String pattern) {
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         return format.format(calendar.getTime());
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new HeraDateTool().format("yyyyMMddHHmmss"));
     }
 
     /**

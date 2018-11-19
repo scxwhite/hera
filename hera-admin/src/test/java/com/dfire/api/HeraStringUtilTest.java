@@ -36,7 +36,7 @@ public class HeraStringUtilTest {
         System.out.println(s);
         s = RenderHierarchyProperties.render("${yesterday}");
         System.out.println(s);
-
+        System.out.println( RenderHierarchyProperties.render("${zdt.format(\"yyyyMMddHHmmss\")}"));
     }
 
     @Test

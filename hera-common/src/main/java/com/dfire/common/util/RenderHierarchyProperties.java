@@ -151,7 +151,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
 
     @Override
     public List<String> getHierarchyProperty(String key) {
-        List<String> result = properties.getHierarchyProperty(key).stream().map(s -> render(s)).collect(Collectors.toList());
+        List<String> result = properties.getHierarchyProperty(key).stream().map(RenderHierarchyProperties::render).collect(Collectors.toList());
         return result;
     }
 
@@ -162,10 +162,4 @@ public class RenderHierarchyProperties extends HierarchyProperties {
         return result;
     }
 
-    @Override
-    public Map<String, String> getAllProperties(String dateString) {
-        Map<String, String> map = properties.getAllProperties();
-        Map<String, String> result = map.keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s), dateString), (t, k) -> k));
-        return result;
-    }
 }

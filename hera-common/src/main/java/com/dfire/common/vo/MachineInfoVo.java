@@ -31,7 +31,7 @@ public class MachineInfoVo {
     /**
      * 分区使用的比例
      */
-    private float use;
+    private String use;
     /**
      * 磁盘分区挂载的目录 即挂载点
      */

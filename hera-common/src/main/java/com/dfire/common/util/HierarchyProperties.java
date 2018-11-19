@@ -108,24 +108,10 @@ public class HierarchyProperties {
     }
 
     /**
-     *
+     * 获得层级属性
      * @return
-     * @desc 获取所有的属性对，(包含继承属性，并且上级继承属性会被下级继承属性覆盖)
      */
     public Map<String, String> getAllProperties() {
-        if(parent != null) {
-
-            Map<String, String> parentMap = new HashMap<>(16);
-            if(parent.getAllProperties() != null) {
-                parentMap = new HashMap<>(parent.getAllProperties());
-            }
-            parentMap.putAll(getLocalProperties());
-            return parentMap;
-        }
-        return getLocalProperties();
-    }
-
-    public Map<String, String> getAllProperties(String dateString) {
         if(parent != null){
             Map<String, String> parentMap=new HashMap<>(parent.getAllProperties());
             parentMap.putAll(getLocalProperties());

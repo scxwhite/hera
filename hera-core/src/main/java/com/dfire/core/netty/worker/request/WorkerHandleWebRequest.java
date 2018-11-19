@@ -65,6 +65,14 @@ public class WorkerHandleWebRequest {
                 .build(), workContext, "三个小时未获得master任务队列的获取信息");
     }
 
+
+    public static Future<WebResponse> getAllWorkInfoFromMaster(WorkContext workContext) {
+        return buildMessage(WebRequest.newBuilder()
+                .setRid(AtomicIncrease.getAndIncrement())
+                .setOperate(WebOperate.GetAllHeartBeatInfo)
+                .build(), workContext, "三个小时未获得master所有work信息");
+    }
+
     private static Future<WebResponse> buildMessage(WebRequest request, WorkContext workContext, String errorMsg) {
         CountDownLatch latch = new CountDownLatch(1);
         WorkResponseListener responseListener = new WorkResponseListener(request, false, latch, null);
@@ -91,4 +99,5 @@ public class WorkerHandleWebRequest {
         return future;
 
     }
+
 }

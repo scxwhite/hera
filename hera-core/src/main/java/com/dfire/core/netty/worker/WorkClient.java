@@ -7,6 +7,10 @@ import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.common.vo.MachineInfoVo;
+import com.dfire.common.vo.OSInfoVo;
+import com.dfire.common.vo.ProcessMonitorVo;
+import com.dfire.common.vo.WorkInfoVo;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.message.HeartBeatInfo;
@@ -22,6 +26,7 @@ import com.dfire.protocol.RpcHeartBeatMessage.AllHeartBeatInfoMessage;
 import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
 import com.dfire.protocol.RpcSocketMessage;
 import com.dfire.protocol.RpcWebResponse;
+import com.dfire.protocol.RpcWorkInfo.*;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -42,10 +47,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -394,6 +396,65 @@ public class WorkClient {
         }
 
         return infoMap;
+    }
+
+    public HashMap<String, WorkInfoVo> getAllWorkInfo() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
+        RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getAllWorkInfoFromMaster(workContext).get();
+        if (response.getStatus() == ResponseStatus.Status.ERROR) {
+            SocketLog.error("获取心跳信息失败:{}", response.getErrorText());
+            return null;
+        }
+        Map<String, WorkInfo> allWorkInfo = AllWorkInfo.parseFrom(response.getBody()).getValuesMap();
+
+        HashMap<String, WorkInfoVo> workInfoHashMap = new HashMap<>(allWorkInfo.size());
+
+        allWorkInfo.forEach((ip, workInfo) -> {
+            WorkInfoVo workInfoVo = new WorkInfoVo();
+            List<ProcessMonitor> monitorList = workInfo.getProcessMonitorList();
+            if (monitorList != null && monitorList.size() > 0) {
+                List<ProcessMonitorVo> monitorVoList = new ArrayList<>(monitorList.size());
+                monitorList.forEach(m -> {
+                    ProcessMonitorVo monitorVo = new ProcessMonitorVo();
+                    monitorVo.setUser(m.getUser());
+                    monitorVo.setViri(m.getViri());
+                    monitorVo.setTime(m.getTime());
+                    monitorVo.setRes(m.getRes());
+                    monitorVo.setMem(m.getMem());
+                    monitorVo.setPid(m.getPid());
+                    monitorVo.setCommand(m.getCommand());
+                    monitorVo.setCpu(m.getCpu());
+                    monitorVoList.add(monitorVo);
+                });
+                workInfoVo.setProcessMonitor(monitorVoList);
+            }
+            OSInfo osInfo = workInfo.getOSInfo();
+            if (osInfo != null) {
+                OSInfoVo osInfoVo = new OSInfoVo();
+                osInfoVo.setCpu(osInfo.getCpu());
+                osInfoVo.setSwap(osInfo.getSwap());
+                osInfoVo.setSystem(osInfo.getSystem());
+                osInfoVo.setUser(osInfo.getUser());
+                osInfoVo.setMem(osInfo.getMem());
+                workInfoVo.setOsInfo(osInfoVo);
+            }
+            List<MachineInfo> machineInfoList = workInfo.getMachineInfoList();
+            if (machineInfoList != null && machineInfoList.size() > 0) {
+                List<MachineInfoVo> machineInfoVoList = new ArrayList<>(machineInfoList.size());
+                machineInfoList.forEach(m -> {
+                    MachineInfoVo machineInfoVo = new MachineInfoVo();
+                    machineInfoVo.setSize(m.getSize());
+                    machineInfoVo.setMountedOn(m.getMountedOn());
+                    machineInfoVo.setType(m.getType());
+                    machineInfoVo.setFilesystem(m.getFilesystem());
+                    machineInfoVo.setAvail(m.getAvail());
+                    machineInfoVo.setUse(m.getUse());
+                    machineInfoVoList.add(machineInfoVo);
+                });
+                workInfoVo.setMachineInfo(machineInfoVoList);
+            }
+        });
+
+        return workInfoHashMap;
     }
 
 }
