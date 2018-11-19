@@ -86,8 +86,6 @@ public class HeraJobServiceImpl implements HeraJobService {
         List<HeraGroup> groups = groupService.getAll();
         List<HeraJob> jobs = heraJobMapper.selectAll();
         Map<String, HeraJobTreeNodeVo> groupMap = new HashMap<>(groups.size());
-
-
         // 建立所有任务的树
         List<HeraJobTreeNodeVo> allNodes = groups.parallelStream()
                 .filter(group -> group.getExisted() == 1)
@@ -101,7 +99,7 @@ public class HeraJobServiceImpl implements HeraJobService {
                             .build();
                     groupMap.put(groupNodeVo.getId(), groupNodeVo);
                     return groupNodeVo;
-                } )
+                })
                 .collect(Collectors.toList());
         allNodes.addAll(jobs.parallelStream().map(job -> HeraJobTreeNodeVo.builder()
                 .id(String.valueOf(job.getId()))
@@ -110,33 +108,40 @@ public class HeraJobServiceImpl implements HeraJobService {
                 .name(job.getName() + Constants.LEFT_BRACKET + job.getId() + Constants.RIGHT_BRACKET)
                 .build())
                 .collect(Collectors.toList()));
+
+
+        Set<HeraJobTreeNodeVo> myGroupSet = new HashSet<>();
         //建立我的任务的树
         List<HeraJobTreeNodeVo> myNodeVos = jobs.parallelStream()
                 .filter(job -> owner.equals(job.getOwner().trim()))
-                .map(job -> HeraJobTreeNodeVo.builder()
-                        .id(String.valueOf(job.getId()))
-                        .parent(Constants.GROUP_PREFIX + job.getGroupId())
-                        .isParent(false)
-                        .name(job.getName() + Constants.LEFT_BRACKET + job.getId() + Constants.RIGHT_BRACKET)
-                        .build())
+                .map(job -> {
+                    HeraJobTreeNodeVo build = HeraJobTreeNodeVo.builder()
+                            .id(String.valueOf(job.getId()))
+                            .parent(Constants.GROUP_PREFIX + job.getGroupId())
+                            .isParent(false)
+                            .name(job.getName() + Constants.LEFT_BRACKET + job.getId() + Constants.RIGHT_BRACKET)
+                            .build();
+                    getPathGroup(myGroupSet, build.getParent(), groupMap);
+                    return build;
+                })
                 .collect(Collectors.toList());
-
-        Set<HeraJobTreeNodeVo> groupNods = new HashSet<>();
-        //TODO  bug 组属于owner 没做
-        myNodeVos.forEach(node -> {
-            HeraJobTreeNodeVo groupVo = groupMap.get(node.getParent());
-            while(groupVo != null && !groupNods.contains(groupVo)) {
-                groupNods.add(groupVo);
-                groupVo = groupMap.get(groupVo.getParent());
-            }
-        });
-        myNodeVos.addAll(groupNods);
+        myNodeVos.addAll(myGroupSet);
         //添加树到返回结果
         allNodes.sort(Comparator.comparing(x -> x.getName().trim()));
         myNodeVos.sort(Comparator.comparing(x -> x.getName().trim()));
         treeMap.put("myJob", myNodeVos);
         treeMap.put("allJob", allNodes);
         return treeMap;
+    }
+
+    private void getPathGroup(Set<HeraJobTreeNodeVo> myGroupSet, String group, Map<String, HeraJobTreeNodeVo> allGroupMap) {
+        HeraJobTreeNodeVo groupNode = allGroupMap.get(group);
+        if (groupNode == null) {
+            return ;
+        }
+        myGroupSet.add(groupNode);
+        getPathGroup(myGroupSet, groupNode.getParent(), allGroupMap);
+
     }
 
     @Override
