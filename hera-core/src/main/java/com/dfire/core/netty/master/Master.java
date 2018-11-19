@@ -159,14 +159,11 @@ public class Master {
                 String status;
                 if (jobDependList.size() > 0) {
                     for (String jobDepend : jobDependList) {
-                        Long jobDep = Long.parseLong(jobDepend);
-                        if (actionMapNew.get(jobDep) != null) {
-                            heraAction = actionMapNew.get(jobDep);
-                            if (heraAction != null) {
-                                status = heraAction.getStatus();
-                                if (Constants.STATUS_WAIT.equals(status) || Constants.STATUS_FAILED.equals(status)) {
-                                    isAllComplete = false;
-                                }
+                        heraAction = actionMapNew.get(Long.parseLong(jobDepend));
+                        if (heraAction != null) {
+                            status = heraAction.getStatus();
+                            if (status == null || Constants.STATUS_WAIT.equals(status) || Constants.STATUS_FAILED.equals(status)) {
+                                isAllComplete = false;
                             }
                         }
                     }
@@ -351,33 +348,32 @@ public class Master {
         int batchNum = 500;
         int step = batchNum;
         int maxSize = 1009;
-        List<Integer>  insertActionList= new ArrayList<Integer>();
-        for(int i =0;i<maxSize;i++){
+        List<Integer> insertActionList = new ArrayList<Integer>();
+        for (int i = 0; i < maxSize; i++) {
             insertActionList.add(i);
         }
-        if(maxSize != 0){
-            for (int i = 0;i < maxSize;i = i+batchNum){
+        if (maxSize != 0) {
+            for (int i = 0; i < maxSize; i = i + batchNum) {
                 List<Integer> insertList;
-                if((step + batchNum) > maxSize){
-                    insertList = insertActionList.subList(i,step);
-                    step = maxSize ;
-                }else {
-                    insertList = insertActionList.subList(i,step);
-                    step = step+batchNum;
+                if ((step + batchNum) > maxSize) {
+                    insertList = insertActionList.subList(i, step);
+                    step = maxSize;
+                } else {
+                    insertList = insertActionList.subList(i, step);
+                    step = step + batchNum;
                 }
-                for(int m =0;m<insertList.size();m++){
+                for (int m = 0; m < insertList.size(); m++) {
                     Integer s = insertList.get(m);
-                   if(ss.contains(s)){
-                       System.out.println(s);
-                   }else {
-                       ss.add(s);
-                   }
+                    if (ss.contains(s)) {
+                        System.out.println(s);
+                    } else {
+                        ss.add(s);
+                    }
                 }
-                System.out.println(insertList.size() +":----------------");
+                System.out.println(insertList.size() + ":----------------");
             }
         }
     }
-
 
 
     /**
@@ -385,23 +381,23 @@ public class Master {
      *
      * @param insertActionList
      */
-    private void batchInsertList(List<HeraAction> insertActionList,Map<Long, HeraAction> actionMap ){
+    private void batchInsertList(List<HeraAction> insertActionList, Map<Long, HeraAction> actionMap) {
         // 每次批量的条数
         int maxSize = insertActionList.size();
         int batchNum = 500;
         int step = batchNum > maxSize ? maxSize : batchNum;
-        if(maxSize != 0){
-            for (int i = 0;i < maxSize;i = i+batchNum){
+        if (maxSize != 0) {
+            for (int i = 0; i < maxSize; i = i + batchNum) {
                 List<HeraAction> insertList;
-                if((step + batchNum) > maxSize){
-                    insertList = insertActionList.subList(i,step);
-                    step = maxSize ;
-                }else {
-                    insertList = insertActionList.subList(i,step);
-                    step = step+batchNum;
+                if ((step + batchNum) > maxSize) {
+                    insertList = insertActionList.subList(i, step);
+                    step = maxSize;
+                } else {
+                    insertList = insertActionList.subList(i, step);
+                    step = step + batchNum;
                 }
                 masterContext.getHeraJobActionService().batchInsert(insertList);
-                for(HeraAction action : insertList){
+                for (HeraAction action : insertList) {
                     actionMap.put(Long.parseLong(action.getId()), action);
                 }
 
@@ -410,20 +406,18 @@ public class Master {
     }
 
 
-
-
-
-    private static HashMap<Long,HeraAction> set = new HashMap<>();
+    private static HashMap<Long, HeraAction> set = new HashMap<>();
 
     /**
      * 生成action
+     *
      * @param list
      * @param heraJob
      * @return
      */
-    private List<HeraAction> createHeraAction(List<String> list,HeraJob heraJob){
+    private List<HeraAction> createHeraAction(List<String> list, HeraJob heraJob) {
         List<HeraAction> heraActionList = new ArrayList<>();
-        for(String str : list){
+        for (String str : list) {
             String actionDate = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "yyyyMMddHHmm");
             String actionCron = HeraDateTool.StringToDateStr(str, "yyyy-MM-dd HH:mm:ss", "0 m H d M") + " ?";
             HeraAction heraAction = new HeraAction();
@@ -599,7 +593,7 @@ public class Master {
                 }
             }
         }
-        batchInsertList(insertActionList,actionMap);
+        batchInsertList(insertActionList, actionMap);
 
         if (noCompleteCount > 0 && retryCount < 40) {
             generateDependJobAction(jobList, actionMap, retryCount);
