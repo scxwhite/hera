@@ -45,10 +45,10 @@ public interface HeraJobActionMapper {
     HeraAction findById(HeraAction heraAction);
 
     @Select("select * from hera_action where job_id = #{jobId} order by id desc limit 1")
-    HeraAction findLatestByJobId(HeraAction heraAction);
+    HeraAction findLatestByJobId(String jobId);
 
     @Select("select * from hera_action where job_id = #{jobId} order by id")
-    List<HeraAction> findByJobId(HeraAction heraAction);
+    List<HeraAction> findByJobId(String jobId);
 
     @Update("update hera_action set status = #{status} where id = #{id}")
     Integer updateStatus(HeraAction heraAction);

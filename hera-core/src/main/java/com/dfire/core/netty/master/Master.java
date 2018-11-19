@@ -61,6 +61,7 @@ public class Master {
     private Map<Long, HeraAction> heraActionMap = new HashMap<>();
     private ThreadPoolExecutor executeJobPool;
 
+    private volatile boolean isGenerateActioning = false;
     private IStrategyWorker chooseWorkerStrategy;
 
 
@@ -260,58 +261,68 @@ public class Master {
         return flag;
     }
 
-    private synchronized boolean generateAction(boolean isSingle, Integer jobId) {
-        DateTime dateTime = new DateTime();
-        Date now = dateTime.toDate();
-        int executeHour = dateTime.getHourOfDay();
-        //凌晨生成版本，早上七点以后开始再次生成版本
-        boolean execute = executeHour == 0 || (executeHour > ActionUtil.ACTION_CREATE_MIN_HOUR && executeHour <= ActionUtil.ACTION_CREATE_MAX_HOUR);
-        if (execute || isSingle) {
-            String currString = ActionUtil.getCurrActionVersion();
-            if (executeHour == ActionUtil.ACTION_CREATE_MAX_HOUR) {
-                Tuple<String, Date> nextDayString = ActionUtil.getNextDayString();
-                //例如：今天 2018.07.17 23:50  currString = 2018.07.18 now = 2018.07.18 23:50
-                currString = nextDayString.getSource();
-                now = nextDayString.getTarget();
+    private boolean generateAction(boolean isSingle, Integer jobId) {
+        try {
+            if (isGenerateActioning) {
+                return true;
             }
-            Map<Long, HeraAction> actionMap = new HashMap<>(heraActionMap.size());
-            List<HeraJob> jobList = new ArrayList<>();
-            //批量生成
-            if (!isSingle) {
-                jobList = masterContext.getHeraJobService().getAll();
-            } else { //单个任务生成版本
-                HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
-                jobList.add(heraJob);
-                actionMap = heraActionMap;
-                List<Long> shouldRemove = new ArrayList<>();
-                for (Long actionId : actionMap.keySet()) {
-                    if (StringUtil.actionIdToJobId(String.valueOf(actionId), String.valueOf(jobId))) {
-                        shouldRemove.add(actionId);
-                    }
+            DateTime dateTime = new DateTime();
+            Date now = dateTime.toDate();
+            int executeHour = dateTime.getHourOfDay();
+            //凌晨生成版本，早上七点以后开始再次生成版本
+            boolean execute = executeHour == 0 || (executeHour > ActionUtil.ACTION_CREATE_MIN_HOUR && executeHour <= ActionUtil.ACTION_CREATE_MAX_HOUR);
+            if (execute || isSingle) {
+                String currString = ActionUtil.getCurrActionVersion();
+                if (executeHour == ActionUtil.ACTION_CREATE_MAX_HOUR) {
+                    Tuple<String, Date> nextDayString = ActionUtil.getNextDayString();
+                    //例如：今天 2018.07.17 23:50  currString = 2018.07.18 now = 2018.07.18 23:50
+                    currString = nextDayString.getSource();
+                    now = nextDayString.getTarget();
                 }
-                shouldRemove.forEach(actionMap::remove);
-            }
-            String cronDate = ActionUtil.getActionVersionByTime(now);
-            generateScheduleJobAction(jobList, cronDate, actionMap);
-            generateDependJobAction(jobList, actionMap, 0);
+                Map<Long, HeraAction> actionMap = new HashMap<>(heraActionMap.size());
+                List<HeraJob> jobList = new ArrayList<>();
+                //批量生成
+                if (!isSingle) {
+                    isGenerateActioning = true;
+                    jobList = masterContext.getHeraJobService().getAll();
+                } else { //单个任务生成版本
+                    HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
+                    jobList.add(heraJob);
+                    actionMap = heraActionMap;
+                    List<Long> shouldRemove = new ArrayList<>();
+                    for (Long actionId : actionMap.keySet()) {
+                        if (StringUtil.actionIdToJobId(String.valueOf(actionId), String.valueOf(jobId))) {
+                            shouldRemove.add(actionId);
+                        }
+                    }
+                    shouldRemove.forEach(actionMap::remove);
+                }
+                String cronDate = ActionUtil.getActionVersionByTime(now);
+                generateScheduleJobAction(jobList, cronDate, actionMap);
+                generateDependJobAction(jobList, actionMap, 0);
 
-            if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
-                heraActionMap = actionMap;
-            }
+                if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
+                    heraActionMap = actionMap;
+                }
 
-            Dispatcher dispatcher = masterContext.getDispatcher();
-            if (dispatcher != null) {
-                if (actionMap.size() > 0) {
-                    for (Long id : actionMap.keySet()) {
-                        dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
-                        if (id >= Long.parseLong(currString)) {
-                            dispatcher.forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id.toString()));
+                Dispatcher dispatcher = masterContext.getDispatcher();
+                if (dispatcher != null) {
+                    if (actionMap.size() > 0) {
+                        for (Long id : actionMap.keySet()) {
+                            dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
+                            if (id >= Long.parseLong(currString)) {
+                                dispatcher.forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id.toString()));
+                            }
                         }
                     }
                 }
+                ScheduleLog.info("[单个任务:{}，任务id:{}]generate action success", isSingle, jobId);
+                return true;
             }
-            ScheduleLog.info("[单个任务:{}，任务id:{}]generate action success", isSingle, jobId);
-            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            isGenerateActioning = false;
         }
         return false;
     }
@@ -509,9 +520,11 @@ public class Master {
                             if (!heraJob.getConfigs().contains("sameday")) {
                                 if (dependenciesMap.get(dependentId).size() == 0) {
                                     HeraAction lostJobAction = masterContext.getHeraJobActionService().findLatestByJobId(dependentId);
-                                    actionMap.put(Long.parseLong(lostJobAction.getId()), lostJobAction);
-                                    dependActionList.add(lostJobAction);
-                                    dependenciesMap.put(dependentId, dependActionList);
+                                    if (lostJobAction != null) {
+                                        actionMap.put(Long.parseLong(lostJobAction.getId()), lostJobAction);
+                                        dependActionList.add(lostJobAction);
+                                        dependenciesMap.put(dependentId, dependActionList);
+                                    }
                                 } else {
                                     break;
                                 }

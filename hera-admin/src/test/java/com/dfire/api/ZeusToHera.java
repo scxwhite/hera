@@ -38,7 +38,7 @@ public class ZeusToHera {
     private final boolean isAll = true;
 
     private String tableName = "hera_group";
-    private Class<?> clazz = HeraGroup.class;
+    private Class<?> clazz = HeraFile.class;
 
     private List<Integer> jobs = Arrays.asList(6625, 6628, 971);
 
