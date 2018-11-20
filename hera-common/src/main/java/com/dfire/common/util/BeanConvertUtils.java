@@ -200,6 +200,7 @@ public class BeanConvertUtils {
         heraActionVo.setConfigs(StringUtil.convertStringToMap(action.getConfigs()));
         heraActionVo.setRunType(JobRunTypeEnum.parser(action.getRunType()));
         heraActionVo.setScheduleType(JobScheduleTypeEnum.parser(action.getScheduleType()));
+        heraActionVo.setId(String.valueOf(action.getId()));
         if (action.getAuto().equals(auto)) {
             heraActionVo.setAuto(true);
         } else {

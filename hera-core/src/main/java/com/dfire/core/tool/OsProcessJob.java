@@ -112,6 +112,9 @@ public class OsProcessJob extends RunShell {
     }
 
     public WorkInfo getRes() {
+        if (workInfo == null) {
+            return WorkInfo.newBuilder().build();
+        }
         return workInfo;
     }
 
