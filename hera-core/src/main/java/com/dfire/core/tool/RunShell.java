@@ -27,6 +27,9 @@ public class RunShell {
     }
 
     public Integer run() {
+        if (!HeraGlobalEnvironment.isLinuxSystem()) {
+            return -1;
+        }
         builder = new ProcessBuilder(commands);
         builder.directory(new File(directory));
         builder.environment().putAll(HeraGlobalEnvironment.userEnvMap);
