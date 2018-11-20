@@ -9,6 +9,7 @@ import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.vo.JobStatus;
+import com.dfire.logs.ScheduleLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,14 +27,12 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     private HeraJobActionMapper heraJobActionMapper;
 
 
-    private static Set<String> set = new HashSet<>();
 
     @Override
     public List<HeraAction> batchInsert(List<HeraAction> heraActionList) {
-        System.out.println("batch size is :" + heraActionList.size());
+        ScheduleLog.info("batchInsert-> batch size is :{}" , heraActionList.size());
         List<HeraAction> insertList = new ArrayList<>();
         List<HeraAction> updateList = new ArrayList<>();
-        int i = 0;
         for(HeraAction heraAction : heraActionList){
             if (isNeedUpdateAction(heraAction)) {
                 updateList.add(heraAction);
@@ -42,16 +41,10 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             }
         }
         if(insertList.size() != 0){
-
             heraJobActionMapper.batchInsert(insertList);
         }
         if(updateList.size() != 0 ){
-            Set<String> sets = new HashSet<>();
-            for (HeraAction heraAction : updateList) {
-                heraJobActionMapper.update(heraAction);
-            }
-
-//            heraJobActionMapper.batchUpdate(updateList);
+            heraJobActionMapper.batchUpdate(updateList);
         }
         return heraActionList;
     }
@@ -106,7 +99,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     @Override
     public HeraAction findById(String actionId) {
-        HeraAction heraAction = HeraAction.builder().id(actionId).build();
+        HeraAction heraAction = HeraAction.builder().id(Long.parseLong(actionId)).build();
         return heraJobActionMapper.findById(heraAction);
     }
 
@@ -155,7 +148,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     @Override
     public JobStatus findJobStatusByJobId(String jobId) {
         HeraAction heraAction = findLatestByJobId(jobId);
-        return findJobStatus(heraAction.getId());
+        return findJobStatus(heraAction.getId().toString());
     }
 
     @Override
@@ -173,4 +166,8 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         return heraJobActionMapper.selectTodayAction(ActionUtil.getInitActionVersion());
     }
 
+    @Override
+    public List<String> getActionVersionByJobId(Long jobId) {
+        return  heraJobActionMapper.getActionVersionByJobId(jobId);
+    }
 }

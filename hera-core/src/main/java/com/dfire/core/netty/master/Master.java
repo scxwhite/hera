@@ -87,7 +87,7 @@ public class Master {
             heraActionMap = new HashMap<>(allJobList.size());
             allJobList.forEach(heraAction -> {
                 masterContext.getDispatcher().
-                        addJobHandler(new JobHandler(heraAction.getId(), this, masterContext));
+                        addJobHandler(new JobHandler(heraAction.getId().toString(), this, masterContext));
                 heraActionMap.put(Long.valueOf(heraAction.getId()), heraAction);
             });
             HeraLog.info("-----------------------------add actions to handler success, time:{}-----------------------------", System.currentTimeMillis());
@@ -409,7 +409,7 @@ public class Master {
                 }
                 masterContext.getHeraJobActionService().batchInsert(insertList);
                 for (HeraAction action : insertList) {
-                    actionMap.put(Long.parseLong(action.getId()), action);
+                    actionMap.put(action.getId(), action);
                 }
 
             }
@@ -434,7 +434,7 @@ public class Master {
             HeraAction heraAction = new HeraAction();
             BeanUtils.copyProperties(heraJob, heraAction);
             Long actionId = Long.parseLong(actionDate) * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()));
-            heraAction.setId(actionId.toString());
+            heraAction.setId(actionId);
             heraAction.setCronExpression(actionCron);
             heraAction.setGmtCreate(new Date());
             heraAction.setJobId(String.valueOf(heraJob.getId()));
@@ -521,7 +521,7 @@ public class Master {
                                 if (dependenciesMap.get(dependentId).size() == 0) {
                                     HeraAction lostJobAction = masterContext.getHeraJobActionService().findLatestByJobId(dependentId);
                                     if (lostJobAction != null) {
-                                        actionMap.put(Long.parseLong(lostJobAction.getId()), lostJobAction);
+                                        actionMap.put(lostJobAction.getId(), lostJobAction);
                                         dependActionList.add(lostJobAction);
                                         dependenciesMap.put(dependentId, dependActionList);
                                     }
@@ -550,7 +550,7 @@ public class Master {
                         if (dependenciesMap.get(actionMostDeps).size() < dependenciesMap.get(dependency).size()) {
                             actionMostDeps = dependency;
                         } else if (dependenciesMap.get(dependency).size() > 0 && dependenciesMap.get(actionMostDeps).size() == dependenciesMap.get(dependency).size() &&
-                                Long.parseLong(dependenciesMap.get(actionMostDeps).get(0).getId()) > Long.parseLong(dependenciesMap.get(dependency).get(0).getId())) {
+                                dependenciesMap.get(actionMostDeps).get(0).getId() > dependenciesMap.get(dependency).get(0).getId()) {
                             actionMostDeps = dependency;
                         }
                     }
@@ -564,7 +564,7 @@ public class Master {
 
                         if (actionMostList != null && actionMostList.size() > 0) {
                             for (HeraAction action : actionMostList) {
-                                StringBuilder actionDependencies = new StringBuilder(action.getId());
+                                StringBuilder actionDependencies = new StringBuilder(action.getId().toString());
                                 Long longActionId = Long.parseLong(actionDependencies.toString());
                                 for (String dependency : dependencies) {
                                     if (!dependency.equals(actionMostDeps)) {
@@ -572,10 +572,10 @@ public class Master {
                                         if (otherAction == null || otherAction.size() == 0) {
                                             continue;
                                         }
-                                        String otherActionId = otherAction.get(0).getId();
+                                        String otherActionId = otherAction.get(0).getId().toString();
                                         for (HeraAction o : otherAction) {
-                                            if (Math.abs(Long.parseLong(o.getId()) - longActionId) < Math.abs(Long.parseLong(otherActionId) - longActionId)) {
-                                                otherActionId = o.getId();
+                                            if (Math.abs(o.getId() - longActionId) < Math.abs(Long.parseLong(otherActionId) - longActionId)) {
+                                                otherActionId = o.getId().toString();
                                             }
                                         }
                                         actionDependencies.append(",");
@@ -585,7 +585,7 @@ public class Master {
                                 HeraAction actionNew = new HeraAction();
                                 BeanUtils.copyProperties(heraJob, actionNew);
                                 Long actionId = longActionId / 1000000 * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()));
-                                actionNew.setId(String.valueOf(actionId));
+                                actionNew.setId(actionId);
                                 actionNew.setGmtCreate(new Date());
                                 actionNew.setDependencies(actionDependencies.toString());
                                 actionNew.setJobDependencies(heraJob.getDependencies());
@@ -614,6 +614,8 @@ public class Master {
             ScheduleLog.warn("重试ID:{}, 未找到版本个数:{} , 重试次数:{}", retryId, noCompleteCount, retryCount);
         }
     }
+
+
 
 
     /**

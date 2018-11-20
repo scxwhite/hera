@@ -1,13 +1,11 @@
 package com.dfire.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.model.JsonResponse;
-import com.dfire.common.entity.vo.HeraGroupVo;
-import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
-import com.dfire.common.entity.vo.HeraJobVo;
-import com.dfire.common.entity.vo.PageHelper;
+import com.dfire.common.entity.vo.*;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
@@ -226,7 +224,7 @@ public class ScheduleCenterController extends BaseHeraController {
         String configs = heraJob.getConfigs();
         HeraJobHistory actionHistory = HeraJobHistory.builder().build();
         actionHistory.setJobId(heraAction.getJobId());
-        actionHistory.setActionId(heraAction.getId());
+        actionHistory.setActionId(heraAction.getId().toString());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
         actionHistory.setOperator(owner.equals(HeraGlobalEnvironment.getAdmin()) ? heraJob.getOwner() : owner);
         actionHistory.setIllustrate(owner);
@@ -253,9 +251,12 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/getJobVersion", method = RequestMethod.GET)
     @ResponseBody
-    public List<HeraAction> getJobVersion(String jobId) {
-        List<HeraAction> list = heraJobActionService.findByJobId(jobId);
-        list.sort((x1, x2) -> -Long.compare(Long.parseLong(x1.getId()), Long.parseLong(x2.getId())));
+    public List<HeraActionVo> getJobVersion(String jobId) {
+        List<HeraActionVo> list = new ArrayList<>();
+        List<String> idList = heraJobActionService.getActionVersionByJobId(Long.parseLong(jobId));
+        for(String id : idList){
+            list.add(HeraActionVo.builder().id(id).build());
+        }
         return list;
 
     }
@@ -448,7 +449,7 @@ public class ScheduleCenterController extends BaseHeraController {
         if (actions == null) {
             return new WebAsyncTask<>(() -> new RestfulResponse(false, "action为空"));
         }
-        return execute(actions.get(actions.size() - 1).getId(), 2, owner);
+        return execute(actions.get(actions.size() - 1).getId().toString(), 2, owner);
 
     }
 

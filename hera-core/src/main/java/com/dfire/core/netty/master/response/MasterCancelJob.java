@@ -134,7 +134,7 @@ public class MasterCancelJob {
         heraJobHistory.setEndTime(new Date());
         heraJobHistory.setStatus(StatusEnum.FAILED.toString());
         context.getHeraJobHistoryService().update(heraJobHistory);
-        context.getHeraJobActionService().updateStatus(HeraAction.builder().id(actionId).status(StatusEnum.FAILED.toString()).build());
+        context.getHeraJobActionService().updateStatus(HeraAction.builder().id(Long.parseLong(actionId)).status(StatusEnum.FAILED.toString()).build());
         return webResponse;
     }
 
@@ -187,7 +187,7 @@ public class MasterCancelJob {
         heraJobHistory.setStatus(StatusEnum.FAILED.toString());
         heraJobHistory.setIllustrate(Constants.CANCEL_JOB_MESSAGE);
         context.getHeraJobHistoryService().update(heraJobHistory);
-        context.getHeraJobActionService().updateStatus(HeraAction.builder().id(actionId).status(StatusEnum.FAILED.toString()).build());
+        context.getHeraJobActionService().updateStatus(HeraAction.builder().id(Long.parseLong(actionId)).status(StatusEnum.FAILED.toString()).build());
         return webResponse;
     }
 

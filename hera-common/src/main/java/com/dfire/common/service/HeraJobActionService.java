@@ -60,4 +60,11 @@ public interface HeraJobActionService {
 
     List<HeraAction> getTodayAction();
 
+    /**
+     * 根据jobId 获取所有的版本
+     * @param jobId
+     * @return
+     */
+    List<String> getActionVersionByJobId(Long jobId);
+
 }
