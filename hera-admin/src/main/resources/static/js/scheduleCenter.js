@@ -792,7 +792,6 @@ $(function () {
     $(document).ready(function () {
         $('#allScheBtn').click(function (e) {
             e.stopPropagation();
-            console.log('click');
             $('#jobTree').hide();
             $('#allTree').show();
             $(this).parent().addClass('active');

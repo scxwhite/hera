@@ -138,6 +138,14 @@ html, body {
 .right-now-log{
     overflow: auto;
     width: 100%;
+    min-height: 700px;
+    display: none;
+}
+.show-right-now-log{
+    display: block;
+}
+.failed-right-now-log{
+    color: orangered;
 }
 .right-now-log-con{
     height: 300px;
@@ -156,7 +164,7 @@ html, body {
 }
 .right-now-ul{
     position: absolute;
-    width: 9999px;
+    width: 999999px;
     padding-left: 0;
 }
 .log-container .prev-tab,.log-container .next-tab{

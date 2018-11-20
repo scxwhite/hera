@@ -510,45 +510,7 @@ $(function () {
             }
         });
     });
-    //获得当前log
-    function getRightNowLog(){
-        $.ajax({
-            url: base_url + "/developCenter/getLog.do",
-            type: "get",
-            data: {
-                id: debugId,
-            },
-            success: function (data) {
-                console.log("data.status " + data.status)
-                if (data.status !== 'running') {
-                    clearInterval(rightTimer);
-                    set('log'+debugId,data.log);
-                }
-                var logArea = $('#log' + debugId);
-                logArea.html(data.log);
 
-            }
-        })
-    }
-    //检查localStorage 有则显示日志
-    function showStorageLog() {
-        var last;
-        for(var i =0;i<localStorage.length;i++){
-            if(localStorage.key(i).indexOf('log')!==-1){
-                last = localStorage.key(i);
-                var ul = logTabContainer.children('ul');
-                ul.children().removeClass('active-log');
-                ul.prepend("<li class=\"logs-id active-log\">DebugId : "+localStorage.key(i).slice(3)+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
-                ul.children('li:first').attr('his-id',localStorage.key(i).slice(3));
-                showPrevNext(logTabContainer);
-            }
-        }
-        rightNowLogCon.children().first().remove();
-        rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"'+last+'\"></div>');
-        var logArea = $('#' + last);
-        logArea.html(localStorage.getItem(last));
-    }
-    showStorageLog();
     //显示当前日志
     function showRightNowLog(id,debugId){
         //tab
@@ -561,31 +523,71 @@ $(function () {
         ul.children('li:first').attr('his-id',debugId);
 
         //日志
-        rightNowLogCon.children().first().remove();
-        rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"log'+debugId+'\"></div>');
-        // if(rightTimer){
-        //     clearInterval(rightTimer);
-        // }
-        var rightTimer=setInterval(getRightNowLog,2000);
+        rightNowLogCon.children().removeClass('show-right-now-log');
+        rightNowLogCon.prepend('<div class=\"right-now-log show-right-now-log \" id=\"log'+debugId+'\"></div>');
+        var timer = setInterval(function () {
+            $.ajax({
+                url: base_url + "/developCenter/getLog.do",
+                type: "get",
+                data: {
+                    id: debugId
+                },
+                success: function (data) {
+                    console.log("data.status " + data.status,timer)
+                    if (data.status !== 'running') {
+                        clearInterval(timer);
+                        set('log'+debugId,data.log,true);
+                    }
+                    if (data.status === 'failed') {
+                        $('li[his-id='+debugId+']').css('color','orangered');
+                        set('log'+debugId,data.log,false);
+                    }
+                    var logArea = $('#log' + debugId);
+                    logArea.html(data.log);
+
+                }
+            })
+        },2000);
     }
+
+
+    //检查localStorage 有则显示日志
+    function showStorageLog() {
+        var last;
+        for(var i =0;i<localStorage.length;i++){
+            if(localStorage.key(i).indexOf('log')!==-1){
+                last = localStorage.key(i);
+                var key = localStorage.key(i);
+                var ul = logTabContainer.children('ul');
+                ul.children().removeClass('active-log');
+                ul.prepend("<li class=\"logs-id active-log\">DebugId : "+key.slice(3)+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
+                ul.children('li:first').attr('his-id',key.slice(3));
+                showPrevNext(logTabContainer);
+                rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"'+key+'\"></div>');
+                var logArea = $('#' + key);
+                logArea.html(localStorage.getItem(key));
+                if(JSON.parse(localStorage.getItem(key)).success===false){
+                    $('li[his-id='+key.slice(3)+']').css('color','orangered');
+                }
+            }
+        }
+        var logArea = $('#' + last);
+        logArea.addClass('show-right-now-log');
+    }
+    showStorageLog();
     //单击当前日志tab
     logTabContainer.on('click','li',function (e) {
         e.stopPropagation();
         logTabContainer.children('ul').children().removeClass('active-log');
         $(this).addClass('active-log');
         debugId=$(this).attr('his-id');
-        rightNowLogCon.children().first().remove();
-        rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"log'+debugId+'\"></div>');
+        rightNowLogCon.children().removeClass('show-right-now-log');
+        rightNowLogCon.children('#log'+debugId).addClass('show-right-now-log');
         var storageLog=get('log'+debugId,1000*60*60*24);
         if(storageLog){
             rightNowLogCon.children('#log'+debugId).html(storageLog);
-        }else {
-            if(rightTimer){
-                clearInterval(rightTimer);
-            }
-            rightTimer=setInterval(getRightNowLog,2000);
         }
-    })
+    });
     //关闭日志
     logTabContainer.on('click','span',function(e){
         e.stopPropagation();
@@ -623,7 +625,7 @@ $(function () {
             });
         })
         showPrevNext(logTabContainer);
-    })
+    });
 
     /**
      * 点击执行选中代码执行逻辑
@@ -653,9 +655,9 @@ $(function () {
 
     });
     //封装过期控制代码
-    function set(key,value){
+    function set(key,value,success){
         var curTime = new Date().getTime();
-        localStorage.setItem(key,JSON.stringify({data:value,time:curTime}));
+        localStorage.setItem(key,JSON.stringify({data:value,time:curTime,success:success}));
     }
     function get(key,exp){
         var data = localStorage.getItem(key);
