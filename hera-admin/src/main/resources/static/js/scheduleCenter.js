@@ -54,7 +54,7 @@ $(function () {
      * @param id    节点ID
      */
     function setDefaultSelectNode(id) {
-            if (id != undefined && id != null) {
+            if (id !== undefined && id !== null) {
                 if(id.indexOf('group')!==-1){
                     var node = treeObj.getNodeByParam("parent", id);
                     expandParent(node, treeObj);
@@ -65,6 +65,8 @@ $(function () {
                     treeObj.selectNode(node);
                 }
                 leftClick();
+
+
             }
     }
 
@@ -429,11 +431,13 @@ $(function () {
 
 
     function expandParent(node, obj) {
-        var path = node.getPath();
-        if (path && path.length > 0) {
-            for (var i = 0; i < path.length - 1; i++) {
-                obj.showNode(path[i]);
-                obj.expandNode(path[i], true);
+        if(node){
+            var path = node.getPath();
+            if (path && path.length > 0) {
+                for (var i = 0; i < path.length - 1; i++) {
+                    obj.showNode(path[i]);
+                    obj.expandNode(path[i], true);
+                }
             }
         }
     }
@@ -606,91 +610,93 @@ $(function () {
         }else{
             selected = zAllTree.getSelectedNodes()[0];
         }
-        var id = selected.id;
-        var dir = selected.directory;
-        focusId = id;
-        setCurrentId(focusId);
-        //如果点击的是任务节点
-        if (dir == null || dir == undefined) {
-            isGroup = false;
+        if(selected){
+            var id = selected.id;
+            var dir = selected.directory;
+            focusId = id;
+            setCurrentId(focusId);
+            //如果点击的是任务节点
+            if (dir == null || dir == undefined) {
+                isGroup = false;
 
-            $.ajax({
-                url: base_url + "/scheduleCenter/getJobMessage.do",
-                type: "get",
-                async: false,
-                data: {
-                    jobId: id
-                },
-                success: function (data) {
-                    focusItem = data;
-                    if (data.runType == "Shell") {
-                        codeMirror.setOption("mode", "text/x-sh");
-                    } else {
-                        codeMirror.setOption("mode", "text/x-hive");
+                $.ajax({
+                    url: base_url + "/scheduleCenter/getJobMessage.do",
+                    type: "get",
+                    async: false,
+                    data: {
+                        jobId: id
+                    },
+                    success: function (data) {
+                        focusItem = data;
+                        if (data.runType == "Shell") {
+                            codeMirror.setOption("mode", "text/x-sh");
+                        } else {
+                            codeMirror.setOption("mode", "text/x-hive");
+                        }
+                        if (data.script != null) {
+                            codeMirror.setValue(data.script);
+                        }
+                        var isShow = data.scheduleType === 0;
+                        $('#dependencies').css("display", isShow ? "none" : "");
+                        $('#heraDependencyCycle').css("display", isShow ? "none" : "");
+                        $('#cronExpression').css("display", isShow ? "" : "none");
+                        formDataLoad("jobMessage form", data);
+                        $("#jobMessage [name='scheduleType']").val(isShow ? "定时调度" : "依赖调度");
+                        selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
+                        $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
+                        $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
+                        inheritConfigCM.setValue(parseJson(data.inheritConfig));
+
+
                     }
-                    if (data.script != null) {
-                        codeMirror.setValue(data.script);
+                });
+            } else { //如果点击的是组节点
+                isGroup = true;
+
+                $.ajax({
+                    url: base_url + "/scheduleCenter/getGroupMessage.do",
+                    type: "get",
+                    async: false,
+                    data: {
+                        groupId: id
+                    },
+                    success: function (data) {
+                        focusItem = data;
+                        formDataLoad("groupMessage form", data);
+                        inheritConfigCM.setValue(parseJson(data.inheritConfig));
+
+                        selfConfigCM.setValue(parseJson(data.configs));
                     }
-                    var isShow = data.scheduleType === 0;
-                    $('#dependencies').css("display", isShow ? "none" : "");
-                    $('#heraDependencyCycle').css("display", isShow ? "none" : "");
-                    $('#cronExpression').css("display", isShow ? "" : "none");
-                    formDataLoad("jobMessage form", data);
-                    $("#jobMessage [name='scheduleType']").val(isShow ? "定时调度" : "依赖调度");
-                    selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
-                    $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
-                    $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
-                    inheritConfigCM.setValue(parseJson(data.inheritConfig));
+
+                });
 
 
-                }
-            });
-        } else { //如果点击的是组节点
-            isGroup = true;
+            }
 
-            $.ajax({
-                url: base_url + "/scheduleCenter/getGroupMessage.do",
-                type: "get",
-                async: false,
-                data: {
-                    groupId: id
-                },
-                success: function (data) {
-                    focusItem = data;
-                    formDataLoad("groupMessage form", data);
-                    inheritConfigCM.setValue(parseJson(data.inheritConfig));
-
-                    selfConfigCM.setValue(parseJson(data.configs));
-                }
-
-            });
-
-
+            changeEditStyle(1);
+            //组管理
+            if (dir != undefined && dir != null) {
+                //设置操作菜单
+                $("#groupOperate").attr("style", "display:block");
+                $("#jobOperate").attr("style", "display:none");
+                var jobDisabled;
+                //设置按钮不可用
+                $("#groupOperate [name='addJob']").attr("disabled", jobDisabled = dir == 0);
+                $("#groupOperate [name='addGroup']").attr("disabled", !jobDisabled);
+                //设置任务相关信息不显示
+                $("#script").css("display", "none");
+                $("#jobMessage").css("display", "none");
+                $("#groupMessage").css("display", "block");
+            } else { //任务管理
+                $("#groupOperate").css("display", "none");
+                $("#groupMessage").css("display", "none");
+                $("#jobOperate").css("display", "block");
+                $("#script").css("display", "block");
+            }
+            $("#config").css("display", "block");
+            $("#inheritConfig").css("display", "block");
+            refreshCm();
         }
-
-        changeEditStyle(1);
-        //组管理
-        if (dir != undefined && dir != null) {
-            //设置操作菜单
-            $("#groupOperate").attr("style", "display:block");
-            $("#jobOperate").attr("style", "display:none");
-            var jobDisabled;
-            //设置按钮不可用
-            $("#groupOperate [name='addJob']").attr("disabled", jobDisabled = dir == 0);
-            $("#groupOperate [name='addGroup']").attr("disabled", !jobDisabled);
-            //设置任务相关信息不显示
-            $("#script").css("display", "none");
-            $("#jobMessage").css("display", "none");
-            $("#groupMessage").css("display", "block");
-        } else { //任务管理
-            $("#groupOperate").css("display", "none");
-            $("#groupMessage").css("display", "none");
-            $("#jobOperate").css("display", "block");
-            $("#script").css("display", "block");
-        }
-        $("#config").css("display", "block");
-        $("#inheritConfig").css("display", "block");
-        refreshCm();
 
         // $.each($("textarea"), function (i, n) {
         //     $(n).css("height", n.scrollHeight + "px");
@@ -786,7 +792,6 @@ $(function () {
     $(document).ready(function () {
         $('#allScheBtn').click(function (e) {
             e.stopPropagation();
-            console.log('click');
             $('#jobTree').hide();
             $('#allTree').show();
             $(this).parent().addClass('active');
