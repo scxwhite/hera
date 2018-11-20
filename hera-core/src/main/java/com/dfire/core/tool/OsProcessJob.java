@@ -45,9 +45,9 @@ public class OsProcessJob extends RunShell {
                             }
                             if ("Cpu(s):".equals(first)) {
                                 try {
-                                    user = Float.parseFloat(words[1].replace("%us", ""));
-                                    system = Float.parseFloat(words[2].replace("%sy", ""));
-                                    cpu = Float.parseFloat(words[4].replace("%id", ""));
+                                    user = Float.parseFloat(words[1].replace("%us,", ""));
+                                    system = Float.parseFloat(words[2].replace("%sy,", ""));
+                                    cpu = Float.parseFloat(words[4].replace("%id,", ""));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
