@@ -207,7 +207,8 @@ $(function () {
         //机器信息
         var machineInfo =machine.machineInfo;
         $('#machineInfo').empty();
-        for(var i =0;i<machineInfo.length;i++){
+
+        for(var i =0;machineInfo != null && i<machineInfo.length;i++){
             $('#machineInfo').append('<div class="machine"><p class="filesystem">'+machineInfo[i].filesystem+'(已用'+machineInfo[i].used+'/可用'+machineInfo[i].avail+')</p><div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="'+machineInfo[i].use+'" aria-valuemin="0" aria-valuemax="100" style="width: '+machineInfo[i].use+'%"><span class="sr-only"></span></div></div></div>')
         }
     }
