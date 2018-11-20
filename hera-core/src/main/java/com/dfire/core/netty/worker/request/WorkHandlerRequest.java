@@ -1,13 +1,13 @@
 package com.dfire.core.netty.worker.request;
 
+import com.dfire.core.exception.RemotingException;
+import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.tool.OsProcessJob;
 import com.dfire.protocol.RpcOperate;
 import com.dfire.protocol.RpcRequest.Request;
-import com.dfire.protocol.RpcResponse;
-import com.dfire.protocol.RpcResponse.Response;
-
-import java.util.concurrent.Future;
+import com.dfire.protocol.RpcSocketMessage;
+import io.netty.channel.Channel;
 
 /**
  * @author xiaosuda
@@ -15,17 +15,23 @@ import java.util.concurrent.Future;
  */
 public class WorkHandlerRequest {
 
-    public Future<Response> getWorkInfo(WorkContext workContext, Request request) {
-        return workContext.getWorkExecuteThreadPool().submit(() -> {
+    public void getWorkInfo(Channel channel, WorkContext workContext, Request request) {
 
-            OsProcessJob processJob = new OsProcessJob();
-            processJob.run();
-            return RpcResponse.Response.newBuilder()
-                    .setRid(request.getRid())
-                    .setBody(processJob.getRes().toByteString())
-                    .setOperate(RpcOperate.Operate.SetWorkInfo)
-                    .build();
-        });
+        OsProcessJob processJob = new OsProcessJob();
+        processJob.run();
+        try {
+            new NettyChannel(channel).writeAndFlush(
+                    RpcSocketMessage.SocketMessage.newBuilder()
+                            .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
+                            .setBody(Request.newBuilder()
+                                    .setBody(processJob.getRes().toByteString())
+                                    .setOperate(RpcOperate.Operate.SetWorkInfo)
+                                    .build()
+                                    .toByteString())
+                            .build());
+        } catch (RemotingException e) {
+            e.printStackTrace();
+        }
 
     }
 }

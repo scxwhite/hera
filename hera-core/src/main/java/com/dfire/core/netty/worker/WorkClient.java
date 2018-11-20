@@ -400,7 +400,7 @@ public class WorkClient {
 
     public HashMap<String, WorkInfoVo> getAllWorkInfo() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getAllWorkInfoFromMaster(workContext).get();
-        if (response.getStatus() == ResponseStatus.Status.ERROR) {
+        if (response == null || response.getStatus() == ResponseStatus.Status.ERROR) {
             SocketLog.error("获取work信息失败:{}", response.getErrorText());
             return null;
         }

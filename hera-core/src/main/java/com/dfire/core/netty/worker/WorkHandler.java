@@ -26,7 +26,6 @@ import java.util.concurrent.*;
 public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
 
-
     private WorkHandlerRequest handlerRequest = new WorkHandlerRequest();
 
     private CompletionService<Response> completionService = new ExecutorCompletionService<>(
@@ -96,8 +95,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                                 new WorkHandleCancel().handleCancel(workContext, request).get());
                         break;
                     case GetWorkInfo:
-                        completionService.submit(() ->
-                                handlerRequest.getWorkInfo(workContext, request).get());
+                        handlerRequest.getWorkInfo(ctx.channel(), workContext, request);
                         break;
                     default:
                         SocketLog.error("unknow operate value {}", request.getOperateValue());
