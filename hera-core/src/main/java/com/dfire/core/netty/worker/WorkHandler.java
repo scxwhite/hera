@@ -95,7 +95,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                                 new WorkHandleCancel().handleCancel(workContext, request).get());
                         break;
                     case GetWorkInfo:
-                        handlerRequest.getWorkInfo(ctx.channel(), workContext, request);
+                        handlerRequest.getWorkInfo(ctx.channel());
                         break;
                     default:
                         SocketLog.error("unknow operate value {}", request.getOperateValue());

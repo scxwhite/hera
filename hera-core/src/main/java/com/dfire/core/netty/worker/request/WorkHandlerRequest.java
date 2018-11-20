@@ -2,7 +2,6 @@ package com.dfire.core.netty.worker.request;
 
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.NettyChannel;
-import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.tool.OsProcessJob;
 import com.dfire.protocol.RpcOperate;
 import com.dfire.protocol.RpcRequest.Request;
@@ -15,8 +14,7 @@ import io.netty.channel.Channel;
  */
 public class WorkHandlerRequest {
 
-    public void getWorkInfo(Channel channel, WorkContext workContext, Request request) {
-
+    public void getWorkInfo(Channel channel) {
         OsProcessJob processJob = new OsProcessJob();
         processJob.run();
         try {

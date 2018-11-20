@@ -115,7 +115,7 @@ $(function () {
             scaleColor: '#666'
         });
         $('#userPercent').data('easyPieChart').update(0);
-        $('#userPercent').data('easyPieChart').update(parseFloat(machine.osInfo.user)*100);
+        $('#userPercent').data('easyPieChart').update(parseFloat(machine.osInfo.user));
 
         $('#SysPercent').easyPieChart({
             animate: 1000,
@@ -128,7 +128,7 @@ $(function () {
             scaleColor: '#666'
         });
         $('#SysPercent').data('easyPieChart').update(0);
-        $('#SysPercent').data('easyPieChart').update(parseFloat(machine.osInfo.system)*100);
+        $('#SysPercent').data('easyPieChart').update(parseFloat(machine.osInfo.system));
 
         $('#CPUPercent').easyPieChart({
             animate: 1000,
