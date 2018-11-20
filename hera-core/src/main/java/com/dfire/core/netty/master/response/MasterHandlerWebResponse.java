@@ -16,6 +16,7 @@ import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
+import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.*;
@@ -239,6 +240,7 @@ public class MasterHandlerWebResponse {
 
     public static synchronized WebResponse buildAllWorkInfo(MasterContext context, WebRequest request) {
         if (!workReady) {
+            SocketLog.info("workInfo未准备，准备请求work组装workInfo");
             //发送workInfo build 请求
             context.getThreadPool().submit(() -> context.getWorkMap().keySet().parallelStream().forEach(channel -> {
                 try {
@@ -252,7 +254,7 @@ public class MasterHandlerWebResponse {
             }));
             CountDownLatch latch = new CountDownLatch(1);
             context.getThreadPool().submit(() -> {
-                int maxTime = 1000, cnt = 0;
+                int maxTime = 300, cnt = 0;
                 boolean canExit;
                 try {
                     while (cnt++ < maxTime) {
@@ -264,6 +266,7 @@ public class MasterHandlerWebResponse {
                             }
                         }
                         if (canExit) {
+                            SocketLog.info("所有workInfo已准备完毕");
                             workReady = true;
                             break;
                         }
@@ -286,7 +289,7 @@ public class MasterHandlerWebResponse {
                 context.getWorkMap().values().forEach(workHolder -> workHolder.setWorkInfo(null));
             }, 30, TimeUnit.SECONDS);
         }
-
+        SocketLog.info("开始组装workInfo");
 
         Map<String, RpcWorkInfo.WorkInfo> workInfoMap = new HashMap<>(context.getWorkMap().size());
         context.getWorkMap().values().forEach(workHolder -> {

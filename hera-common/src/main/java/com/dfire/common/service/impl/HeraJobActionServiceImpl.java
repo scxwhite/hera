@@ -6,14 +6,16 @@ import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
 import com.dfire.common.service.HeraJobActionService;
-import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.ActionUtil;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.logs.ScheduleLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -27,23 +29,22 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     private HeraJobActionMapper heraJobActionMapper;
 
 
-
     @Override
     public List<HeraAction> batchInsert(List<HeraAction> heraActionList) {
-        ScheduleLog.info("batchInsert-> batch size is :{}" , heraActionList.size());
+        ScheduleLog.info("batchInsert-> batch size is :{}", heraActionList.size());
         List<HeraAction> insertList = new ArrayList<>();
         List<HeraAction> updateList = new ArrayList<>();
-        for(HeraAction heraAction : heraActionList){
+        for (HeraAction heraAction : heraActionList) {
             if (isNeedUpdateAction(heraAction)) {
                 updateList.add(heraAction);
             } else {
                 insertList.add(heraAction);
             }
         }
-        if(insertList.size() != 0){
+        if (insertList.size() != 0) {
             heraJobActionMapper.batchInsert(insertList);
         }
-        if(updateList.size() != 0 ){
+        if (updateList.size() != 0) {
             heraJobActionMapper.batchUpdate(updateList);
         }
         return heraActionList;
@@ -51,10 +52,11 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     /**
      * 判断是更新该是修改
+     *
      * @param heraAction
      * @return
      */
-    private boolean isNeedUpdateAction(HeraAction heraAction){
+    private boolean isNeedUpdateAction(HeraAction heraAction) {
         HeraAction action = heraJobActionMapper.findById(heraAction);
         if (action != null) {
             //如果该任务不是在运行中
@@ -77,7 +79,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public int insert(HeraAction heraAction) {
         if (isNeedUpdateAction(heraAction)) {
             return heraJobActionMapper.update(heraAction);
-        }else {
+        } else {
             return heraJobActionMapper.insert(heraAction);
         }
     }
@@ -117,7 +119,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public int updateStatus(JobStatus jobStatus) {
         HeraAction heraAction = findById(jobStatus.getActionId());
         heraAction.setGmtModified(new Date());
-        HeraAction tmp  = BeanConvertUtils.convert(jobStatus);
+        HeraAction tmp = BeanConvertUtils.convert(jobStatus);
         heraAction.setStatus(tmp.getStatus());
         heraAction.setReadyDependency(tmp.getReadyDependency());
         heraAction.setHistoryId(jobStatus.getHistoryId());
@@ -127,11 +129,10 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     @Override
     public Tuple<HeraActionVo, JobStatus> findHeraActionVo(String actionId) {
         HeraAction heraActionTmp = findById(actionId);
-        if(heraActionTmp == null) {
+        if (heraActionTmp == null) {
             return null;
         }
-        Tuple<HeraActionVo, JobStatus> tuple = BeanConvertUtils.convert(heraActionTmp);
-        return tuple;
+        return BeanConvertUtils.convert(heraActionTmp);
     }
 
     @Override
@@ -142,6 +143,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     /**
      * 根据jobId查询版本运行信息，只能是取最新版本信息
+     *
      * @param jobId
      * @return
      */
@@ -168,6 +170,6 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     @Override
     public List<String> getActionVersionByJobId(Long jobId) {
-        return  heraJobActionMapper.getActionVersionByJobId(jobId);
+        return heraJobActionMapper.getActionVersionByJobId(jobId);
     }
 }
