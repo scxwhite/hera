@@ -100,7 +100,7 @@ $(function () {
     }
     function initInfo(machine){
         //系统概况
-        ramOption.series[0].data[0].value = parseFloat(machine.osInfo.mem);
+        ramOption.series[0].data[0].value = parseFloat(machine.osInfo.mem.toFixed(2));
         var myChart=echarts.init(document.getElementById('ramGauge'));
         myChart.setOption(ramOption, true);
 

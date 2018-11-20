@@ -76,7 +76,6 @@ public class OsProcessJob extends RunShell {
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
-
                             }
                         }
                     }
