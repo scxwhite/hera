@@ -82,14 +82,14 @@ public class OsProcessJob extends RunShell {
                     }
 
                     mem = 1.0f - ((memFree + memBuffers + swapCached) / memTotal);
-                    swap = 1.0f - ((swapFree + swapCached) / swapTotal);
+                    swap = 1.0f - ((swapFree) / swapTotal);
                     workInfo = WorkInfo.newBuilder()
                             .setOSInfo(OSInfo.newBuilder()
                                     .setUser(user)
                                     .setSystem(system)
                                     .setCpu(cpu)
-                                    .setSwap(swap)
-                                    .setMem(mem)
+                                    .setSwap(swap * 100f)
+                                    .setMem(mem * 100f)
                                     .build())
                             .addAllProcessMonitor(processMonitors).build();
                 }
