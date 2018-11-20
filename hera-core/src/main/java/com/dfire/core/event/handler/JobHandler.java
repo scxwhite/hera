@@ -156,7 +156,7 @@ public class JobHandler extends AbstractHandler {
 
                     HeraJobHistory heraJobHistory = HeraJobHistory.builder()
                             .jobId(heraAction.getJobId())
-                            .actionId(heraAction.getId())
+                            .actionId(heraAction.getId().toString())
                             .triggerType(TriggerTypeEnum.MANUAL_RECOVER.getId())
                             .illustrate(LogConstant.SERVER_START_JOB_LOG)
                             .log(LogConstant.SERVER_START_JOB_LOG)

@@ -35,14 +35,14 @@ public class HeraActionBatchUpdateDriver extends XMLLanguageDriver implements La
                 String  fieldName = field.getName();
                 String tmp = dbName +" = CASE id "+
                         "<foreach collection=\"$1\" item=\"item\" > " +
-                        " WHEN #{item.id}  THEN #{item."+fieldName+"}" +
+                        " WHEN #{item.id,jdbcType=BIGINT}  THEN #{item."+fieldName+"}" +
                         "</foreach> END ,";
                 sb.append(tmp);
             }
             sb.deleteCharAt(sb.lastIndexOf(","));
             sb.append(" where id in ");
             String whereSql =  "<foreach collection=\"$1\" item=\"item\"  " +
-                    "separator=\",\" open=\"(\" close=\")\"> #{item.id} </foreach>";
+                    "separator=\",\" open=\"(\" close=\")\"> #{item.id,jdbcType=BIGINT} </foreach>";
             sb.append(whereSql);
 
             script = matcher.replaceAll(sb.toString());

@@ -98,7 +98,7 @@ public class WorkExecuteJob {
                                 .endTime(new Date())
                                 .build());
 
-                workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(actionId).status(res).build());
+                workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(Long.parseLong(actionId)).status(res).build());
                 workContext.getManualRunning().remove(actionId);
             }
 

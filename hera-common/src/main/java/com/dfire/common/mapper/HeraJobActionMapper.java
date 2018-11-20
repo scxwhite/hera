@@ -44,6 +44,7 @@ public interface HeraJobActionMapper {
     @Lang(HeraSelectLangDriver.class)
     HeraAction findById(HeraAction heraAction);
 
+
     @Select("select * from hera_action where job_id = #{jobId} order by id desc limit 1")
     HeraAction findLatestByJobId(String jobId);
 
@@ -57,5 +58,13 @@ public interface HeraJobActionMapper {
     Integer updateStatusAndReadDependency(HeraAction heraAction);
     @Select("select * from hera_action where id >= #{today}")
     List<HeraAction> selectTodayAction(String today);
+
+    /**
+     * 根据JobId 获取版本
+     * @param jobId
+     * @return
+     */
+    @Select("select id from hera_action where job_id = #{jobId} order by id desc")
+    List<String> getActionVersionByJobId(Long jobId);
 
 }

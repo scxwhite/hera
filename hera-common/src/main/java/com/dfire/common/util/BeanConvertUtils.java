@@ -170,7 +170,7 @@ public class BeanConvertUtils {
     public static Tuple<HeraActionVo, JobStatus> convert(HeraAction action) {
         HeraActionVo heraActionVo = transform(action);
         JobStatus jobStatus = JobStatus.builder().build();
-        jobStatus.setActionId(action.getId());
+        jobStatus.setActionId(action.getId().toString());
         jobStatus.setHistoryId(action.getHistoryId());
         jobStatus.setStatus(StatusEnum.parse(action.getStatus()));
         jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()));
@@ -215,7 +215,7 @@ public class BeanConvertUtils {
             return heraAction;
         }
 
-        heraAction.setId(jobStatus.getActionId());
+        heraAction.setId(Long.parseLong(jobStatus.getActionId()));
         heraAction.setStatus(jobStatus.getStatus() == null ? null : jobStatus.getStatus().toString());
         heraAction.setHistoryId(jobStatus.getHistoryId());
         heraAction.setStartTime(jobStatus.getStartTime());
