@@ -69,7 +69,7 @@ public class WorkerHandleWebRequest {
     public static Future<WebResponse> getAllWorkInfoFromMaster(WorkContext workContext) {
         return buildMessage(WebRequest.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
-                .setOperate(WebOperate.GetAllHeartBeatInfo)
+                .setOperate(WebOperate.GetAllWorkInfo)
                 .build(), workContext, "三个小时未获得master所有work信息");
     }
 

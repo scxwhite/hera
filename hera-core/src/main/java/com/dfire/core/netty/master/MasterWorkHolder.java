@@ -2,7 +2,7 @@ package com.dfire.core.netty.master;
 
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.HeraChannel;
-import io.netty.channel.Channel;
+import com.dfire.protocol.RpcWorkInfo.WorkInfo;
 import lombok.Data;
 
 import java.util.HashSet;
@@ -26,6 +26,8 @@ public class MasterWorkHolder {
     private Set<String> debugRunning = new HashSet<>();
 
     private HeartBeatInfo heartBeatInfo;
+
+    private WorkInfo workInfo;
 
     public MasterWorkHolder(HeraChannel channel) {
         this.channel = channel;

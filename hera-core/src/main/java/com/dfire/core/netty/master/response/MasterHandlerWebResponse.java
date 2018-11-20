@@ -7,16 +7,18 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.event.HeraJobMaintenanceEvent;
 import com.dfire.core.event.base.Events;
+import com.dfire.core.exception.RemotingException;
 import com.dfire.core.message.HeartBeatInfo;
+import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.netty.master.MasterContext;
+import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
-import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
-import com.dfire.protocol.ResponseStatus;
+import com.dfire.protocol.*;
 import com.dfire.protocol.ResponseStatus.Status;
 import com.dfire.protocol.RpcHeartBeatMessage.AllHeartBeatInfoMessage;
 import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
@@ -25,6 +27,8 @@ import com.dfire.protocol.RpcWebRequest.WebRequest;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * master处理work发起的web请求
@@ -33,6 +37,9 @@ import java.util.*;
  * @date 2018/11/9
  */
 public class MasterHandlerWebResponse {
+
+
+    private static volatile boolean workReady = false;
 
     /**
      * 处理work发起的调度中心任务执行 操作
@@ -53,7 +60,7 @@ public class MasterHandlerWebResponse {
                     .setOperate(WebOperate.ExecuteJob)
                     .setStatus(Status.OK)
                     .build();
-            TaskLog.info("MasterHandlerWebResponse: send web execute response, actionId = {} ",  history.getJobId());
+            TaskLog.info("MasterHandlerWebResponse: send web execute response, actionId = {} ", history.getJobId());
             return webResponse;
         } else if (request.getEk() == ExecuteKind.DebugKind) {
             String debugId = request.getId();
@@ -227,6 +234,74 @@ public class MasterHandlerWebResponse {
                 .setOperate(request.getOperate())
                 .setStatus(Status.OK)
                 .setBody(AllHeartBeatInfoMessage.newBuilder().putAllValues(allInfo).build().toByteString())
+                .build();
+    }
+
+    public static synchronized WebResponse buildAllWorkInfo(MasterContext context, WebRequest request) {
+        if (!workReady) {
+            //发送workInfo build 请求
+            context.getThreadPool().submit(() -> context.getWorkMap().keySet().parallelStream().forEach(channel -> {
+                try {
+                    new NettyChannel(channel).writeAndFlush(RpcSocketMessage.SocketMessage.newBuilder()
+                            .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
+                            .setBody(RpcRequest.Request.newBuilder().setOperate(RpcOperate.Operate.GetWorkInfo).build().toByteString())
+                            .build());
+                } catch (RemotingException e) {
+                    e.printStackTrace();
+                }
+            }));
+            CountDownLatch latch = new CountDownLatch(1);
+            context.getThreadPool().submit(() -> {
+                int maxTime = 1000, cnt = 0;
+                boolean canExit;
+                try {
+                    while (cnt++ < maxTime) {
+                        canExit = true;
+                        for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
+                            if (workHolder.getWorkInfo() == null) {
+                                canExit = false;
+                                break;
+                            }
+                        }
+                        if (canExit) {
+                            workReady = true;
+                            break;
+                        }
+                        TimeUnit.MILLISECONDS.sleep(10);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    latch.countDown();
+                }
+            });
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            context.getMasterSchedule().schedule(() -> {
+                workReady = false;
+                context.getWorkMap().values().forEach(workHolder -> workHolder.setWorkInfo(null));
+            }, 30, TimeUnit.SECONDS);
+        }
+
+
+        Map<String, RpcWorkInfo.WorkInfo> workInfoMap = new HashMap<>(context.getWorkMap().size());
+        context.getWorkMap().values().forEach(workHolder -> {
+            String host = workHolder.getHeartBeatInfo().getHost();
+            if (host.equals(WorkContext.host)) {
+                workInfoMap.put(Constants.MASTER_PREFIX + host, workHolder.getWorkInfo());
+            } else {
+                workInfoMap.put(Constants.WORK_PREFIX + host, workHolder.getWorkInfo());
+            }
+        });
+        return WebResponse.newBuilder()
+                .setRid(request.getRid())
+                .setOperate(request.getOperate())
+                .setStatus(Status.OK)
+                .setBody(RpcWorkInfo.AllWorkInfo.newBuilder().putAllValues(workInfoMap).build().toByteString())
                 .build();
     }
 }

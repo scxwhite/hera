@@ -32,41 +32,49 @@ public final class RpcWebOperate {
      *手动执行或者手动恢复job
      * </pre>
      *
-     * <code>ExecuteJob = 2;</code>
+     * <code>ExecuteJob = 1;</code>
      */
-    ExecuteJob(2),
+    ExecuteJob(1),
     /**
      * <pre>
      *手动取消任务
      * </pre>
      *
-     * <code>CancelJob = 3;</code>
+     * <code>CancelJob = 2;</code>
      */
-    CancelJob(3),
+    CancelJob(2),
     /**
      * <pre>
      *调试任务
      * </pre>
      *
-     * <code>ExecuteDebug = 4;</code>
+     * <code>ExecuteDebug = 3;</code>
      */
-    ExecuteDebug(4),
+    ExecuteDebug(3),
     /**
      * <pre>
      *生成版本
      * </pre>
      *
-     * <code>GenerateAction = 5;</code>
+     * <code>GenerateAction = 4;</code>
      */
-    GenerateAction(5),
+    GenerateAction(4),
     /**
      * <pre>
-     *获得任务队列信息
+     *获得心跳信息
      * </pre>
      *
-     * <code>GetAllHeartBeatInfo = 6;</code>
+     * <code>GetAllHeartBeatInfo = 5;</code>
      */
-    GetAllHeartBeatInfo(6),
+    GetAllHeartBeatInfo(5),
+    /**
+     * <pre>
+     *获得所有机器信息
+     * </pre>
+     *
+     * <code>GetAllWorkInfo = 6;</code>
+     */
+    GetAllWorkInfo(6),
     UNRECOGNIZED(-1),
     ;
 
@@ -83,41 +91,49 @@ public final class RpcWebOperate {
      *手动执行或者手动恢复job
      * </pre>
      *
-     * <code>ExecuteJob = 2;</code>
+     * <code>ExecuteJob = 1;</code>
      */
-    public static final int ExecuteJob_VALUE = 2;
+    public static final int ExecuteJob_VALUE = 1;
     /**
      * <pre>
      *手动取消任务
      * </pre>
      *
-     * <code>CancelJob = 3;</code>
+     * <code>CancelJob = 2;</code>
      */
-    public static final int CancelJob_VALUE = 3;
+    public static final int CancelJob_VALUE = 2;
     /**
      * <pre>
      *调试任务
      * </pre>
      *
-     * <code>ExecuteDebug = 4;</code>
+     * <code>ExecuteDebug = 3;</code>
      */
-    public static final int ExecuteDebug_VALUE = 4;
+    public static final int ExecuteDebug_VALUE = 3;
     /**
      * <pre>
      *生成版本
      * </pre>
      *
-     * <code>GenerateAction = 5;</code>
+     * <code>GenerateAction = 4;</code>
      */
-    public static final int GenerateAction_VALUE = 5;
+    public static final int GenerateAction_VALUE = 4;
     /**
      * <pre>
-     *获得任务队列信息
+     *获得心跳信息
      * </pre>
      *
-     * <code>GetAllHeartBeatInfo = 6;</code>
+     * <code>GetAllHeartBeatInfo = 5;</code>
      */
-    public static final int GetAllHeartBeatInfo_VALUE = 6;
+    public static final int GetAllHeartBeatInfo_VALUE = 5;
+    /**
+     * <pre>
+     *获得所有机器信息
+     * </pre>
+     *
+     * <code>GetAllWorkInfo = 6;</code>
+     */
+    public static final int GetAllWorkInfo_VALUE = 6;
 
 
     public final int getNumber() {
@@ -139,11 +155,12 @@ public final class RpcWebOperate {
     public static WebOperate forNumber(int value) {
       switch (value) {
         case 0: return UpdateJob;
-        case 2: return ExecuteJob;
-        case 3: return CancelJob;
-        case 4: return ExecuteDebug;
-        case 5: return GenerateAction;
-        case 6: return GetAllHeartBeatInfo;
+        case 1: return ExecuteJob;
+        case 2: return CancelJob;
+        case 3: return ExecuteDebug;
+        case 4: return GenerateAction;
+        case 5: return GetAllHeartBeatInfo;
+        case 6: return GetAllWorkInfo;
         default: return null;
       }
     }
@@ -205,11 +222,11 @@ public final class RpcWebOperate {
       descriptor;
   static {
     String[] descriptorData = {
-      "\n\007x.proto*y\n\nWebOperate\022\r\n\tUpdateJob\020\000\022\016" +
-      "\n\nExecuteJob\020\002\022\r\n\tCancelJob\020\003\022\020\n\014Execute" +
-      "Debug\020\004\022\022\n\016GenerateAction\020\005\022\027\n\023GetAllHea" +
-      "rtBeatInfo\020\006B%\n\022com.dfire.protocolB\rRpcW" +
-      "ebOperateH\001b\006proto3"
+      "\n\007x.proto*\215\001\n\nWebOperate\022\r\n\tUpdateJob\020\000\022" +
+      "\016\n\nExecuteJob\020\001\022\r\n\tCancelJob\020\002\022\020\n\014Execut" +
+      "eDebug\020\003\022\022\n\016GenerateAction\020\004\022\027\n\023GetAllHe" +
+      "artBeatInfo\020\005\022\022\n\016GetAllWorkInfo\020\006B%\n\022com" +
+      ".dfire.protocolB\rRpcWebOperateH\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

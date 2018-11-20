@@ -1,10 +1,12 @@
 package com.dfire.core.netty.master.response;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.queue.JobElement;
@@ -31,7 +33,7 @@ public class MasterCancelJob {
         RpcWebResponse.WebResponse webResponse = null;
         String debugId = request.getId();
         HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
-        for (JobElement element : new ArrayList<>(context.getDebugQueue())) {
+        for (JobElement element : context.getDebugQueue()) {
             if (element.getJobId().equals(debugId)) {
                 webResponse = RpcWebResponse.WebResponse.newBuilder()
                         .setRid(request.getRid())
@@ -45,8 +47,7 @@ public class MasterCancelJob {
             }
         }
 
-        for (Channel key : new HashSet<>(context.getWorkMap().keySet())) {
-            MasterWorkHolder workHolder = context.getWorkMap().get(key);
+        for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
             if (workHolder.getDebugRunning().contains(debugId)) {
                 Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
                         workHolder.getChannel(), JobExecuteKind.ExecuteKind.DebugKind, debugId);
@@ -106,7 +107,7 @@ public class MasterCancelJob {
                             workHolder.getChannel(), JobExecuteKind.ExecuteKind.ManualKind, historyId);
                     workHolder.getManningRunning().remove(jobId);
                     try {
-                        future.get(1, TimeUnit.MINUTES);
+                        future.get(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -129,7 +130,7 @@ public class MasterCancelJob {
                     .setErrorText("Manual任务中找不到匹配的job(" + heraJobHistory.getJobId() + "," + actionId + ")，无法执行取消命令")
                     .build();
         }
-        heraJobHistory.setIllustrate("任务取消");
+        heraJobHistory.setIllustrate(Constants.CANCEL_JOB_MESSAGE);
         heraJobHistory.setEndTime(new Date());
         heraJobHistory.setStatus(StatusEnum.FAILED.toString());
         context.getHeraJobHistoryService().update(heraJobHistory);
@@ -159,7 +160,7 @@ public class MasterCancelJob {
                             workHolder.getChannel(), JobExecuteKind.ExecuteKind.ScheduleKind, historyId);
                     workHolder.getRunning().remove(jobId);
                     try {
-                        future.get(1, TimeUnit.MINUTES);
+                        future.get(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -184,7 +185,7 @@ public class MasterCancelJob {
         }
         heraJobHistory.setEndTime(new Date());
         heraJobHistory.setStatus(StatusEnum.FAILED.toString());
-        heraJobHistory.setIllustrate("任务取消");
+        heraJobHistory.setIllustrate(Constants.CANCEL_JOB_MESSAGE);
         context.getHeraJobHistoryService().update(heraJobHistory);
         context.getHeraJobActionService().updateStatus(HeraAction.builder().id(actionId).status(StatusEnum.FAILED.toString()).build());
         return webResponse;

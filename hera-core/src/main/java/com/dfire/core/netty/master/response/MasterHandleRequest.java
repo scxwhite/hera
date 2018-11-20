@@ -5,8 +5,10 @@ import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.logs.HeartLog;
-import com.dfire.protocol.RpcHeartBeatMessage;
-import com.dfire.protocol.RpcRequest;
+import com.dfire.logs.HeraLog;
+import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
+import com.dfire.protocol.RpcRequest.Request;
+import com.dfire.protocol.RpcWorkInfo.WorkInfo;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 
@@ -15,14 +17,14 @@ import io.netty.channel.Channel;
  * @author xiaosuda
  * @date 2018/4/13
  */
-public class MasterHandleHeartBeat {
+public class MasterHandleRequest {
 
-    public void handleHeartBeat(MasterContext masterContext, Channel channel, RpcRequest.Request request) {
-        MasterWorkHolder worker = masterContext.getWorkMap().get(channel);
+    public static void handleHeartBeat(MasterContext masterContext, Channel channel, Request request) {
+        MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);
         HeartBeatInfo heartBeatInfo = new HeartBeatInfo();
-        RpcHeartBeatMessage.HeartBeatMessage heartBeatMessage;
+        HeartBeatMessage heartBeatMessage;
         try {
-            heartBeatMessage = RpcHeartBeatMessage.HeartBeatMessage.newBuilder().mergeFrom(request.getBody()).build();
+            heartBeatMessage = HeartBeatMessage.newBuilder().mergeFrom(request.getBody()).build();
             heartBeatInfo.setHost(heartBeatMessage.getHost());
             heartBeatInfo.setMemRate(heartBeatMessage.getMemRate());
             heartBeatInfo.setMemTotal(heartBeatMessage.getMemTotal());
@@ -32,11 +34,21 @@ public class MasterHandleHeartBeat {
             heartBeatInfo.setManualRunning(heartBeatMessage.getManualRunningsList());
             heartBeatInfo.setTimestamp(heartBeatMessage.getTimestamp());
             heartBeatInfo.setCores(heartBeatMessage.getCores());
-            worker.setHeartBeatInfo(heartBeatInfo);
+            workHolder.setHeartBeatInfo(heartBeatInfo);
             HeartLog.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
+    }
 
+    public static void setWorkInfo(MasterContext masterContext, Channel channel, Request request) {
+        MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);
+        try {
+            WorkInfo workInfo = WorkInfo.parseFrom(request.getBody());
+            workHolder.setWorkInfo(workInfo);
+            HeraLog.info("set workInfo success,{}", channel.remoteAddress());
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
     }
 }

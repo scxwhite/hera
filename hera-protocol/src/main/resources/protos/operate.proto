@@ -20,4 +20,10 @@ enum Operate {
 
     //手动执行命令
     Manual = 4;
+
+    //获得机器信息
+    GetWorkInfo = 5;
+
+    //设置机器信息
+    SetWorkInfo = 6;
 }

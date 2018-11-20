@@ -401,7 +401,7 @@ public class WorkClient {
     public HashMap<String, WorkInfoVo> getAllWorkInfo() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getAllWorkInfoFromMaster(workContext).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error("获取心跳信息失败:{}", response.getErrorText());
+            SocketLog.error("获取work信息失败:{}", response.getErrorText());
             return null;
         }
         Map<String, WorkInfo> allWorkInfo = AllWorkInfo.parseFrom(response.getBody()).getValuesMap();
@@ -452,6 +452,8 @@ public class WorkClient {
                 });
                 workInfoVo.setMachineInfo(machineInfoVoList);
             }
+
+            workInfoHashMap.put(ip, workInfoVo);
         });
 
         return workInfoHashMap;

@@ -22,6 +22,8 @@ import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
 import com.dfire.core.message.HeartBeatInfo;
+import com.dfire.core.netty.HeraChannel;
+import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.route.factory.StrategyWorkerEnum;
@@ -834,8 +836,7 @@ public class Master {
             HeraJobFailedEvent event = new HeraJobFailedEvent(actionId, triggerType, jobHistory);
             event.setRollBackTime(retryWaitTime);
             event.setRunCount(runCount);
-            if (jobHistory != null && jobHistory.getIllustrate() != null
-                    && jobHistory.getIllustrate().contains("取消")) {
+            if (Constants.CANCEL_JOB_MESSAGE.equals(jobHistory.getIllustrate())) {
                 isCancelJob = true;
                 ScheduleLog.info("任务取消，取消重试:{}", jobHistory.getActionId());
             } else {

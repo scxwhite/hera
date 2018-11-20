@@ -31,5 +31,7 @@ public class Constants {
 
     public final static String ALL_JOB_ID = "-1024";
 
+    public final static String CANCEL_JOB_MESSAGE = "任务手动取消";
+
 
 }

@@ -5,9 +5,9 @@ import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
+import com.dfire.core.netty.worker.request.WorkHandlerRequest;
 import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
-import com.dfire.protocol.RpcOperate.Operate;
 import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
@@ -24,6 +24,10 @@ import java.util.concurrent.*;
  * @desc SocketMessage为RPC消息体
  */
 public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
+
+
+
+    private WorkHandlerRequest handlerRequest = new WorkHandlerRequest();
 
     private CompletionService<Response> completionService = new ExecutorCompletionService<>(
             new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L,
@@ -80,15 +84,25 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
         switch (socketMessage.getKind()) {
             case REQUEST:
                 final Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                Operate operate = request.getOperate();
-                if (operate == Operate.Schedule || operate == Operate.Manual || operate == Operate.Debug) {
-                    completionService.submit(() ->
-                            new WorkExecuteJob().execute(workContext, request).get());
-                } else if (operate == Operate.Cancel) {
-                    completionService.submit(() ->
-                            new WorkHandleCancel().handleCancel(workContext, request).get());
+                switch (request.getOperate()) {
+                    case Schedule:
+                    case Manual:
+                    case Debug:
+                        completionService.submit(() ->
+                                new WorkExecuteJob().execute(workContext, request).get());
+                        break;
+                    case Cancel:
+                        completionService.submit(() ->
+                                new WorkHandleCancel().handleCancel(workContext, request).get());
+                        break;
+                    case GetWorkInfo:
+                        completionService.submit(() ->
+                                handlerRequest.getWorkInfo(workContext, request).get());
+                        break;
+                    default:
+                        SocketLog.error("unknow operate value {}", request.getOperateValue());
+                        break;
                 }
-                break;
             case RESPONSE:
                 final Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 TaskLog.info("4.WorkHandler:receiver: socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());

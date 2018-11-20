@@ -63,10 +63,8 @@ public class RunShell {
         return result.toString().trim();
     }
 
-    public static void main(String[] args) throws IOException {
-        RunShell shell = new RunShell("sh x.sh");
-        shell.setDirectory("/Users/qqr/Downloads/");
+    public static void main(String[] args) {
+        RunShell shell = new RunShell("top -b -n 1");
         shell.run();
-        System.out.println(shell.getResult());
     }
 }

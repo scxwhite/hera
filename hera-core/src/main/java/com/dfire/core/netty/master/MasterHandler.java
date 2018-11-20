@@ -4,11 +4,10 @@ import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.netty.listener.ResponseListener;
-import com.dfire.core.netty.master.response.MasterHandleHeartBeat;
+import com.dfire.core.netty.master.response.MasterHandleRequest;
 import com.dfire.core.netty.master.response.MasterHandlerWebResponse;
 import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
-import com.dfire.protocol.RpcOperate.Operate;
 import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
@@ -37,12 +36,6 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
      * 调度器执行上下文信息
      */
     private MasterContext masterContext;
-
-
-    /**
-     * 主节点接收到心跳，masterHandler在read到HeartBeat处理逻辑
-     */
-    private MasterHandleHeartBeat masterDoHeartBeat = new MasterHandleHeartBeat();
 
 
     public MasterHandler(MasterContext masterContext) {
@@ -82,8 +75,16 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
             //心跳
             case REQUEST:
                 Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                if (request.getOperate() == Operate.HeartBeat) {
-                    masterDoHeartBeat.handleHeartBeat(masterContext, channel, request);
+                switch (request.getOperate()) {
+                    case HeartBeat:
+                        MasterHandleRequest.handleHeartBeat(masterContext, channel, request);
+                        break;
+                    case SetWorkInfo:
+                        MasterHandleRequest.setWorkInfo(masterContext, channel, request);
+                        break;
+                    default:
+                        SocketLog.error("unknow request operate error.{}", request.getOperateValue());
+                        break;
                 }
                 break;
             case WEB_REQUEST:
@@ -114,8 +115,11 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         completionService.submit(() ->
                                 new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.buildJobQueueInfo(masterContext, webRequest)));
                         break;
+                    case GetAllWorkInfo:
+                        completionService.submit(() ->
+                                new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.buildAllWorkInfo(masterContext, webRequest)));
                     default:
-                        SocketLog.error("unknown operate error:{}", webRequest.getOperate());
+                        SocketLog.error("unknown webRequest operate error:{}", webRequest.getOperate());
                         break;
                 }
                 break;
