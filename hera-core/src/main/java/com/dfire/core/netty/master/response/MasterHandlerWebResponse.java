@@ -16,6 +16,7 @@ import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
+import com.dfire.logs.HeraLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
@@ -240,7 +241,7 @@ public class MasterHandlerWebResponse {
 
     public static synchronized WebResponse buildAllWorkInfo(MasterContext context, WebRequest request) {
         if (!workReady) {
-            SocketLog.info("workInfo未准备，准备请求work组装workInfo");
+            HeraLog.info("workInfo未准备，准备请求work组装workInfo");
             //发送workInfo build 请求
             context.getThreadPool().submit(() -> context.getWorkMap().keySet().parallelStream().forEach(channel -> {
                 try {
@@ -266,7 +267,7 @@ public class MasterHandlerWebResponse {
                             }
                         }
                         if (canExit) {
-                            SocketLog.info("所有workInfo已准备完毕");
+                            HeraLog.info("所有workInfo已准备完毕");
                             workReady = true;
                             break;
                         }
@@ -285,11 +286,12 @@ public class MasterHandlerWebResponse {
             }
 
             context.getMasterSchedule().schedule(() -> {
+                HeraLog.info("开始清理workInfo");
                 workReady = false;
                 context.getWorkMap().values().forEach(workHolder -> workHolder.setWorkInfo(null));
             }, 30, TimeUnit.SECONDS);
         }
-        SocketLog.info("开始组装workInfo");
+        HeraLog.info("开始组装workInfo");
 
         Map<String, RpcWorkInfo.WorkInfo> workInfoMap = new HashMap<>(context.getWorkMap().size());
         context.getWorkMap().values().forEach(workHolder -> {
