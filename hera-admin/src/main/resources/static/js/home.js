@@ -99,6 +99,7 @@ $(function () {
         })
     }
     function initInfo(machine){
+        console.log(machine)
         //系统概况
         ramOption.series[0].data[0].value = parseFloat(machine.osInfo.mem.toFixed(2));
         var myChart=echarts.init(document.getElementById('ramGauge'));
@@ -140,7 +141,6 @@ $(function () {
             lineWidth:10,
             scaleColor: '#666'
         });
-        console.log($('#CPUPercent'))
         $('#CPUPercent').data('easyPieChart').update(0);
         $('#CPUPercent').data('easyPieChart').update(parseInt(machine.osInfo.cpu));
 
@@ -158,51 +158,54 @@ $(function () {
         $('#SwapPercent').data('easyPieChart').update(parseInt(machine.osInfo.swap));
 
         //进程监控
-        $('#processMonitor').bootstrapTable({
-            columns:[{
-                field: 'pid',
-                title: 'PID',
-                width: 150
-            },{
-                field: 'user',
-                title: 'USER',
-                width: 150
-            },{
-                field: 'viri',
-                title: 'VIRI',
-                width: 150
-            },{
-                field: 'res',
-                title: 'RES',
-                width: 150
-            },{
-                field: 'cpu',
-                title: 'CPU',
-                formatter:function(value,row,index){
-                    value = parseFloat(value)
-                    value*=10;
-                    return '<div class="progress progress-xs"><div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="10" style="width: '+value+'%"><span class="sr-only">40% Complete (success)</span></div></div>'
-                },
-                width: 150
+        $("#processMonitor").bootstrapTable('destroy');
+        if(machine.processMonitor!==null){
+            $('#processMonitor').bootstrapTable({
+                columns:[{
+                    field: 'pid',
+                    title: 'PID',
+                    width: 150
+                },{
+                    field: 'user',
+                    title: 'USER',
+                    width: 150
+                },{
+                    field: 'viri',
+                    title: 'VIRI',
+                    width: 150
+                },{
+                    field: 'res',
+                    title: 'RES',
+                    width: 150
+                },{
+                    field: 'cpu',
+                    title: 'CPU',
+                    formatter:function(value,row,index){
+                        value = parseFloat(value)
+                        value*=10;
+                        return '<div class="progress progress-xs"><div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="10" style="width: '+value+'%"><span class="sr-only">40% Complete (success)</span></div></div>'
+                    },
+                    width: 150
 
-            },{
-                field: 'mem',
-                title: 'MEM',
-                formatter:function(value,row,index){
-                    return '<div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100" style="width: '+value+'"><span class="sr-only">40% Complete (success)</span></div></div>'
-                },
-                width: 150
-            },{
-                field: 'time',
-                title: 'TIME',
-                width: 150
-            },{
-                field: 'command',
-                title: 'COMMAND',
-                width: 150
-            }],
-            data: machine.processMonitor
-        })
+                },{
+                    field: 'mem',
+                    title: 'MEM',
+                    formatter:function(value,row,index){
+                        return '<div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100" style="width: '+value+'"><span class="sr-only">40% Complete (success)</span></div></div>'
+                    },
+                    width: 150
+                },{
+                    field: 'time',
+                    title: 'TIME',
+                    width: 150
+                },{
+                    field: 'command',
+                    title: 'COMMAND',
+                    width: 150
+                }],
+                data: machine.processMonitor
+            });
+        }
         $('#processMonitor').bootstrapTable('hideLoading');
         //机器信息
         var machineInfo =machine.machineInfo;
@@ -212,12 +215,11 @@ $(function () {
             $('#machineInfo').append('<div class="machine"><p class="filesystem">'+machineInfo[i].filesystem+'(已用'+machineInfo[i].used+'/可用'+machineInfo[i].avail+')</p><div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="'+machineInfo[i].use+'" aria-valuemin="0" aria-valuemax="100" style="width: '+machineInfo[i].use+'%"><span class="sr-only"></span></div></div></div>')
         }
     }
-    initMachine()
+    initMachine();
     $('#machineList').change(function (e) {
         e.stopPropagation();
         var machine = $(this).val();
         machine = info[machine];
-        console.log(machine)
         initInfo(machine);
     })
 
