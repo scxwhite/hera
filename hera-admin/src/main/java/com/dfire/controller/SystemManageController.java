@@ -30,24 +30,29 @@ public class SystemManageController {
     @Autowired
     private WorkClient workClient;
 
-    @RequestMapping("userManage")
+    @RequestMapping("/userManage")
     public String userManage() {
         return "systemManage/userManage.index";
     }
 
-    @RequestMapping("hostGroupManage")
+    @RequestMapping("/hostGroupManage")
     public String hostGroupManage() {
         return "systemManage/hostGroupManage.index";
     }
 
-    @RequestMapping("jobDetail")
+    @RequestMapping("/jobDetail")
     public String jobManage() {
         return "jobManage/jobDetail.index";
     }
 
-    @RequestMapping("jobDag")
+    @RequestMapping("/jobDag")
     public String jobDag() {
         return "jobManage/jobDag.index";
+    }
+
+    @RequestMapping("/machineInfo")
+    public String machineInfo() {
+        return "machineInfo";
     }
 
     /**
