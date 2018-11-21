@@ -6,6 +6,7 @@ import lombok.Data;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author xiaosuda
@@ -36,7 +37,9 @@ public class RunShell {
 
         try {
             process = builder.start();
-            exitCode = process.waitFor();
+            if (process.waitFor(2, TimeUnit.SECONDS)) {
+                return exitCode = 0;
+            }
             return exitCode;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -66,8 +69,9 @@ public class RunShell {
         return result.toString().trim();
     }
 
-    public static void main(String[] args) {
-        RunShell shell = new RunShell("top -b -n 1");
-        shell.run();
+    public static void main(String[] args) throws IOException {
+        RunShell shell = new RunShell("uptime");
+        System.out.println(shell.run());
+        System.out.println(shell.getResult());
     }
 }

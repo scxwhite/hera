@@ -63,6 +63,9 @@ public class OsProcessJob extends RunShell {
 
                             } else if (StringUtils.isNumeric(first)) {
                                 try {
+                                    if (processMonitors.size() > 30) {
+                                        continue;
+                                    }
                                     processMonitors.add(ProcessMonitor.newBuilder()
                                             .setPid(words[0])
                                             .setUser(words[1])

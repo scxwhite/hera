@@ -599,8 +599,6 @@ public class Master {
                             }
 
                         }
-
-
                     }
 
                 }
