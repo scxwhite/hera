@@ -27,7 +27,7 @@ public class MasterWorkHolder {
 
     private HeartBeatInfo heartBeatInfo;
 
-    private WorkInfo workInfo;
+    private volatile WorkInfo workInfo;
 
     public MasterWorkHolder(HeraChannel channel) {
         this.channel = channel;
