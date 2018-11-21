@@ -8,6 +8,7 @@ import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.tool.RunShell;
 import com.dfire.core.util.NetUtils;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

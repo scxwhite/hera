@@ -294,10 +294,12 @@ public class MasterHandlerWebResponse {
         Map<String, RpcWorkInfo.WorkInfo> workInfoMap = new HashMap<>(context.getWorkMap().size());
         context.getWorkMap().values().forEach(workHolder -> {
             String host = workHolder.getHeartBeatInfo().getHost();
-            if (host.equals(WorkContext.host)) {
-                workInfoMap.put(Constants.MASTER_PREFIX + host, workHolder.getWorkInfo());
-            } else {
-                workInfoMap.put(Constants.WORK_PREFIX + host, workHolder.getWorkInfo());
+            if (workHolder.getWorkInfo() != null) {
+                if (host.equals(WorkContext.host)) {
+                    workInfoMap.put(Constants.MASTER_PREFIX + host, workHolder.getWorkInfo());
+                } else {
+                    workInfoMap.put(Constants.WORK_PREFIX + host, workHolder.getWorkInfo());
+                }
             }
         });
         return WebResponse.newBuilder()
