@@ -15,6 +15,7 @@ import java.net.SocketAddress;
  */
 public class NettyChannel implements HeraChannel {
 
+
     private Channel channel;
 
     public NettyChannel(Channel channel) {
@@ -55,5 +56,12 @@ public class NettyChannel implements HeraChannel {
     @Override
     public void close() {
         channel.close();
+    }
+
+    @Override
+    public String toString() {
+        return "NettyChannel{" +
+                "channel=" + channel +
+                '}';
     }
 }

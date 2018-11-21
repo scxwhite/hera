@@ -86,6 +86,7 @@ public class OsProcessJob extends RunShell {
                     mem = 1.0f - ((memFree + memBuffers + swapCached) / memTotal);
                     swap = 1.0f - ((swapFree) / swapTotal);
                     workInfo = WorkInfo.newBuilder()
+                            .addAllMachineInfo(new ArrayList<>())
                             .setOSInfo(OSInfo.newBuilder()
                                     .setUser(user)
                                     .setSystem(system)
@@ -115,7 +116,7 @@ public class OsProcessJob extends RunShell {
 
     public WorkInfo getRes() {
         if (workInfo == null) {
-            return WorkInfo.newBuilder().build();
+            return WorkInfo.newBuilder().setOSInfo(OSInfo.newBuilder().build()).addAllProcessMonitor(new ArrayList<>()).addAllMachineInfo(new ArrayList<>()).build();
         }
         return workInfo;
     }
