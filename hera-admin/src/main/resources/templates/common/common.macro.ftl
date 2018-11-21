@@ -122,7 +122,9 @@
                         </span>
                     </a>
                 </li>
-
+                <li class="nav-click" id="machineInfoMenu"><a
+                        href="${request.contextPath}/machineInfo"><i class="fa fa-book"></i> <span>机器组监控</span></a>
+                </li>
                 <li class="treeview" id="sysManager">
                     <a href="#">
                         <i class="fa fa-folder"></i> <span>系统管理</span>
