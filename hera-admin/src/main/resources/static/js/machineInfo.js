@@ -1,6 +1,20 @@
 $(function () {
     $('#machineInfoMenu').addClass('active');
     var info = {};
+    var ramOption = {
+        tooltip : {
+            formatter: "{a} <br/>{b} : {c}%"
+        },
+        series: [
+            {
+                name: '业务指标',
+                type: 'gauge',
+                detail: {formatter:'{value}%'},
+                data: [{value: 50, name: '内存使用率'}]
+            }
+        ]
+    };
+
 //内存仪表板
     function initMachine() {
         $.ajax({

@@ -1,6 +1,7 @@
 $(function () {
     $('#jobDetailMenu').addClass('active');
     $('#jobDetailMenu').parent().addClass('menu-open');
+    $('#jobDetailMenu').parent().parent().addClass('menu-open');
     $('#jobManage').addClass('active');
 
     var oTable = new TableInit();
@@ -16,7 +17,7 @@ var TableInit = function () {
     oTableInit.init = function () {
         var table = $('#historyJobTable');
         table.bootstrapTable({
-            url: base_url + '/jobManage/findJobHistoryByStatus',
+            url: base_url + '/jobManage/findJobHistoryByStaus',
             method: 'get',
             pagination: true,
             cache: false,

@@ -4,6 +4,7 @@ $(document).ready(function () {
         // keypath();
     $('#jobDag').addClass('active');
     $('#jobDag').parent().addClass('menu-open');
+    $('#jobDag').parent().parent().addClass('menu-open');
     $('#jobManage').addClass('active');
 
     $('#nextNode').on("click", function () {
