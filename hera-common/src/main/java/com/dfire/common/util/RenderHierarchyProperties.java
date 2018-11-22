@@ -99,7 +99,6 @@ public class RenderHierarchyProperties extends HierarchyProperties {
         template = template.replace("${yesterday}", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")).addDay(-1).format("yyyyMMdd"));
         return template;
     }
-
     @Override
     public HierarchyProperties getParent() {
         return new RenderHierarchyProperties(properties.getParent());
