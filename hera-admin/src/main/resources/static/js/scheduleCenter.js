@@ -896,7 +896,7 @@ $(function () {
             var para = '0 ' + min + ' ' + hour + ' ' + day + ' ' + month + ' ' + week;
             $('#timeChange').val(para);
             $('#timeModal').modal('toggle');
-        })
+        });
 
         //隐藏
         $('.hideBtn').click(function (e) {
