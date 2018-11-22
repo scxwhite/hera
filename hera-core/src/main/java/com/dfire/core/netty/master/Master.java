@@ -86,7 +86,7 @@ public class Master {
             allJobList.forEach(heraAction -> {
                 masterContext.getDispatcher().
                         addJobHandler(new JobHandler(heraAction.getId().toString(), this, masterContext));
-                heraActionMap.put(Long.valueOf(heraAction.getId()), heraAction);
+                heraActionMap.put(heraAction.getId(), heraAction);
             });
             HeraLog.info("-----------------------------add actions to handler success, time:{}-----------------------------", System.currentTimeMillis());
             masterContext.getDispatcher().forwardEvent(Events.Initialize);
@@ -330,8 +330,8 @@ public class Master {
     /**
      * hera自动调度任务版本生成，版本id 18位当前时间 + actionId
      *
-     * @param jobList
-     * @param actionMap
+     * @param jobList jobList
+     * @param actionMap cronDate
      */
     public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap) {
         List<HeraAction> insertActionList = new ArrayList<>();
