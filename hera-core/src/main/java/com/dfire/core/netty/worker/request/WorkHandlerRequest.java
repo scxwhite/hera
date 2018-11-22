@@ -5,7 +5,8 @@ import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.tool.OsProcessJob;
 import com.dfire.protocol.RpcOperate;
 import com.dfire.protocol.RpcRequest.Request;
-import com.dfire.protocol.RpcSocketMessage;
+import com.dfire.protocol.RpcSocketMessage.*;
+import com.dfire.protocol.RpcWorkInfo.*;
 import io.netty.channel.Channel;
 
 /**
@@ -19,10 +20,13 @@ public class WorkHandlerRequest {
         processJob.run();
         try {
             new NettyChannel(channel).writeAndFlush(
-                    RpcSocketMessage.SocketMessage.newBuilder()
-                            .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
+                    SocketMessage.newBuilder()
+                            .setKind(SocketMessage.Kind.REQUEST)
                             .setBody(Request.newBuilder()
-                                    .setBody(processJob.getRes().toByteString())
+                                    .setBody(WorkInfo.newBuilder()
+                                            .setOSInfo(processJob.getOsInfo())
+                                            .addAllProcessMonitor(processJob.getProcessMonitors())
+                                            .build().toByteString())
                                     .setOperate(RpcOperate.Operate.SetWorkInfo)
                                     .build()
                                     .toByteString())

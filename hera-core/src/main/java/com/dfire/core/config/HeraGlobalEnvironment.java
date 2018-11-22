@@ -1,5 +1,6 @@
 package com.dfire.core.config;
 
+import com.dfire.common.enums.OperatorSystemEnum;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class HeraGlobalEnvironment {
     private static long requestTimeout = 60 * 1000L;
 
     @Getter
-    private static long channelTimeout =  1000L;
+    private static long channelTimeout = 1000L;
 
     @Getter
     private static String env;
@@ -155,6 +156,7 @@ public class HeraGlobalEnvironment {
     public void setTimeout(Long requestTimeout) {
         HeraGlobalEnvironment.requestTimeout = requestTimeout;
     }
+
     @Value("${hera.channelTimeout}")
     public void setChannelTimeout(Long channelTimeout) {
         HeraGlobalEnvironment.channelTimeout = channelTimeout;
@@ -208,23 +210,32 @@ public class HeraGlobalEnvironment {
     /**
      * 判断是否是linux 环境，有些命令不一样
      */
-    private static boolean linuxSystem = true;
+    private static boolean linuxSystem = false;
+
+
+    @Getter
+    private static OperatorSystemEnum systemEnum;
 
     /**
      * 用户环境变量
      */
-    public static Map<String,String> userEnvMap = new HashMap<>();
+    public static Map<String, String> userEnvMap = new HashMap<>();
 
     static {
         String os = System.getProperties().getProperty("os.name");
         if (os != null) {
-            if (os.toLowerCase().startsWith("win") || os.toLowerCase().startsWith("mac")) {
-                linuxSystem = false;
+            if (os.toLowerCase().startsWith("win")) {
+                systemEnum = OperatorSystemEnum.WIN;
+            } else if (os.toLowerCase().startsWith("mac")) {
+                systemEnum = OperatorSystemEnum.MAC;
+            } else {
+                systemEnum = OperatorSystemEnum.LINUX;
+                linuxSystem = true;
             }
         }
         // 全局配置，支持中文不乱
         userEnvMap.putAll(System.getenv());
-        userEnvMap.put("LANG","zh_CN.UTF-8");
+        userEnvMap.put("LANG", "zh_CN.UTF-8");
     }
 
     public static boolean isLinuxSystem() {
