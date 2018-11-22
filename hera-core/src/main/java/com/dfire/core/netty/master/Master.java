@@ -151,7 +151,7 @@ public class Master {
 
     private void rollBackLostJob(Long actionId, Map<Long, HeraAction> actionMapNew, List<Long> actionIdList) {
         HeraAction lostJob = actionMapNew.get(actionId);
-        if (lostJob != null && lostJob.getStatus() == null) {
+        if (lostJob != null && lostJob.getStatus() == null && lostJob.getAuto() == 1) {
             String dependencies = lostJob.getDependencies();
             if (StringUtils.isNotBlank(dependencies)) {
                 List<String> jobDependList = Arrays.asList(dependencies.split(","));
@@ -330,7 +330,7 @@ public class Master {
     /**
      * hera自动调度任务版本生成，版本id 18位当前时间 + actionId
      *
-     * @param jobList jobList
+     * @param jobList   jobList
      * @param actionMap cronDate
      */
     public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap) {
