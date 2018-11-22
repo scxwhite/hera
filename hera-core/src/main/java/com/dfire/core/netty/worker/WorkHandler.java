@@ -12,6 +12,7 @@ import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -102,18 +103,34 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                         break;
                 }
             case RESPONSE:
-                final Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                TaskLog.info("4.WorkHandler:receiver: socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
-                for (ResponseListener listener : listeners) {
-                    listener.onResponse(response);
-                }
+                workContext.getWorkWebThreadPool().execute(() -> {
+                    Response response = null;
+                    try {
+                        response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                    } catch (InvalidProtocolBufferException e) {
+                        e.printStackTrace();
+                    }
+                    TaskLog.info("4.WorkHandler:receiver: socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
+                    for (ResponseListener listener : listeners) {
+
+                        listener.onResponse(response);
+                    }
+                });
+
                 break;
             case WEB_RESPONSE:
-                WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                TaskLog.info("4.WorkHandler:receiver socket info from master {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
-                for (ResponseListener listener : listeners) {
-                    listener.onWebResponse(webResponse);
-                }
+                workContext.getWorkWebThreadPool().execute(() -> {
+                    WebResponse webResponse = null;
+                    try {
+                        webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                    } catch (InvalidProtocolBufferException e) {
+                        e.printStackTrace();
+                    }
+                    TaskLog.info("4.WorkHandler:receiver socket info from master {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
+                    for (ResponseListener listener : listeners) {
+                        listener.onWebResponse(webResponse);
+                    }
+                });
                 break;
             default:
                 SocketLog.error("WorkHandler:can not recognition ");
@@ -141,8 +158,8 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
         SocketLog.error("work exception: {}, {}", ctx.channel().remoteAddress(), cause.toString());
-        super.exceptionCaught(ctx, cause);
     }
 
 }
