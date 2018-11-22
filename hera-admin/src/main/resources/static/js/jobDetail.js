@@ -1189,7 +1189,7 @@ var TableInit = function () {
     oTableInit.init = function () {
         var table = $('#historyJobTable');
         table.bootstrapTable({
-            url: base_url + '/jobManage/findJobHistoryByStaus',
+            url: base_url + '/jobManage/findJobHistoryByStatus',
             method: 'get',
             pagination: true,
             cache: false,
@@ -1205,7 +1205,7 @@ var TableInit = function () {
             queryParams: params,
             search: true,
             uniqueId: 'id',
-            onClickRow:function (row) {
+            onClickRow: function (row) {
                 // console.log(row)
                 $('#runningLogDetailTable').bootstrapTable("destroy");
                 var tableObject = new JobLogTable(row.jobId);
@@ -1221,7 +1221,10 @@ var TableInit = function () {
                     }
                 }, {
                     field: 'jobId',
-                    title: '任务ID'
+                    title: '任务ID',
+                    formatter: function (val) {
+                        return '<a href = "#">' + val + '</a>';
+                    }
                 }, {
                     field: 'jobName',
                     title: '任务名称'
@@ -1260,6 +1263,7 @@ function params(params) {
     };
     return temp;
 }
+
 var JobLogTable = function (jobId) {
     var parameter = {jobId: jobId};
     var actionRow;
@@ -1422,6 +1426,7 @@ var JobLogTable = function (jobId) {
     };
     return oTableInit;
 };
+
 function cancelJob(historyId, jobId) {
     var url = base_url + "/scheduleCenter/cancelJob.do";
     var parameter = {historyId: historyId, jobId: jobId};
