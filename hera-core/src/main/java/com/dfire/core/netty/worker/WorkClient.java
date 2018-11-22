@@ -145,8 +145,16 @@ public class WorkClient {
             }
         }, HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
 
+        /**
+         * 定时 刷新日志到数据库
+         */
         workSchedule.scheduleWithFixedDelay(new Runnable() {
-            private void editLog(Job job, Exception e) {
+            /**
+             * 处理任务调度的异常日志
+             * @param job
+             * @param e
+             */
+            private void  printScheduleLog(Job job, Exception e) {
                 try {
                     HeraJobHistoryVo his = job.getJobContext().getHeraJobHistory();
                     String logContent = his.getLog().getContent();
@@ -163,8 +171,12 @@ public class WorkClient {
                 }
             }
 
-
-            private void editDebugLog(Job job, Exception e) {
+            /**
+             * 处理 开发中心的日志
+             * @param job
+             * @param e
+             */
+            private void printDebugLog(Job job, Exception e) {
                 try {
                     HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
                     String logContent = history.getLog().getContent();
@@ -183,14 +195,13 @@ public class WorkClient {
 
             @Override
             public void run() {
-
                 try {
                     for (Job job : new HashSet<>(workContext.getRunning().values())) {
                         try {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                             workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
-                            editDebugLog(job, e);
+                            printScheduleLog(job, e);
                         }
                     }
 
@@ -199,7 +210,7 @@ public class WorkClient {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                             workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
-                            editLog(job, e);
+                            printScheduleLog(job, e);
                         }
                     }
 
@@ -208,7 +219,7 @@ public class WorkClient {
                             HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
                             workContext.getHeraDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
-                            editDebugLog(job, e);
+                            printDebugLog(job, e);
                         }
                     }
                 } catch (Exception e) {
