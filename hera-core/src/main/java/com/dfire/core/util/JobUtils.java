@@ -92,7 +92,6 @@ public class JobUtils {
 
         String jobId = jobBean.getHeraActionVo().getId();
         String script = workContext.getHeraJobActionService().findHeraActionVo(jobId).getSource().getScript();
-        script = RenderHierarchyProperties.render(script);
         if (jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Shell)
                 || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Hive)
                 || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Spark)) {
@@ -100,7 +99,7 @@ public class JobUtils {
         }
         jobContext.setResources(resource);
         script = replace(jobContext.getProperties().getAllProperties(), script);
-
+        script = RenderHierarchyProperties.render(script);
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
 
         List<Job> pres = new ArrayList<>();
@@ -126,17 +125,15 @@ public class JobUtils {
         if (script == null) {
             return null;
         }
-        Map<String, String> varMap = new HashMap<>(16);
-        for (String key : allProperties.keySet()) {
-            if (allProperties.get(key) != null) {
-                varMap.put("${" + key + "}", allProperties.get(key));
-            }
+        Map<String, String> varMap = new HashMap<>(allProperties.size());
+        for (Map.Entry<String, String> entry : allProperties.entrySet()) {
+            varMap.put("${" + entry.getKey() + "}", entry.getValue());
         }
-        for (String key : varMap.keySet()) {
-            String old = "";
+        String old;
+        for (Map.Entry<String, String> entry : varMap.entrySet()) {
             do {
                 old = script;
-                script = script.replace(key, varMap.get(key));
+                script = script.replace(entry.getKey(), entry.getValue());
             } while (!old.equals(script));
         }
         return script;
