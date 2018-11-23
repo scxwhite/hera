@@ -1223,7 +1223,7 @@ var JobLogTable = function (jobId) {
             ],
             detailView: true,
             detailFormatter: function (index, row) {
-                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; word-break: break-all; word-wrap:break-word; height:600px; white-space:pre-line;font-family:Microsoft YaHei" id="log_' + row.id + '">'
+                var html = '<form role="form">' + '<div class="form-group" style="background: #2c4762;min-height:600px; overflow:scroll;  ">' + '<div class="form-control"  style="border:none; height:600px; word-break: break-all; word-wrap:break-word; white-space:pre-line;font-family:Microsoft YaHei" id="log_' + row.id + '">'
                     + '日志加载中。。' +
                     '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;
