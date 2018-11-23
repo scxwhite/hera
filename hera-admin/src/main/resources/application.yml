@@ -57,7 +57,7 @@ hera:
    excludeFile: jar;war
    maxMemRate : 0.80       #已使用内存占总内存的最大比例,默认0.75
    maxCpuLoadPerCore : 3.0   #cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量，默认3.0
-   scanRate : 1000        #队列扫描频率(毫秒)
+   scanRate : 100        #队列扫描频率(毫秒)
    systemMemUsed : 4000  # 系统占用内存
    requestTimeout: 10000 # 异步请求超时时间
    channelTimeout: 1000 # netty请求超时时间
@@ -66,7 +66,7 @@ hera:
    downloadDir : /opt/logs/spring-boot
    hdfsLibPath : /hera/hdfs-upload-dir #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上
    schedule-group : online
-   maxParallelNum: 1000
+   maxParallelNum: 2000
    connectPort : 9887 #netty通信的端口
    admin: biadmin
    taskTimeout: 12  #单个任务执行的最大时间  单位：小时
