@@ -73,8 +73,6 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         } else {
             if (heraAction.getId() < Long.parseLong(ActionUtil.getCurrActionVersion())) {
                 heraAction.setStatus(Constants.STATUS_FAILED);
-                heraAction.setStartTime(new Date());
-                heraAction.setLastEndTime(heraAction.getStartTime());
                 heraAction.setLastResult("生成action时，任务过时，直接设置为失败");
             }
         }
