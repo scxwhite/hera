@@ -352,7 +352,7 @@ $(function () {
                 }
             };
             var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
-            $.fn.zTree.init($("#dependTree"), setting, dependNodes);
+            $.fn.zTree.init($("#dependTree"), setting, dependNodes.myJob);
             dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
 
             $("#dependJob").bind('click', function () {
