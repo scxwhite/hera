@@ -82,3 +82,7 @@ input {
 .main-header .navbar {
     margin-left: 160px;
 }
+#jobLog .form-control {
+    color: #fff;
+    background-color: #2c4762;
+}

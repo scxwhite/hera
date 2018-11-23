@@ -21,6 +21,14 @@ public class RunShell {
     private String directory = "/tmp";
 
     public RunShell(String command) {
+        setCommand(command);
+    }
+
+    public RunShell() {
+
+    }
+
+    public void setCommand(String command) {
         commands = new ArrayList<>(3);
         commands.add("sh");
         commands.add("-c");
@@ -28,13 +36,9 @@ public class RunShell {
     }
 
     public Integer run() {
-        if (!HeraGlobalEnvironment.isLinuxSystem()) {
-            return -1;
-        }
         builder = new ProcessBuilder(commands);
         builder.directory(new File(directory));
         builder.environment().putAll(HeraGlobalEnvironment.userEnvMap);
-
         try {
             process = builder.start();
             if (process.waitFor(2, TimeUnit.SECONDS)) {
@@ -70,8 +74,8 @@ public class RunShell {
     }
 
     public static void main(String[] args) throws IOException {
-        RunShell shell = new RunShell("uptime");
-        System.out.println(shell.run());
-        System.out.println(shell.getResult());
+        RunShell shell = new RunShell("top -s 0 -n 30 -o mem -O cpu -l 2  -stats pid,user,cpu,time,mem,command");
+        shell.run();
     }
+
 }

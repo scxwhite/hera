@@ -31,8 +31,7 @@ public class UserManageController {
     @RequestMapping(value = "/initUser", method = RequestMethod.POST)
     @ResponseBody
     public List<HeraUser> initUser() {
-        List<HeraUser> list = heraUserService.getAll();
-        return list;
+        return heraUserService.getAll();
     }
 
     @RequestMapping(value = "/editUser", method = RequestMethod.POST)

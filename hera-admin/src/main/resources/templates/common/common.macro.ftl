@@ -114,16 +114,15 @@
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
             <ul class="sidebar-menu tree">
-                <li class="treeview menu-open" id="home">
+                <li class="treeview menu-closed" id="home">
                     <a href="${request.contextPath}/home">
                         <i class="fa fa-dashboard"></i> <span>首页</span>
-                        <span class="pull-right-container">
-                              <i class="fa fa-angle-left pull-right"></i>
-                        </span>
                     </a>
                 </li>
-
-                <li class="treeview" id="sysManager">
+                <li class="nav-click" id="machineInfoMenu"><a
+                        href="${request.contextPath}/machineInfo"><i class="fa fa-book"></i> <span>机器组监控</span></a>
+                </li>
+                <li class="treeview menu-closed my-tree" id="sysManager">
                     <a href="#">
                         <i class="fa fa-folder"></i> <span>系统管理</span>
                         <span class="pull-right-container">
@@ -138,7 +137,7 @@
                     </ul>
                 </li>
 
-                <li class=" treeview" id="jobManage">
+                <li class=" treeview menu-closed my-tree" id="jobManage">
                     <a href="#">
                         <i class="fa fa-folder"></i> <span>任务管理</span>
                         <span class="pull-right-container">

@@ -874,11 +874,12 @@ $(function () {
             e.stopPropagation();
             $('#timeModal').modal('toggle');
             var para = $.trim($('#timeChange').val());
-            var min = para.substr(2, 1);
-            var hour = para.substr(4, 1);
-            var day = para.substr(6, 1);
-            var month = para.substr(8, 1);
-            var week = para.substr(10, 1);
+            var arr = para.split(' ');
+            var min = arr[1];
+            var hour = arr[2];
+            var day = arr[3];
+            var month = arr[4];
+            var week = arr[5];
             $('#inputMin').val(min);
             $('#inputHour').val(hour);
             $('#inputDay').val(day);
@@ -895,7 +896,7 @@ $(function () {
             var para = '0 ' + min + ' ' + hour + ' ' + day + ' ' + month + ' ' + week;
             $('#timeChange').val(para);
             $('#timeModal').modal('toggle');
-        })
+        });
 
         //隐藏
         $('.hideBtn').click(function (e) {

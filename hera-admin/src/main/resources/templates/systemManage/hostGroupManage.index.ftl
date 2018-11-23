@@ -107,6 +107,7 @@
         initEvent();
         $('#hostGroupManage').addClass('active');
         $('#hostGroupManage').parent().addClass('menu-open');
+        $('#hostGroupManage').parent().parent().addClass('menu-open');
         $('#sysManager').addClass('active');
     });
 

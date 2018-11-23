@@ -209,3 +209,6 @@ function clearAllCookie() {
         }
     }
 }
+$('.my-tree').click(function (e) {
+    $(this).addClass('menu-open');
+})

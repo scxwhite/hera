@@ -50,7 +50,7 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder workHolder, String actionId) {
-        String jobId = String.valueOf(ActionUtil.getJobId(actionId));
+        String jobId = ActionUtil.getJobId(actionId);
         workHolder.getManningRunning().add(jobId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
@@ -72,7 +72,7 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder workHolder, String actionId) {
-        String jobId = String.valueOf(ActionUtil.getJobId(actionId));
+        String jobId = ActionUtil.getJobId(actionId);
         workHolder.getRunning().add(jobId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())

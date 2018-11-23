@@ -5,7 +5,11 @@
     <title>任务历史运行记录</title>
     <#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-
+    <style>
+        .table-hover > tbody > tr:hover {
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body class="hold-transition skin-black sidebar-mini">
@@ -39,8 +43,26 @@
                 </div>
         </section>
     </div>
-
 </div>
+
+<div class="modal fade" id="jobLog" tabindex="-1" role="dialog" aria-labelledby="jobLog" aria-hidden="true">
+    <div class="modal-dialog" style="width: 80%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">信息日志</h4>
+            </div>
+
+            <div class="modal-body">
+                <table class="table " id="runningLogDetailTable"></table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-info add-btn" name="refreshLog">刷新</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 
 <@netCommon.commonScript />
