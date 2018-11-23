@@ -6,7 +6,7 @@ package com.dfire.common.constants;
  * @time 2018/10/25
  */
 public class TimeFormatConstant {
-    public static final String YYYYMMDD = "YYYYMMDD";
+    public static final String YYYYMMDD = "yyyyMMdd";
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
     public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 }
