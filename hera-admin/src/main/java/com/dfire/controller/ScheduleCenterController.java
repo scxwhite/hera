@@ -472,7 +472,15 @@ public class ScheduleCenterController extends BaseHeraController {
         HeraGroup group = heraGroupService.findConfigById(groupId);
         Map<String, String> configMap = new HashMap<>(64);
         while (group != null && groupId != null && groupId != 0) {
-            configMap.putAll(StringUtil.convertStringToMap(group.getConfigs()));
+            Map<String,String> map = StringUtil.convertStringToMap(group.getConfigs());
+            // 多重继承相同变量，以第一个的为准
+            for(Map.Entry<String,String> entry : map.entrySet()){
+                String key = entry.getKey();
+                if(!configMap.containsKey(key)){
+                    String val = entry.getValue();
+                    configMap.put(key,val);
+                }
+            }
             groupId = group.getParent();
             group = heraGroupService.findConfigById(groupId);
         }
