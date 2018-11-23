@@ -10,6 +10,7 @@ import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.logs.ScheduleLog;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +67,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 heraAction.setReadyDependency(action.getReadyDependency());
                 heraAction.setGmtCreate(action.getGmtCreate());
             } else {
-                heraAction = action;
+                BeanUtils.copyProperties(action, heraAction);
                 heraAction.setGmtModified(new Date());
             }
             return true;
@@ -75,9 +76,6 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 heraAction.setStatus(Constants.STATUS_FAILED);
                 heraAction.setLastResult("生成action时，任务过时，直接设置为失败");
             }
-        }
-        if (heraAction.getStatus() == null) {
-            heraAction.setStatus(Constants.STATUS_FAILED);
         }
         return false;
 

@@ -151,7 +151,10 @@ public class Master {
 
     private void rollBackLostJob(Long actionId, Map<Long, HeraAction> actionMapNew, List<Long> actionIdList) {
         HeraAction lostJob = actionMapNew.get(actionId);
-        if (lostJob != null && lostJob.getStatus() == null && lostJob.getAuto() == 1) {
+        boolean isCheck = lostJob != null
+                && lostJob.getAuto() == 1
+                && (lostJob.getStatus() == null || Constants.STATUS_RUNNING.equals(lostJob.getStatus()));
+        if (isCheck) {
             String dependencies = lostJob.getDependencies();
             if (StringUtils.isNotBlank(dependencies)) {
                 List<String> jobDependList = Arrays.asList(dependencies.split(","));
