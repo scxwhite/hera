@@ -31,6 +31,11 @@ public class ActionUtil {
      */
     private static final String ACTION_VERSION_PREFIX = "yyyy-MM-dd";
 
+    /**
+     * 当前时间戳
+     */
+    private static final String YYYY_MM_DD = "yyyy-MM-dd";
+
 
     /**
      * 生成今天 Action版本的最晚时间
@@ -71,6 +76,10 @@ public class ActionUtil {
 
     public static String getActionVersionByTime(Date nowTime) {
         return new DateTime(nowTime).toString(ACTION_VERSION_PREFIX);
+    }
+
+    public static String getCurrDate(){
+        return new DateTime().toString(YYYY_MM_DD);
     }
 
     public static Tuple<String, Date> getNextDayString() {
@@ -127,7 +136,7 @@ public class ActionUtil {
     }
 
 
-    public static Integer getJobId(String action) {
+    public static String getJobId(String action) {
         if (StringUtils.isBlank(action) ) {
             return null;
         }
@@ -136,7 +145,7 @@ public class ActionUtil {
         if (actionLen < len ) {
             return null;
         }
-        return Integer.parseInt(action.substring(actionLen - len));
+        return action.substring(actionLen - len);
     }
 
 

@@ -13,6 +13,7 @@ import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import com.dfire.protocol.RpcWebRequest.WebRequest;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -77,10 +78,10 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
                 switch (request.getOperate()) {
                     case HeartBeat:
-                        MasterHandleRequest.handleHeartBeat(masterContext, channel, request);
+                        masterContext.getThreadPool().execute(() -> MasterHandleRequest.handleHeartBeat(masterContext, channel, request));
                         break;
                     case SetWorkInfo:
-                        MasterHandleRequest.setWorkInfo(masterContext, channel, request);
+                        masterContext.getThreadPool().execute(() -> MasterHandleRequest.setWorkInfo(masterContext, channel, request));
                         break;
                     default:
                         SocketLog.error("unknow request operate error.{}", request.getOperateValue());
@@ -124,40 +125,56 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 }
                 break;
             case RESPONSE:
-                Response response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("6.MasterHandler:receiver socket info from work {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
-                for (ResponseListener listener : listeners) {
-                    listener.onResponse(response);
-                }
+                masterContext.getThreadPool().execute(() -> {
+                    Response response = null;
+                    try {
+                        response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
+
+                        SocketLog.info("6.MasterHandler:receiver socket info from work {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
+                        for (ResponseListener listener : listeners) {
+                            listener.onResponse(response);
+                        }
+                    } catch (InvalidProtocolBufferException e) {
+                        e.printStackTrace();
+                    }
+                });
+
                 break;
             case WEB_RESPONSE:
-                WebResponse webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                SocketLog.info("6.MasterHandler:receiver socket info from work {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
-                for (ResponseListener listener : listeners) {
-                    listener.onWebResponse(webResponse);
-                }
+                masterContext.getThreadPool().execute(() -> {
+                    WebResponse webResponse = null;
+                    try {
+                        webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                    } catch (InvalidProtocolBufferException e) {
+                        e.printStackTrace();
+                    }
+                    SocketLog.info("6.MasterHandler:receiver socket info from work {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
+                    for (ResponseListener listener : listeners) {
+                        listener.onWebResponse(webResponse);
+                    }
+                });
                 break;
             default:
                 SocketLog.error("unknown request type : {}", socketMessage.getKind());
                 break;
         }
-        super.channelRead(ctx, msg);
     }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
-        Channel channel = ctx.channel();
-        masterContext.getWorkMap().put(channel, new MasterWorkHolder(new NettyChannel(ctx.channel())));
-        SocketAddress remoteAddress = channel.remoteAddress();
-        SocketLog.info("worker client channel registered connect success : {}", remoteAddress.toString());
+        masterContext.getThreadPool().execute(() -> {
+            Channel channel = ctx.channel();
+            masterContext.getWorkMap().put(channel, new MasterWorkHolder(new NettyChannel(ctx.channel())));
+            SocketAddress remoteAddress = channel.remoteAddress();
+            SocketLog.info("worker client channel registered connect success : {}", remoteAddress.toString());
+        });
     }
-
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        SocketLog.error("worker miss connection !!!");
-        masterContext.getMaster().workerDisconnectProcess(ctx.channel());
-        super.channelUnregistered(ctx);
-
+        masterContext.getThreadPool().execute(() -> {
+            SocketLog.error("worker miss connection !!!");
+            masterContext.getMaster().workerDisconnectProcess(ctx.channel());
+        });
     }
 
     @Override
@@ -169,7 +186,8 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
+        cause.printStackTrace();
+        SocketLog.error("cause exception {}", cause);
     }
 
     private SocketMessage wrapper(WebResponse response) {

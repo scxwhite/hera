@@ -51,7 +51,8 @@ public class HeraDateTool {
     }
 
     public static void main(String[] args) {
-        System.out.println(new HeraDateTool().format("yyyyMMddHHmmss"));
+        System.out.println(new HeraDateTool(new Date()).addDay(-1).format(TimeFormatConstant.YYYYMMDD));
+
     }
 
     /**

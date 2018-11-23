@@ -22,8 +22,6 @@ import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
 import com.dfire.core.message.HeartBeatInfo;
-import com.dfire.core.netty.HeraChannel;
-import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.route.factory.StrategyWorkerEnum;
@@ -88,7 +86,7 @@ public class Master {
             allJobList.forEach(heraAction -> {
                 masterContext.getDispatcher().
                         addJobHandler(new JobHandler(heraAction.getId().toString(), this, masterContext));
-                heraActionMap.put(Long.valueOf(heraAction.getId()), heraAction);
+                heraActionMap.put(heraAction.getId(), heraAction);
             });
             HeraLog.info("-----------------------------add actions to handler success, time:{}-----------------------------", System.currentTimeMillis());
             masterContext.getDispatcher().forwardEvent(Events.Initialize);
@@ -153,7 +151,7 @@ public class Master {
 
     private void rollBackLostJob(Long actionId, Map<Long, HeraAction> actionMapNew, List<Long> actionIdList) {
         HeraAction lostJob = actionMapNew.get(actionId);
-        if (lostJob != null && lostJob.getStatus() == null) {
+        if (lostJob != null && lostJob.getStatus() == null && lostJob.getAuto() == 1) {
             String dependencies = lostJob.getDependencies();
             if (StringUtils.isNotBlank(dependencies)) {
                 List<String> jobDependList = Arrays.asList(dependencies.split(","));
@@ -179,13 +177,15 @@ public class Master {
     }
 
     private void addRollBackJob(List<Long> actionIdList, Long actionId) {
+        String actionStr = String.valueOf(actionId);
         if (!actionIdList.contains(actionId) &&
                 !checkJobExists(HeraJobHistoryVo
                         .builder()
-                        .actionId(String.valueOf(actionId))
-                        .jobId(String.valueOf(ActionUtil.getJobId(String.valueOf(actionId))))
+                        .actionId(actionStr)
+                        .triggerType(TriggerTypeEnum.SCHEDULE)
+                        .jobId(ActionUtil.getJobId(actionStr))
                         .build(), true)) {
-            masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId.toString()));
+            masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionStr));
             actionIdList.add(actionId);
             ScheduleLog.info("roll back lost actionId :" + actionId);
         }
@@ -330,8 +330,8 @@ public class Master {
     /**
      * hera自动调度任务版本生成，版本id 18位当前时间 + actionId
      *
-     * @param jobList
-     * @param actionMap
+     * @param jobList   jobList
+     * @param actionMap cronDate
      */
     public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap) {
         List<HeraAction> insertActionList = new ArrayList<>();
@@ -612,8 +612,6 @@ public class Master {
             ScheduleLog.warn("重试ID:{}, 未找到版本个数:{} , 重试次数:{}", retryId, noCompleteCount, retryCount);
         }
     }
-
-
 
 
     /**
@@ -986,6 +984,7 @@ public class Master {
                         heraJobHistory.setStatusEnum(StatusEnum.FAILED);
                         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
+                    TaskLog.warn("调度队列已存在该任务，添加失败 {}", actionId);
                     return true;
                 }
             }
@@ -1001,6 +1000,7 @@ public class Master {
                         heraJobHistory.setStatusEnum(StatusEnum.FAILED);
                         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
+                    TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
                     return true;
 
                 }
@@ -1017,6 +1017,7 @@ public class Master {
                         heraJobHistory.setStatusEnum(StatusEnum.FAILED);
                         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
+                    TaskLog.warn("手动任务队列已存在该任务，添加失败 {}", actionId);
                     return true;
                 }
             }
@@ -1030,6 +1031,7 @@ public class Master {
                         heraJobHistory.setStatusEnum(StatusEnum.FAILED);
                         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
+                    TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
                     return true;
                 }
             }

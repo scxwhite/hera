@@ -7,6 +7,7 @@ import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -149,7 +150,7 @@ public class WorkExecuteJob {
             workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
 
             HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(jobId);
-            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            String date = ActionUtil.getCurrDate();
             File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                     + File.separator + date + File.separator + history.getId());
             if (!directory.exists()) {
