@@ -910,10 +910,13 @@
 </div>
 
 <div class="modal fade" tabindex="-1" role="dialog" id="jobDagModal">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document" id="jobDagModalCon">
         <div class="modal-content">
         <div class="modal-header">
             <h3 class="box-title">机器组管理</h3>
+            <div id="biggerBtn">
+            <i class="fa fa-plus" ></i>
+            </div>
         </div>
         <div class="modal-body">
 

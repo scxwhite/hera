@@ -42,7 +42,7 @@ $(function () {
             }
             initJobTopTen(data.data);
         }
-    })
+    });
 
     jQuery.ajax({
         url: base_url + "/homePage/findAllJobStatus",
