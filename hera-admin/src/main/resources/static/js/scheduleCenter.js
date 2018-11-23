@@ -932,6 +932,16 @@ $(function () {
         })
 
     });
+    $('#biggerBtn').click(function (e) {
+        e.stopPropagation();
+        if($(this).children().hasClass('fa-plus')){
+            $('#jobDagModalCon').addClass('bigger');
+            $(this).children().removeClass('fa-plus').addClass('fa-minus');
+        }else{
+            $('#jobDagModalCon').removeClass('bigger');
+            $(this).children().removeClass('fa-minus').addClass('fa-plus');
+        }
+    })
 });
 
 function keypath(type) {

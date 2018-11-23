@@ -94,3 +94,15 @@ div#rMenu ul li {
     display: block;
     padding: 10px 10px;
 }
+#biggerBtn{
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    cursor: pointer;
+}
+#biggerBtn :hover{
+    color: #888;
+}
+.bigger{
+    width: 100%;
+}
