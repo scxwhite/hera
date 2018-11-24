@@ -225,7 +225,7 @@
                                             <label class="control-label input-sm col-sm-3"><label class="tip">*</label>描述:</label>
                                             <div class="col-sm-8">
                                             <#--<label class="form-control-static"></label>-->
-                                                <input class="form-control" type="text" name="" readonly>
+                                                <input class="form-control" type="text" name="description" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -406,7 +406,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">描述:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" name="jobName">
+                                                <input class="form-control" type="text" name="description">
 
                                             </div>
                                         </div>

@@ -117,12 +117,11 @@ $(function () {
                     formatter: function (value, row, index) {
                         value = parseFloat(value)
                         if (value <= 60) {
-                            return '<div class="progress progress-xs"><div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="' + value + '" aria-valuemin="0" aria-valuemax="10" style="width: ' + value + '%"><span class="sr-only">40% Complete (success)</span></div></div>'
-
+                            return '<div class="progress progress-xs"><div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="' + value + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + value + '%"><span class="sr-only">40% Complete (success)</span></div></div>'
                         } else if (value <= 80) {
-                            return '<div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="' + value + '" aria-valuemin="0" aria-valuemax="10" style="width: ' + value + '%"><span class="sr-only">40% Complete (success)</span></div></div>'
+                            return '<div class="progress progress-xs"><div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="' + value + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + value + '%"><span class="sr-only">40% Complete (success)</span></div></div>'
                         } else {
-                            return '<div class="progress progress-xs"><div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="' + value + '" aria-valuemin="0" aria-valuemax="10" style="width: ' + value + '%"><span class="sr-only">40% Complete (success)</span></div></div>'
+                            return '<div class="progress progress-xs"><div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="' + value + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + value + '%"><span class="sr-only">40% Complete (success)</span></div></div>'
                         }
                     },
                     width: 150
