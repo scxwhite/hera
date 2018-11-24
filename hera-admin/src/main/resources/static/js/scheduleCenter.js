@@ -481,9 +481,10 @@ $(function () {
                     "&id=" + focusId,
                 type: "post",
                 success: function (data) {
-                    leftClick();
                     if (data.success == false) {
-                        alert(data.msg)
+                        layer.msg(data.msg)
+                    } else {
+                        leftClick();
                     }
                 }
             });
@@ -494,9 +495,10 @@ $(function () {
                     "&resource=" + "&groupId=" + focusId,
                 type: "post",
                 success: function (data) {
-                    leftClick();
                     if (data.success == false) {
-                        alert(data.msg);
+                        layer.msg(data.msg);
+                    } else {
+                        leftClick();
                     }
 
                 }

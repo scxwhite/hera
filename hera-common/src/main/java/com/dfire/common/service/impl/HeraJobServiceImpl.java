@@ -137,7 +137,7 @@ public class HeraJobServiceImpl implements HeraJobService {
     private void getPathGroup(Set<HeraJobTreeNodeVo> myGroupSet, String group, Map<String, HeraJobTreeNodeVo> allGroupMap) {
         HeraJobTreeNodeVo groupNode = allGroupMap.get(group);
         if (groupNode == null) {
-            return ;
+            return;
         }
         myGroupSet.add(groupNode);
         getPathGroup(myGroupSet, groupNode.getParent(), allGroupMap);
@@ -321,9 +321,9 @@ public class HeraJobServiceImpl implements HeraJobService {
                 graphNode = indexMap.get(integer);
                 GraphNode graphNode1 = historyMap.get(graphNode.getNodeName() + "");
                 if (graphNode1 == null) {
-                    graphNode1 = new GraphNode(graphNode.getNodeName(), "" + graphNode.getRemark());
+                    graphNode1 = new GraphNode<>(graphNode.getNodeName(), "" + graphNode.getRemark());
                 } else {
-                    graphNode1 = new GraphNode(graphNode.getNodeName(), "" + graphNode.getRemark() + graphNode1.getRemark());
+                    graphNode1 = new GraphNode<>(graphNode.getNodeName(), "" + graphNode.getRemark() + graphNode1.getRemark());
                 }
                 edgeList.add(new Edge(node, graphNode1));
                 nodeQueue.add(graphNode1);
@@ -344,8 +344,8 @@ public class HeraJobServiceImpl implements HeraJobService {
     public DirectionGraph buildJobGraph(List<JobRelation> jobRelations) {
         DirectionGraph directionGraph = new DirectionGraph();
         for (JobRelation jobRelation : jobRelations) {
-            GraphNode graphNodeTwo = new GraphNode(Integer.parseInt(jobRelation.getPid()), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
-            GraphNode graphNodeOne = new GraphNode(Integer.parseInt(jobRelation.getId()), "任务ID：" + jobRelation.getId() + "\n任务名称：" + jobRelation.getName() + "\n");
+            GraphNode<Integer> graphNodeTwo = new GraphNode<>(Integer.parseInt(jobRelation.getPid()), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
+            GraphNode<Integer> graphNodeOne = new GraphNode<>(Integer.parseInt(jobRelation.getId()), "任务ID：" + jobRelation.getId() + "\n任务名称：" + jobRelation.getName() + "\n");
             directionGraph.addNode(graphNodeOne);
             directionGraph.addNode(graphNodeTwo);
             directionGraph.addEdge(graphNodeOne, graphNodeTwo);

@@ -80,7 +80,7 @@
         <section class="content">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">机器组管理</h3>
+                    <h3 class="box-title">任务链路图</h3>
                 </div>
                 <div class="box-body">
 
