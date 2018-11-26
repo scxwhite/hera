@@ -1,6 +1,7 @@
 package com.dfire.threadpool;
 
 import org.joda.time.DateTime;
+import org.joda.time.DurationFieldType;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -15,10 +16,17 @@ public class SchedulePoolTest {
 
     public static void main(String[] args) {
 
-        test3();
+        test4();
 
     }
 
+
+    public static void test4() {
+        DateTime now = new DateTime();
+        executor.scheduleWithFixedDelay(() -> {
+            System.out.println(new DateTime());
+        }, 60 - now.getSecondOfMinute(), 5, TimeUnit.MINUTES);
+    }
 
     /**
      * 根据上一次的成功时间来计时下一次

@@ -50,8 +50,8 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder workHolder, String actionId) {
-        String jobId = ActionUtil.getJobId(actionId);
-        workHolder.getManningRunning().add(Integer.parseInt(jobId));
+        Integer jobId = ActionUtil.getJobId(actionId);
+        workHolder.getManningRunning().add(jobId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Manual)
@@ -72,8 +72,8 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder workHolder, String actionId) {
-        String jobId = ActionUtil.getJobId(actionId);
-        workHolder.getRunning().add(Integer.parseInt(jobId));
+        Integer jobId = ActionUtil.getJobId(actionId);
+        workHolder.getRunning().add(jobId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Schedule)
@@ -95,7 +95,8 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder workHolder, String id) {
-        workHolder.getDebugRunning().add(Integer.parseInt(id));
+        Integer jobId = Integer.parseInt(id);
+        workHolder.getDebugRunning().add(jobId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Debug)
@@ -103,7 +104,7 @@ public class MasterExecuteJob {
                         .newBuilder()
                         .setDebugId(id)
                         .build().toByteString())
-                .build(), workHolder, id, TriggerTypeEnum.DEBUG, id);
+                .build(), workHolder, id, TriggerTypeEnum.DEBUG, jobId);
 
     }
 
@@ -119,7 +120,7 @@ public class MasterExecuteJob {
      * @return Future
      */
 
-    private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, String actionId, TriggerTypeEnum typeEnum, String jobId) {
+    private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, String actionId, TriggerTypeEnum typeEnum, Integer jobId) {
         final CountDownLatch latch = new CountDownLatch(1);
         MasterResponseListener responseListener = new MasterResponseListener(request, false, latch, null);
         context.getHandler().addListener(responseListener);

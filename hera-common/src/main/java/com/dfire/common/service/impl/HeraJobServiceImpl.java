@@ -254,11 +254,10 @@ public class HeraJobServiceImpl implements HeraJobService {
     private Map<String, GraphNode> buildHistoryMap() {
 
         List<HeraJobHistory> actionHistories = heraJobHistoryService.findTodayJobHistory();
-
-        String start = "none", end = "none", status, jobId, duration;
         Map<String, GraphNode> map = new HashMap<>(actionHistories.size());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (HeraJobHistory actionHistory : actionHistories) {
+            String start = "none", end = "none", status, jobId, duration;
             status = actionHistory.getStatus() == null ? "none" : actionHistory.getStatus();
             jobId = actionHistory.getJobId() + "";
             duration = "none";

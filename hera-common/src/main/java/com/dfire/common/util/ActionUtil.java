@@ -136,7 +136,7 @@ public class ActionUtil {
     }
 
 
-    public static String getJobId(String action) {
+    public static Integer getJobId(String action) {
         if (StringUtils.isBlank(action) ) {
             return null;
         }
@@ -145,7 +145,7 @@ public class ActionUtil {
         if (actionLen < len ) {
             return null;
         }
-        return action.substring(actionLen - len);
+        return Integer.parseInt(action.substring(actionLen - len));
     }
 
 

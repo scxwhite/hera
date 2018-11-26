@@ -28,7 +28,6 @@ public class MasterResponseListener extends ResponseListenerAdapter {
 
     @Override
     public void onResponse(RpcResponse.Response response) {
-        TaskLog.info("MasterResponseListener id1,id2:{},{}", response.getRid(), request.getRid());
         if (response.getRid() == request.getRid()) {
             try {
                 this.response = response;
