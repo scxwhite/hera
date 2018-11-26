@@ -86,3 +86,27 @@ input {
     color: #fff;
     background-color: #2c4762;
 }
+.fixed-table-container thead th .sortable {
+    background-image: url('../images/sort_sort1.png');
+    cursor: pointer;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+    background-size:20px 20px;
+}
+
+.fixed-table-container thead th .asc {
+    background-image: url('../images/sort_asc1.png');
+    cursor: pointer;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+}
+
+.fixed-table-container thead th .desc {
+    background-image: url('../images/sort_desc1.png');
+    cursor: pointer;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+}
