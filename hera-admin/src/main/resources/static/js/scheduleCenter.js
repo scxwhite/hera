@@ -334,42 +334,6 @@ $(function () {
         if (status == 0) {
             setJobMessageEdit(true);
         } else if (status == 1) {//依赖调度
-
-            var setting = {
-                check: {
-                    enable: true
-                },
-                data: {
-                    simpleData: {
-                        enable: true,
-                        idKey: "id",
-                        pIdKey: "parent",
-                        rootPId: 0
-                    }
-                },
-                callback: {
-                    onClick: zTreeOnClick
-                }
-            };
-            var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
-            $.fn.zTree.init($("#dependTree"), setting, dependNodes.myJob);
-            dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
-
-            $("#dependJob").bind('click', function () {
-                $("#selectDepend").modal('show');
-            });
-            $("#chooseDepend").bind('click', function () {
-                var nodes = dependTreeObj.getCheckedNodes(true);
-                var ids = new Array();
-                for (var i = 0; i < nodes.length; i++) {
-                    if (nodes[i]['isParent'] == false) {
-                        ids.push(nodes[i]['id']);
-                    }
-                }
-                $("#dependJob").val(ids.join(","));
-                $("#selectDepend").modal('hide');
-
-            });
             setJobMessageEdit(false);
         }
     });
@@ -804,6 +768,7 @@ $(function () {
         $.fn.zTree.init($("#jobTree"), setting, zNodes.myJob);
         zTree = $.fn.zTree.getZTreeObj("jobTree");
         treeObj = $.fn.zTree.getZTreeObj("jobTree");
+
         $('#myScheBtn').click(function (e) {
             e.stopPropagation();
             console.log('my');
@@ -942,9 +907,48 @@ $(function () {
             $(this).children().removeClass('fa-minus').addClass('fa-plus');
         }
     })
+    $("#dependJob").bind('click', function () {
+        $("#selectDepend").modal('show');
+        //定时调度
+        var setting = {
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true,
+                    idKey: "id",
+                    pIdKey: "parent",
+                    rootPId: 0
+                }
+            },
+            callback: {
+                onClick: zTreeOnClick
+            }
+        };
+
+        var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
+        $.fn.zTree.init($("#dependTree"), setting, dependNodes.allJob);
+        dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
+
+        $("#chooseDepend").bind('click', function () {
+            var nodes = dependTreeObj.getCheckedNodes(true);
+            var ids = new Array();
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i]['isParent'] == false) {
+                    ids.push(nodes[i]['id']);
+                }
+            }
+            $("#dependJob").val(ids.join(","));
+            $("#selectDepend").modal('hide');
+
+        });
+        setJobMessageEdit(false);
+    });
 });
 
 function keypath(type) {
+    $('#expandAll').removeClass('active').addClass('disabled');
     graphType = type;
     var node = $("#item")[0].value;
     if (node == "")
@@ -978,8 +982,9 @@ function keypath(type) {
             .scale(initialScale)
             .event(svg);
         //svg.attr('height', g.com.dfire.graph().height * initialScale + 40);
-    }
 
+        $('#expandAll').removeClass('disabled').addClass('active');
+    }
     jQuery.ajax({
         type: 'POST',
         url: url,

@@ -929,7 +929,7 @@
                     <input class="btn btn-primary" type="button" value="下游任务链" onclick="keypath(1)"/>
                 </div>
                 <div class="form-group">
-                    <input class="btn btn-primary" type="button" id="expandAll" value="展示全部">
+                    <input class="btn btn-primary disabled" type="button" id="expandAll" value="展示全部" >
                 </div>
             </form>
 
