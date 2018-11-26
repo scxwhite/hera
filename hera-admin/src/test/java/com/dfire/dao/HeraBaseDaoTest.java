@@ -121,7 +121,7 @@ public class HeraBaseDaoTest {
         System.out.println(heraAction.getGmtCreate());
         List<HeraAction> list = heraJobActionService.getAll();
         System.out.println(list.get(5).getJobDependencies());
-        heraJobActionService.insert(heraAction);
+        heraJobActionService.insert(heraAction, Long.parseLong(ActionUtil.getCurrActionVersion()));
         heraJobActionService.delete("1111111111111111111");
 
         HeraAction heraAction = heraJobActionService.findById("201806190000000002");
@@ -137,7 +137,7 @@ public class HeraBaseDaoTest {
         HeraAction heraAction = heraJobActionService.findById("201806190000000002");
         List<HeraAction> list = Arrays.asList(heraAction);
 
-        heraJobActionService.batchInsert(list);
+        heraJobActionService.batchInsert(list, Long.parseLong(ActionUtil.getCurrActionVersion()));
 //
 //        HeraAction heraAction = heraJobActionService.findById("201806190000000002");
 //        System.out.println(heraAction.getJobDependencies());
@@ -305,8 +305,8 @@ public class HeraBaseDaoTest {
 
                     List<HeraJob> heraJobList = heraJobService.getAll();
                     String  cronDate = ActionUtil.getActionVersionByTime(now);
-                    master.generateScheduleJobAction(heraJobList, cronDate, actionMap);
-                    master.generateDependJobAction(heraJobList, actionMap, 0);
+                    master.generateScheduleJobAction(heraJobList, cronDate, actionMap, Long.parseLong(cronDate));
+                    master.generateDependJobAction(heraJobList, actionMap, 0, Long.parseLong(cronDate));
 
                 }
             }

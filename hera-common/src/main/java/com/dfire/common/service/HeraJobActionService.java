@@ -16,14 +16,14 @@ import java.util.List;
 public interface HeraJobActionService {
 
 
-    int insert(HeraAction heraAction);
+    int insert(HeraAction heraAction, Long nowAction);
 
     /**
      * 批量插入
      * @param heraActionList
      * @return
      */
-    List<HeraAction>  batchInsert(List<HeraAction> heraActionList);
+    List<HeraAction>  batchInsert(List<HeraAction> heraActionList, Long nowAction);
 
     int delete(String id);
 

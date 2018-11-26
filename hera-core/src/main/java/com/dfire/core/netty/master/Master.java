@@ -336,9 +336,10 @@ public class Master {
             boolean execute = executeHour == 0 || (executeHour > ActionUtil.ACTION_CREATE_MIN_HOUR && executeHour <= ActionUtil.ACTION_CREATE_MAX_HOUR);
             if (execute || isSingle) {
                 String currString = ActionUtil.getCurrActionVersion();
+                Long nowAction = Long.parseLong(currString);
                 if (executeHour == ActionUtil.ACTION_CREATE_MAX_HOUR) {
                     Tuple<String, Date> nextDayString = ActionUtil.getNextDayString();
-                    //例如：今天 2018.07.17 23:50  currString = 2018.07.18 now = 2018.07.18 23:50
+                    //例如：今天 2018.07.17 23:50  currString = 201807180000000000 now = 2018.07.18 23:50
                     currString = nextDayString.getSource();
                     now = nextDayString.getTarget();
                 }
@@ -361,8 +362,8 @@ public class Master {
                     shouldRemove.forEach(actionMap::remove);
                 }
                 String cronDate = ActionUtil.getActionVersionByTime(now);
-                generateScheduleJobAction(jobList, cronDate, actionMap);
-                generateDependJobAction(jobList, actionMap, 0);
+                generateScheduleJobAction(jobList, cronDate, actionMap, nowAction);
+                generateDependJobAction(jobList, actionMap, 0, nowAction);
 
                 if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
                     heraActionMap = actionMap;
@@ -396,7 +397,7 @@ public class Master {
      * @param jobList   jobList
      * @param actionMap cronDate
      */
-    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap) {
+    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap, Long nowAction) {
         List<HeraAction> insertActionList = new ArrayList<>();
         for (HeraJob heraJob : jobList) {
             if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 0) {
@@ -412,7 +413,7 @@ public class Master {
                 }
             }
         }
-        batchInsertList(insertActionList, actionMap);
+        batchInsertList(insertActionList, actionMap, nowAction);
 
     }
 
@@ -422,7 +423,7 @@ public class Master {
      *
      * @param insertActionList
      */
-    private void batchInsertList(List<HeraAction> insertActionList, Map<Long, HeraAction> actionMap) {
+    private void batchInsertList(List<HeraAction> insertActionList, Map<Long, HeraAction> actionMap, Long nowAction) {
         // 每次批量的条数
         int maxSize = insertActionList.size();
         int batchNum = 500;
@@ -437,7 +438,7 @@ public class Master {
                     insertList = insertActionList.subList(i, step);
                     step = step + batchNum;
                 }
-                masterContext.getHeraJobActionService().batchInsert(insertList);
+                masterContext.getHeraJobActionService().batchInsert(insertList, nowAction);
                 for (HeraAction action : insertList) {
                     actionMap.put(action.getId(), action);
                 }
@@ -524,7 +525,7 @@ public class Master {
      * @param actionMap
      * @param retryCount
      */
-    public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount) {
+    public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount, Long nowAction) {
         retryCount++;
         int noCompleteCount = 0, retryId = -1;
         List<HeraAction> insertActionList = new ArrayList<>();
@@ -634,10 +635,10 @@ public class Master {
                 }
             }
         }
-        batchInsertList(insertActionList, actionMap);
+        batchInsertList(insertActionList, actionMap, nowAction);
 
         if (noCompleteCount > 0 && retryCount < 40) {
-            generateDependJobAction(jobList, actionMap, retryCount);
+            generateDependJobAction(jobList, actionMap, retryCount, nowAction);
         } else if (retryCount == 40 && noCompleteCount > 0) {
             ScheduleLog.warn("重试ID:{}, 未找到版本个数:{} , 重试次数:{}", retryId, noCompleteCount, retryCount);
         }

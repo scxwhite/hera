@@ -31,12 +31,12 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
 
     @Override
-    public List<HeraAction> batchInsert(List<HeraAction> heraActionList) {
+    public List<HeraAction> batchInsert(List<HeraAction> heraActionList, Long nowAction) {
         ScheduleLog.info("batchInsert-> batch size is :{}", heraActionList.size());
         List<HeraAction> insertList = new ArrayList<>();
         List<HeraAction> updateList = new ArrayList<>();
         for (HeraAction heraAction : heraActionList) {
-            if (isNeedUpdateAction(heraAction)) {
+            if (isNeedUpdateAction(heraAction, nowAction)) {
                 updateList.add(heraAction);
             } else {
                 insertList.add(heraAction);
@@ -57,7 +57,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
      * @param heraAction
      * @return
      */
-    private boolean isNeedUpdateAction(HeraAction heraAction) {
+    private boolean isNeedUpdateAction(HeraAction heraAction, Long nowAction) {
         HeraAction action = heraJobActionMapper.findById(heraAction);
         if (action != null) {
             //如果该任务不是在运行中
@@ -72,7 +72,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             }
             return true;
         } else {
-            if (heraAction.getId() < Long.parseLong(ActionUtil.getCurrActionVersion())) {
+            if (heraAction.getId() < nowAction) {
                 heraAction.setStatus(Constants.STATUS_FAILED);
                 heraAction.setLastResult("生成action时，任务过时，直接设置为失败");
             }
@@ -82,8 +82,8 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public int insert(HeraAction heraAction) {
-        if (isNeedUpdateAction(heraAction)) {
+    public int insert(HeraAction heraAction, Long nowAction) {
+        if (isNeedUpdateAction(heraAction, nowAction)) {
             return heraJobActionMapper.update(heraAction);
         } else {
             return heraJobActionMapper.insert(heraAction);
