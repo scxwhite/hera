@@ -31,10 +31,10 @@ import java.util.concurrent.TimeUnit;
 public class MasterCancelJob {
     public static RpcWebResponse.WebResponse handleDebugCancel(MasterContext context, RpcWebRequest.WebRequest request) {
         RpcWebResponse.WebResponse webResponse = null;
-        String debugId = request.getId();
-        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
+        Integer debugId = Integer.parseInt(request.getId());
+        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(String.valueOf(debugId));
         for (JobElement element : context.getDebugQueue()) {
-            if (element.getJobId().equals(debugId)) {
+            if (element.getJobId().equals(String.valueOf(debugId))) {
                 webResponse = RpcWebResponse.WebResponse.newBuilder()
                         .setRid(request.getRid())
                         .setOperate(request.getOperate())
@@ -50,7 +50,7 @@ public class MasterCancelJob {
         for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
             if (workHolder.getDebugRunning().contains(debugId)) {
                 Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
-                        workHolder.getChannel(), JobExecuteKind.ExecuteKind.DebugKind, debugId);
+                        workHolder.getChannel(), JobExecuteKind.ExecuteKind.DebugKind, String.valueOf(debugId));
                 workHolder.getDebugRunning().remove(debugId);
                 try {
                     future.get(10, TimeUnit.SECONDS);
@@ -76,7 +76,7 @@ public class MasterCancelJob {
                     .setErrorText("Manual任务中找不到匹配的job(" + debugHistory.getId() + "," + debugHistory.getId() + ")，无法执行取消命令")
                     .build();
         }
-        debugHistory = context.getHeraDebugHistoryService().findById(debugId);
+        debugHistory = context.getHeraDebugHistoryService().findById(String.valueOf(debugId));
         debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         debugHistory.setStatus(StatusEnum.FAILED);
         context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
@@ -90,7 +90,7 @@ public class MasterCancelJob {
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         String actionId = heraJobHistory.getActionId();
-        String jobId = heraJobHistory.getJobId();
+        Integer jobId = Integer.parseInt(heraJobHistory.getJobId());
         //手动执行队列 查找该job是否存在
         if (remove(context.getManualQueue().iterator(), actionId)) {
             webResponse = RpcWebResponse.WebResponse.newBuilder()
@@ -142,7 +142,8 @@ public class MasterCancelJob {
         RpcWebResponse.WebResponse webResponse = null;
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
-        String jobId = heraJobHistory.getJobId();
+        Integer jobId = Integer.parseInt(heraJobHistory.getJobId());
+
         String actionId = heraJobHistory.getActionId();
 
         if (remove(context.getScheduleQueue().iterator(), actionId)) {
