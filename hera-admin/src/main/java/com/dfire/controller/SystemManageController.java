@@ -1,7 +1,7 @@
 package com.dfire.controller;
 
-import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
@@ -135,7 +135,7 @@ public class SystemManageController {
     @RequestMapping(value = "/homePage/getNotRunJob", method = RequestMethod.GET)
     @ResponseBody
     public JsonResponse getNotRunJob() {
-        List<HeraAction> scheduleJob = heraJobActionService.getNotRunScheduleJob();
+        List<HeraActionVo> scheduleJob = heraJobActionService.getNotRunScheduleJob();
         return new JsonResponse(true, "查询成功", scheduleJob);
     }
 

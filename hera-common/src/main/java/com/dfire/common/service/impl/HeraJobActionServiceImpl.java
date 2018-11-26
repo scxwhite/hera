@@ -180,7 +180,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public List<HeraAction> getNotRunScheduleJob() {
+    public List<HeraActionVo> getNotRunScheduleJob() {
         return heraJobActionMapper.getNotRunScheduleJob();
     }
 }
