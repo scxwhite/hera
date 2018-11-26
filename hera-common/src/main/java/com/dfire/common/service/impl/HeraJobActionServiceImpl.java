@@ -178,4 +178,9 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public List<String> getActionVersionByJobId(Long jobId) {
         return heraJobActionMapper.getActionVersionByJobId(jobId);
     }
+
+    @Override
+    public List<HeraAction> getNotRunScheduleJob() {
+        return heraJobActionMapper.getNotRunScheduleJob();
+    }
 }

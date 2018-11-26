@@ -1,10 +1,10 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraAction;
-import com.dfire.common.mybatis.action.HeraActionBatchInsertDriver;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
+import com.dfire.common.mybatis.action.HeraActionBatchInsertDriver;
 import com.dfire.common.mybatis.action.HeraActionBatchUpdateDriver;
 import org.apache.ibatis.annotations.*;
 
@@ -56,15 +56,20 @@ public interface HeraJobActionMapper {
 
     @Update("update hera_action set status = #{status},ready_dependency=#{readyDependency} where id = #{id}")
     Integer updateStatusAndReadDependency(HeraAction heraAction);
+
     @Select("select * from hera_action where id >= #{today}")
     List<HeraAction> selectTodayAction(String today);
 
     /**
      * 根据JobId 获取版本
+     *
      * @param jobId
      * @return
      */
     @Select("select id from hera_action where job_id = #{jobId} order by id desc")
     List<String> getActionVersionByJobId(Long jobId);
+
+    @Select("select id,job_id,owner from hera_action where id <= CURRENT_TIMESTAMP()* 10000 and id >= CURRENT_DATE () * 10000000000 and schedule_type = 0 and auto = 1 and status != 'success'")
+    List<HeraAction> getNotRunScheduleJob();
 
 }

@@ -1,10 +1,11 @@
 package com.dfire.controller;
 
+import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.service.HeraJobActionService;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.logs.ErrorLog;
-import com.dfire.logs.HeraLog;
 import com.dfire.monitor.service.JobManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -27,6 +29,9 @@ public class SystemManageController {
 
     @Autowired
     private JobManageService jobManageService;
+
+    @Autowired
+    private HeraJobActionService heraJobActionService;
 
     @Autowired
     private WorkClient workClient;
@@ -120,6 +125,18 @@ public class SystemManageController {
             }
             return null;
         });
+    }
+
+    /**
+     * 今日所有任务状态明细，线形图初始化
+     *
+     * @return
+     */
+    @RequestMapping(value = "/homePage/getNotRunJob", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse getNotRunJob() {
+        List<HeraAction> scheduleJob = heraJobActionService.getNotRunScheduleJob();
+        return new JsonResponse(true, "查询成功", scheduleJob);
     }
 
     @RequestMapping(value = "/homePage/getAllWorkInfo", method = RequestMethod.GET)

@@ -67,4 +67,7 @@ public interface HeraJobActionService {
      */
     List<String> getActionVersionByJobId(Long jobId);
 
+
+    List<HeraAction> getNotRunScheduleJob();
+
 }
