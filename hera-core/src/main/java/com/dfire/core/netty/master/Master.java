@@ -33,6 +33,7 @@ import com.dfire.protocol.JobExecuteKind;
 import com.dfire.protocol.ResponseStatus;
 import com.dfire.protocol.RpcResponse;
 import io.netty.channel.Channel;
+import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
@@ -58,6 +59,7 @@ import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
 public class Master {
 
     private MasterContext masterContext;
+    @Getter
     private Map<Long, HeraAction> heraActionMap = new HashMap<>();
     private ThreadPoolExecutor executeJobPool;
 
@@ -218,20 +220,27 @@ public class Master {
                 if (actionHistory == null) {
                     return;
                 }
-                if (actionHistory.getStatus().equals(Constants.STATUS_SUCCESS)) {
-                    ErrorLog.error("任务信号丢失:{}", actionId);
-                    Integer jobId = ActionUtil.getJobId(String.valueOf(actionId));
-                    boolean scheduleType = actionHistory.getTriggerType().equals(TriggerTypeEnum.SCHEDULE.getId())
-                            || actionHistory.getTriggerType().equals(TriggerTypeEnum.MANUAL_RECOVER.getId());
-                    //TODO 可以选择重跑 or 广播 + 设置状态 这里偷懒 直接重跑
-                    masterContext.getWorkMap().values().forEach(workHolder -> {
-                        if (scheduleType) {
-                            workHolder.getRunning().remove(jobId);
-                        } else {
-                            workHolder.getManningRunning().remove(jobId);
+                if (!actionHistory.getStatus().equals(Constants.STATUS_RUNNING)) {
+                    masterContext.getMasterSchedule().schedule(() -> {
+                        HeraAction newAction = masterContext.getHeraJobActionService().findById(String.valueOf(actionId));
+                        if (Constants.STATUS_RUNNING.equals(newAction.getStatus())) {
+                            ErrorLog.error("任务信号丢失:{}", actionId);
+                            Integer jobId = ActionUtil.getJobId(String.valueOf(actionId));
+                            boolean scheduleType = actionHistory.getTriggerType().equals(TriggerTypeEnum.SCHEDULE.getId())
+                                    || actionHistory.getTriggerType().equals(TriggerTypeEnum.MANUAL_RECOVER.getId());
+                            //TODO 可以选择重跑 or 广播 + 设置状态 这里偷懒 直接重跑
+                            masterContext.getWorkMap().values().forEach(workHolder -> {
+                                if (scheduleType) {
+                                    workHolder.getRunning().remove(jobId);
+                                } else {
+                                    workHolder.getManningRunning().remove(jobId);
+                                }
+                            });
+                            startNewJob(actionHistory, "任务信号丢失重试");
                         }
-                    });
-                    startNewJob(actionHistory, "任务信号丢失重试");
+
+                    }, 1, TimeUnit.MINUTES);
+
                 }
             }
         } catch (Exception e) {
