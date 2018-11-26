@@ -33,5 +33,14 @@ public class Constants {
 
     public final static String CANCEL_JOB_MESSAGE = "任务手动取消";
 
+    /**
+     * jwt  过期时间 单位 天
+     */
+    public final static Integer JWT_TIME_OUT = 3;
+    /**
+     * cookie过期时间 单位 秒
+     */
+    public final static Integer LOGIN_TIME_OUT = JWT_TIME_OUT * 60 * 60 * 24;
+
 
 }

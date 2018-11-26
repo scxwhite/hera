@@ -40,7 +40,7 @@ public class JwtUtils {
         header.put("typ", "JWT");
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
-        calendar.add(Calendar.HOUR_OF_DAY, 3);
+        calendar.add(Calendar.DAY_OF_MONTH, 3);
         Date expireDate = calendar.getTime();
         return JWT.create().withHeader(header)
                 .withClaim("iss", "hera")

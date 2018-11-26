@@ -109,6 +109,17 @@ public class Master {
      * 版本定时生成
      */
     private void batchActionCheck() {
+        //启动的时候生成版本
+        masterContext.masterSchedule.schedule(() -> {
+            try {
+                generateBatchAction();
+                clearInvalidAction();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 2, TimeUnit.MINUTES);
+
+        //只在05分生成版本
         masterContext.masterSchedule.scheduleWithFixedDelay(() -> {
             try {
                 generateBatchAction();
