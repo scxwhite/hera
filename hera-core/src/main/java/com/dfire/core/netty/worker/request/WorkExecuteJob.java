@@ -223,21 +223,21 @@ public class WorkExecuteJob {
         String debugId = debugMessage.getDebugId();
         HeraDebugHistoryVo history = workContext.getHeraDebugHistoryService().findById(debugId);
         return workContext.getWorkExecuteThreadPool().submit(() -> {
-            history.setExecuteHost(WorkContext.host);
-            workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
-
-            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator + "debug-" + debugId);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-            Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
-                    directory.getAbsolutePath(), workContext);
-            workContext.getDebugRunning().putIfAbsent(debugId, job);
-
             int exitCode = -1;
             Exception exception = null;
             try {
+
+                history.setExecuteHost(WorkContext.host);
+                workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
+
+                String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator + "debug-" + debugId);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+                Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
+                        directory.getAbsolutePath(), workContext);
+                workContext.getDebugRunning().putIfAbsent(debugId, job);
                 exitCode = job.run();
             } catch (Exception e) {
                 exception = e;
@@ -254,7 +254,6 @@ public class WorkExecuteJob {
                 HeraDebugHistoryVo debugHistory = workContext.getDebugRunning().get(debugId).getJobContext().getDebugHistory();
                 workContext.getHeraDebugHistoryService().updateLog(BeanConvertUtils.convert(debugHistory));
                 workContext.getDebugRunning().remove(debugId);
-
             }
             ResponseStatus.Status status = ResponseStatus.Status.OK;
             String errorText = "";

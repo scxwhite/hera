@@ -197,7 +197,7 @@ public class WorkClient {
             @Override
             public void run() {
                 try {
-                    for (Job job : new HashSet<>(workContext.getRunning().values())) {
+                    for (Job job : workContext.getRunning().values()) {
                         try {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                             workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
@@ -206,7 +206,7 @@ public class WorkClient {
                         }
                     }
 
-                    for (Job job : new HashSet<>(workContext.getManualRunning().values())) {
+                    for (Job job : workContext.getManualRunning().values()) {
                         try {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                             workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
@@ -215,7 +215,7 @@ public class WorkClient {
                         }
                     }
 
-                    for (Job job : new HashSet<>(workContext.getDebugRunning().values())) {
+                    for (Job job : workContext.getDebugRunning().values()) {
                         try {
                             HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
                             workContext.getHeraDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
@@ -283,14 +283,12 @@ public class WorkClient {
         Job job = workContext.getDebugRunning().get(debugId);
         job.cancel();
         workContext.getDebugRunning().remove(debugId);
-
         HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
         history.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         history.setStatus(StatusEnum.FAILED);
         workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
         workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
-
 
     }
 
