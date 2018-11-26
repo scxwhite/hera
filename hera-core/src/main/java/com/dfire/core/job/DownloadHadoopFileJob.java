@@ -23,7 +23,6 @@ public class DownloadHadoopFileJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
-        commands.add(" echo $JAVA_HOME '---  JAVA_HOME ' ");
         commands.add("hadoop fs -copyToLocal " + hadoopPath + " " + localPath);
         //格式转换
         return commands;
