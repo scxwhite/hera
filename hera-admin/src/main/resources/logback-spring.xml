@@ -155,6 +155,19 @@
             <immediateFlush>${immediateFlush}</immediateFlush>
         </encoder>
     </appender>
+    <appender name="errorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/errorLog.log</file>
+        <Append>true</Append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/bak/error.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <!-- keep 10 days worth of history -->
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${PATTERN}</pattern>
+            <immediateFlush>${immediateFlush}</immediateFlush>
+        </encoder>
+    </appender>
 
 
 
@@ -205,5 +218,9 @@
     </logger>
 
 
+    <logger name="com.dfire.logs.ErrorLog" additivity="true">
+        <level value="INFO"/>
+        <appender-ref ref="errorLog"/>
+    </logger>
 
 </configuration>
