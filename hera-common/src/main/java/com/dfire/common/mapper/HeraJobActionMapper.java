@@ -73,4 +73,6 @@ public interface HeraJobActionMapper {
     @Select("select id,job_id,owner,auto from hera_action where id <= CURRENT_TIMESTAMP()* 10000 and id >= CURRENT_DATE () * 10000000000 and schedule_type = 0 and auto = 1 and status != 'success' group by job_id")
     List<HeraActionVo> getNotRunScheduleJob();
 
+    @Select("select id,job_id,owner,auto from hera_action where id <= CURRENT_TIMESTAMP()* 10000 and id >= CURRENT_DATE () * 10000000000  and status = 'failed' and auto = 1 group by job_id")
+    List<HeraActionVo> getFailedJob();
 }

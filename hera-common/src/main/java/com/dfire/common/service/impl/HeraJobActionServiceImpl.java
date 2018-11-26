@@ -183,4 +183,9 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public List<HeraActionVo> getNotRunScheduleJob() {
         return heraJobActionMapper.getNotRunScheduleJob();
     }
+
+    @Override
+    public List<HeraActionVo> getFailedJob() {
+        return heraJobActionMapper.getFailedJob();
+    }
 }

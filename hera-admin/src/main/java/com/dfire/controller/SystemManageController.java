@@ -139,6 +139,17 @@ public class SystemManageController {
         return new JsonResponse(true, "查询成功", scheduleJob);
     }
 
+    /**
+     * 今日所有任务状态明细，线形图初始化
+     * @return
+     */
+    @RequestMapping(value = "/homePage/getFailJob", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse getScheduleFailJob() {
+        List<HeraActionVo> failedJob = heraJobActionService.getFailedJob();
+        return new JsonResponse(true, "查询成功", failedJob);
+    }
+
     @RequestMapping(value = "/homePage/getAllWorkInfo", method = RequestMethod.GET)
     @ResponseBody
     public WebAsyncTask getAllWorkInfo() {

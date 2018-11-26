@@ -70,4 +70,6 @@ public interface HeraJobActionService {
 
     List<HeraActionVo> getNotRunScheduleJob();
 
+    List<HeraActionVo> getFailedJob();
+
 }
