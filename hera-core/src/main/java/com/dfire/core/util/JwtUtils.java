@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +41,7 @@ public class JwtUtils {
         header.put("typ", "JWT");
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime();
-        calendar.add(Calendar.HOUR_OF_DAY, 3);
+        calendar.add(Calendar.DAY_OF_MONTH, 3);
         Date expireDate = calendar.getTime();
         return JWT.create().withHeader(header)
                 .withClaim("iss", "hera")
@@ -63,7 +64,7 @@ public class JwtUtils {
         try {
             jwt = verifier.verify(token);
         } catch (Exception e) {
-            HeraLog.error("token 过期");
+            ErrorLog.error("token 过期");
             return null;
         }
         return jwt.getClaims();

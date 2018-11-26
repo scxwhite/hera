@@ -7,6 +7,7 @@ import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
@@ -104,7 +105,7 @@ public class MasterContext {
                 HeraLog.info("quartz schedule shutdown success");
             } catch (Exception e) {
                 e.printStackTrace();
-                HeraLog.error("quartz schedule shutdown error");
+                ErrorLog.error("quartz schedule shutdown error");
             }
         }
         HeraLog.info("destroy master context success");

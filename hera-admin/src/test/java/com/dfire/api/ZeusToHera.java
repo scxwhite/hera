@@ -4,7 +4,6 @@ import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraUser;
-import com.dfire.core.config.HeraGlobalEnvironment;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -93,6 +92,23 @@ public class ZeusToHera {
             HttpGet httpGet = new HttpGet("http://10.1.28.81:8080/hera/scheduleCenter/execute?id=" + id + "&owner=biadmin");
             httpClient.execute(httpGet);
             System.out.println("--------------------------" + id + ": ok--------------------------");
+        }
+    }
+
+    @Test
+    public void moveParam() throws SQLException {
+        PreparedStatement statement = zeusConnection.prepareStatement("select id, descr from zeus_group");
+
+        ResultSet resultSet = statement.executeQuery();
+
+        int cnt = 0;
+        while (resultSet.next()) {
+            PreparedStatement prepareStatement = heraConnection.prepareStatement("update hera_group set description = ? where id = ?");
+            prepareStatement.setString(1, resultSet.getString("descr"));
+            prepareStatement.setInt(2, resultSet.getInt("id"));
+            System.out.println(++cnt + " " + prepareStatement.executeUpdate());
+            prepareStatement.close();
+
         }
     }
 

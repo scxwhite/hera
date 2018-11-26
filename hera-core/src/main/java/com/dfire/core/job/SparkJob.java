@@ -4,6 +4,7 @@ import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -44,7 +45,7 @@ public class SparkJob extends ProcessJob {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                HeraLog.error("创建.spark失败");
+                ErrorLog.error("创建.spark失败");
             }
         }
 

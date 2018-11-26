@@ -2,6 +2,7 @@ package com.dfire.core.tool.pool;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,14 +38,14 @@ public abstract class AbstractDataSourcePool {
 
     public Connection getConnection() {
         if (isClose || dataSource == null) {
-            HeraLog.error("空连接池或连接池已关闭");
+            ErrorLog.error("空连接池或连接池已关闭");
             return null;
         }
         try {
             return dataSource.getConnection();
         } catch (Exception e) {
             e.printStackTrace();
-            HeraLog.error("获取连接失败");
+            ErrorLog.error("获取连接失败");
             return null;
         }
     }

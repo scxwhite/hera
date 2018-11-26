@@ -6,7 +6,7 @@ $(function () {
     var focusId = -1;
     var focusItem = null;
     var isGroup;
-    var treeObj,allTreeObj;
+    var treeObj, allTreeObj;
     var dependTreeObj;
     var selected;
     var triggerType;
@@ -41,9 +41,9 @@ $(function () {
      * @param id    节点ID
      */
     function setCurrentId(id) {
-        if($('#jobTree').css('display')==='block'){
+        if ($('#jobTree').css('display') === 'block') {
             localStorage.setItem("defaultId", id);
-        }else{
+        } else {
             localStorage.setItem("allDefaultId", id);
 
         }
@@ -54,20 +54,20 @@ $(function () {
      * @param id    节点ID
      */
     function setDefaultSelectNode(id) {
-            if (id !== undefined && id !== null) {
-                if(id.indexOf('group')!==-1){
-                    var node = treeObj.getNodeByParam("parent", id);
-                    expandParent(node, treeObj);
-                    treeObj.selectNode(node);
-                }else{
-                    var node = treeObj.getNodeByParam("id", id);
-                    expandParent(node, treeObj);
-                    treeObj.selectNode(node);
-                }
-                leftClick();
-
-
+        if (id !== undefined && id !== null) {
+            if (id.indexOf('group') !== -1) {
+                var node = treeObj.getNodeByParam("parent", id);
+                expandParent(node, treeObj);
+                treeObj.selectNode(node);
+            } else {
+                var node = treeObj.getNodeByParam("id", id);
+                expandParent(node, treeObj);
+                treeObj.selectNode(node);
             }
+            leftClick();
+
+
+        }
     }
 
     /**
@@ -242,8 +242,14 @@ $(function () {
             type: "post",
             success: function (data) {
                 leftClick();
-                if (data.success == false) {
-                    alert(data.msg);
+                if (data.success === false) {
+                    layer.msg(data.msg);
+                } else {
+                    if (focusItem.auto === "开启") {
+                        layer.msg("开启成功");
+                    } else {
+                        layer.msg("关闭成功");
+                    }
                 }
 
             }
@@ -334,6 +340,41 @@ $(function () {
         if (status == 0) {
             setJobMessageEdit(true);
         } else if (status == 1) {//依赖调度
+            var setting = {
+                check: {
+                    enable: true
+                },
+                data: {
+                    simpleData: {
+                        enable: true,
+                        idKey: "id",
+                        pIdKey: "parent",
+                        rootPId: 0
+                    }
+                },
+                callback: {
+                    onClick: zTreeOnClick
+                }
+            };
+            var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
+            $.fn.zTree.init($("#dependTree"), setting, dependNodes.myJob);
+            dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
+
+            $("#dependJob").bind('click', function () {
+                $("#selectDepend").modal('show');
+            });
+            $("#chooseDepend").bind('click', function () {
+                var nodes = dependTreeObj.getCheckedNodes(true);
+                var ids = new Array();
+                for (var i = 0; i < nodes.length; i++) {
+                    if (nodes[i]['isParent'] == false) {
+                        ids.push(nodes[i]['id']);
+                    }
+                }
+                $("#dependJob").val(ids.join(","));
+                $("#selectDepend").modal('hide');
+
+            });
             setJobMessageEdit(false);
         }
     });
@@ -357,7 +398,7 @@ $(function () {
         timeoutId = setTimeout(function () {
             search(key); //lazy load ztreeFilter function
             $('#' + keyId).focus();
-        }, 300);
+        }, 1500);
 
         function search(key) {
             var keys, length;
@@ -395,7 +436,7 @@ $(function () {
 
 
     function expandParent(node, obj) {
-        if(node){
+        if (node) {
             var path = node.getPath();
             if (path && path.length > 0) {
                 for (var i = 0; i < path.length - 1; i++) {
@@ -441,13 +482,14 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                    "&script=" + encodeURIComponent(codeMirror.getValue()) +
-                    "&id=" + focusId,
+                "&script=" + encodeURIComponent(codeMirror.getValue()) +
+                "&id=" + focusId,
                 type: "post",
                 success: function (data) {
-                    leftClick();
                     if (data.success == false) {
-                        alert(data.msg)
+                        layer.msg(data.msg)
+                    } else {
+                        leftClick();
                     }
                 }
             });
@@ -455,12 +497,13 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
                 data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                    "&resource=" + "&groupId=" + focusId,
+                "&resource=" + "&groupId=" + focusId,
                 type: "post",
                 success: function (data) {
-                    leftClick();
                     if (data.success == false) {
-                        alert(data.msg);
+                        layer.msg(data.msg);
+                    } else {
+                        leftClick();
                     }
 
                 }
@@ -570,12 +613,12 @@ $(function () {
 
     function leftClick() {
         codeMirror.setValue('');
-        if($('#jobTree').css('display')==='block'){
+        if($('#jobTree').css('display')==='block') {
             selected = zTree.getSelectedNodes()[0];
-        }else{
+        } else {
             selected = zAllTree.getSelectedNodes()[0];
         }
-        if(selected){
+        if (selected) {
             var id = selected.id;
             var dir = selected.directory;
             focusId = id;
@@ -751,7 +794,7 @@ $(function () {
         treeObj.refresh();//调用api自带的refresh函数。
     }
 
-    var zTree, rMenu,zAllTree;
+    var zTree, rMenu, zAllTree;
 
 
     $(document).ready(function () {
@@ -872,11 +915,11 @@ $(function () {
         //隐藏树
         $('#hideTreeBtn').click(function (e) {
             e.stopPropagation();
-            if($(this).children().hasClass('fa-minus')){
+            if ($(this).children().hasClass('fa-minus')) {
                 $('#treeCon').removeClass('col-md-3 col-sm-3 col-lg-3').addClass('col-md-1 col-sm-1 col-lg-1');
                 $(this).children().removeClass('fa-minus').addClass('fa-plus');
                 $('#infoCon').removeClass('col-md-8 col-sm-8 col-lg-8').addClass('col-md-10 col-sm-10 col-lg-10');
-            }else{
+            } else {
                 $('#treeCon').removeClass('col-md-1 col-sm-1 col-lg-1').addClass('col-md-3 col-sm-3 col-lg-3');
                 $(this).children().removeClass('fa-plus').addClass('fa-minus');
                 $('#infoCon').removeClass('col-md-10 col-sm-10 col-lg-10').addClass('col-md-8 col-sm-8 col-lg-8');
@@ -1042,6 +1085,7 @@ function redraw() {
         redraw();
     })
 }
+
 //依赖图
 //根据状态获得颜色
 function getColor(status) {

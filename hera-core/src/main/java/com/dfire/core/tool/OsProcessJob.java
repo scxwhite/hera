@@ -1,6 +1,7 @@
 package com.dfire.core.tool;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.protocol.RpcWorkInfo;
 import com.dfire.protocol.RpcWorkInfo.OSInfo;
@@ -41,7 +42,7 @@ public class OsProcessJob extends RunShell {
             default:
                 String oSName = System.getProperties().getProperty("os.name");
                 command = "echo 未知的操作系统类型" + oSName;
-                HeraLog.error("未知的操作系统类型{}", oSName);
+                ErrorLog.error("未知的操作系统类型{}", oSName);
         }
     }
 

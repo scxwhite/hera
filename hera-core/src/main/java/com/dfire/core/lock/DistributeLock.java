@@ -6,6 +6,7 @@ import com.dfire.common.service.HeraLockService;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.schedule.HeraSchedule;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -72,7 +73,7 @@ public class DistributeLock {
                 Date date = new Date();
                 Integer lock = heraLockService.changeLock(WorkContext.host, date, date, heraLock.getHost());
                 if (lock != null && lock > 0) {
-                    HeraLog.error("master 发生切换,{} 抢占成功", WorkContext.host);
+                    ErrorLog.error("master 发生切换,{} 抢占成功", WorkContext.host);
                     heraSchedule.startup();
                     heraLock.setHost(WorkContext.host);
                     //TODO  接入master切换通知

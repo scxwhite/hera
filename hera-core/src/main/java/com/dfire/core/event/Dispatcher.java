@@ -7,6 +7,7 @@ import com.dfire.core.event.base.MvcEvent;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.AbstractListener;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.ScheduleLog;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -91,7 +92,7 @@ public class Dispatcher extends AbstractObservable {
                 fireEvent(afterDispatch, mvcEvent);
             }
         } catch (Exception e) {
-            ScheduleLog.error("global dispatch job event error");
+            ErrorLog.error("global dispatch job event error");
             throw new RuntimeException(e);
         }
 

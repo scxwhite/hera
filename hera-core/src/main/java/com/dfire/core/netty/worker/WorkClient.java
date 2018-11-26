@@ -17,6 +17,7 @@ import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.netty.worker.request.WorkerHandleWebRequest;
 import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeartLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.SocketLog;
@@ -129,68 +130,79 @@ public class WorkClient {
                         boolean send = workerHandlerHeartBeat.send(workContext);
                         if (!send) {
                             failCount++;
-                            SocketLog.error("send heart beat failed ,failCount :" + failCount);
+                            ErrorLog.error("send heart beat failed ,failCount :" + failCount);
                         } else {
                             failCount = 0;
                             HeartLog.info("send heart beat success:{}", workContext.getServerChannel().getRemoteAddress());
                         }
                     } else {
-                        SocketLog.error("server channel can not find on " + WorkContext.host);
+                        ErrorLog.error("server channel can not find on " + WorkContext.host);
                     }
                 } catch (Exception e) {
-                    SocketLog.error("heart beat error:", e);
+                    ErrorLog.error("heart beat error:", e);
                 } finally {
                     workSchedule.schedule(this, (failCount + 1) * HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
                 }
             }
         }, HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
 
+        /**
+         * 定时 刷新日志到数据库
+         */
         workSchedule.scheduleWithFixedDelay(new Runnable() {
-            private void editLog(Job job, Exception e) {
+            /**
+             * 处理任务调度的异常日志
+             * @param job
+             * @param e
+             */
+            private void  printScheduleLog(Job job, Exception e) {
                 try {
                     HeraJobHistoryVo his = job.getJobContext().getHeraJobHistory();
                     String logContent = his.getLog().getContent();
                     if (logContent == null) {
                         logContent = "";
                     }
-                    HeraLog.error("log output error!\n" +
+                    ErrorLog.error("log output error!\n" +
                             "[actionId:" + his.getJobId() +
                             ", hisId:" + his.getId() +
                             ", logLength:" +
                             logContent.length() + "]", e);
                 } catch (Exception ex) {
-                    HeraLog.error("log exception error!");
+                    ErrorLog.error("log exception error!");
                 }
             }
 
-
-            private void editDebugLog(Job job, Exception e) {
+            /**
+             * 处理 开发中心的日志
+             * @param job
+             * @param e
+             */
+            private void printDebugLog(Job job, Exception e) {
                 try {
                     HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
                     String logContent = history.getLog().getContent();
                     if (logContent == null) {
                         logContent = "";
                     }
-                    HeraLog.error("log output error!\n" +
+                    ErrorLog.error("log output error!\n" +
                             "[fileId:" + history.getFileId() +
                             ", hisId:" + history.getId() +
                             ", logLength:" +
                             logContent.length() + "]", e);
                 } catch (Exception ex) {
-                    HeraLog.error("log exception error!");
+                    ErrorLog.error("log exception error!");
                 }
             }
 
             @Override
             public void run() {
-
                 try {
                     for (Job job : new HashSet<>(workContext.getRunning().values())) {
                         try {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                             workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
-                            editDebugLog(job, e);
+                            printScheduleLog(job, e);
                         }
                     }
 
@@ -199,7 +211,7 @@ public class WorkClient {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
                             workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
-                            editLog(job, e);
+                            printScheduleLog(job, e);
                         }
                     }
 
@@ -208,11 +220,11 @@ public class WorkClient {
                             HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
                             workContext.getHeraDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
-                            editDebugLog(job, e);
+                            printDebugLog(job, e);
                         }
                     }
                 } catch (Exception e) {
-                    HeraLog.error("job log flush exception:{}", e.toString());
+                    ErrorLog.error("job log flush exception:{}", e.toString());
                 }
 
             }
@@ -342,14 +354,14 @@ public class WorkClient {
     public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.handleWebExecute(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error(response.getErrorText());
+            ErrorLog.error(response.getErrorText());
         }
     }
 
     public String cancelJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse webResponse = WorkerHandleWebRequest.handleCancel(workContext, kind, id).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error(webResponse.getErrorText());
+            ErrorLog.error(webResponse.getErrorText());
             return webResponse.getErrorText();
         }
         return "取消任务成功";
@@ -358,14 +370,14 @@ public class WorkClient {
     public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse webResponse = WorkerHandleWebRequest.handleUpdate(workContext, jobId).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error(webResponse.getErrorText());
+            ErrorLog.error(webResponse.getErrorText());
         }
     }
 
     public String generateActionFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.handleWebAction(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error("generate action error");
+            ErrorLog.error("generate action error");
             return "生成版本失败";
         }
         return "生成版本成功";
@@ -374,7 +386,7 @@ public class WorkClient {
     public Map<String, HeartBeatInfo> getJobQueueInfoFromWeb() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getJobQueueInfoFromMaster(workContext).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error("获取心跳信息失败:{}", response.getErrorText());
+            ErrorLog.error("获取心跳信息失败:{}", response.getErrorText());
             return null;
         }
         Map<String, HeartBeatMessage> map = AllHeartBeatInfoMessage.parseFrom(response.getBody()).getValuesMap();
@@ -401,7 +413,7 @@ public class WorkClient {
     public HashMap<String, WorkInfoVo> getAllWorkInfo() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getAllWorkInfoFromMaster(workContext).get();
         if (response == null || response.getStatus() == ResponseStatus.Status.ERROR) {
-            SocketLog.error("获取work信息失败:{}", response.getErrorText());
+            ErrorLog.error("获取work信息失败:{}", response.getErrorText());
             return null;
         }
         Map<String, WorkInfo> allWorkInfo = AllWorkInfo.parseFrom(response.getBody()).getValuesMap();

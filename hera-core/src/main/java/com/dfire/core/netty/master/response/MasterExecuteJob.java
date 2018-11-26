@@ -8,6 +8,7 @@ import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.util.AtomicIncrease;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.RpcDebugMessage.DebugMessage;
@@ -50,7 +51,7 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder workHolder, String actionId) {
-        String jobId = ActionUtil.getJobId(actionId);
+        Integer jobId = ActionUtil.getJobId(actionId);
         workHolder.getManningRunning().add(jobId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
@@ -72,7 +73,7 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder workHolder, String actionId) {
-        String jobId = ActionUtil.getJobId(actionId);
+        Integer jobId = ActionUtil.getJobId(actionId);
         workHolder.getRunning().add(jobId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
@@ -95,7 +96,8 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder workHolder, String id) {
-        workHolder.getDebugRunning().add(id);
+        Integer jobId = Integer.parseInt(id);
+        workHolder.getDebugRunning().add(jobId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Debug)
@@ -103,7 +105,7 @@ public class MasterExecuteJob {
                         .newBuilder()
                         .setDebugId(id)
                         .build().toByteString())
-                .build(), workHolder, id, TriggerTypeEnum.DEBUG, id);
+                .build(), workHolder, id, TriggerTypeEnum.DEBUG, jobId);
 
     }
 
@@ -119,7 +121,7 @@ public class MasterExecuteJob {
      * @return Future
      */
 
-    private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, String actionId, TriggerTypeEnum typeEnum, String jobId) {
+    private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, String actionId, TriggerTypeEnum typeEnum, Integer jobId) {
         final CountDownLatch latch = new CountDownLatch(1);
         MasterResponseListener responseListener = new MasterResponseListener(request, false, latch, null);
         context.getHandler().addListener(responseListener);
@@ -127,7 +129,7 @@ public class MasterExecuteJob {
             try {
                 latch.await(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
-                    TaskLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
+                    ErrorLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
                 }
             } finally {
                 context.getHandler().removeListener(responseListener);
@@ -145,7 +147,7 @@ public class MasterExecuteJob {
                         holder.getDebugRunning().remove(jobId);
                         break;
                     default:
-                        TaskLog.error("未识别的任务执行类型{}", typeEnum);
+                        ErrorLog.error("未识别的任务执行类型{}", typeEnum);
                 }
             }
             return responseListener.getResponse();
@@ -160,7 +162,7 @@ public class MasterExecuteJob {
         } catch (RemotingException e) {
             e.printStackTrace();
             context.getHandler().removeListener(responseListener);
-            TaskLog.error("5.MasterExecuteJob:master send debug command to worker exception,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().getRemoteAddress());
+            ErrorLog.error("5.MasterExecuteJob:master send debug command to worker exception,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().getRemoteAddress());
         }
         return future;
 

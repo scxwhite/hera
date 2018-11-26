@@ -1,7 +1,7 @@
 package com.dfire.common.util;
 
 import com.dfire.common.constants.TimeFormatConstant;
-import com.dfire.logs.HeraLog;
+import com.dfire.logs.ErrorLog;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
@@ -25,7 +25,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
         try {
             Velocity.init();
         } catch (Exception e) {
-            HeraLog.error("velocity init fail", e);
+            ErrorLog.error("velocity init fail", e);
         }
     }
 
@@ -54,11 +54,11 @@ public class RenderHierarchyProperties extends HierarchyProperties {
                 context.put("zdt", new HeraDateTool(new Date()));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
-                    HeraLog.error("render fail with target:" + m);
+                    ErrorLog.error("render fail with target:" + m);
                     break;
                 }
             } catch (Exception e) {
-                HeraLog.error("zdt render error", e);
+                ErrorLog.error("zdt render error", e);
                 break;
             }
             template = template.replace(m, sw.toString());
@@ -86,11 +86,11 @@ public class RenderHierarchyProperties extends HierarchyProperties {
                 context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
-                    HeraLog.error("render fail with target:" + m);
+                    ErrorLog.error("render fail with target:" + m);
                     break;
                 }
             } catch (Exception e) {
-                HeraLog.error("zdt render error", e);
+                ErrorLog.error("zdt render error", e);
                 break;
             }
             template = template.replace(m, sw.toString());
@@ -99,6 +99,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
         template = template.replace("${yesterday}", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")).addDay(-1).format("yyyyMMdd"));
         return template;
     }
+
     @Override
     public HierarchyProperties getParent() {
         return new RenderHierarchyProperties(properties.getParent());

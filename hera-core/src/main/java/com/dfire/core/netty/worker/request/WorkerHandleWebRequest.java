@@ -5,6 +5,7 @@ import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.WorkResponseListener;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
@@ -80,7 +81,7 @@ public class WorkerHandleWebRequest {
         Future<WebResponse> future = workContext.getWorkWebThreadPool().submit(() -> {
             latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
-                SocketLog.error(errorMsg);
+                ErrorLog.error(errorMsg);
             }
             workContext.getHandler().removeListener(responseListener);
             return responseListener.getWebResponse();
@@ -94,7 +95,7 @@ public class WorkerHandleWebRequest {
         } catch (RemotingException e) {
             e.printStackTrace();
             workContext.getHandler().removeListener(responseListener);
-            SocketLog.error("1.WorkerHandleWebRequest: send web request to master exception requestId ={}", request.getRid());
+            ErrorLog.error("1.WorkerHandleWebRequest: send web request to master exception requestId ={}", request.getRid());
         }
         return future;
 

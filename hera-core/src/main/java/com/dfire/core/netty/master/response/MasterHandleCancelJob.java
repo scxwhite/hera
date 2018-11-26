@@ -6,6 +6,7 @@ import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.util.AtomicIncrease;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 
@@ -40,7 +41,7 @@ public class MasterHandleCancelJob {
         Future<RpcResponse.Response> future = context.getThreadPool().submit(() -> {
             latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
-                SocketLog.error("取消任务信号消失，三小时未收到work返回：{}", jobId);
+                ErrorLog.error("取消任务信号消失，三小时未收到work返回：{}", jobId);
             }
             context.getHandler().removeListener(responseListener);
             return responseListener.getResponse();
@@ -50,7 +51,7 @@ public class MasterHandleCancelJob {
             channel.writeAndFlush(socketMessage);
         } catch (RemotingException e) {
             e.printStackTrace();
-            SocketLog.error("send cancel job exception {}", request.getRid());
+            ErrorLog.error("send cancel job exception {}", request.getRid());
         }
         return future;
     }

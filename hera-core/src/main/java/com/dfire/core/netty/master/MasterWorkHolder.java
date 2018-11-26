@@ -19,11 +19,11 @@ public class MasterWorkHolder {
 
     private HeraChannel channel;
 
-    private Set<String> running = new HashSet<>();
+    private Set<Integer> running = new HashSet<>();
 
-    private Set<String> manningRunning = new HashSet<>();
+    private Set<Integer> manningRunning = new HashSet<>();
 
-    private Set<String> debugRunning = new HashSet<>();
+    private Set<Integer> debugRunning = new HashSet<>();
 
     private HeartBeatInfo heartBeatInfo;
 

@@ -1,6 +1,5 @@
 package com.dfire.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.*;
@@ -19,6 +18,7 @@ import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.protocol.JobExecuteKind;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -82,7 +83,7 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,List<HeraJobTreeNodeVo>> initJobTree() {
+    public Map<String, List<HeraJobTreeNodeVo>> initJobTree() {
         return heraJobService.buildJobTree(getOwner());
     }
 
@@ -254,7 +255,7 @@ public class ScheduleCenterController extends BaseHeraController {
     public List<HeraActionVo> getJobVersion(String jobId) {
         List<HeraActionVo> list = new ArrayList<>();
         List<String> idList = heraJobActionService.getActionVersionByJobId(Long.parseLong(jobId));
-        for(String id : idList){
+        for (String id : idList) {
             list.add(HeraActionVo.builder().id(id).build());
         }
         return list;
@@ -264,13 +265,19 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse updateJobMessage(HeraJobVo heraJobVo) {
+
+        if (StringUtils.isBlank(heraJobVo.getDescription())) {
+            return new RestfulResponse(false, "描述不能为空");
+        }
+        try {
+            new CronExpression(heraJobVo.getCronExpression());
+        } catch (ParseException e) {
+            return new RestfulResponse(false, "定时表达式不准确，请核实后再保存");
+        }
         if (!hasPermission(heraJobVo.getId(), JOB)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
-        HeraJob heraJob = BeanConvertUtils.convertToHeraJob(heraJobVo);
-        RestfulResponse response = heraJobService.checkAndUpdate(heraJob);
-        updateJobToMaster(response.isSuccess(), heraJob.getId());
-        return response;
+        return heraJobService.checkAndUpdate(BeanConvertUtils.convertToHeraJob(heraJobVo));
     }
 
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
@@ -458,9 +465,7 @@ public class ScheduleCenterController extends BaseHeraController {
             poolExecutor.execute(() -> {
                 try {
                     workClient.updateJobFromWeb(String.valueOf(id));
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }
             });
@@ -472,7 +477,15 @@ public class ScheduleCenterController extends BaseHeraController {
         HeraGroup group = heraGroupService.findConfigById(groupId);
         Map<String, String> configMap = new HashMap<>(64);
         while (group != null && groupId != null && groupId != 0) {
-            configMap.putAll(StringUtil.convertStringToMap(group.getConfigs()));
+            Map<String, String> map = StringUtil.convertStringToMap(group.getConfigs());
+            // 多重继承相同变量，以第一个的为准
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                String key = entry.getKey();
+                if (!configMap.containsKey(key)) {
+                    String val = entry.getValue();
+                    configMap.put(key, val);
+                }
+            }
             groupId = group.getParent();
             group = heraGroupService.findConfigById(groupId);
         }
