@@ -569,6 +569,7 @@ $(function () {
     }
 
     function leftClick() {
+        codeMirror.setValue('');
         if($('#jobTree').css('display')==='block'){
             selected = zTree.getSelectedNodes()[0];
         }else{
