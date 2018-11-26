@@ -219,7 +219,7 @@ public class Master {
                     return;
                 }
                 if (actionHistory.getStatus().equals(Constants.STATUS_SUCCESS)) {
-                    TaskLog.error("任务信号丢失:{}", actionId);
+                    ErrorLog.error("任务信号丢失:{}", actionId);
                     Integer jobId = ActionUtil.getJobId(String.valueOf(actionId));
                     boolean scheduleType = actionHistory.getTriggerType().equals(TriggerTypeEnum.SCHEDULE.getId())
                             || actionHistory.getTriggerType().equals(TriggerTypeEnum.MANUAL_RECOVER.getId());
@@ -405,7 +405,7 @@ public class Master {
                 if (StringUtils.isNotBlank(cron)) {
                     boolean isCronExp = CronParse.Parser(cron, cronDate, list);
                     if (!isCronExp) {
-                        ScheduleLog.error("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
+                        ErrorLog.error("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
                         continue;
                     }
                     insertActionList.addAll(createHeraAction(list, heraJob));
@@ -739,7 +739,7 @@ public class Master {
                 if (future != null) {
                     future.cancel(true);
                 }
-                ScheduleLog.error("manual job run error {}", e);
+                ErrorLog.error("manual job run error {}", e);
                 jobStatus.setStatus(StatusEnum.FAILED);
                 history.setStatus(jobStatus.getStatus().toString());
                 masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(history);
@@ -752,7 +752,7 @@ public class Master {
             if (!success) {
                 if (exception != null) {
                     HeraException heraException = new HeraException(exception);
-                    ScheduleLog.error("manual actionId = {} error, {}", history.getActionId(), heraException.getMessage());
+                    ErrorLog.error("manual actionId = {} error, {}", history.getActionId(), heraException.getMessage());
                 }
                 ScheduleLog.info("actionId = {} manual execute failed", history.getActionId());
                 jobStatus.setStatus(StatusEnum.FAILED);
@@ -858,7 +858,7 @@ public class Master {
                     ScheduleKind, actionId);
             response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
         } catch (Exception e) {
-            ScheduleLog.error("schedule job run error :" + actionId, e);
+            ErrorLog.error("schedule job run error :" + actionId, e);
             if (future != null) {
                 future.cancel(true);
             }
@@ -1088,7 +1088,7 @@ public class Master {
      */
     public void workerDisconnectProcess(Channel channel) {
         String ip = getIpFromChannel(channel);
-        SocketLog.error("work:{}断线", ip);
+        ErrorLog.error("work:{}断线", ip);
         MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);
         masterContext.getWorkMap().remove(channel);
         if (workHolder != null) {
@@ -1171,7 +1171,7 @@ public class Master {
                         }
                     }
                 } catch (InterruptedException e) {
-                    SocketLog.error("work断线任务检测异常{}", e);
+                    ErrorLog.error("work断线任务检测异常{}", e);
                 }
             }, 10, TimeUnit.MINUTES);
 
@@ -1179,7 +1179,7 @@ public class Master {
                     "自动调度队列任务：" + workHolder.getHeartBeatInfo().getRunning() + "<br>" +
                     "手动队列任务：" + workHolder.getHeartBeatInfo().getManualRunning() + "<br>" +
                     "开发中心队列任务：" + workHolder.getHeartBeatInfo().getDebugRunning() + "<br>";
-            SocketLog.error(content);
+            ErrorLog.error(content);
         }
     }
 

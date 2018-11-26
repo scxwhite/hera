@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPathException;
 import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.Processor;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.StringUtils;
 
@@ -37,7 +38,7 @@ public class StringUtil {
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            HeraLog.error("MD5 错误");
+            ErrorLog.error("MD5 错误");
         }
         md.update(sourceStr.getBytes());
         byte b[] = md.digest();

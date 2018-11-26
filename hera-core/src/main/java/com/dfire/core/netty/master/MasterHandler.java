@@ -6,6 +6,7 @@ import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.MasterHandleRequest;
 import com.dfire.core.netty.master.response.MasterHandlerWebResponse;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.RpcRequest.Request;
@@ -57,10 +58,10 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                             response.channel.writeAndFlush(wrapper(response.webResponse));
                             TaskLog.info("3-2.MasterHandler:-->master send response success, requestId={}", response.webResponse.getRid());
                         } catch (Exception e) {
-                            SocketLog.error("master handler future take error:{}", e);
+                            ErrorLog.error("master handler future take error:{}", e);
                             e.printStackTrace();
                         } catch (Throwable throwable) {
-                            SocketLog.error("master handler future take throwable{}", throwable);
+                            ErrorLog.error("master handler future take throwable{}", throwable);
                             throwable.printStackTrace();
                         }
                     }
@@ -84,7 +85,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         masterContext.getThreadPool().execute(() -> MasterHandleRequest.setWorkInfo(masterContext, channel, request));
                         break;
                     default:
-                        SocketLog.error("unknow request operate error.{}", request.getOperateValue());
+                        ErrorLog.error("unknow request operate error.{}", request.getOperateValue());
                         break;
                 }
                 break;
@@ -120,7 +121,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                         completionService.submit(() ->
                                 new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.buildAllWorkInfo(masterContext, webRequest)));
                     default:
-                        SocketLog.error("unknown webRequest operate error:{}", webRequest.getOperate());
+                        ErrorLog.error("unknown webRequest operate error:{}", webRequest.getOperate());
                         break;
                 }
                 break;
@@ -155,7 +156,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 });
                 break;
             default:
-                SocketLog.error("unknown request type : {}", socketMessage.getKind());
+                ErrorLog.error("unknown request type : {}", socketMessage.getKind());
                 break;
         }
     }
@@ -172,7 +173,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         masterContext.getThreadPool().execute(() -> {
-            SocketLog.error("worker miss connection !!!");
+            ErrorLog.error("worker miss connection !!!");
             masterContext.getMaster().workerDisconnectProcess(ctx.channel());
         });
     }
@@ -187,7 +188,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
-        SocketLog.error("cause exception {}", cause);
+        ErrorLog.error("cause exception {}", cause);
     }
 
     private SocketMessage wrapper(WebResponse response) {

@@ -8,6 +8,7 @@ import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.util.AtomicIncrease;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.RpcDebugMessage.DebugMessage;
@@ -128,7 +129,7 @@ public class MasterExecuteJob {
             try {
                 latch.await(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
-                    TaskLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
+                    ErrorLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
                 }
             } finally {
                 context.getHandler().removeListener(responseListener);
@@ -146,7 +147,7 @@ public class MasterExecuteJob {
                         holder.getDebugRunning().remove(jobId);
                         break;
                     default:
-                        TaskLog.error("未识别的任务执行类型{}", typeEnum);
+                        ErrorLog.error("未识别的任务执行类型{}", typeEnum);
                 }
             }
             return responseListener.getResponse();
@@ -161,7 +162,7 @@ public class MasterExecuteJob {
         } catch (RemotingException e) {
             e.printStackTrace();
             context.getHandler().removeListener(responseListener);
-            TaskLog.error("5.MasterExecuteJob:master send debug command to worker exception,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().getRemoteAddress());
+            ErrorLog.error("5.MasterExecuteJob:master send debug command to worker exception,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().getRemoteAddress());
         }
         return future;
 

@@ -1,6 +1,7 @@
 package com.dfire.core.quartz;
 
 import com.dfire.common.constants.Constants;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import jdk.nashorn.internal.objects.annotations.Constructor;
 import org.quartz.*;
@@ -53,7 +54,7 @@ public class QuartzSchedulerService {
             HeraLog.info("start init quartz scheduler");
         } catch (SchedulerException | IOException e) {
             e.printStackTrace();
-            HeraLog.error("failed init quartz scheduler");
+            ErrorLog.error("failed init quartz scheduler");
         }
     }
 
@@ -65,7 +66,7 @@ public class QuartzSchedulerService {
                 HeraLog.info("worker shutdown quartz service");
             } catch (SchedulerException e) {
                 e.printStackTrace();
-                HeraLog.error("failed shutdown quartz scheduler");
+                ErrorLog.error("failed shutdown quartz scheduler");
             }
         }
     }
@@ -83,7 +84,7 @@ public class QuartzSchedulerService {
             }
             HeraLog.warn("remove action {} from quartz", actionId);
         } catch (SchedulerException e) {
-            HeraLog.error("remove quartz schedule error : " + actionId);
+            ErrorLog.error("remove quartz schedule error : " + actionId);
         }
 
     }

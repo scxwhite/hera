@@ -2,6 +2,7 @@ package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -40,7 +41,7 @@ public class HiveJob extends ProcessJob {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                HeraLog.error("创建.hive失败");
+                ErrorLog.error("创建.hive失败");
             }
         }
 

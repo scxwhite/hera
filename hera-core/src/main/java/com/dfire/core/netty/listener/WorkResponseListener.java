@@ -2,6 +2,7 @@ package com.dfire.core.netty.listener;
 
 import com.dfire.core.netty.listener.adapter.ResponseListenerAdapter;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.RpcWebRequest;
 import com.dfire.protocol.RpcWebResponse;
@@ -35,7 +36,7 @@ public class WorkResponseListener extends ResponseListenerAdapter {
                 webResponse = response;
                 receiveResult = true;
             } catch (Exception e) {
-                TaskLog.error("work release exception {}", e);
+                ErrorLog.error("work release exception {}", e);
             } finally {
                 latch.countDown();
             }

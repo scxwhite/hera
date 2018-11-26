@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,7 +64,7 @@ public class JwtUtils {
         try {
             jwt = verifier.verify(token);
         } catch (Exception e) {
-            HeraLog.error("token 过期");
+            ErrorLog.error("token 过期");
             return null;
         }
         return jwt.getClaims();

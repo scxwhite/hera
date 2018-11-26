@@ -1,5 +1,6 @@
 package com.dfire.core.netty.master;
 
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.protocol.RpcSocketMessage;
 import io.netty.bootstrap.ServerBootstrap;
@@ -64,7 +65,7 @@ public class MasterServer {
         if (channelFuture.isSuccess()) {
             HeraLog.info("start master server success");
         } else if (!channelFuture.isSuccess()) {
-            HeraLog.error("start master server success");
+            ErrorLog.error("start master server success");
         }
 
         return true;

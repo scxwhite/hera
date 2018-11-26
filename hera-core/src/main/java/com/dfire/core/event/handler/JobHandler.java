@@ -28,6 +28,7 @@ import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.quartz.HeraQuartzJob;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.ScheduleLog;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -120,7 +121,7 @@ public class JobHandler extends AbstractHandler {
         if (heraAction != null) {
             //对版本表中处于running状态的任务进行重试
             if (StatusEnum.RUNNING.toString().equals(heraAction.getStatus())) {
-                ScheduleLog.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
+                ErrorLog.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
                 //有历史版本
                 if (heraAction.getHistoryId() != null) {
                     HeraJobHistory jobHistory = jobHistoryService.findById(heraAction.getHistoryId());
@@ -181,7 +182,7 @@ public class JobHandler extends AbstractHandler {
             } catch (Exception e) {
                 if (e instanceof SchedulerException) {
                     heraActionVo.setAuto(false);
-                    ScheduleLog.error("create job quartz schedule error");
+                    ErrorLog.error("create job quartz schedule error");
                 }
                 throw new RuntimeException(e);
             }
@@ -307,7 +308,7 @@ public class JobHandler extends AbstractHandler {
 
             } catch (MessagingException e) {
                 e.printStackTrace();
-                ScheduleLog.error("发送邮件失败");
+                ErrorLog.error("发送邮件失败");
             }
         }
     }

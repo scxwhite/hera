@@ -6,6 +6,7 @@ import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
 import com.dfire.core.netty.worker.request.WorkHandlerRequest;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.RpcRequest.Request;
@@ -54,7 +55,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                     TaskLog.info("1.WorkHandler: worker send response,rid={}", response.getRid());
                 } catch (InterruptedException | ExecutionException | RemotingException e) {
                     e.printStackTrace();
-                    TaskLog.error("1.WorkHandler: worker send response timeout,rid={}", response == null ? null : response.getRid());
+                    ErrorLog.error("1.WorkHandler: worker send response timeout,rid={}", response == null ? null : response.getRid());
                 }
             }
         });
@@ -99,7 +100,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                         workContext.getWorkExecuteThreadPool().execute(() -> handlerRequest.getWorkInfo(ctx.channel()));
                         break;
                     default:
-                        SocketLog.error("unknow operate value {}", request.getOperateValue());
+                        ErrorLog.error("unknow operate value {}", request.getOperateValue());
                         break;
                 }
             case RESPONSE:
@@ -133,7 +134,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                 });
                 break;
             default:
-                SocketLog.error("WorkHandler:can not recognition ");
+                ErrorLog.error("WorkHandler:can not recognition ");
                 break;
 
         }
@@ -159,7 +160,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
-        SocketLog.error("work exception: {}, {}", ctx.channel().remoteAddress(), cause.toString());
+        ErrorLog.error("work exception: {}, {}", ctx.channel().remoteAddress(), cause.toString());
     }
 
 }

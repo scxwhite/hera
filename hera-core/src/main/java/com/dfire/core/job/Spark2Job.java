@@ -2,6 +2,7 @@ package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.core.tool.pool.JdbcDataSourcePool;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 
 import java.sql.Connection;
@@ -82,7 +83,7 @@ public class Spark2Job extends ProcessJob {
                 connection.close();
             } catch (Exception e) {
                 e.printStackTrace();
-                HeraLog.error("连接归还失败");
+                ErrorLog.error("连接归还失败");
             }
         }
         return true;

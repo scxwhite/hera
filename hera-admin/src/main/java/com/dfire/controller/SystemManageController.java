@@ -3,6 +3,7 @@ package com.dfire.controller;
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.monitor.service.JobManageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +129,7 @@ public class SystemManageController {
         WebAsyncTask webAsyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> workClient.getAllWorkInfo());
 
         webAsyncTask.onTimeout(() -> {
-            HeraLog.error("获取work信息超时");
+            ErrorLog.error("获取work信息超时");
             return null;
         });
         return webAsyncTask;

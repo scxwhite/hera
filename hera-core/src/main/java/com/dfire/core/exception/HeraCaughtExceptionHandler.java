@@ -1,6 +1,6 @@
 package com.dfire.core.exception;
 
-import com.dfire.logs.HeraLog;
+import com.dfire.logs.ErrorLog;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -11,7 +11,7 @@ public class HeraCaughtExceptionHandler implements Thread.UncaughtExceptionHandl
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        HeraLog.error("Thread pool caught thread exception " + e);
+        ErrorLog.error("Thread pool caught thread exception " + e);
         throw new RuntimeException(e);
     }
 }
