@@ -41,7 +41,7 @@ public class DistributeLock {
     @PostConstruct
     public void init() {
 
-        workClient.workSchedule.scheduleWithFixedDelay(() -> {
+        workClient.workSchedule.scheduleAtFixedRate(() -> {
             try {
                 checkLock();
             } catch (Exception e) {

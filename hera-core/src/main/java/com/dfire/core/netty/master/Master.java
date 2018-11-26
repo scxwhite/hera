@@ -122,7 +122,7 @@ public class Master {
         }, 2, TimeUnit.MINUTES);
 
         //只在05分生成版本
-        masterContext.masterSchedule.scheduleWithFixedDelay(() -> {
+        masterContext.masterSchedule.scheduleAtFixedRate(() -> {
             try {
                 generateBatchAction();
                 if (DateTime.now().getHourOfDay() == 8) {
@@ -140,7 +140,7 @@ public class Master {
      */
     private void lostJobCheck() {
         int minute = new DateTime().getMinuteOfHour();
-        masterContext.masterSchedule.scheduleWithFixedDelay(() -> {
+        masterContext.masterSchedule.scheduleAtFixedRate(() -> {
             ScheduleLog.info("refresh host group success, start roll back");
             masterContext.refreshHostGroupCache();
             String currDate = ActionUtil.getCurrActionVersion();
@@ -300,7 +300,7 @@ public class Master {
      */
     private void heartCheck() {
 
-        masterContext.masterSchedule.scheduleWithFixedDelay(() -> {
+        masterContext.masterSchedule.scheduleAtFixedRate(() -> {
             Date now = new Date();
             Map<Channel, MasterWorkHolder> workMap = masterContext.getWorkMap();
             List<Channel> removeChannel = new ArrayList<>(workMap.size());
