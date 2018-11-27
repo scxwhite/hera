@@ -412,6 +412,8 @@ $(function () {
                 $('#deSearchInfo').hide();
                 $('#searchInfo').hide();
                 tree.getNodesByFilter(function (node) {
+                    node.highlight = false;
+                    tree.updateNode(node);
                     tree.showNode(node);
                 });
                 tree.expandAll(false);
@@ -983,7 +985,7 @@ $(function () {
         });
         $('#expandAll').on("click", function () {
             expandNextNode(len);
-        })
+        });
 
     });
     $('#biggerBtn').click(function (e) {
