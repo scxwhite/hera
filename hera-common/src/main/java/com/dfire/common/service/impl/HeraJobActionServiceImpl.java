@@ -34,19 +34,18 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public List<HeraAction> batchInsert(List<HeraAction> heraActionList, Long nowAction) {
         ScheduleLog.info("batchInsert-> batch size is :{}", heraActionList.size());
         List<HeraAction> insertList = new ArrayList<>();
-        List<HeraAction> updateList = new ArrayList<>();
         for (HeraAction heraAction : heraActionList) {
+            //更新时单条更新
+            //原因：批量更新时，在极端情况下，数据会有批量数据处理时间的buff
+            //     此时如果有其它地方修改了某条数据 会数据库中的数据被批量更新的覆盖
             if (isNeedUpdateAction(heraAction, nowAction)) {
-                updateList.add(heraAction);
+                update(heraAction);
             } else {
                 insertList.add(heraAction);
             }
         }
         if (insertList.size() != 0) {
             heraJobActionMapper.batchInsert(insertList);
-        }
-        if (updateList.size() != 0) {
-            heraJobActionMapper.batchUpdate(updateList);
         }
         return heraActionList;
     }

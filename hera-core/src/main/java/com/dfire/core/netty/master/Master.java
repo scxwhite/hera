@@ -121,7 +121,7 @@ public class Master {
             }
         }, 2, TimeUnit.MINUTES);
 
-        //只在05分生成版本
+        //只在整点生成版本
         masterContext.masterSchedule.scheduleAtFixedRate(() -> {
             try {
                 generateBatchAction();
@@ -131,12 +131,13 @@ public class Master {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 65 - new DateTime().getMinuteOfHour(), 60, TimeUnit.MINUTES);
+        }, 60 - new DateTime().getMinuteOfHour(), 60, TimeUnit.MINUTES);
     }
 
 
     /**
-     * 漏泡检测，清理schedule线程，1小时调度一次,超过15分钟，job开始检测漏泡
+     * 漏泡检测，清理schedule线程，30分钟调度一次,
+     * job开始检测15分钟之前的漏跑任务
      */
     private void lostJobCheck() {
         int minute = new DateTime().getMinuteOfHour();
@@ -160,7 +161,7 @@ public class Master {
                 }
                 ScheduleLog.info("clear job scheduler ok");
             }
-        }, minute <= 30 ? 30 - minute : 60 - minute, 30, TimeUnit.MINUTES);
+        }, minute <= 30 ? 40 - minute : 70 - minute, 30, TimeUnit.MINUTES);
 
     }
 
@@ -456,8 +457,6 @@ public class Master {
         }
     }
 
-
-    private static HashMap<Long, HeraAction> set = new HashMap<>();
 
     /**
      * 生成action
