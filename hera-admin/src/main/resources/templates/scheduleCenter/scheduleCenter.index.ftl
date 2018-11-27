@@ -825,6 +825,7 @@
             </div>
             <div class="modal-body">
                 <input type="text" class="form-control" id="dependKeyWords" placeholder="请输入关键词">
+                <p id="searchInfo">查找中，请稍后...</p>
                 <ul id="dependTree" class="ztree"></ul>
             </div>
 
