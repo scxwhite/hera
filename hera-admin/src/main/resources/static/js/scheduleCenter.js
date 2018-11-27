@@ -13,7 +13,9 @@ $(function () {
     var codeMirror, inheritConfigCM, selfConfigCM;
     var editor = $('#editor');
     var setting = {
-        view: {},
+        view: {
+                fontCss: getFontCss
+            },
         data: {
             simpleData: {
                 enable: true,
@@ -23,7 +25,6 @@ $(function () {
             }
         },
         callback: {
-            onRightClick: OnRightClick,
             onClick: leftClick
         }
     };
@@ -341,6 +342,9 @@ $(function () {
             setJobMessageEdit(true);
         } else if (status == 1) {//依赖调度
             var setting = {
+                view: {
+                    fontCss: getFontCss
+                },
                 check: {
                     enable: true
                 },
@@ -381,17 +385,19 @@ $(function () {
 
     $('#keyWords').on('keyup', function () {
         var key = $.trim($(this).val());
-        searchNodeLazy(key, treeObj, "keyWords");
+        searchNodeLazy(key, treeObj, "keyWords",false);
 
     });
     $('#dependKeyWords').on('keyup', function () {
         var key = $.trim($(this).val());
-        searchNodeLazy(key, dependTreeObj, "dependKeyWords");
+        searchNodeLazy(key, dependTreeObj, "dependKeyWords",false);
 
     });
     var timeoutId;
 
-    function searchNodeLazy(key, tree, keyId) {
+    function searchNodeLazy(key, tree, keyId,first) {
+        $('#deSearchInfo').show();
+        $('#searchInfo').show();
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
@@ -403,7 +409,11 @@ $(function () {
         function search(key) {
             var keys, length;
             if (key == null || key == "" || key == undefined) {
+                $('#deSearchInfo').hide();
+                $('#searchInfo').hide();
                 tree.getNodesByFilter(function (node) {
+                    node.highlight = false;
+                    tree.updateNode(node);
                     tree.showNode(node);
                 });
                 tree.expandAll(false);
@@ -416,18 +426,55 @@ $(function () {
                     nodeShow.forEach(function (node) {
                         expandParent(node, tree);
                     })
+                    $('#deSearchInfo').hide();
+                    $('#searchInfo').hide();
                 }
             }
 
             function filterNodes(node) {
                 for (var i = 0; i < length; i++) {
-                    if (node.name && node.name.toLowerCase().indexOf(keys[i].toLowerCase()) != -1) {
-                        tree.showNode(node);
-                        return true;
+                    if (node.name) {
+                        //id搜索
+                        if(!isNaN(keys[i])){
+                            var id = /\((.*)\)/.exec(node.name)[1];
+                            if(id === keys[i]){
+                                if(tree === $.fn.zTree.getZTreeObj("jobTree")){
+                                    tree.checkNode(node,true,true);
+                                    if(i === 0){
+                                        tree.selectNode(node);
+                                        $('.curSelectedNode').trigger('click');
+                                    }
+                                }else{
+                                    if(first) tree.checkNode(node,true,true);
+                                }
+                                node.highlight = true;
+                                tree.updateNode(node);
+                                tree.showNode(node);
+                                return true;
+                            }
+                        }else{//name搜索
+                            var end = node.name.indexOf('(');
+                            var name = node.name.substring(0,end);
+                            if(name.indexOf(keys[i]) !== -1){
+                                if(tree === $.fn.zTree.getZTreeObj("jobTree")){
+                                    tree.checkNode(node,true,true);
+                                    if(i === 0){
+                                        tree.selectNode(node);
+                                        $('.curSelectedNode').trigger('click');
+                                    }
+                                }else{
+                                    if(first) tree.checkNode(node,true,true);
+                                }
+                                node.highlight = true;
+                                tree.updateNode(node);
+                                tree.showNode(node);
+                                return true;
+                            }
+                        }
                     }
                 }
-
-                tree.hideNode(node);
+                node.highlight = false;
+                tree.updateNode(node);
                 return false;
             }
 
@@ -610,7 +657,10 @@ $(function () {
 
         return userConfigs;
     }
-
+    //搜索结果节点颜色改变
+    function getFontCss(treeId, treeNode) {
+        return (!!treeNode.highlight) ? {color:"#A60000", "font-weight":"bold"} : {color:"#333", "font-weight":"normal"};
+    }
     function leftClick() {
         codeMirror.setValue('');
         if($('#jobTree').css('display')==='block') {
@@ -780,9 +830,6 @@ $(function () {
         });
     }
 
-    function OnRightClick() {
-
-    }
 
 
     var zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
@@ -935,10 +982,10 @@ $(function () {
             }
             expandNextNode(expand);
 
-        })
+        });
         $('#expandAll').on("click", function () {
             expandNextNode(len);
-        })
+        });
 
     });
     $('#biggerBtn').click(function (e) {
@@ -953,8 +1000,12 @@ $(function () {
     })
     $("#dependJob").bind('click', function () {
         $("#selectDepend").modal('show');
+        $('#dependKeyWords').val($(this).val().split(',').join(' '));
         //定时调度
         var setting = {
+            view:{
+                fontCss: getFontCss
+            },
             check: {
                 enable: true
             },
@@ -974,7 +1025,7 @@ $(function () {
         var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
         $.fn.zTree.init($("#dependTree"), setting, dependNodes.allJob);
         dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
-
+        searchNodeLazy($(this).val().split(',').join(' '), dependTreeObj, "dependKeyWords",true);
         $("#chooseDepend").bind('click', function () {
             var nodes = dependTreeObj.getCheckedNodes(true);
             var ids = new Array();

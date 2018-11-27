@@ -119,6 +119,7 @@
                         <div class="box-body">
                             <div>
                                 <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词(空格分割)">
+                                <p id="searchInfo" style="display: none">查找中，请稍候...</p>
                                 <ul id="jobTree" class="ztree"></ul>
                                 <ul id="allTree" class="ztree"></ul>
                             </div>
@@ -825,6 +826,7 @@
             </div>
             <div class="modal-body">
                 <input type="text" class="form-control" id="dependKeyWords" placeholder="请输入关键词">
+                <p id="deSearchInfo" style="display: none">查找中，请稍候...</p>
                 <ul id="dependTree" class="ztree"></ul>
             </div>
 
