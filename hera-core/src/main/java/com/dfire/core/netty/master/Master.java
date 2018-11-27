@@ -220,11 +220,11 @@ public class Master {
                 if (actionHistory == null) {
                     return;
                 }
-                if (!actionHistory.getStatus().equals(Constants.STATUS_RUNNING)) {
+                if (actionHistory.getStatus() != null && !actionHistory.getStatus().equals(Constants.STATUS_RUNNING)) {
                     masterContext.getMasterSchedule().schedule(() -> {
                         HeraAction newAction = masterContext.getHeraJobActionService().findById(String.valueOf(actionId));
                         if (Constants.STATUS_RUNNING.equals(newAction.getStatus())) {
-                            ErrorLog.error("任务信号丢失:{}", actionId);
+                            ErrorLog.error("任务信号丢失actionId:{},historyId:{}", actionId, newAction.getHistoryId());
                             Integer jobId = ActionUtil.getJobId(String.valueOf(actionId));
                             boolean scheduleType = actionHistory.getTriggerType().equals(TriggerTypeEnum.SCHEDULE.getId())
                                     || actionHistory.getTriggerType().equals(TriggerTypeEnum.MANUAL_RECOVER.getId());
@@ -734,6 +734,7 @@ public class Master {
             HeraAction heraAction = heraActionMap.get(Long.parseLong(actionId));
             if (heraAction != null) {
                 heraAction.setStatus(Constants.STATUS_RUNNING);
+                heraAction.setHistoryId(jobStatus.getHistoryId());
             }
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(historyVo));
 
@@ -857,6 +858,7 @@ public class Master {
         HeraAction heraAction = heraActionMap.get(Long.parseLong(actionId));
         if (heraAction != null) {
             heraAction.setStatus(Constants.STATUS_RUNNING);
+            heraAction.setHistoryId(jobStatus.getHistoryId());
         }
         masterContext.getHeraJobActionService().updateStatus(jobStatus);
         heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);

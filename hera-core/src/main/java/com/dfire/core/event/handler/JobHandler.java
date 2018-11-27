@@ -352,6 +352,7 @@ public class JobHandler extends AbstractHandler {
         if (heraActionVo == null) {
             masterContext.getDispatcher().removeJobHandler(this);
             destroy();
+            ScheduleLog.info("heraAction 为空， 删除{}", actionId);
             return;
         }
         //自动调度关闭
