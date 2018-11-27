@@ -404,7 +404,7 @@ $(function () {
         timeoutId = setTimeout(function () {
             search(key); //lazy load ztreeFilter function
             $('#' + keyId).focus();
-        }, 1500);
+        }, 1000);
 
         function search(key) {
             var keys, length;
