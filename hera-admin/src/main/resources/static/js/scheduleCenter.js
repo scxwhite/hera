@@ -438,36 +438,46 @@ $(function () {
                         if(!isNaN(keys[i])){
                             var id = /\((.*)\)/.exec(node.name)[1];
                             if(id === keys[i]){
-                                if(tree === $.fn.zTree.getZTreeObj("jobTree")){
+                                if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')){
                                     tree.checkNode(node,true,true);
+                                    node.highlight = true;
+                                    tree.updateNode(node);
+                                    tree.showNode(node);
                                     if(i === 0){
                                         tree.selectNode(node);
                                         $('.curSelectedNode').trigger('click');
                                     }
                                 }else{
-                                    if(first) tree.checkNode(node,true,true);
+                                    if(!node.isParent){
+                                        node.highlight = true;
+                                        tree.updateNode(node);
+                                        tree.showNode(node);
+                                        if(first) tree.checkNode(node,true,true);
+                                    }
                                 }
-                                node.highlight = true;
-                                tree.updateNode(node);
-                                tree.showNode(node);
                                 return true;
                             }
                         }else{//name搜索
                             var end = node.name.indexOf('(');
                             var name = node.name.substring(0,end);
                             if(name.indexOf(keys[i]) !== -1){
-                                if(tree === $.fn.zTree.getZTreeObj("jobTree")){
+                                if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj("allTree")){
+                                    node.highlight = true;
+                                    tree.updateNode(node);
+                                    tree.showNode(node);
                                     tree.checkNode(node,true,true);
                                     if(i === 0){
                                         tree.selectNode(node);
                                         $('.curSelectedNode').trigger('click');
                                     }
                                 }else{
-                                    if(first) tree.checkNode(node,true,true);
+                                    if(!node.isParent){
+                                        node.highlight = true;
+                                        tree.updateNode(node);
+                                        tree.showNode(node);
+                                        if(first) tree.checkNode(node,true,true);
+                                    }
                                 }
-                                node.highlight = true;
-                                tree.updateNode(node);
-                                tree.showNode(node);
                                 return true;
                             }
                         }
@@ -1024,6 +1034,7 @@ $(function () {
 
         var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
         $.fn.zTree.init($("#dependTree"), setting, dependNodes.allJob);
+
         dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
         searchNodeLazy($(this).val().split(',').join(' '), dependTreeObj, "dependKeyWords",true);
         $("#chooseDepend").bind('click', function () {
