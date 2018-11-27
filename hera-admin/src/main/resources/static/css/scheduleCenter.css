@@ -106,3 +106,7 @@ div#rMenu ul li {
 .bigger{
     width: 100%;
 }
+#searchInfo,#deSearchInfo{
+    margin: 5px;
+    font-size: 12px;
+}

@@ -396,6 +396,7 @@ $(function () {
     var timeoutId;
 
     function searchNodeLazy(key, tree, keyId,first) {
+        $('#deSearchInfo').show();
         $('#searchInfo').show();
         if (timeoutId) {
             clearTimeout(timeoutId);
@@ -408,6 +409,8 @@ $(function () {
         function search(key) {
             var keys, length;
             if (key == null || key == "" || key == undefined) {
+                $('#deSearchInfo').hide();
+                $('#searchInfo').hide();
                 tree.getNodesByFilter(function (node) {
                     tree.showNode(node);
                 });
@@ -421,6 +424,7 @@ $(function () {
                     nodeShow.forEach(function (node) {
                         expandParent(node, tree);
                     })
+                    $('#deSearchInfo').hide();
                     $('#searchInfo').hide();
                 }
             }
