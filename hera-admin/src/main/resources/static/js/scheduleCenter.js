@@ -411,7 +411,7 @@ $(function () {
                 $('#deSearchInfo').hide();
             }
         }
-            if (timeoutId) {
+        if (timeoutId) {
             clearTimeout(timeoutId);
         }
         timeoutId = setTimeout(function () {
@@ -510,11 +510,11 @@ $(function () {
                         }
                     }
                 }
+                if(node.checked) tree.checkNode(node,false,true);
                 node.highlight = false;
                 tree.updateNode(node);
                 return false;
             }
-
         }
     }
 
