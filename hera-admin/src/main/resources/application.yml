@@ -82,7 +82,7 @@ mail:
   host: smtp.aliyun.com
   protocol: smtp
   port: 465
-  user: scx_white@aliyun.com
+  user: scx_hera@aliyun.com
   password: aaascx521
 
 logging:
