@@ -74,7 +74,6 @@
         margin-top: 0px;
         padding: 0px;
         background-color: #eee;
-        border: 1px solid #ddd;
     }
 
     .form-control-static {
@@ -104,12 +103,12 @@
 
         <section class="content">
             <div class="row">
-                <div class="col-md-3 col-sm-3 col-lg-3 colStyle" id="treeCon">
-                    <div class="box box-primary height-self" style="overflow: auto;">
-                        <div class="box-header with-border">
+                <div class="col-md-3 col-sm-3 col-lg-3 colStyle" style="border: none" id="treeCon">
+                    <div class="height-self left-bar" style="overflow: auto;">
+                        <div class="box-header left-bar-head">
                             <ul class="nav nav-tabs" role="tablist">
-                                <li role="presentation" class="active"><a href="#" role="tab"id="myScheBtn">我的调度任务</a></li>
-                                <li role="presentation"><a href="#" role="tab"id="allScheBtn">全部调度任务</a></li>
+                                <li role="presentation" class="active" style="background-color: #fff"><a href="#" role="tab"id="myScheBtn">我的调度任务</a></li>
+                                <li role="presentation"  style="background-color: #fff"><a href="#" role="tab"id="allScheBtn">全部调度任务</a></li>
                             </ul>
                             <div class="box-tools" >
                                 <button type="button" class="btn btn-box-tool" id="hideTreeBtn"><i class="fa fa-minus"></i>
@@ -127,12 +126,12 @@
                     </div>
                 </div>
 
-                <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self" style="overflow: auto;" id="infoCon">
+                <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self" style="overflow: auto;background: transparent;border: none;" id="infoCon">
 
-                    <div class="box box-primary">
+                    <div class="my-box" style="margin-top: 0">
 
                         <div id="groupMessage" class="box box-body text-center" style="display: none">
-                            <label>基本信息</label>
+                            <label class="info-title">基本信息</label>
                             <form class="form-horizontal form-group-sm">
 
                                 <div class="row">
@@ -179,7 +178,7 @@
                         </div>
 
                         <div id="jobMessage" class="box-body text-center" style="display: none">
-                            <label>基本信息</label>
+                            <label class="info-title">基本信息</label>
 
                             <form class="form-group-sm form-horizontal">
 
@@ -481,28 +480,28 @@
 
                     </div>
 
-                    <div id="config" class="box box-primary" style="display: none">
+                    <div id="config" class="my-box" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
-                                <label>配置项信息</label>
+                                <label class="info-title" >配置项信息</label>
                                 <textarea class="form-control"
                                 ></textarea>
                             </div>
                         </div>
                     </div>
-                    <div id="script" class="box box-primary " style="display: none">
+                    <div id="script" class="my-box" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
-                                <label>脚本</label>
+                                <label class="info-title">脚本</label>
                                 <textarea id="editor" name="editor"
                                 ></textarea>
                             </div>
                         </div>
                     </div>
-                    <div id="inheritConfig" class="box box-primary" style="display: none">
+                    <div id="inheritConfig" class="my-box" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
-                                <label>继承的配置项信息</label>
+                                <label class="info-title">继承的配置项信息</label>
                                 <textarea class="form-control" style="resize: none"
                                 ></textarea>
                             </div>
@@ -513,7 +512,7 @@
                 </div>
 
                 <div class="col-md-1 col-lg-1 col-sm-1 colStyle">
-                    <div id="groupOperate" class="box box-primary" style="display: none">
+                    <div id="groupOperate" style="display: none;" class="btn-con">
                         <div class="box-body">
                             <div>
                                 <ul class="list-unstyled">
@@ -568,7 +567,7 @@
 
                     </div>
 
-                    <div id="jobOperate" class="box box-primary" style="display: none">
+                    <div id="jobOperate" class="btn-con" style="display: none">
                         <div class="box-body" style="white-space:nowrap;">
                             <ul class="list-unstyled">
                                 <li>
@@ -634,7 +633,7 @@
                         </div>
                     </div>
 
-                    <div id="editOperator" class="box box-primary" style="display: none">
+                    <div id="editOperator" class="btn-con" style="display: none">
                         <div class="box-body">
                             <ul class="list-unstyled">
                                 <li>
