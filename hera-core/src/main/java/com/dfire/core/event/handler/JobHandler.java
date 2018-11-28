@@ -282,9 +282,8 @@ public class JobHandler extends AbstractHandler {
             List<String> emails = new ArrayList<>(1);
             try {
                 HeraJobMonitor monitor = heraJobMonitorService.findByJobId(Integer.parseInt(heraActionVo.getJobId()));
-                if (monitor == null) {
+                if (monitor == null && Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
                     ScheduleLog.info("任务无监控人，发送给owner：{}", heraActionVo.getJobId());
-
                     HeraUser user = heraUserService.findByName(heraActionVo.getOwner());
                     emails.add(user.getEmail().trim());
                 } else {
@@ -301,7 +300,6 @@ public class JobHandler extends AbstractHandler {
                     }
                 }
                 emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
-
             } catch (MessagingException e) {
                 e.printStackTrace();
                 ErrorLog.error("发送邮件失败");

@@ -12,6 +12,8 @@ public class Constants {
 
     public final static String PRE_ENV = "pre";
 
+    public final static String PUB_ENV = "publish";
+
     public final static String WORK_PREFIX = "worker-";
 
     public final static String MASTER_PREFIX = "master-";
