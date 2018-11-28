@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.mail.MessagingException;
+import java.util.Arrays;
 
 /**
  * @author <a href="mailto:huoguo@2dfire.com">火锅</a>
@@ -25,9 +26,9 @@ public class EmailTest {
     EmailService emailService;
 
     @Test
-    public void sendEmail(){
+    public void sendEmail() {
         try {
-            emailService.sendEmail("test1","content1", new String[]{"huoguo@2dfire.com"});
+            emailService.sendEmail("test1", "content1", Arrays.asList("xiaosuda@2dfire.com"));
         } catch (MessagingException e) {
             e.printStackTrace();
         }

@@ -10,6 +10,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -32,11 +33,11 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
-    public void sendEmail(String title, String content, String... address) throws MessagingException {
-        int len = address.length;
+    public void sendEmail(String title, String content, List<String> address) throws MessagingException {
+        int len = address.size();
         InternetAddress[] addresses = new InternetAddress[len];
         for (int i = 0; i < len; i++) {
-            addresses[i] = new InternetAddress(address[i]);
+            addresses[i] = new InternetAddress(address.get(i));
         }
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", mailHost);

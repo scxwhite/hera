@@ -38,10 +38,7 @@ import org.quartz.*;
 
 import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -282,29 +279,28 @@ public class JobHandler extends AbstractHandler {
             return;
         }
         if (heraActionVo.getAuto() && event.getActionId().equals(actionId)) {
+            List<String> emails = new ArrayList<>(1);
             try {
                 HeraJobMonitor monitor = heraJobMonitorService.findByJobId(Integer.parseInt(heraActionVo.getJobId()));
                 if (monitor == null) {
-                    ScheduleLog.info("任务无监控人：{}", heraActionVo.getJobId());
-                } else {
+                    ScheduleLog.info("任务无监控人，发送给owner：{}", heraActionVo.getJobId());
 
+                    HeraUser user = heraUserService.findByName(heraActionVo.getOwner());
+                    emails.add(user.getEmail().trim());
+                } else {
                     String ids = monitor.getUserIds();
                     String[] id = ids.split(",");
-
-                    String[] emails = new String[id.length];
-                    int index = 0;
                     for (String anId : id) {
                         if (StringUtils.isBlank(anId)) {
                             continue;
                         }
                         HeraUser user = heraUserService.findById(HeraUser.builder().id(Integer.parseInt(anId)).build());
                         if (user != null && user.getEmail() != null) {
-                            emails[index++] = user.getEmail();
+                            emails.add(user.getEmail());
                         }
                     }
-                    emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
-
                 }
+                emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
 
             } catch (MessagingException e) {
                 e.printStackTrace();
