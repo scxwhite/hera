@@ -24,7 +24,7 @@ public class LogContent {
     private final String HERA = "<b>HERA#</b> ";
     private StringBuffer content;
 
-    private static final int COUNT = 20000;
+    private static final int COUNT = 10000;
     private static final String ERROR = "error";
 
     public void appendConsole(String log) {

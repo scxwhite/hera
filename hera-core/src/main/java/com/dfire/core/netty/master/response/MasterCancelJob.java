@@ -73,7 +73,7 @@ public class MasterCancelJob {
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
                     .setStatus(ResponseStatus.Status.ERROR)
-                    .setErrorText("Manual任务中找不到匹配的job(" + debugHistory.getId() + "," + debugHistory.getId() + ")，无法执行取消命令")
+                    .setErrorText("开发中心任务中找不到匹配的job(" + debugHistory.getId() + "," + debugHistory.getId() + ")，无法执行取消命令")
                     .build();
         }
         debugHistory = context.getHeraDebugHistoryService().findById(String.valueOf(debugId));
@@ -127,7 +127,7 @@ public class MasterCancelJob {
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
                     .setStatus(ResponseStatus.Status.ERROR)
-                    .setErrorText("Manual任务中找不到匹配的job(" + heraJobHistory.getJobId() + "," + actionId + ")，无法执行取消命令")
+                    .setErrorText("手动执行任务中找不到匹配的job(" + heraJobHistory.getJobId() + "," + actionId + ")，无法执行取消命令")
                     .build();
         }
         heraJobHistory.setIllustrate(Constants.CANCEL_JOB_MESSAGE);

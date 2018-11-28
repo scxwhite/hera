@@ -225,6 +225,7 @@ public class WorkExecuteJob {
         return workContext.getWorkExecuteThreadPool().submit(() -> {
             int exitCode = -1;
             Exception exception = null;
+            ResponseStatus.Status status;
             try {
 
                 history.setExecuteHost(WorkContext.host);
@@ -246,8 +247,10 @@ public class WorkExecuteJob {
                 HeraDebugHistoryVo heraDebugHistoryVo = workContext.getHeraDebugHistoryService().findById(debugId);
                 heraDebugHistoryVo.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                 if (exitCode == 0) {
+                    status = ResponseStatus.Status.OK;
                     heraDebugHistoryVo.setStatus(StatusEnum.SUCCESS);
                 } else {
+                    status = ResponseStatus.Status.ERROR;
                     heraDebugHistoryVo.setStatus(StatusEnum.FAILED);
                 }
                 workContext.getHeraDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
@@ -255,11 +258,7 @@ public class WorkExecuteJob {
                 workContext.getHeraDebugHistoryService().updateLog(BeanConvertUtils.convert(debugHistory));
                 workContext.getDebugRunning().remove(debugId);
             }
-            ResponseStatus.Status status = ResponseStatus.Status.OK;
             String errorText = "";
-            if (exitCode != 0) {
-                status = ResponseStatus.Status.ERROR;
-            }
             if (exception != null && exception.getMessage() != null) {
                 errorText = exception.getMessage();
             }
@@ -272,13 +271,4 @@ public class WorkExecuteJob {
         });
     }
 
-    public static void main(String[] args) {
-        String x = new String("1") + new String("2");
-
-        String y = "12";
-
-        String z = "1" + "2";
-        System.out.println(x == y);
-        System.out.println(z == y);
-    }
 }
