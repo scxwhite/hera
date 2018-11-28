@@ -1,7 +1,6 @@
 package com.dfire.common.vo;
 
 import com.dfire.common.constants.Constants;
-import com.dfire.common.enums.StatusEnum;
 import lombok.Builder;
 import lombok.Data;
 
@@ -26,6 +25,7 @@ public class LogContent {
 
     private static final int COUNT = 10000;
     private static final String ERROR = "error";
+
 
     public void appendConsole(String log) {
         if (lines < COUNT) {
@@ -53,7 +53,9 @@ public class LogContent {
         if (content == null) {
             content = new StringBuffer();
         }
-        content.append(HERA).append(log).append(SPLIT);
+        if (lines < COUNT) {
+            content.append(HERA).append(log).append(SPLIT);
+        }
     }
 
     public void append(String log) {
@@ -61,7 +63,9 @@ public class LogContent {
         if (content == null) {
             content = new StringBuffer();
         }
-        content.append(log).append(SPLIT);
+        if (lines < COUNT) {
+            content.append(HERA).append(log).append(SPLIT);
+        }
     }
 
     public void appendHeraException(Exception e) {
