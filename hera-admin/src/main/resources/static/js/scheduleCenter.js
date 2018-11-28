@@ -396,28 +396,44 @@ $(function () {
     var timeoutId;
 
     function searchNodeLazy(key, tree, keyId,first) {
-        $('#deSearchInfo').show();
-        $('#searchInfo').show();
-        if (timeoutId) {
+        if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')){
+            $('#searchInfo').show();
+            $('#searchInfo').text('查找中，请稍候...');
+        }else{
+            $('#deSearchInfo').show();
+            $('#deSearchInfo').text('查找中，请稍候...');
+        }
+        if (key == null || key == "" || key == undefined) {
+            if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
+                setDefaultSelectNode(localStorage.getItem("defaultId"));
+                $('#searchInfo').hide();
+            }else{
+                $('#deSearchInfo').hide();
+            }
+        }
+            if (timeoutId) {
             clearTimeout(timeoutId);
         }
         timeoutId = setTimeout(function () {
             search(key); //lazy load ztreeFilter function
             $('#' + keyId).focus();
-        }, 1000);
+        }, 500);
 
         function search(key) {
             var keys, length;
             if (key == null || key == "" || key == undefined) {
-                $('#deSearchInfo').hide();
-                $('#searchInfo').hide();
                 tree.getNodesByFilter(function (node) {
                     node.highlight = false;
                     tree.updateNode(node);
                     tree.showNode(node);
                 });
                 tree.expandAll(false);
-                setDefaultSelectNode(localStorage.getItem("defaultId"));
+                if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
+                    setDefaultSelectNode(localStorage.getItem("defaultId"));
+                    $('#searchInfo').hide();
+                }else{
+                    $('#deSearchInfo').hide();
+                }
             } else {
                 keys = key.split(" ");
                 length = keys.length;
@@ -425,9 +441,18 @@ $(function () {
                 if (nodeShow && nodeShow.length > 0) {
                     nodeShow.forEach(function (node) {
                         expandParent(node, tree);
-                    })
-                    $('#deSearchInfo').hide();
-                    $('#searchInfo').hide();
+                    });
+                    if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
+                        $('#searchInfo').hide();
+                    }else{
+                        $('#deSearchInfo').hide();
+                    }
+                }else{
+                    if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
+                        $('#searchInfo').text('未找到该节点');
+                    }else{
+                        $('#deSearchInfo').text('未找到该节点');
+                    }
                 }
             }
 
@@ -436,7 +461,9 @@ $(function () {
                     if (node.name) {
                         //id搜索
                         if(!isNaN(keys[i])){
-                            var id = /\((.*)\)/.exec(node.name)[1];
+                            var start = node.name.lastIndexOf('(');
+                            var end = node.name.lastIndexOf(')');
+                            var id = node.name.substring(++start,end);
                             if(id === keys[i]){
                                 if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')){
                                     tree.checkNode(node,true,true);
@@ -458,7 +485,7 @@ $(function () {
                                 return true;
                             }
                         }else{//name搜索
-                            var end = node.name.indexOf('(');
+                            var end = node.name.lastIndexOf('(');
                             var name = node.name.substring(0,end);
                             if(name.indexOf(keys[i]) !== -1){
                                 if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj("allTree")){
@@ -865,6 +892,8 @@ $(function () {
             zAllTree = $.fn.zTree.getZTreeObj("allTree");
             treeObj = $.fn.zTree.getZTreeObj("allTree");
             setDefaultSelectNode(localStorage.getItem("allDefaultId"));
+            var key = $('#keyWords').val();
+            searchNodeLazy(key, treeObj, "keyWords",false);
         });
         $.fn.zTree.init($("#jobTree"), setting, zNodes.myJob);
         zTree = $.fn.zTree.getZTreeObj("jobTree");
@@ -872,12 +901,13 @@ $(function () {
 
         $('#myScheBtn').click(function (e) {
             e.stopPropagation();
-            console.log('my');
             $('#jobTree').show();
             $('#allTree').hide();
             $(this).parent().addClass('active');
             $('#allScheBtn').parent().removeClass('active');
             treeObj = $.fn.zTree.getZTreeObj("jobTree");
+            var key = $('#keyWords').val();
+            searchNodeLazy(key, treeObj, "keyWords",false);
         });
         rMenu = $("#rMenu");
         $.each($(".content .row .height-self"), function (i, n) {
