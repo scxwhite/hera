@@ -202,7 +202,6 @@ public class Master {
             }
         }
     }
-    scheduleCenter.js
 
     /**
      * 信号丢失处理
