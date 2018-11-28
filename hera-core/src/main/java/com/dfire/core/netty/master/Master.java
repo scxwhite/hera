@@ -137,7 +137,8 @@ public class Master {
 
 
     /**
-     * 漏泡检测，清理schedule线程，30分钟调度一次,
+     * 漏泡检测，清理schedule线程，30分钟调度一次
+     * 信号丢失检测
      * job开始检测15分钟之前的漏跑任务
      */
     private void lostJobCheck() {
@@ -152,7 +153,7 @@ public class Master {
 
                 if (actionMapNew != null && actionMapNew.size() > 0) {
                     List<Long> actionIdList = new ArrayList<>();
-                    Long tmp = Long.parseLong(currDate) - 15000000;
+                    Long tmp = Long.parseLong(currDate) - MasterConstant.PRE_CHECK_MIN;
                     for (Long actionId : actionMapNew.keySet()) {
                         if (actionId < tmp) {
                             rollBackLostJob(actionId, actionMapNew, actionIdList);
@@ -208,8 +209,8 @@ public class Master {
     /**
      * 信号丢失处理
      *
-     * @param actionId hera_action 表信息id
-     * @param actionMapNew hera_action 内存信息
+     * @param actionId hera_action 表信息id /版本id
+     * @param actionMapNew hera_action 内存信息 /内存保存的今天版本信息
      */
     private void checkLostSingle(Long actionId, Map<Long, HeraAction> actionMapNew) {
         try {
@@ -517,6 +518,7 @@ public class Master {
                         masterContext.getHeraJobActionService().delete(actionId);
                     }
                 }
+                //移除非今天版本的订阅者
                 if (!ActionUtil.isInitActionVersion(actionId)) {
                     shouldRemove.add(jobHandler);
                 }
