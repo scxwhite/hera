@@ -68,7 +68,7 @@ html, body {
     height: 950px;
 }
 #config{
-    padding:10px;
+    padding:15px;
 }
 .icon-next,.icon-prev{
     color: #999999;
@@ -96,7 +96,7 @@ html, body {
 .code-log-con{
     position: absolute;
     bottom: 0;
-    top: 76px;
+    top: 86px;
     left: 0px;
     right: 15px;
     background: #D8DEE4;

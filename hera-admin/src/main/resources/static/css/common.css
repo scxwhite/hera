@@ -155,3 +155,12 @@ input {
 a {
     color: #6d8aa7;
 }
+:focus {
+    outline: none;
+}
+.pagination {
+    margin: 0;
+}
+.box {
+    padding: 10px;
+}
