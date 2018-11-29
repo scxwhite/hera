@@ -70,14 +70,12 @@ $(function () {
             var name = addCount + ".hive";
 
             var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-            console.log(zTree)
             $.ajax({
                 url: base_url + "/developCenter/addFile.do",
                 type: "get",
                 async: false,
                 data: parameter,
                 success: function (data) {
-                    console.log(data)
                     if (treeNode) {
                         treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name: name});
                     } else {
@@ -141,7 +139,6 @@ $(function () {
                 if(isInArray(tabData,tabDetail)){
                     tabObj = $("#tabContainer").data("tabs").changeText(id,name);
                     //更改localStorage内的值
-                    console.log(tabData);
                     for(var i =0;i<tabData.length;i++){
                         if(tabData[i].id===id){
                             tabData.splice(i,1);
@@ -276,7 +273,6 @@ $(function () {
                 loadAll: true
             });
             tabObj = $("#tabContainer").data("tabs").showTab(id);
-            console.log(id)
         }
         localStorage.setItem("tabData", JSON.stringify(tabData));
 
@@ -432,7 +428,6 @@ $(function () {
     $("#rename").bind('click',{node:rightClickNode},function () {
         hideRMenu();
         var selected = zTree.getSelectedNodes()[0];
-        console.log(selected,rightClickNode);
         var treeObj = $.fn.zTree.getZTreeObj("documentTree");
         treeObj.editName(selected);
     });
@@ -607,7 +602,10 @@ $(function () {
                 }else{
                     logTabContainer.tabsLength -=width;
                     localStorage.removeItem('log'+debugId);
+                    li.prev().addClass('active-log');
                     li.remove();
+                    $('.show-right-now-log').prev().addClass('show-right-now-log');
+                    $('.show-right-now-log:last').remove();
                 }
             }
         })
@@ -616,14 +614,17 @@ $(function () {
             $('#cancelSrueModal').modal('hide');
             logTabContainer.tabsLength -=width;
             localStorage.removeItem('log'+debugId);
+            li.prev().addClass('active-log');
             li.remove();
+            $('.show-right-now-log').prev().addClass('show-right-now-log');
+            $('.show-right-now-log:last').remove();
             clearInterval(rightTimer);
             var url = base_url + "/developCenter/cancelJob.do";
             var parameter = {id: debugId};
             $.get(url, parameter, function (data) {
                 layer.msg(data);
             });
-        })
+        });
         showPrevNext(logTabContainer);
     });
 
@@ -788,13 +789,11 @@ $(function () {
             for (var i = 0; i < lis.length; i++) {
                 tabContainer.tabsLength += lis[i].clientWidth;
             }
-            console.log('tab init',tabContainer.tabsLength);
         }
     }
     //计算tabs长度是否超过container
     function showPrevNext(tabContainer){
         tabContainer.tabContainerWidth =  tabContainer.width();
-        console.log(tabContainer.tabContainerWidth);
         if(tabContainer.tabsLength > tabContainer.tabContainerWidth){
             tabContainer.siblings('.prev-next-con').children('.prev-tab').removeClass('hide');
             tabContainer.siblings('.prev-next-con').children('.next-tab').removeClass('hide');
