@@ -1007,17 +1007,18 @@ public class Master {
         if (checkJobExists(heraJobHistory, false)) {
             return;
         }
-        if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
-            masterContext.getManualQueue().offer(element);
-        } else {
-            masterContext.getScheduleQueue().offer(element);
-        }
+        //先在数据库中set一些执行任务所需的必须值 然后再加入任务队列
         JobStatus jobStatus = masterContext.getHeraJobActionService().findJobStatus(actionId);
         jobStatus.setStatus(StatusEnum.RUNNING);
         jobStatus.setHistoryId(heraJobHistory.getId());
         masterContext.getHeraJobActionService().updateStatus(jobStatus);
         heraJobHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "进入任务队列");
         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+        if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
+            masterContext.getManualQueue().offer(element);
+        } else {
+            masterContext.getScheduleQueue().offer(element);
+        }
     }
 
 
