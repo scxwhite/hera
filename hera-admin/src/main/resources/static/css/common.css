@@ -155,3 +155,6 @@ input {
 a {
     color: #6d8aa7;
 }
+:focus {
+    outline: none;
+}

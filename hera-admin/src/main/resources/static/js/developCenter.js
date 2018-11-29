@@ -607,7 +607,10 @@ $(function () {
                 }else{
                     logTabContainer.tabsLength -=width;
                     localStorage.removeItem('log'+debugId);
+                    li.prev().addClass('active-log');
                     li.remove();
+                    $('.show-right-now-log').prev().addClass('show-right-now-log');
+                    $('.show-right-now-log:last').remove();
                 }
             }
         })
@@ -616,14 +619,17 @@ $(function () {
             $('#cancelSrueModal').modal('hide');
             logTabContainer.tabsLength -=width;
             localStorage.removeItem('log'+debugId);
+            li.prev().addClass('active-log');
             li.remove();
+            $('.show-right-now-log').prev().addClass('show-right-now-log');
+            $('.show-right-now-log:last').remove();
             clearInterval(rightTimer);
             var url = base_url + "/developCenter/cancelJob.do";
             var parameter = {id: debugId};
             $.get(url, parameter, function (data) {
                 layer.msg(data);
             });
-        })
+        });
         showPrevNext(logTabContainer);
     });
 
