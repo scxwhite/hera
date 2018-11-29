@@ -1011,7 +1011,7 @@ public class Master {
         jobStatus.setStatus(StatusEnum.RUNNING);
         jobStatus.setHistoryId(heraJobHistory.getId());
         masterContext.getHeraJobActionService().updateStatus(jobStatus);
-        heraJobHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "进入任务队列");
+        heraJobHistory.getLog().append(ActionUtil.getTodayString() + "进入任务队列");
         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
             masterContext.getManualQueue().offer(element);
