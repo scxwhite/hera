@@ -111,6 +111,8 @@ public class DevelopCenterController extends BaseHeraController {
                 runType = "hive";
             } else if (".sh".equalsIgnoreCase(postfix)) {
                 runType = "shell";
+            } else if (".spark".equalsIgnoreCase(postfix)) {
+                runType = "spark";
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
@@ -150,6 +152,8 @@ public class DevelopCenterController extends BaseHeraController {
                 runType = "hive";
             } else if (".sh".equalsIgnoreCase(postfix)) {
                 runType = "shell";
+            } else if (".spark".equalsIgnoreCase(postfix)) {
+                runType = "spark";
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);

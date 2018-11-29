@@ -47,7 +47,6 @@ $(function () {
             //new folder
             var name = "文件夹" + addCount;
             var parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
-
             $.ajax({
                 url: base_url + "/developCenter/addFile.do",
                 type: "get",
@@ -67,8 +66,8 @@ $(function () {
                 }
             });
         } else if(e.data.type===2){
+            //new .hive file
             var name = addCount + ".hive";
-
             var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
             $.ajax({
                 url: base_url + "/developCenter/addFile.do",
@@ -93,7 +92,28 @@ $(function () {
             //new .sh file
             var name = addCount + ".sh";
             var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-
+            $.ajax({
+                url: base_url + "/developCenter/addFile.do",
+                type: "get",
+                async: false,
+                data: parameter,
+                success: function (data) {
+                    if (treeNode) {
+                        treeNode = zTree.addNodes(treeNode, {id:data, pId:treeNode.id, isParent:isParent, name: name});
+                    } else {
+                        treeNode = zTree.addNodes(null, {id:data, pId:0, isParent:isParent, name: name});
+                    }
+                    if (treeNode) {
+                        zTree.editName(treeNode[0]);
+                    } else {
+                        layer.msg("叶子节点被锁定，无法增加子节点");
+                    }
+                }
+            });
+        }else if(e.data.type===4){
+            //new .spark file
+            var name = addCount + ".spark";
+            var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
             $.ajax({
                 url: base_url + "/developCenter/addFile.do",
                 type: "get",
@@ -113,7 +133,6 @@ $(function () {
                 }
             });
         }
-
     };
     //修改文件名后回调
     function renameFile(event, treeId, treeNode, isCancel) {
@@ -384,12 +403,14 @@ $(function () {
             $("#addFolder").show();
             $("#addHiveFile").show();
             $("#addShellFile").show();
+            $("#addSparkFile").show();
             $("#rename").show();
             $("#removeFile").show();
         } else if (type == "node") {
             $("#addFolder").hide();
             $("#addHiveFile").hide();
             $("#addShellFile").hide();
+            $("#addSparkFile").hide();
         }
 
         y += document.body.scrollTop;
@@ -419,11 +440,10 @@ $(function () {
     }
 
     $("#addFolder").bind('click',{isParent:true,type:1},add);
-
     $("#addHiveFile").bind('click',{isParent:false,type:2},add);
-
-
     $("#addShellFile").bind('click',{isParent:false,type:3},add);
+    $("#addSparkFile").bind('click',{isParent:false,type:4},add);
+
     //重命名
     $("#rename").bind('click',{node:rightClickNode},function () {
         hideRMenu();
