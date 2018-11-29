@@ -110,3 +110,24 @@ div#rMenu ul li {
     margin: 5px;
     font-size: 12px;
 }
+.btn-con{
+    border: none;
+    background: #fff;
+    margin: 10px 4px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.nav-tabs {
+    background: transparent;
+    border: none;
+}
+.nav-tabs li a {
+    line-height: 1;
+    margin-right: -1px;
+    color: #999;
+    border-radius: 0;
+    border: none;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+#jobMessage input{
+    border: none;
+}

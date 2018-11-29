@@ -110,3 +110,48 @@ input {
     background-repeat: no-repeat;
     padding-right: 30px;
 }
+.left-bar{
+    background: #E9EDF1;;
+}
+.left-bar-head{
+    background: #D8DEE4;
+}
+.info-title{
+    font-size: 20px;
+    margin: 20px 0;
+}
+.my-box{
+    margin: 10px 0;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.btn-group-xs>.btn, .btn-xs {
+    padding: 1px 5px;
+    font-size: 14px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    z-index: 3;
+    cursor: default;
+    background-color: #D8DEE4;
+    border-color: #D8DEE4;
+}
+.btn-default {
+    background-color: #fff;
+    color: #444;
+    border-color: #ddd;
+}
+.dropdown-menu>.active>a, .dropdown-menu>.active>a:focus, .dropdown-menu>.active>a:hover {
+    text-decoration: none;
+    background-color: #D8DEE4;
+    outline: 0;
+}
+.btn-default.active.focus, .btn-default.active:focus, .btn-default.active:hover, .btn-default:active.focus, .btn-default:active:focus, .btn-default:active:hover, .open>.dropdown-toggle.btn-default.focus, .open>.dropdown-toggle.btn-default:focus, .open>.dropdown-toggle.btn-default:hover {
+    color: #333;
+     background-color: #fff;
+    border-color: #8c8c8c;
+}
+a {
+    color: #6d8aa7;
+}

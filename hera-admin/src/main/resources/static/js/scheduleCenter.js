@@ -510,11 +510,11 @@ $(function () {
                         }
                     }
                 }
+                if(node.checked) tree.checkNode(node,false,true);
                 node.highlight = false;
                 tree.updateNode(node);
                 return false;
             }
-
         }
     }
 
@@ -697,10 +697,7 @@ $(function () {
 
     //搜索结果节点颜色改变
     function getFontCss(treeId, treeNode) {
-        return (!!treeNode.highlight) ? {color: "#A60000", "font-weight": "bold"} : {
-            color: "#333",
-            "font-weight": "normal"
-        };
+        return (!!treeNode.highlight) ? {color:"#A60000", "font-weight":"bold"} : {color:"rgba(0, 0, 0, 0.65)", "font-weight":"normal"};
     }
 
     function leftClick() {

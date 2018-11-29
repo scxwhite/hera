@@ -27,6 +27,7 @@ public class JobGroupCache {
                 heraActionVo = jobStatusTuple.getSource();
             } else {
                 heraActionVo = null;
+
             }
         }
         return heraActionVo;

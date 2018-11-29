@@ -58,7 +58,7 @@
     <div class="content-wrapper">
         <section class="content">
             <div class="row myPanel">
-                <div class="col-md-2 panel panel-primary">
+                <div class="col-md-2 panel panel-primary left-bar">
                     <div style="overflow: auto;" class="height-self">
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
@@ -88,7 +88,7 @@
                     </div>
                     <div id="tabContainer" class="devStyle"></div>
                     <div class="code-log-con">
-                        <div id="scriptEditor" class="box box-primary " class="devStyle">
+                        <div id="scriptEditor"  class="devStyle">
                             <textarea id="fileScript" name="editor"></textarea>
                         </div>
                         <div id="logContainer" class="log-container">
