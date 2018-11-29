@@ -375,7 +375,7 @@ public class Master {
                 }
                 String cronDate = ActionUtil.getActionVersionByTime(now);
                 generateScheduleJobAction(jobList, cronDate, actionMap, nowAction);
-                generateDependJobAction(jobList, actionMap, 0, nowAction);
+                generateDependJobAction(jobList, actionMap, 0, nowAction, new HashSet<>());
 
                 if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
                     heraActionMap = actionMap;
@@ -536,14 +536,13 @@ public class Master {
      * @param actionMap 内存本本状态
      * @param retryCount 循环依赖
      */
-    public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount, Long nowAction) {
+    public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount, Long nowAction, Set<Integer> ids) {
         retryCount++;
         int noCompleteCount = 0, retryId = -1;
         List<HeraAction> insertActionList = new ArrayList<>();
         for (HeraJob heraJob : jobList) {
             //依赖任务生成版本
-            if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 1) {
-
+            if (!ids.contains(heraJob.getId()) && heraJob.getScheduleType() != null && heraJob.getScheduleType() == 1) {
                 String jobDependencies = heraJob.getDependencies();
                 if (StringUtils.isNotBlank(jobDependencies)) {
 
@@ -600,7 +599,6 @@ public class Master {
                     if (!isComplete) {
                         noCompleteCount++;
                         retryId = heraJob.getId();
-                        continue;
                     } else {
                         List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
 
@@ -637,6 +635,7 @@ public class Master {
                                 actionNew.setHostGroupId(heraJob.getHostGroupId());
                                 if (!actionMap.containsKey(actionId)) {
                                     insertActionList.add(actionNew);
+                                    ids.add(heraJob.getId());
                                 }
                             }
 
@@ -649,7 +648,7 @@ public class Master {
         batchInsertList(insertActionList, actionMap, nowAction);
 
         if (noCompleteCount > 0 && retryCount < 40) {
-            generateDependJobAction(jobList, actionMap, retryCount, nowAction);
+            generateDependJobAction(jobList, actionMap, retryCount, nowAction, ids);
         } else if (retryCount == 40 && noCompleteCount > 0) {
             ScheduleLog.warn("重试ID:{}, 未找到版本个数:{} , 重试次数:{}", retryId, noCompleteCount, retryCount);
         }

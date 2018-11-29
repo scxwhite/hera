@@ -87,7 +87,7 @@ public class DistributeLock {
         }
         workClient.init();
         try {
-            workClient.connect(heraLock.getHost());
+            workClient.connect(heraLock.getHost().trim());
         } catch (Exception e) {
             e.printStackTrace();
         }
