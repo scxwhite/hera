@@ -511,6 +511,7 @@ $(function () {
                     }
                 }
                 if(node.checked) tree.checkNode(node,false,true);
+                tree.hideNode(node);
                 node.highlight = false;
                 tree.updateNode(node);
                 return false;
