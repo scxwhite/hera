@@ -132,12 +132,12 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
-  address : jdbc:hive2://10.10.18.215:10000
+  address : jdbc:hive2://spark-server001.2dfire-inc.com:10000
   master : --master yarn
-  driver-memory : --driver-memory 1g
+  driver-memory : --driver-memory 2g
   driver-cores : --driver-cores 1
-  executor-memory : -- executor-memory 4g
-  executor-cores : --executor-cores 2
+  executor-memory : -- executor-memory 2g
+  executor-cores : --executor-cores 1
 ---
 spring:
   profiles: publish
@@ -148,9 +148,9 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
-  address : jdbc:hive2://10.10.18.215:10000
+  address : jdbc:hive2://spark-server001.2dfire-inc.com:10000
   master : --master yarn
-  driver-memory : --driver-memory 1g
+  driver-memory : --driver-memory 2g
   driver-cores : --driver-cores 1
-  executor-memory : -- executor-memory 4g
-  executor-cores : --executor-cores 2
+  executor-memory : -- executor-memory 2g
+  executor-cores : --executor-cores 1
