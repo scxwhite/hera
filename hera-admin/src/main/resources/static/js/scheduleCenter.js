@@ -14,8 +14,8 @@ $(function () {
     var editor = $('#editor');
     var setting = {
         view: {
-                fontCss: getFontCss
-            },
+            fontCss: getFontCss
+        },
         data: {
             simpleData: {
                 enable: true,
@@ -362,6 +362,25 @@ $(function () {
             };
             var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
             $.fn.zTree.init($("#dependTree"), setting, dependNodes.myJob);
+
+            // var testNode ={"allJob": [
+            //         {
+            //             "id": "1218",
+            //             "parent": "group_3848",
+            //             "name": "0-1. tmp_tab(1218)",
+            //             "directory": null,
+            //             "isParent": false
+            //         },
+            //         {
+            //             "id": "1219",
+            //             "parent": "group_3848",
+            //             "name": "0-2. 到店(1219)",
+            //             "directory": null,
+            //             "isParent": false
+            //         }]}
+            // $.fn.zTree.init($("#dependTree"), setting, testNode.allJob);
+
+
             dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
 
             $("#dependJob").bind('click', function () {
@@ -385,29 +404,29 @@ $(function () {
 
     $('#keyWords').on('keyup', function () {
         var key = $.trim($(this).val());
-        searchNodeLazy(key, treeObj, "keyWords",false);
+        searchNodeLazy(key, treeObj, "keyWords", false);
 
     });
     $('#dependKeyWords').on('keyup', function () {
         var key = $.trim($(this).val());
-        searchNodeLazy(key, dependTreeObj, "dependKeyWords",false);
+        searchNodeLazy(key, dependTreeObj, "dependKeyWords", false);
 
     });
     var timeoutId;
 
-    function searchNodeLazy(key, tree, keyId,first) {
-        if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')){
+    function searchNodeLazy(key, tree, keyId, first) {
+        if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
             $('#searchInfo').show();
             $('#searchInfo').text('查找中，请稍候...');
-        }else{
+        } else {
             $('#deSearchInfo').show();
             $('#deSearchInfo').text('查找中，请稍候...');
         }
         if (key == null || key == "" || key == undefined) {
-            if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
+            if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
                 setDefaultSelectNode(localStorage.getItem("defaultId"));
                 $('#searchInfo').hide();
-            }else{
+            } else {
                 $('#deSearchInfo').hide();
             }
         }
@@ -417,21 +436,23 @@ $(function () {
         timeoutId = setTimeout(function () {
             search(key); //lazy load ztreeFilter function
             $('#' + keyId).focus();
-        }, 500);
+        }, 1000);
 
         function search(key) {
             var keys, length;
+            var checkNodes = tree.getCheckedNodes();
             if (key == null || key == "" || key == undefined) {
                 tree.getNodesByFilter(function (node) {
                     node.highlight = false;
+                    tree.checkNode(node,false,true,false);
                     tree.updateNode(node);
                     tree.showNode(node);
                 });
                 tree.expandAll(false);
-                if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
+                if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
                     setDefaultSelectNode(localStorage.getItem("defaultId"));
                     $('#searchInfo').hide();
-                }else{
+                } else {
                     $('#deSearchInfo').hide();
                 }
             } else {
@@ -442,15 +463,15 @@ $(function () {
                     nodeShow.forEach(function (node) {
                         expandParent(node, tree);
                     });
-                    if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
+                    if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
                         $('#searchInfo').hide();
-                    }else{
+                    } else {
                         $('#deSearchInfo').hide();
                     }
-                }else{
-                    if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
+                } else {
+                    if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
                         $('#searchInfo').text('未找到该节点');
-                    }else{
+                    } else {
                         $('#deSearchInfo').text('未找到该节点');
                     }
                 }
@@ -460,58 +481,64 @@ $(function () {
                 for (var i = 0; i < length; i++) {
                     if (node.name) {
                         //id搜索
-                        if(!isNaN(keys[i])){
+                        if (!isNaN(keys[i])) {
                             var start = node.name.lastIndexOf('(');
                             var end = node.name.lastIndexOf(')');
-                            var id = node.name.substring(++start,end);
-                            if(id === keys[i]){
-                                if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')){
-                                    tree.checkNode(node,true,true);
+                            var id = node.name.substring(++start, end);
+                            if (id === keys[i]) {
+                                if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
+                                    tree.checkNode(node, true, true, false);
                                     node.highlight = true;
-                                    tree.updateNode(node);
                                     tree.showNode(node);
-                                    if(i === 0){
+                                    if (i === 0) {
                                         tree.selectNode(node);
                                         $('.curSelectedNode').trigger('click');
                                     }
-                                }else{
-                                    if(!node.isParent){
+                                } else {
+                                    if (!node.isParent) {
                                         node.highlight = true;
-                                        tree.updateNode(node);
                                         tree.showNode(node);
-                                        if(first) tree.checkNode(node,true,true);
+                                        if(node.name === '0-1. tmp_tab(1218)'&&node.checked===false){
+                                            console.log(node)
+                                            console.log('start node unchecked');
+                                        }
+                                        if (first) tree.checkNode(node, true, true, false);
                                     }
                                 }
+                                tree.updateNode(node);
                                 return true;
                             }
-                        }else{//name搜索
+                        } else {//name搜索
                             var end = node.name.lastIndexOf('(');
-                            var name = node.name.substring(0,end);
-                            if(name.indexOf(keys[i]) !== -1){
-                                if(tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj("allTree")){
+                            var name = node.name.substring(0, end);
+                            if (name.indexOf(keys[i]) !== -1) {
+                                if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj("allTree")) {
                                     node.highlight = true;
-                                    tree.updateNode(node);
                                     tree.showNode(node);
-                                    tree.checkNode(node,true,true);
-                                    if(i === 0){
+                                    tree.checkNode(node, true, true, false);
+                                    if (i === 0) {
                                         tree.selectNode(node);
                                         $('.curSelectedNode').trigger('click');
                                     }
-                                }else{
-                                    if(!node.isParent){
+                                } else {
+                                    if (!node.isParent) {
                                         node.highlight = true;
-                                        tree.updateNode(node);
                                         tree.showNode(node);
-                                        if(first) tree.checkNode(node,true,true);
+                                        if (first) tree.checkNode(node, true, true, false);
                                     }
                                 }
+                                tree.updateNode(node);
                                 return true;
                             }
                         }
                     }
                 }
-                if(node.checked) tree.checkNode(node,false,true);
-                tree.hideNode(node);
+                if(node.checked && !node.isParent){
+                    tree.checkNode(node,false,true,false);
+                }
+                if(!first){
+                    tree.hideNode(node);
+                }
                 node.highlight = false;
                 tree.updateNode(node);
                 return false;
@@ -567,8 +594,8 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                "&script=" + encodeURIComponent(codeMirror.getValue()) +
-                "&id=" + focusId,
+                    "&script=" + encodeURIComponent(codeMirror.getValue()) +
+                    "&id=" + focusId,
                 type: "post",
                 success: function (data) {
                     if (data.success == false) {
@@ -582,7 +609,7 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
                 data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                "&resource=" + "&groupId=" + focusId,
+                    "&resource=" + "&groupId=" + focusId,
                 type: "post",
                 success: function (data) {
                     if (data.success == false) {
@@ -695,13 +722,15 @@ $(function () {
 
         return userConfigs;
     }
+
     //搜索结果节点颜色改变
     function getFontCss(treeId, treeNode) {
         return (!!treeNode.highlight) ? {color:"#A60000", "font-weight":"bold"} : {color:"rgba(0, 0, 0, 0.65)", "font-weight":"normal"};
     }
+
     function leftClick() {
         codeMirror.setValue('');
-        if($('#jobTree').css('display')==='block') {
+        if ($('#jobTree').css('display') === 'block') {
             selected = zTree.getSelectedNodes()[0];
         } else {
             selected = zAllTree.getSelectedNodes()[0];
@@ -869,7 +898,6 @@ $(function () {
     }
 
 
-
     var zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
 
     //修正zTree的图标，让文件节点显示文件夹图标
@@ -894,7 +922,7 @@ $(function () {
             treeObj = $.fn.zTree.getZTreeObj("allTree");
             setDefaultSelectNode(localStorage.getItem("allDefaultId"));
             var key = $('#keyWords').val();
-            searchNodeLazy(key, treeObj, "keyWords",false);
+            searchNodeLazy(key, treeObj, "keyWords", false);
         });
         $.fn.zTree.init($("#jobTree"), setting, zNodes.myJob);
         zTree = $.fn.zTree.getZTreeObj("jobTree");
@@ -908,7 +936,7 @@ $(function () {
             $('#allScheBtn').parent().removeClass('active');
             treeObj = $.fn.zTree.getZTreeObj("jobTree");
             var key = $('#keyWords').val();
-            searchNodeLazy(key, treeObj, "keyWords",false);
+            searchNodeLazy(key, treeObj, "keyWords", false);
         });
         rMenu = $("#rMenu");
         $.each($(".content .row .height-self"), function (i, n) {
@@ -1031,10 +1059,10 @@ $(function () {
     });
     $('#biggerBtn').click(function (e) {
         e.stopPropagation();
-        if($(this).children().hasClass('fa-plus')){
+        if ($(this).children().hasClass('fa-plus')) {
             $('#jobDagModalCon').addClass('bigger');
             $(this).children().removeClass('fa-plus').addClass('fa-minus');
-        }else{
+        } else {
             $('#jobDagModalCon').removeClass('bigger');
             $(this).children().removeClass('fa-minus').addClass('fa-plus');
         }
@@ -1044,7 +1072,7 @@ $(function () {
         $('#dependKeyWords').val($(this).val().split(',').join(' '));
         //定时调度
         var setting = {
-            view:{
+            view: {
                 fontCss: getFontCss
             },
             check: {
@@ -1065,9 +1093,25 @@ $(function () {
 
         var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
         $.fn.zTree.init($("#dependTree"), setting, dependNodes.allJob);
+        // var testNode ={"allJob": [
+        //         {
+        //             "id": "1218",
+        //             "parent": "group_3848",
+        //             "name": "0-1. tmp_tab(1218)",
+        //             "directory": null,
+        //             "isParent": false
+        //         },
+        //         {
+        //             "id": "1219",
+        //             "parent": "group_3848",
+        //             "name": "0-2. 到店(1219)",
+        //             "directory": null,
+        //             "isParent": false
+        //         }]}
+        // $.fn.zTree.init($("#dependTree"), setting, testNode.allJob);
 
         dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
-        searchNodeLazy($(this).val().split(',').join(' '), dependTreeObj, "dependKeyWords",true);
+        searchNodeLazy($(this).val().split(',').join(' '), dependTreeObj, "dependKeyWords", true);
         $("#chooseDepend").bind('click', function () {
             var nodes = dependTreeObj.getCheckedNodes(true);
             var ids = new Array();
