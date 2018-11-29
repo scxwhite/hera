@@ -25,6 +25,7 @@ html, body {
     position: absolute;
     height: 26px;
     width: 99999px;
+    border: none;
 }
 .prev-tab,.next-tab{
     height: 26px;
@@ -83,11 +84,11 @@ html, body {
     position: relative;
     width: 100%;
     overflow: hidden;
-    background: #eee;
+    background: #D8DEE4;
 }
 .bottom-tabs{
     bottom: 0;
-    background-color: #eeeeee;
+    background-color: #D8DEE4;
     height: 30px;
     width: 100%;
     font-size: 0;
@@ -98,6 +99,7 @@ html, body {
     top: 76px;
     left: 0px;
     right: 15px;
+    background: #D8DEE4;
 }
 .log-tab{
     box-sizing: border-box;
@@ -108,7 +110,7 @@ html, body {
     padding: 8px;
 }
 .log-tab:hover{
-    background-color: #b2b2b2;
+    background-color: #c0cedc;
     cursor: pointer;
 }
 .right-now-logs-id{
@@ -177,4 +179,9 @@ html, body {
 .form-control{
     background: #2c4762;
     color: #ffffff;
+}
+.panel-primary {
+    margin: 0;
+    border: none;
+    /* border-left: 1px solid #337ab7; */
 }
