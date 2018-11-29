@@ -362,6 +362,25 @@ $(function () {
             };
             var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
             $.fn.zTree.init($("#dependTree"), setting, dependNodes.myJob);
+
+            // var testNode ={"allJob": [
+            //         {
+            //             "id": "1218",
+            //             "parent": "group_3848",
+            //             "name": "0-1. tmp_tab(1218)",
+            //             "directory": null,
+            //             "isParent": false
+            //         },
+            //         {
+            //             "id": "1219",
+            //             "parent": "group_3848",
+            //             "name": "0-2. 到店(1219)",
+            //             "directory": null,
+            //             "isParent": false
+            //         }]}
+            // $.fn.zTree.init($("#dependTree"), setting, testNode.allJob);
+
+
             dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
 
             $("#dependJob").bind('click', function () {
@@ -421,9 +440,11 @@ $(function () {
 
         function search(key) {
             var keys, length;
+            var checkNodes = tree.getCheckedNodes();
             if (key == null || key == "" || key == undefined) {
                 tree.getNodesByFilter(function (node) {
                     node.highlight = false;
+                    tree.checkNode(node,false,true,false);
                     tree.updateNode(node);
                     tree.showNode(node);
                 });
@@ -466,9 +487,8 @@ $(function () {
                             var id = node.name.substring(++start, end);
                             if (id === keys[i]) {
                                 if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
-                                    tree.checkNode(node, true, true);
+                                    tree.checkNode(node, true, true, false);
                                     node.highlight = true;
-                                    tree.updateNode(node);
                                     tree.showNode(node);
                                     if (i === 0) {
                                         tree.selectNode(node);
@@ -477,11 +497,15 @@ $(function () {
                                 } else {
                                     if (!node.isParent) {
                                         node.highlight = true;
-                                        tree.updateNode(node);
                                         tree.showNode(node);
-                                        if (first) tree.checkNode(node, true, true);
+                                        if(node.name === '0-1. tmp_tab(1218)'&&node.checked===false){
+                                            console.log(node)
+                                            console.log('start node unchecked');
+                                        }
+                                        if (first) tree.checkNode(node, true, true, false);
                                     }
                                 }
+                                tree.updateNode(node);
                                 return true;
                             }
                         } else {//name搜索
@@ -490,9 +514,8 @@ $(function () {
                             if (name.indexOf(keys[i]) !== -1) {
                                 if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj("allTree")) {
                                     node.highlight = true;
-                                    tree.updateNode(node);
                                     tree.showNode(node);
-                                    tree.checkNode(node, true, true);
+                                    tree.checkNode(node, true, true, false);
                                     if (i === 0) {
                                         tree.selectNode(node);
                                         $('.curSelectedNode').trigger('click');
@@ -500,18 +523,22 @@ $(function () {
                                 } else {
                                     if (!node.isParent) {
                                         node.highlight = true;
-                                        tree.updateNode(node);
                                         tree.showNode(node);
-                                        if (first) tree.checkNode(node, true, true);
+                                        if (first) tree.checkNode(node, true, true, false);
                                     }
                                 }
+                                tree.updateNode(node);
                                 return true;
                             }
                         }
                     }
                 }
-                if(node.checked) tree.checkNode(node,false,true);
-                tree.hideNode(node);
+                if(node.checked && !node.isParent){
+                    tree.checkNode(node,false,true,false);
+                }
+                if(!first){
+                    tree.hideNode(node);
+                }
                 node.highlight = false;
                 tree.updateNode(node);
                 return false;
@@ -567,8 +594,8 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                "&script=" + encodeURIComponent(codeMirror.getValue()) +
-                "&id=" + focusId,
+                    "&script=" + encodeURIComponent(codeMirror.getValue()) +
+                    "&id=" + focusId,
                 type: "post",
                 success: function (data) {
                     if (data.success == false) {
@@ -582,7 +609,7 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
                 data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                "&resource=" + "&groupId=" + focusId,
+                    "&resource=" + "&groupId=" + focusId,
                 type: "post",
                 success: function (data) {
                     if (data.success == false) {
@@ -1066,6 +1093,22 @@ $(function () {
 
         var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
         $.fn.zTree.init($("#dependTree"), setting, dependNodes.allJob);
+        // var testNode ={"allJob": [
+        //         {
+        //             "id": "1218",
+        //             "parent": "group_3848",
+        //             "name": "0-1. tmp_tab(1218)",
+        //             "directory": null,
+        //             "isParent": false
+        //         },
+        //         {
+        //             "id": "1219",
+        //             "parent": "group_3848",
+        //             "name": "0-2. 到店(1219)",
+        //             "directory": null,
+        //             "isParent": false
+        //         }]}
+        // $.fn.zTree.init($("#dependTree"), setting, testNode.allJob);
 
         dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
         searchNodeLazy($(this).val().split(',').join(' '), dependTreeObj, "dependKeyWords", true);
