@@ -158,3 +158,9 @@ a {
 :focus {
     outline: none;
 }
+.pagination {
+    margin: 0;
+}
+.box {
+    padding: 10px;
+}
