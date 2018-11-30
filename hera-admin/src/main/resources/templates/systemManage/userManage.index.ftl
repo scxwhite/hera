@@ -4,7 +4,6 @@
     <title>用户管理中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-fixed-colunms/bootstrap-table-fixed-columns.css">
     <link rel="stylesheet" href="${request.contextPath}/css/userManage.css">
 </head>
 
