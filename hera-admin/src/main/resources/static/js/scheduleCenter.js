@@ -423,12 +423,18 @@ $(function () {
             $('#deSearchInfo').text('查找中，请稍候...');
         }
         if (key == null || key == "" || key == undefined) {
+            tree.getNodesByFilter(function (node) {
+                node.highlight = false;
+                node.checked = false;
+                tree.showNode(node);
+            });
             if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
                 setDefaultSelectNode(localStorage.getItem("defaultId"));
                 $('#searchInfo').hide();
             } else {
                 $('#deSearchInfo').hide();
             }
+            tree.refresh();
         }
         if (timeoutId) {
             clearTimeout(timeoutId);
@@ -440,22 +446,7 @@ $(function () {
 
         function search(key) {
             var keys, length;
-            var checkNodes = tree.getCheckedNodes();
-            if (key == null || key == "" || key == undefined) {
-                tree.getNodesByFilter(function (node) {
-                    node.highlight = false;
-                    tree.checkNode(node,false,true,false);
-                    tree.updateNode(node);
-                    tree.showNode(node);
-                });
-                tree.expandAll(false);
-                if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
-                    setDefaultSelectNode(localStorage.getItem("defaultId"));
-                    $('#searchInfo').hide();
-                } else {
-                    $('#deSearchInfo').hide();
-                }
-            } else {
+            if (key !== null && key !== "" && key !== undefined) {
                 keys = key.split(" ");
                 length = keys.length;
                 var nodeShow = tree.getNodesByFilter(filterNodes);
@@ -468,6 +459,7 @@ $(function () {
                     } else {
                         $('#deSearchInfo').hide();
                     }
+                    tree.refresh();
                 } else {
                     if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
                         $('#searchInfo').text('未找到该节点');
@@ -478,7 +470,7 @@ $(function () {
             }
 
             function filterNodes(node) {
-                for (var i = 0; i < length; i++) {
+                for(var i =0;i<length;i++) {
                     if (node.name) {
                         //id搜索
                         if (!isNaN(keys[i])) {
@@ -498,14 +490,13 @@ $(function () {
                                     if (!node.isParent) {
                                         node.highlight = true;
                                         tree.showNode(node);
-                                        if(node.name === '0-1. tmp_tab(1218)'&&node.checked===false){
+                                        if (node.name === '0-1. tmp_tab(1218)' && node.checked === false) {
                                             console.log(node)
                                             console.log('start node unchecked');
                                         }
                                         if (first) tree.checkNode(node, true, true, false);
                                     }
                                 }
-                                tree.updateNode(node);
                                 return true;
                             }
                         } else {//name搜索
@@ -527,7 +518,6 @@ $(function () {
                                         if (first) tree.checkNode(node, true, true, false);
                                     }
                                 }
-                                tree.updateNode(node);
                                 return true;
                             }
                         }
@@ -540,7 +530,6 @@ $(function () {
                     tree.hideNode(node);
                 }
                 node.highlight = false;
-                tree.updateNode(node);
                 return false;
             }
         }
