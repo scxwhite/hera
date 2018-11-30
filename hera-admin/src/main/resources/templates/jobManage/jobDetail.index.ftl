@@ -9,6 +9,9 @@
         .table-hover > tbody > tr:hover {
             cursor: pointer;
         }
+        #toolbar{
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 
