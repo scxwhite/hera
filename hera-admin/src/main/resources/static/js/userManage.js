@@ -123,10 +123,12 @@ $(function () {
                         field: 'description',
                         title: '描述',
                         formatter: function (val) {
-                            if (val.length > 20) {
-                                return val.substr(0, 20) + '...'
-                            } else {
-                                return val
+                            if(val){
+                                if (val.length > 20) {
+                                    return val.substr(0, 20) + '...'
+                                } else {
+                                    return val
+                                }
                             }
                         }
                     }, {
