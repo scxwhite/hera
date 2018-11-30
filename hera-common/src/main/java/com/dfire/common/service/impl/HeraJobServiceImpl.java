@@ -16,6 +16,7 @@ import com.dfire.graph.DirectionGraph;
 import com.dfire.graph.Edge;
 import com.dfire.graph.GraphNode;
 import com.dfire.graph.JobRelation;
+import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,7 +88,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         List<HeraJob> jobs = heraJobMapper.selectAll();
         Map<String, HeraJobTreeNodeVo> groupMap = new HashMap<>(groups.size());
         // 建立所有任务的树
-        List<HeraJobTreeNodeVo> allNodes = groups.parallelStream()
+        List<HeraJobTreeNodeVo> allNodes = groups.stream()
                 .filter(group -> group.getExisted() == 1)
                 .map(g -> {
                     HeraJobTreeNodeVo groupNodeVo = HeraJobTreeNodeVo.builder()
@@ -101,7 +102,7 @@ public class HeraJobServiceImpl implements HeraJobService {
                     return groupNodeVo;
                 })
                 .collect(Collectors.toList());
-        allNodes.addAll(jobs.parallelStream().map(job -> HeraJobTreeNodeVo.builder()
+        allNodes.addAll(jobs.stream().map(job -> HeraJobTreeNodeVo.builder()
                 .id(String.valueOf(job.getId()))
                 .parent(Constants.GROUP_PREFIX + job.getGroupId())
                 .isParent(false)
@@ -112,7 +113,7 @@ public class HeraJobServiceImpl implements HeraJobService {
 
         Set<HeraJobTreeNodeVo> myGroupSet = new HashSet<>();
         //建立我的任务的树
-        List<HeraJobTreeNodeVo> myNodeVos = jobs.parallelStream()
+        List<HeraJobTreeNodeVo> myNodeVos = jobs.stream()
                 .filter(job -> owner.equals(job.getOwner().trim()))
                 .map(job -> {
                     HeraJobTreeNodeVo build = HeraJobTreeNodeVo.builder()
@@ -131,6 +132,8 @@ public class HeraJobServiceImpl implements HeraJobService {
         myNodeVos.sort(Comparator.comparing(x -> x.getName().trim()));
         treeMap.put("myJob", myNodeVos);
         treeMap.put("allJob", allNodes);
+        HeraLog.info("我的任务大小:" + myNodeVos.size());
+        HeraLog.info("所有任务大小" + allNodes.size());
         return treeMap;
     }
 
