@@ -131,3 +131,6 @@ div#rMenu ul li {
 #jobMessage input{
     border: none;
 }
+#infoCon::-webkit-scrollbar {
+    display: none;
+}

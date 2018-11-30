@@ -164,3 +164,19 @@ a {
 .box {
     padding: 10px;
 }
+#jobDetail{
+    resize: none;
+}
+.big-title{
+    font-size: 24px;
+}
+.h1, .h2, .h3, h1, h2, h3 {
+    margin: 0;
+}
+.scroll-box{
+    height: 80vh;
+    overflow: scroll;
+}
+.scroll-box::-webkit-scrollbar{
+    display: none;
+}

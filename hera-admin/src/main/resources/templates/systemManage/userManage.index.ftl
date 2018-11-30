@@ -22,11 +22,11 @@
         <section class="content">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">用户管理</h3>
+                    <h3 class="big-title">用户管理</h3>
                 </div>
                 <div class="box-body">
                     <div class = "jobPreview"  class="div-row" style="margin-bottom:10px">
-                        <table id="table" class="table"/></table>
+                        <table id="table" class="table table-striped"/></table>
                     </div>
                 </div>
             </div>
