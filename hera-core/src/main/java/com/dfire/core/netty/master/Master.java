@@ -209,7 +209,7 @@ public class Master {
     /**
      * 信号丢失处理
      *
-     * @param actionId hera_action 表信息id /版本id
+     * @param actionId     hera_action 表信息id /版本id
      * @param actionMapNew hera_action 内存信息 /内存保存的今天版本信息
      */
     private void checkLostSingle(Long actionId, Map<Long, HeraAction> actionMapNew) {
@@ -463,7 +463,7 @@ public class Master {
     /**
      * 生成action
      *
-     * @param list 表格cronTab 表达式，对应多了时间点的版本集合
+     * @param list    表格cronTab 表达式，对应多了时间点的版本集合
      * @param heraJob hera_job 表对象
      * @return 更新后的action 信息，保存到内存
      */
@@ -490,8 +490,6 @@ public class Master {
         }
         return heraActionList;
     }
-
-
 
 
     private void clearInvalidAction() {
@@ -532,8 +530,8 @@ public class Master {
     /**
      * hera 依赖任务版本生成
      *
-     * @param jobList hera_job 表集合
-     * @param actionMap 内存本本状态
+     * @param jobList    hera_job 表集合
+     * @param actionMap  内存本本状态
      * @param retryCount 循环依赖
      */
     public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount, Long nowAction, Set<Integer> ids) {
@@ -633,10 +631,8 @@ public class Master {
                                 actionNew.setAuto(heraJob.getAuto());
                                 actionNew.setGmtModified(new Date());
                                 actionNew.setHostGroupId(heraJob.getHostGroupId());
-                                if (!actionMap.containsKey(actionId)) {
-                                    insertActionList.add(actionNew);
-                                    ids.add(heraJob.getId());
-                                }
+                                insertActionList.add(actionNew);
+                                ids.add(heraJob.getId());
                             }
 
                         }
@@ -719,7 +715,7 @@ public class Master {
      * 手动执行任务调度器执行逻辑，向master的channel写manual任务执行请求
      *
      * @param selectWork selectWork 所选机器
-     * @param actionId  actionId
+     * @param actionId   actionId
      */
     private void runManualJob(MasterWorkHolder selectWork, String actionId) {
         final MasterWorkHolder workHolder = selectWork;
@@ -789,7 +785,7 @@ public class Master {
      * 调度任务执行前，先获取任务的执行重试时间间隔和重试次数
      *
      * @param workHolder 所选机器
-     * @param actionId actionId
+     * @param actionId   actionId
      */
     private void runScheduleJob(MasterWorkHolder workHolder, String actionId) {
         this.executeJobPool.execute(() -> {
@@ -917,7 +913,7 @@ public class Master {
      * 开发中心脚本执行逻辑
      *
      * @param selectWork 所选机器
-     * @param jobId jobId
+     * @param jobId      jobId
      */
     private void runDebugJob(MasterWorkHolder selectWork, String jobId) {
         final MasterWorkHolder workHolder = selectWork;
@@ -1092,6 +1088,7 @@ public class Master {
 
     /**
      * work断开的处理
+     *
      * @param channel channel
      */
     public void workerDisconnectProcess(Channel channel) {
