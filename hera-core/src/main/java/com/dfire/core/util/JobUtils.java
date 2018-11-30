@@ -69,8 +69,7 @@ public class JobUtils {
             jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Spark2.toString());
             core = new Spark2Job(jobContext);
         }
-        Job job = new ProcessJobContainer(jobContext, pres, new ArrayList<>(), core);
-        return job;
+        return new ProcessJobContainer(jobContext, pres, new ArrayList<>(), core);
     }
 
     public static Job createScheduleJob(JobContext jobContext, HeraJobBean jobBean,

@@ -295,18 +295,16 @@ public class HeraBaseDaoTest {
                 MasterContext masterContext = (MasterContext) masterContextField.get(heraSchedule);
                 if(masterContext != null) {
                     Master master = masterContext.getMaster();
-                    List<Integer> integerList = Arrays.asList(new Integer[] {38,37});
 
                     Calendar calendar = Calendar.getInstance();
                     Date now = calendar.getTime();
-                    SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
 
                     Map<Long, HeraAction> actionMap = new HashMap<>();
 
                     List<HeraJob> heraJobList = heraJobService.getAll();
                     String  cronDate = ActionUtil.getActionVersionByTime(now);
                     master.generateScheduleJobAction(heraJobList, cronDate, actionMap, Long.parseLong(cronDate));
-                    master.generateDependJobAction(heraJobList, actionMap, 0, Long.parseLong(cronDate));
+                    master.generateDependJobAction(heraJobList, actionMap, 0, Long.parseLong(cronDate), new HashSet<>());
 
                 }
             }

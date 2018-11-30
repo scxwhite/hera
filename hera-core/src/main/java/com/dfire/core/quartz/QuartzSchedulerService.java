@@ -81,8 +81,8 @@ public class QuartzSchedulerService {
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
             if (jobDetail != null) {
                 scheduler.deleteJob(jobKey);
+                HeraLog.warn("remove action {} from quartz", actionId);
             }
-            HeraLog.warn("remove action {} from quartz", actionId);
         } catch (SchedulerException e) {
             ErrorLog.error("remove quartz schedule error : " + actionId);
         }

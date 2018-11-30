@@ -30,8 +30,7 @@ public class HiveJob extends ProcessJob {
 
     @Override
     public int run() throws Exception {
-        Integer exitCode = runInner();
-        return exitCode;
+        return runInner();
     }
 
     private Integer runInner() throws Exception {
@@ -50,9 +49,12 @@ public class HiveJob extends ProcessJob {
             writer = new OutputStreamWriter(new FileOutputStream(file),
                     Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
             writer.write(script.replaceAll("^--.*", "--"));
-
         } catch (Exception e) {
-            jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+            if (jobContext.getHeraJobHistory() != null) {
+                jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+            } else {
+                jobContext.getDebugHistory().getLog().appendHeraException(e);
+            }
         } finally {
             IOUtils.closeQuietly(writer);
         }

@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -15,26 +16,35 @@ import java.util.TimeZone;
  */
 public class ActionUtil {
 
-    private static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * 精确到分钟的时间
+     */
+    public static final String ACTION_MIN =  "yyyyMMddHHmm";
+    /**
+     * ACTION 表达式
+     */
+    public static final String ACTION_CRON = "0 m H d M";
 
     /**
      * 当前时刻生成版本格式
      */
-    private static final String ACTION_VERSION_CURR = "yyyyMMddHHmmss0000";
+    public static final String ACTION_VERSION_CURR = "yyyyMMddHHmmss0000";
 
     /**
      * 初始化今天凌晨的版本
      */
-    private static final String ACTION_VERSION_INIT = "yyyyMMdd0000000000";
+    public static final String ACTION_VERSION_INIT = "yyyyMMdd0000000000";
     /**
      * 版本Action 前缀
      */
-    private static final String ACTION_VERSION_PREFIX = "yyyy-MM-dd";
+    public static final String ACTION_VERSION_PREFIX = "yyyy-MM-dd";
 
     /**
      * 当前时间戳
      */
-    private static final String YYYY_MM_DD = "yyyy-MM-dd";
+    public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
 
     /**
@@ -66,7 +76,10 @@ public class ActionUtil {
 
     public static String getCurrActionVersion() {
         return new DateTime().toString(ACTION_VERSION_CURR);
+    }
 
+    public static Long getLongCurrActionVersion() {
+        return Long.parseLong(new DateTime().toString(ACTION_VERSION_CURR));
     }
 
     public static String getInitActionVersion() {
@@ -147,6 +160,25 @@ public class ActionUtil {
         }
         return Integer.parseInt(action.substring(actionLen - len));
     }
+
+    /**
+     * 获取当前时间 的 下一天的版本
+     * @return Long{201811290000000000}
+     */
+    public static  Long getLongNextDayActionVersion(){
+        return Long.parseLong(getNextDayActionVersion());
+    }
+
+    /**
+     * 获取当前时间 的 下一天的版本
+     * @return String{201811290000000000}
+     */
+    public static  String getNextDayActionVersion(){
+        return new DateTime().plusDays(1).toString(ACTION_VERSION_INIT);
+    }
+
+
+
 
 
 }
