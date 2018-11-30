@@ -104,7 +104,7 @@
         <section class="content">
             <div class="row">
                 <div class="col-md-3 col-sm-3 col-lg-3 colStyle" style="border: none" id="treeCon">
-                    <div class="height-self left-bar" style="overflow: auto;">
+                    <div class="height-self left-bar" style="overflow: hidden;">
                         <div class="box-header left-bar-head">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li role="presentation" class="active" style="background-color: #fff"><a href="#" role="tab"id="myScheBtn">我的调度任务</a></li>
@@ -115,12 +115,14 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="box-body">
+                        <div class="box-body" style="height: 100%;padding-bottom: 10px;">
                             <div>
                                 <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词(空格分割)">
                                 <p id="searchInfo" style="display: none">查找中，请稍候...</p>
-                                <ul id="jobTree" class="ztree"></ul>
-                                <ul id="allTree" class="ztree"></ul>
+                                <div class="scroll-box">
+                                    <ul id="jobTree" class="ztree"></ul>
+                                    <ul id="allTree" class="ztree"></ul>
+                                </div>
                             </div>
                         </div>
                     </div>

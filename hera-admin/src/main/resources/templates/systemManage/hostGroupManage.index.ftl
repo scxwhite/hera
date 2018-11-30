@@ -7,19 +7,6 @@
 	<@netCommon.commonStyle />
     <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
 
-    <style>
-
-        h3, table {
-            margin: 20px;
-        }
-
-        .error{
-            color: red;
-        }
-        #toolbar {
-            margin-left: 20px;
-        }
-    </style>
 </head>
 
 
@@ -34,14 +21,14 @@
         <div class="content">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">机器组管理</h3>
+                    <h3 class="big-title">机器组管理</h3>
                 </div>
                 <div class="box-body">
                     <div id="toolbar">
                     <button class="btn btn-success" id="addHostGroup">添加</button>
                     </div>
                     <table id="selectTable"
-                           data-url="${request.contextPath}/hostGroup/list" class="table" data-pagination="true" data-toggle="table"
+                           data-url="${request.contextPath}/hostGroup/list" class="table table-striped" data-pagination="true" data-toggle="table"
                            data-search="true" data-toolbar="#toolbar"
                            data-show-refresh="true">
                         <thead>

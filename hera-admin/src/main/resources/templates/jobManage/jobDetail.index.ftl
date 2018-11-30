@@ -9,6 +9,9 @@
         .table-hover > tbody > tr:hover {
             cursor: pointer;
         }
+        #toolbar{
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 
@@ -38,7 +41,7 @@
                                 <option value="running">运行中</option>
                             </select>
                         </div>
-                        <table id="historyJobTable" ></table>
+                        <table id="historyJobTable" class="table-striped" ></table>
                     </div>
                 </div>
         </section>
