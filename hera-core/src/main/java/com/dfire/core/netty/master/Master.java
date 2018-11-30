@@ -3,6 +3,7 @@ package com.dfire.core.netty.master;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
+import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
@@ -556,7 +557,7 @@ public class Master {
                         }
                         dependenciesMap.put(dependentId, dependActionList);
                         if (retryCount > 20) {
-                            if (!heraJob.getConfigs().contains("sameday")) {
+                            if (!heraJob.getConfigs().contains(RunningJobKeyConstant.DEPENDENCY_CYCLE_VALUE)) {
                                 if (dependenciesMap.get(dependentId).size() == 0) {
                                     HeraAction lostJobAction = masterContext.getHeraJobActionService().findLatestByJobId(dependentId);
                                     if (lostJobAction != null) {
