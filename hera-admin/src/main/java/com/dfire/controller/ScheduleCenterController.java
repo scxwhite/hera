@@ -416,7 +416,8 @@ public class ScheduleCenterController extends BaseHeraController {
                 if (job.getAuto() == 1) {
                     if (!hasAuto) {
                         hasAuto = true;
-                        builder = new StringBuilder(job.getId());
+                        builder = new StringBuilder();
+                        builder.append(job.getId());
                     } else {
                         builder.append(",").append(job.getId());
                     }
@@ -430,8 +431,11 @@ public class ScheduleCenterController extends BaseHeraController {
         boolean result = heraJobService.changeSwitch(id);
         if (heraJob.getAuto() == 0) {
             updateJobToMaster(result, id);
+            return new RestfulResponse(result, result ? "开启成功" : "开启失败");
+        } else {
+            return new RestfulResponse(result, result ? "关闭成功" : "关闭失败");
         }
-        return new RestfulResponse(result, result ? "开启成功" : "开启失败");
+
     }
 
     @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)

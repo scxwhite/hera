@@ -245,11 +245,7 @@ $(function () {
                 if (data.success === false) {
                     layer.msg(data.msg);
                 } else {
-                    if (focusItem.auto === "开启") {
-                        layer.msg("开启成功");
-                    } else {
-                        layer.msg("关闭成功");
-                    }
+                    layer.msg(data.msg);
                     leftClick();
                 }
             }
