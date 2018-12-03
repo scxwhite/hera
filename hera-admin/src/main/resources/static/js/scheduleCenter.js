@@ -1114,6 +1114,56 @@ $(function () {
         });
         setJobMessageEdit(false);
     });
+    $('#showAllModal').modal('hide');
+    $('#showAllBtn').click(function (e) {
+        $('#allTable').bootstrapTable({
+            url: base_url + '/scheduleCenter/getGroupTask',
+            method: 'get',
+            pagination: true,
+            cache: false,
+            clickToSelect: true,
+            striped: false,
+            pageNumber: 1,              //初始化加载第一页，默认第一页
+            pageSize: 20,                //每页的记录行数（*）
+            pageList: [40, 60, 80],
+            uniqueId: 'id',
+            sidePagination: "client",
+            searchAlign:'left',
+            buttonsAlign:'left',
+            columns: [
+                {
+                    field: "actionId",
+                    title: "ActionId"
+                }, {
+                    field: "jobId",
+                    title: "JobId"
+                }, {
+                    field: "name",
+                    title: "任务名称"
+                }, {
+                    field: "status",
+                    title: "执行状态",
+                    formatter:function (val) {
+                        if(val==='success'){
+                            return '<span>'+val+'</span>'
+                        }else{
+                            return '<span style="color: #f17c67;">'+val+'</span>'
+                        }
+                    }
+                }, {
+                    field: "readyStatus",
+                    title: "依赖状态"
+                }, {
+                    field: "lastResult",
+                    title: "上一次任务情况"
+                }
+            ]
+        });
+        $('#showAllModal').modal('show');
+    });
+    $('#closeAll').click(function (e) {
+        $("#showAllModal").modal('hide');
+    })
 });
 
 function keypath(type) {

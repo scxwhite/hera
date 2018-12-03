@@ -519,7 +519,7 @@
                             <div>
                                 <ul class="list-unstyled">
                                     <li>
-                                        <button class="btn btn-xs  btn-primary btn-block" type="button">任务总览</button>
+                                        <button class="btn btn-xs  btn-primary btn-block" type="button" id="showAllBtn">任务总览</button>
                                     </li>
                                     <br>
                                     <li>
@@ -945,6 +945,23 @@
             </div>
         </div>
         </div>
+</div>
+</div>
+<div class="modal" id="showAllModal" tabindex="-1" role="dialog" aria-labelledby="title">
+    <div class="modal-dialog"  style="min-width: 950px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="box-title">任务总览</h3>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" class="text-center">
+                <div id="allTable" class="table table-striped"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="closeAll">关闭</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <@netCommon.commonScript />
