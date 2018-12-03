@@ -134,3 +134,4 @@ div#rMenu ul li {
 #infoCon::-webkit-scrollbar {
     display: none;
 }
+.table { table-layout: fixed;}

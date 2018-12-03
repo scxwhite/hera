@@ -1115,50 +1115,55 @@ $(function () {
         });
         setJobMessageEdit(false);
     });
-    $('#showAllModal').hide();
+    $('#showAllModal').modal('hide');
     $('#showAllBtn').click(function (e) {
         $('#allTable').bootstrapTable({
-            // url: base_url + '/jobManage/findJobHistoryByStatus',
-            // method: 'get',
+            url: base_url + '/scheduleCenter/getGroupTask',
+            method: 'get',
             pagination: true,
             cache: false,
             clickToSelect: true,
-            toolTip: "",
             striped: false,
-            showRefresh: true,           //是否显示刷新按钮
-            showPaginationSwitch: true,  //是否显示选择分页数按钮
             pageNumber: 1,              //初始化加载第一页，默认第一页
             pageSize: 20,                //每页的记录行数（*）
             pageList: [40, 60, 80],
-            // queryParams: params,
-            search: true,
             uniqueId: 'id',
             sidePagination: "client",
             searchAlign:'left',
             buttonsAlign:'left',
             columns: [
                 {
-                    field: "ationId",
-                    title: "AtionId"
+                    field: "actionId",
+                    title: "ActionId"
                 }, {
                     field: "jobId",
                     title: "JobId"
                 }, {
-                    field: "jobId",
+                    field: "name",
                     title: "任务名称"
                 }, {
-                    field: "executeHost",
-                    title: "执行状态"
-                }, {
                     field: "status",
+                    title: "执行状态",
+                    formatter:function (val) {
+                        if(val==='success'){
+                            return '<span>'+val+'</span>'
+                        }else{
+                            return '<span style="color: #f17c67;">'+val+'</span>'
+                        }
+                    }
+                }, {
+                    field: "readyStatus",
                     title: "依赖状态"
                 }, {
-                    field: "operator",
+                    field: "lastResult",
                     title: "上一次任务情况"
                 }
             ]
         });
         $('#showAllModal').modal('show');
+    });
+    $('#closeAll').click(function (e) {
+        $("#showAllModal").modal('hide');
     })
 });
 
