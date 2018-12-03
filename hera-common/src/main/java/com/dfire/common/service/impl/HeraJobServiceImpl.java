@@ -110,7 +110,6 @@ public class HeraJobServiceImpl implements HeraJobService {
                 .build())
                 .collect(Collectors.toList()));
 
-
         Set<HeraJobTreeNodeVo> myGroupSet = new HashSet<>();
         //建立我的任务的树
         List<HeraJobTreeNodeVo> myNodeVos = jobs.stream()
@@ -132,8 +131,6 @@ public class HeraJobServiceImpl implements HeraJobService {
         myNodeVos.sort(Comparator.comparing(x -> x.getName().trim()));
         treeMap.put("myJob", myNodeVos);
         treeMap.put("allJob", allNodes);
-        HeraLog.info("我的任务大小:" + myNodeVos.size());
-        HeraLog.info("所有任务大小" + allNodes.size());
         return treeMap;
     }
 

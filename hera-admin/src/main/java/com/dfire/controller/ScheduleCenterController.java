@@ -265,7 +265,9 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)
     @ResponseBody
     public RestfulResponse updateJobMessage(HeraJobVo heraJobVo) {
-
+        if (!hasPermission(heraJobVo.getId(), JOB)) {
+            return new RestfulResponse(false, ERROR_MSG);
+        }
         if (StringUtils.isBlank(heraJobVo.getDescription())) {
             return new RestfulResponse(false, "描述不能为空");
         }
@@ -274,8 +276,34 @@ public class ScheduleCenterController extends BaseHeraController {
         } catch (ParseException e) {
             return new RestfulResponse(false, "定时表达式不准确，请核实后再保存");
         }
-        if (!hasPermission(heraJobVo.getId(), JOB)) {
-            return new RestfulResponse(false, ERROR_MSG);
+
+        //如果是依赖任务
+        if (heraJobVo.getScheduleType() == 1) {
+            String dependencies = heraJobVo.getDependencies();
+            if (StringUtils.isNotBlank(dependencies)) {
+                String[] jobs = dependencies.split(",");
+                HeraJob heraJob;
+                boolean jobAuto = true;
+                StringBuilder sb = null;
+                for (String job : jobs) {
+                    heraJob = heraJobService.findById(Integer.parseInt(job));
+                    if (heraJob == null) {
+                        return new RestfulResponse(false, "任务:" + job + "为空");
+                    }
+                    if (heraJob.getAuto() == 0) {
+                        if (jobAuto) {
+                            jobAuto = false;
+                            sb = new StringBuilder();
+                            sb.append(job);
+                        } else {
+                            sb.append(",").append(job);
+                        }
+                    }
+                }
+                if (!jobAuto) {
+                    return new RestfulResponse(false, "不允许依赖关闭状态的任务:" + sb.toString());
+                }
+            }
         }
         return heraJobService.checkAndUpdate(BeanConvertUtils.convertToHeraJob(heraJobVo));
     }
