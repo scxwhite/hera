@@ -847,7 +847,7 @@ $(function () {
                 if (res.success === true) {
                     layer.msg('执行成功');
                 } else {
-                    layer.msg('执行失败')
+                    layer.msg(res.msg)
                 }
             },
             error: function (err) {

@@ -18,7 +18,7 @@ public class DirectionGraph<T> implements Serializable {
     /**
      * 默认图的点的个数
      */
-    private Integer MAX_NODE_NUM = 60000;
+    private Integer maxNodeNum = 60000;
 
     /**
      * srcEdge 表示图的边
@@ -35,29 +35,29 @@ public class DirectionGraph<T> implements Serializable {
     /**
      * 根据下标查找node节点
      */
-    private Map<Integer, GraphNode> indexMap;
+    private Map<Integer, GraphNode<T>> indexMap;
 
 
     private int index;
 
     public DirectionGraph() {
         index = 0;
-        srcEdge = new ArrayList[MAX_NODE_NUM];
-        tarEdge = new ArrayList[MAX_NODE_NUM];
+        srcEdge = new ArrayList[maxNodeNum];
+        tarEdge = new ArrayList[maxNodeNum];
         nodeMap = new HashMap<>();
         indexMap = new HashMap<>();
     }
 
-    public boolean addNode(GraphNode graphNode) {
+    public boolean addNode(GraphNode<T> graphNode) {
         if (nodeMap.get(graphNode.getNodeName()) != null) {
             return false;
         }
-        nodeMap.put((T) graphNode.getNodeName(), index);
+        nodeMap.put( graphNode.getNodeName(), index);
         indexMap.put(index++, graphNode);
         return true;
     }
 
-    public boolean addEdge(GraphNode graphNodeOne, GraphNode graphNodeTwo) {
+    public boolean addEdge(GraphNode<T> graphNodeOne, GraphNode<T> graphNodeTwo) {
         Integer srcIndex = getNodeIndex(graphNodeOne);
         Integer tarIndex = getNodeIndex(graphNodeTwo);
         if (srcIndex == null) {
@@ -78,7 +78,7 @@ public class DirectionGraph<T> implements Serializable {
         return true;
     }
 
-    public Integer getNodeIndex(GraphNode node) {
+    public Integer getNodeIndex(GraphNode<T> node) {
         return nodeMap.get(node.getNodeName());
     }
 }

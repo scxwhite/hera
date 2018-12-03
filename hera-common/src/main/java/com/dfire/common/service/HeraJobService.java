@@ -41,7 +41,7 @@ public interface HeraJobService {
 
     RestfulResponse checkAndUpdate(HeraJob heraJob);
 
-    JsonResponse findCurrentJobGraph(int jobId, Integer type);
+    Map<String, Object> findCurrentJobGraph(int jobId, Integer type);
 
     /**
      * 构建依赖图边
