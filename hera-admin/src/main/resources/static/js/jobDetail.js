@@ -35,6 +35,8 @@ var TableInit = function () {
             search: true,
             uniqueId: 'id',
             sidePagination: "client",
+            searchAlign:'left',
+            buttonsAlign:'left',
             onClickRow: function (row) {
                 // console.log(row)
                 $('#runningLogDetailTable').bootstrapTable("destroy");
