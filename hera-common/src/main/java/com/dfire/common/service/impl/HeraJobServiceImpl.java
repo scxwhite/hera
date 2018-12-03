@@ -244,6 +244,17 @@ public class HeraJobServiceImpl implements HeraJobService {
         return heraJobMapper.findAllDependencies();
     }
 
+    @Override
+    public List<HeraJob> findDownStreamJob(Integer jobId) {
+        return this.getStreamTask(jobId, true);
+    }
+
+    @Override
+    public List<HeraJob> findUpStreamJob(Integer jobId) {
+        return this.getStreamTask(jobId, false);
+
+    }
+
     /**
      * 建立今日任务执行 Map映射 便于获取
      *
@@ -280,13 +291,46 @@ public class HeraJobServiceImpl implements HeraJobService {
     }
 
 
-    public List<HeraJob> getDownStreamTask(Integer jobId) {
+    /**
+     * 获得上下游的任务
+     *
+     * @param jobId 任务id
+     * @param down  是否为下游
+     * @return
+     */
+
+    private List<HeraJob> getStreamTask(Integer jobId, boolean down) {
         GraphNode<Integer> head = new GraphNode<>();
         head.setNodeName(jobId);
         DirectionGraph<Integer> graph = this.getDirectionGraph();
+        Integer headIndex = graph.getNodeIndex(head);
+        Queue<Integer> nodeQueue = new LinkedList<>();
+        nodeQueue.add(headIndex);
+        ArrayList<Integer> graphNodes;
+        Map<Integer, GraphNode<Integer>> indexMap = graph.getIndexMap();
+        List<Integer> jobList = new ArrayList<>();
+        while (!nodeQueue.isEmpty()) {
+            headIndex = nodeQueue.remove();
+            if (down) {
+                graphNodes = graph.getTarEdge()[headIndex];
+            } else {
+                graphNodes = graph.getSrcEdge()[headIndex];
+            }
+            if (graphNodes == null || graphNodes.size() == 0) {
+                continue;
+            }
 
+            for (Integer graphNode : graphNodes) {
+                nodeQueue.add(graphNode);
+                jobList.add(indexMap.get(graphNode).getNodeName());
+            }
+        }
 
-        return null;
+        List<HeraJob> res = new ArrayList<>();
+        for (Integer id : jobList) {
+            res.add(this.findById(id));
+        }
+        return res;
     }
 
     /**
@@ -295,7 +339,7 @@ public class HeraJobServiceImpl implements HeraJobService {
      * @param graph      所有任务的关系图
      * @param type       展示类型  0:任务进度分析   1：影响分析
      */
-    private Map<String, Object> buildCurrJobGraph(Map<String, GraphNode> historyMap, GraphNode<Integer> node, DirectionGraph graph, Integer type) {
+    private Map<String, Object> buildCurrJobGraph(Map<String, GraphNode> historyMap, GraphNode<Integer> node, DirectionGraph<Integer> graph, Integer type) {
         String start = "start_node";
         Map<String, Object> res = new HashMap<>(2);
         List<Edge> edgeList = new ArrayList<>();

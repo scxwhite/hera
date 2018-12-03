@@ -242,7 +242,6 @@ $(function () {
             },
             type: "post",
             success: function (data) {
-                leftClick();
                 if (data.success === false) {
                     layer.msg(data.msg);
                 } else {
@@ -251,8 +250,8 @@ $(function () {
                     } else {
                         layer.msg("关闭成功");
                     }
+                    leftClick();
                 }
-
             }
         })
     });

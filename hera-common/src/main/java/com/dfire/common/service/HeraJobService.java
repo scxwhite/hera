@@ -53,4 +53,9 @@ public interface HeraJobService {
 
     List<HeraJob> findAllDependencies();
 
+
+    List<HeraJob> findDownStreamJob(Integer jobId);
+
+    List<HeraJob> findUpStreamJob(Integer jobId);
+
 }

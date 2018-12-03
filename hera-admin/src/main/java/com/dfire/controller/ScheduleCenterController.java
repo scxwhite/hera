@@ -409,7 +409,22 @@ public class ScheduleCenterController extends BaseHeraController {
         HeraJob heraJob = heraJobService.findById(id);
         //关闭动作
         if (heraJob.getAuto() == 1) {
-
+            List<HeraJob> streamJob = heraJobService.findDownStreamJob(id);
+            StringBuilder builder = null;
+            boolean hasAuto = false;
+            for (HeraJob job : streamJob) {
+                if (job.getAuto() == 1) {
+                    if (!hasAuto) {
+                        hasAuto = true;
+                        builder = new StringBuilder(job.getId());
+                    } else {
+                        builder.append(",").append(job.getId());
+                    }
+                }
+            }
+            if (hasAuto) {
+                return new RestfulResponse(false, "下游存在开启状态任务:" + builder.toString());
+            }
         }
 
         boolean result = heraJobService.changeSwitch(id);
