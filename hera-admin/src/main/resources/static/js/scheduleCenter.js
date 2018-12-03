@@ -1115,6 +1115,51 @@ $(function () {
         });
         setJobMessageEdit(false);
     });
+    $('#showAllModal').hide();
+    $('#showAllBtn').click(function (e) {
+        $('#allTable').bootstrapTable({
+            // url: base_url + '/jobManage/findJobHistoryByStatus',
+            // method: 'get',
+            pagination: true,
+            cache: false,
+            clickToSelect: true,
+            toolTip: "",
+            striped: false,
+            showRefresh: true,           //是否显示刷新按钮
+            showPaginationSwitch: true,  //是否显示选择分页数按钮
+            pageNumber: 1,              //初始化加载第一页，默认第一页
+            pageSize: 20,                //每页的记录行数（*）
+            pageList: [40, 60, 80],
+            // queryParams: params,
+            search: true,
+            uniqueId: 'id',
+            sidePagination: "client",
+            searchAlign:'left',
+            buttonsAlign:'left',
+            columns: [
+                {
+                    field: "ationId",
+                    title: "AtionId"
+                }, {
+                    field: "jobId",
+                    title: "JobId"
+                }, {
+                    field: "jobId",
+                    title: "任务名称"
+                }, {
+                    field: "executeHost",
+                    title: "执行状态"
+                }, {
+                    field: "status",
+                    title: "依赖状态"
+                }, {
+                    field: "operator",
+                    title: "上一次任务情况"
+                }
+            ]
+        });
+        $('#showAllModal').modal('show');
+    })
 });
 
 function keypath(type) {
