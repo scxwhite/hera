@@ -276,8 +276,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void dagTest() {
-        JsonResponse restfulResponse = heraJobService.findCurrentJobGraph(119,0);
-        System.out.println(restfulResponse.getData());
+
     }
 
     @Test

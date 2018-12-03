@@ -4,7 +4,6 @@ import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.mapper.HeraJobMapper;
 import com.dfire.common.service.HeraGroupService;
@@ -16,7 +15,6 @@ import com.dfire.graph.DirectionGraph;
 import com.dfire.graph.Edge;
 import com.dfire.graph.GraphNode;
 import com.dfire.graph.JobRelation;
-import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -192,11 +190,11 @@ public class HeraJobServiceImpl implements HeraJobService {
     }
 
     @Override
-    public JsonResponse findCurrentJobGraph(int jobId, Integer type) {
+    public Map<String, Object> findCurrentJobGraph(int jobId, Integer type) {
         Map<String, GraphNode> historyMap = buildHistoryMap();
         HeraJob nodeJob = findById(jobId);
         if (nodeJob == null) {
-            return new JsonResponse(false, "当前任务不存在");
+            return null;
         }
         GraphNode graphNode1 = historyMap.get(nodeJob.getId() + "");
         String remark = "";
@@ -205,14 +203,14 @@ public class HeraJobServiceImpl implements HeraJobService {
         }
         GraphNode<Integer> graphNode = new GraphNode<>(nodeJob.getId(), "任务ID：" + jobId + "\n任务名称:" + nodeJob.getName() + remark);
 
-        return new JsonResponse("建图成功", true, buildCurrJobGraph(historyMap, graphNode, getDirectionGraph(), type));
+        return buildCurrJobGraph(historyMap, graphNode, getDirectionGraph(), type);
     }
 
     @Override
     public List<JobRelation> getJobRelations() {
         List<JobRelation> list = heraJobMapper.getJobRelations();
-        List<JobRelation> res = new ArrayList<>(1024);
-        Map<String, String> map = new HashMap<>(1024);
+        List<JobRelation> res = new ArrayList<>(list.size() * 3);
+        Map<String, String> map = new HashMap<>(list.size());
 
         for (JobRelation r : list) {
             String id = r.getId();
@@ -226,15 +224,15 @@ public class HeraJobServiceImpl implements HeraJobService {
                 continue;
             }
             String[] ds = dependencies.split(",");
-            for (int i = 0; i < ds.length; i++) {
-                if (map.get(ds[i]) == null) {
+            for (String d : ds) {
+                if (map.get(d) == null) {
                     continue;
                 }
                 JobRelation jr = new JobRelation();
                 jr.setId(id);
                 jr.setName(map.get(id));
-                jr.setPid(ds[i]);
-                jr.setPname(map.get(ds[i]));
+                jr.setPid(d);
+                jr.setPname(map.get(d));
                 res.add(jr);
             }
         }
@@ -277,10 +275,18 @@ public class HeraJobServiceImpl implements HeraJobService {
         return map;
     }
 
-    public DirectionGraph<Integer> getDirectionGraph() {
-        List<JobRelation> jobRelation = this.getJobRelations();
-        DirectionGraph directionGraph = this.buildJobGraph(jobRelation);
-        return directionGraph;
+    private DirectionGraph<Integer> getDirectionGraph() {
+        return this.buildJobGraph(this.getJobRelations());
+    }
+
+
+    public List<HeraJob> getDownStreamTask(Integer jobId) {
+        GraphNode<Integer> head = new GraphNode<>();
+        head.setNodeName(jobId);
+        DirectionGraph<Integer> graph = this.getDirectionGraph();
+
+
+        return null;
     }
 
     /**
@@ -289,17 +295,17 @@ public class HeraJobServiceImpl implements HeraJobService {
      * @param graph      所有任务的关系图
      * @param type       展示类型  0:任务进度分析   1：影响分析
      */
-    private Map<String, Object> buildCurrJobGraph(Map<String, GraphNode> historyMap, GraphNode node, DirectionGraph graph, Integer type) {
-        String start = "2dfire_task_start_signal";
-        Map<String, Object> res = new HashMap<>();
+    private Map<String, Object> buildCurrJobGraph(Map<String, GraphNode> historyMap, GraphNode<Integer> node, DirectionGraph graph, Integer type) {
+        String start = "start_node";
+        Map<String, Object> res = new HashMap<>(2);
         List<Edge> edgeList = new ArrayList<>();
-        Queue<GraphNode> nodeQueue = new LinkedList<>();
+        Queue<GraphNode<Integer>> nodeQueue = new LinkedList<>();
         GraphNode headNode = new GraphNode<>(0, start);
         res.put("headNode", headNode);
         nodeQueue.add(node);
         edgeList.add(new Edge(headNode, node));
         ArrayList<Integer> graphNodes;
-        Map<Integer, GraphNode> indexMap = graph.getIndexMap();
+        Map<Integer, GraphNode<Integer>> indexMap = graph.getIndexMap();
         GraphNode graphNode;
         Integer index;
         while (!nodeQueue.isEmpty()) {
@@ -340,8 +346,8 @@ public class HeraJobServiceImpl implements HeraJobService {
      * @return DirectionGraph
      */
 
-    public DirectionGraph buildJobGraph(List<JobRelation> jobRelations) {
-        DirectionGraph directionGraph = new DirectionGraph();
+    public DirectionGraph<Integer> buildJobGraph(List<JobRelation> jobRelations) {
+        DirectionGraph<Integer> directionGraph = new DirectionGraph<>();
         for (JobRelation jobRelation : jobRelations) {
             GraphNode<Integer> graphNodeTwo = new GraphNode<>(Integer.parseInt(jobRelation.getPid()), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
             GraphNode<Integer> graphNodeOne = new GraphNode<>(Integer.parseInt(jobRelation.getId()), "任务ID：" + jobRelation.getId() + "\n任务名称：" + jobRelation.getName() + "\n");

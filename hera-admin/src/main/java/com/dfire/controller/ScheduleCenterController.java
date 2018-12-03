@@ -12,6 +12,7 @@ import com.dfire.common.service.*;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.util.StringUtil;
+import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.UnCheckLogin;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -115,6 +116,18 @@ public class ScheduleCenterController extends BaseHeraController {
         heraJobVo.setUIdS(getuIds(jobId));
         heraJobVo.setFocusUser(focusUsers.toString());
         return heraJobVo;
+    }
+
+    @RequestMapping(value = "/getGroupTask", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse getGroupTask() {
+        List<GroupTaskVo> groupTaskVos = new ArrayList<>();
+
+        groupTaskVos.add(GroupTaskVo.builder().actionId("201811212000005497").name("card_all").status("success").readyStatus("依赖任务:201811212000005497,运行时间:11月21日 16：03").jobId(5497).build());
+        groupTaskVos.add(GroupTaskVo.builder().actionId("201811212000007361").name("customer_register_all").status("failed").readyStatus("依赖任务:201811212000005497,运行时间:11月21日 16：03").jobId(5497).build());
+        groupTaskVos.add(GroupTaskVo.builder().actionId("201811212000005497").name("card_all").status("success").readyStatus("依赖任务:201811212000005497,运行时间:11月21日 16：03").jobId(5497).build());
+        return new JsonResponse(true, "查询成功", groupTaskVos);
+
     }
 
     @RequestMapping(value = "/getGroupMessage", method = RequestMethod.GET)
@@ -392,8 +405,17 @@ public class ScheduleCenterController extends BaseHeraController {
         if (!hasPermission(id, JOB)) {
             return new RestfulResponse(false, ERROR_MSG);
         }
+
+        HeraJob heraJob = heraJobService.findById(id);
+        //关闭动作
+        if (heraJob.getAuto() == 1) {
+
+        }
+
         boolean result = heraJobService.changeSwitch(id);
-        updateJobToMaster(result, id);
+        if (heraJob.getAuto() == 0) {
+            updateJobToMaster(result, id);
+        }
         return new RestfulResponse(result, result ? "开启成功" : "开启失败");
     }
 
@@ -625,7 +647,11 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/getJobImpactOrProgress", method = RequestMethod.POST)
     @ResponseBody
     public JsonResponse getJobImpactOrProgress(Integer jobId, Integer type) {
-        return heraJobService.findCurrentJobGraph(jobId, type);
+        Map<String, Object> graph = heraJobService.findCurrentJobGraph(jobId, type);
+        if (graph == null) {
+            return new JsonResponse(false, "当前任务不存在");
+        }
+        return new JsonResponse(true, "成功", graph);
     }
 
     private Integer getGroupId(String group) {
