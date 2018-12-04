@@ -1373,39 +1373,48 @@ var JobLogTable = function (jobId) {
             columns: [
                 {
                     field: "id",
-                    title: "id"
+                    title: "id",
+                    width: "50",
                 }, {
                     field: "actionId",
-                    title: "版本号"
+                    title: "版本号",
+                    width: "150",
                 }, {
                     field: "jobId",
-                    title: "任务ID"
+                    title: "任务ID",
+                    width: "50",
                 }, {
                     field: "executeHost",
-                    title: "执行机器ip"
+                    title: "执行机器ip",
+                    width: "80",
+
                 }, {
                     field: "status",
-                    title: "执行状态"
+                    title: "执行状态",
+                    width: "50",
                 }, {
                     field: "operator",
-                    title: "执行人"
+                    title: "执行人",
+                    width: "100",
+
                 }, {
                     field: "startTime",
                     title: "开始时间",
-                    width: "20%",
+                    width: "150",
                     formatter: function (row) {
                         return getLocalTime(row);
                     }
                 }, {
                     field: "endTime",
                     title: "结束时间",
-                    width: "20%",
+                    width: "150",
                     formatter: function (row) {
                         return getLocalTime(row);
                     }
                 }, {
                     field: "illustrate",
                     title: "说明",
+                    width: "100",
                     formatter: function (val) {
                         if (val == null) {
                             return val;
@@ -1416,7 +1425,7 @@ var JobLogTable = function (jobId) {
                 {
                     field: "triggerType",
                     title: "触发类型",
-                    width: "20%",
+                    width: "100",
                     formatter: function (value, row) {
                         if (row['triggerType'] == 1) {
                             return "自动调度";
@@ -1433,7 +1442,7 @@ var JobLogTable = function (jobId) {
                 {
                     field: "status",
                     title: "操作",
-                    width: "20%",
+                    width: "100",
                     formatter: function (index, row) {
                         var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消任务</a>';
                         if (row['status'] == 'running') {

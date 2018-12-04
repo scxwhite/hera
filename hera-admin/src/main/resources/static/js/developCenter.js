@@ -535,7 +535,7 @@ $(function () {
             dataType: "json",
             success: function (res) {
                 if (res.success === true) {
-                    showRightNowLog(data.fileId, res.data.debugId);
+                    showRightNowLog(res.data.fileId, res.data.debugId);
                 } else {
                     layer.msg(res.message);
                 }
@@ -566,7 +566,6 @@ $(function () {
                     id: debugId
                 },
                 success: function (data) {
-                    console.log("data.status " + data.status, timer)
                     if (data.status !== 'running') {
                         clearInterval(timer);
                         set('log' + debugId, data.log, true);
@@ -575,8 +574,7 @@ $(function () {
                         $('li[his-id=' + debugId + ']').css('color', 'orangered');
                         set('log' + debugId, data.log, false);
                     }
-                    var logArea = $('#log' + debugId);
-                    logArea.html(data.log);
+                    $('#log' + debugId).html(data.log);
 
                 }
             })
