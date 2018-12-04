@@ -1,6 +1,7 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraJob;
+import com.dfire.common.entity.Judge;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
@@ -48,13 +49,11 @@ public interface HeraJobMapper {
     List<HeraJob> findByIds(@Param("list") List<Integer> list);
 
     @Select("select * from hera_job where group_id = #{groupId}")
-    @Lang(HeraSelectLangDriver.class)
-    List<HeraJob> findByPid(HeraJob heraJob);
+    List<HeraJob> findByPid(Integer groupId);
 
 
     @Update("update hera_job set auto = !auto where id = #{id}")
     Integer updateSwitch(Integer id);
-
 
 
     @Select("select id,dependencies from hera_job where schedule_type = 1")
@@ -69,5 +68,9 @@ public interface HeraJobMapper {
 
     @Select("select id,dependencies from hera_job")
     List<HeraJob> findAllDependencies();
+
+    @Select("select count(*) count, max(id) maxId, max(gmt_modified) lastModified from hera_job")
+    Judge selectTableInfo();
+
 
 }

@@ -74,8 +74,7 @@ public class HeraJobServiceImpl implements HeraJobService {
 
     @Override
     public List<HeraJob> findByPid(int groupId) {
-        HeraJob heraJob = HeraJob.builder().groupId(groupId).build();
-        return heraJobMapper.findByPid(heraJob);
+        return heraJobMapper.findByPid(groupId);
     }
 
     @Override
