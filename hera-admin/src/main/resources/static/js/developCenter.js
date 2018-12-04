@@ -525,7 +525,6 @@ $(function () {
             id: fileId,
             content: fileScript
         };
-        var result = null;
         var url = base_url + "/developCenter/debug.do";
 
         $.ajax({
@@ -534,10 +533,13 @@ $(function () {
             data: JSON.stringify(parameter),
             contentType: "application/json",
             dataType: "json",
-            success: function (data) {
-                result = data;
-                debugId = data.debugId;
-                showRightNowLog(data.fileId, data.debugId);
+            success: function (res) {
+                if (res.success === true) {
+                    showRightNowLog(data.fileId, res.data.debugId);
+                } else {
+                    layer.msg(res.message);
+                }
+
             }
         });
     });
