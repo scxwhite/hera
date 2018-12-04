@@ -1391,11 +1391,11 @@ var JobLogTable = function (jobId) {
                 }, {
                     field: "status",
                     title: "执行状态",
-                    width: "100",
+                    width: "80",
                 }, {
                     field: "operator",
                     title: "执行人",
-                    width: "100",
+                    width: "80",
 
                 }, {
                     field: "startTime",
