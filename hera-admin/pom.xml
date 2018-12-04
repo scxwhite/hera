@@ -10,7 +10,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.dfire.hera</groupId>
     <artifactId>hera-admin</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
