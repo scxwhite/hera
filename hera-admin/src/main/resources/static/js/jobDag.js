@@ -118,9 +118,13 @@ function redraw() {
 }
 
 //根据状态获得颜色
-function getColor(status) {
+function getColor(auto,status) {
 
-    if (status.indexOf("success") >= 0)
+    // 判断是否关闭，0表示关闭，特殊颜色显示
+    if(auto == 0){
+        return "fill: #919191";
+    }
+    else if (status.indexOf("success") >= 0)
         return "fill: #37b55a";
     else if (status.indexOf("running") >= 0)
         return "fill: #f0ab4e";
@@ -143,24 +147,26 @@ function expandNextNode(nodeNum) {
     }
     redraw();
 }
-
+/** 绘制节点信息 */
 function addEdgeToGraph(edge) {
-    var targ = edge.nodeA;
+    var target = edge.nodeA;
     var src = edge.nodeB;
 
     if (g.node(src.nodeName) == undefined) {
-        g.setNode(src.nodeName, {label: src.nodeName, style: getColor(src.remark) + ";" + src.remark});
+        var srcRemarkColor  = getColor(src.auto,src.remark);
+        g.setNode(src.nodeName, {label: src.nodeName, style: srcRemarkColor + ";" + src.remark});
     }
-    if (g.node(targ.nodeName) == undefined) {
-        g.setNode(targ.nodeName, {label: targ.nodeName, style: getColor(targ.remark) + ";" + targ.remark});
+    if (g.node(target.nodeName) == undefined) {
+        var targetRemarkColor  = getColor(target.auto,target.remark);
+        g.setNode(target.nodeName, {label: target.nodeName, style: targetRemarkColor + ";" + target.remark});
     }
-    if (nodeIndex[targ.nodeName] == 0) {
+    if (nodeIndex[target.nodeName] == 0) {
         return false;
     }
     if (graphType == 0) {
-        g.setEdge(src.nodeName, targ.nodeName, {label: ""});
+        g.setEdge(src.nodeName, target.nodeName, {label: ""});
     } else {
-        g.setEdge(targ.nodeName, src.nodeName, {label: ""});
+        g.setEdge(target.nodeName, src.nodeName, {label: ""});
     }
 
     return true;

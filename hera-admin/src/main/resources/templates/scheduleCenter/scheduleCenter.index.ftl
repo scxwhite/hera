@@ -981,6 +981,7 @@
 
 
 <script src="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.js"></script>
+<script src="${request.contextPath}/js/jobDag.js?v=2"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.2/js/locales/zh.js"></script>

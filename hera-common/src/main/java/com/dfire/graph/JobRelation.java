@@ -15,5 +15,7 @@ public class JobRelation {
 
     private String pname;
 
+    private Integer auto;
+
 
 }

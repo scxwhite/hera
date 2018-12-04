@@ -201,8 +201,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         if (graphNode1 != null) {
             remark = (String) graphNode1.getRemark();
         }
-        GraphNode<Integer> graphNode = new GraphNode<>(nodeJob.getId(), "任务ID：" + jobId + "\n任务名称:" + nodeJob.getName() + remark);
-
+        GraphNode<Integer> graphNode = new GraphNode<>(nodeJob.getAuto(),nodeJob.getId(), "任务ID：" + jobId + "\n任务名称:" + nodeJob.getName() + remark);
         return buildCurrJobGraph(historyMap, graphNode, getDirectionGraph(), type);
     }
 
@@ -229,6 +228,7 @@ public class HeraJobServiceImpl implements HeraJobService {
                     continue;
                 }
                 JobRelation jr = new JobRelation();
+                jr.setAuto(r.getAuto());
                 jr.setId(id);
                 jr.setName(map.get(id));
                 jr.setPid(d);
@@ -277,11 +277,13 @@ public class HeraJobServiceImpl implements HeraJobService {
                     end = sdf.format(actionHistory.getEndTime());
                 }
             }
-            map.put(actionHistory.getJobId() + "", new GraphNode<>(Integer.parseInt(jobId),
+            GraphNode node = new GraphNode<>(Integer.parseInt(jobId),
                     "任务状态：" + status + "\n" +
                             "执行时间：" + start + "\n" +
                             "结束时间：" + end + "\n" +
-                            "耗时：" + duration + "\n"));
+                            "耗时：" + duration + "\n");
+
+            map.put(actionHistory.getJobId() + "",node );
         }
         return map;
     }
@@ -370,9 +372,9 @@ public class HeraJobServiceImpl implements HeraJobService {
                 graphNode = indexMap.get(integer);
                 GraphNode graphNode1 = historyMap.get(graphNode.getNodeName() + "");
                 if (graphNode1 == null) {
-                    graphNode1 = new GraphNode<>(graphNode.getNodeName(), "" + graphNode.getRemark());
+                    graphNode1 = new GraphNode<>(graphNode.getAuto(),graphNode.getNodeName(), "" + graphNode.getRemark());
                 } else {
-                    graphNode1 = new GraphNode<>(graphNode.getNodeName(), "" + graphNode.getRemark() + graphNode1.getRemark());
+                    graphNode1 = new GraphNode<>(graphNode.getAuto(),graphNode.getNodeName(), "" + graphNode.getRemark() + graphNode1.getRemark());
                 }
                 edgeList.add(new Edge(node, graphNode1));
                 nodeQueue.add(graphNode1);
@@ -393,8 +395,8 @@ public class HeraJobServiceImpl implements HeraJobService {
     public DirectionGraph<Integer> buildJobGraph(List<JobRelation> jobRelations) {
         DirectionGraph<Integer> directionGraph = new DirectionGraph<>();
         for (JobRelation jobRelation : jobRelations) {
-            GraphNode<Integer> graphNodeTwo = new GraphNode<>(Integer.parseInt(jobRelation.getPid()), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
-            GraphNode<Integer> graphNodeOne = new GraphNode<>(Integer.parseInt(jobRelation.getId()), "任务ID：" + jobRelation.getId() + "\n任务名称：" + jobRelation.getName() + "\n");
+            GraphNode<Integer> graphNodeTwo = new GraphNode<>(jobRelation.getAuto(),Integer.parseInt(jobRelation.getPid()), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
+            GraphNode<Integer> graphNodeOne = new GraphNode<>(jobRelation.getAuto(),Integer.parseInt(jobRelation.getId()), "任务ID：" + jobRelation.getId() + "\n任务名称：" + jobRelation.getName() + "\n");
             directionGraph.addNode(graphNodeOne);
             directionGraph.addNode(graphNodeTwo);
             directionGraph.addEdge(graphNodeOne, graphNodeTwo);

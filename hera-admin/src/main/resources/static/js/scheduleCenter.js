@@ -1225,49 +1225,6 @@ function initDate(data) {
     }
 }
 
-//重新加载界面
-function redraw() {
-    var render = new dagreD3.render();
-    render(inner, g);
-
-    $('.node').on("mousemove", function () {
-        var nodeName = $(this).text();
-        var str = g.node(nodeName).style || '';
-        $('#jobDetail').text(str.substring(str.indexOf(";") + 1));
-    })
-
-    $('.node').on("click", function () {
-        var nodeName = $(this).text();
-        var currNodeIndex = nodeIndex[nodeName];
-        if (currNodeIndex == 0 || currNodeIndex == undefined) {
-            $('#jobDetail').text("此任务节点已全部展开^_^");
-            return;
-        }
-
-        --currNodeIndex;
-        while (true) {
-            var edge = edges[currNodeIndex];
-            addEdgeToGraph(edge);
-            if (++currNodeIndex >= len || edge.nodeA.nodeName != edges[currNodeIndex].nodeA.nodeName) {
-                break;
-            }
-        }
-        nodeIndex[nodeName] = 0;
-        redraw();
-    })
-}
-
-//依赖图
-//根据状态获得颜色
-function getColor(status) {
-
-    if (status.indexOf("success") >= 0)
-        return "fill: #37b55a";
-    else if (status.indexOf("running") >= 0)
-        return "fill: #f0ab4e";
-    else
-        return "fill: #f77";
-}
 
 function expandNextNode(nodeNum) {
     while (nodeNum > 0) {
@@ -1285,27 +1242,7 @@ function expandNextNode(nodeNum) {
     redraw();
 }
 
-function addEdgeToGraph(edge) {
-    var targ = edge.nodeA;
-    var src = edge.nodeB;
 
-    if (g.node(src.nodeName) == undefined) {
-        g.setNode(src.nodeName, {label: src.nodeName, style: getColor(src.remark) + ";" + src.remark});
-    }
-    if (g.node(targ.nodeName) == undefined) {
-        g.setNode(targ.nodeName, {label: targ.nodeName, style: getColor(targ.remark) + ";" + targ.remark});
-    }
-    if (nodeIndex[targ.nodeName] == 0) {
-        return false;
-    }
-    if (graphType == 0) {
-        g.setEdge(src.nodeName, targ.nodeName, {label: ""});
-    } else {
-        g.setEdge(targ.nodeName, src.nodeName, {label: ""});
-    }
-
-    return true;
-}
 
 var JobLogTable = function (jobId) {
     var parameter = {jobId: jobId};

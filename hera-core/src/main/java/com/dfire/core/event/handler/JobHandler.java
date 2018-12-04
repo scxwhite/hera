@@ -138,8 +138,8 @@ public class JobHandler extends AbstractHandler {
                             e.printStackTrace();
                         }
                         //TODO  未测试
-                    } else if (heraJobHistory != null && heraJobHistory.getStatusEnum().equals(StatusEnum.FAILED) &&
-                            heraJobHistory.getIllustrate().equals(LogConstant.WORK_DISCONNECT_LOG)) {
+                    } else if (heraJobHistory != null && StatusEnum.FAILED.equals(heraJobHistory.getStatusEnum()) &&
+                            LogConstant.WORK_DISCONNECT_LOG.equals(heraJobHistory.getIllustrate())) {
                         try {
                             JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
                             heraJobHistory.setIllustrate(LogConstant.WORK_DISCONNECT_LOG);

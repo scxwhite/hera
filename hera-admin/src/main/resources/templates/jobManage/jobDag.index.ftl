@@ -114,7 +114,7 @@
 </body>
 
 <@netCommon.commonScript />
-<script src="${request.contextPath}/js/jobDag.js"></script>
+<script src="${request.contextPath}/js/jobDag.js?v=2"></script>
 
 </body>
 </html>
