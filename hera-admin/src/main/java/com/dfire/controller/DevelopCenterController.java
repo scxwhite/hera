@@ -1,7 +1,9 @@
 package com.dfire.controller;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
@@ -89,13 +91,13 @@ public class DevelopCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/debug", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<Map<String, Object>> debug(@RequestBody HeraFile heraFile) {
+    public WebAsyncTask<JsonResponse> debug(@RequestBody HeraFile heraFile) {
 
         return new WebAsyncTask<>(10000, () -> {
             Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
             String name = file.getName();
-            String runType = "1";
+            String runType;
             file.setContent(heraFile.getContent());
             heraFileService.updateContent(heraFile);
 
@@ -106,20 +108,26 @@ public class DevelopCenterController extends BaseHeraController {
                     .owner(file.getOwner())
                     .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnvironment.defaultWorkerGroup : file.getHostGroupId())
                     .build();
-            String postfix = name.substring(name.lastIndexOf("."));
-            if (".hive".equalsIgnoreCase(postfix)) {
-                runType = "hive";
-            } else if (".sh".equalsIgnoreCase(postfix)) {
-                runType = "shell";
-            } else if (".spark".equalsIgnoreCase(postfix)) {
-                runType = "spark";
+            int suffixIndex = name.lastIndexOf(Constants.POINT);
+            if (suffixIndex == -1) {
+                return new JsonResponse(false, "无后缀名,请设置支持的后缀名[.sh .hive .spark]");
+            }
+            String suffix = name.substring(suffixIndex);
+            if ((Constants.POINT + Constants.HIVE_FILE).equalsIgnoreCase(suffix)) {
+                runType = Constants.HIVE_FILE;
+            } else if ((Constants.POINT + Constants.SHELL_FILE).equalsIgnoreCase(suffix)) {
+                runType = Constants.SHELL_FILE;
+            } else if ((Constants.POINT + Constants.SPARK_FILE).equalsIgnoreCase(suffix)) {
+                runType = Constants.SPARK_FILE;
+            } else {
+                return new JsonResponse(false, "暂支持的后缀名[" + suffix + "],请设置支持的后缀名[.sh .hive .spark]");
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
             workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
             res.put("fileId", file.getId());
             res.put("debugId", newId);
-            return res;
+            return new JsonResponse(true, "执行成功", res);
         });
     }
 

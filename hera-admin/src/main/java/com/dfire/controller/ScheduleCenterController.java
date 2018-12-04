@@ -407,27 +407,19 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         HeraJob heraJob = heraJobService.findById(id);
-        //关闭动作
+        //关闭动作 上游关闭时需要判断下游是否有开启任务，如果有，则不允许关闭
         if (heraJob.getAuto() == 1) {
-            List<HeraJob> streamJob = heraJobService.findDownStreamJob(id);
-            StringBuilder builder = null;
-            boolean hasAuto = false;
-            for (HeraJob job : streamJob) {
-                if (job.getAuto() == 1) {
-                    if (!hasAuto) {
-                        hasAuto = true;
-                        builder = new StringBuilder();
-                        builder.append(job.getId());
-                    } else {
-                        builder.append(",").append(job.getId());
-                    }
-                }
+            String errorMsg;
+            if ((errorMsg = getJobFromAuto(heraJobService.findDownStreamJob(id), 1)) != null) {
+                return new RestfulResponse(false, "下游存在开启状态任务:" + errorMsg);
             }
-            if (hasAuto) {
-                return new RestfulResponse(false, "下游存在开启状态任务:" + builder.toString());
+        } else { //开启动作 如果有上游任务，上游任务不能为关闭状态
+            String errorMsg;
+            if ((errorMsg = getJobFromAuto(heraJobService.findUpStreamJob(id), 0)) != null) {
+                return new RestfulResponse(false, "上游存在关闭状态任务:" + errorMsg);
             }
-        }
 
+        }
         boolean result = heraJobService.changeSwitch(id);
         if (heraJob.getAuto() == 0) {
             updateJobToMaster(result, id);
@@ -436,6 +428,27 @@ public class ScheduleCenterController extends BaseHeraController {
             return new RestfulResponse(result, result ? "关闭成功" : "关闭失败");
         }
 
+    }
+
+
+    private String getJobFromAuto(List<HeraJob> streamJob, Integer auto) {
+        boolean has = false;
+        StringBuilder filterJob = null;
+        for (HeraJob job : streamJob) {
+            if (job.getAuto().equals(auto)) {
+                if (!has) {
+                    has = true;
+                    filterJob = new StringBuilder();
+                    filterJob.append(job.getId());
+                } else {
+                    filterJob.append(",").append(job.getId());
+                }
+            }
+        }
+        if (has) {
+            return filterJob.toString();
+        }
+        return null;
     }
 
     @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)

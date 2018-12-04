@@ -44,5 +44,22 @@ public class Constants {
      */
     public final static Integer LOGIN_TIME_OUT = JWT_TIME_OUT * 60 * 60 * 24;
 
+    public final static Integer DEFAULT_EXIT_CODE = 1024;
+
+    public final static Integer LOG_EXIT_CODE = 1025;
+
+    public final static Integer INTERRUPTED_EXIT_CODE = 1026;
+
+
+    public final static String SPARK_FILE = "spark";
+
+    public final static String HIVE_FILE = "hive";
+
+    public final static String SHELL_FILE = "shell";
+
+    public final static String POINT = ".";
+
+    public final static String COMMA = ",";
+
 
 }

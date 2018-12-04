@@ -191,7 +191,7 @@
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
-<script src="${request.contextPath}/js/developCenter.js"></script>
+<script src="${request.contextPath}/js/developCenter.js?v=1"></script>
 <script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.2/js/locales/zh.js"></script>
 
 </body>
