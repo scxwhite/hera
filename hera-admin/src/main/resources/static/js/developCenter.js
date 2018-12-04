@@ -539,7 +539,6 @@ $(function () {
                 } else {
                     layer.msg(res.message);
                 }
-
             }
         });
     });
