@@ -286,7 +286,7 @@ public class JobHandler extends AbstractHandler {
                     ScheduleLog.info("任务无监控人，发送给owner：{}", heraActionVo.getJobId());
                     HeraUser user = heraUserService.findByName(heraActionVo.getOwner());
                     emails.add(user.getEmail().trim());
-                } else if (monitor != null){
+                } else if (monitor != null) {
                     String ids = monitor.getUserIds();
                     String[] id = ids.split(",");
                     for (String anId : id) {
@@ -299,7 +299,9 @@ public class JobHandler extends AbstractHandler {
                         }
                     }
                 }
-                emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
+                if (emails.size() > 0) {
+                    emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
+                }
             } catch (MessagingException e) {
                 e.printStackTrace();
                 ErrorLog.error("发送邮件失败");
