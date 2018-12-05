@@ -104,7 +104,7 @@
 
         <section class="content">
             <div class="row">
-                <div class="col-md-2 col-sm-2 col-lg-2 colStyle" style="border: none" id="treeCon">
+                <div class="col-md-3 col-sm-3 col-lg-3 colStyle" style="border: none" id="treeCon">
                     <div class="height-self left-bar" style="overflow: hidden;">
                         <div class="box-header left-bar-head">
                             <ul class="nav nav-tabs" role="tablist">
