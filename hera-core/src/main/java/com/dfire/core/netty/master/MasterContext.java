@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -54,6 +55,7 @@ public class MasterContext {
     @Autowired
     private HeraJobMonitorService heraJobMonitorService;
     @Autowired
+    @Qualifier("heraJobMemoryService")
     private HeraJobService heraJobService;
     @Autowired
     private HeraDebugHistoryService heraDebugHistoryService;

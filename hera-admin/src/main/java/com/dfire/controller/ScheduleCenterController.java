@@ -21,6 +21,7 @@ import com.dfire.protocol.JobExecuteKind;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 public class ScheduleCenterController extends BaseHeraController {
 
     @Autowired
+    @Qualifier("heraJobMemoryService")
     private HeraJobService heraJobService;
     @Autowired
     private HeraJobActionService heraJobActionService;
@@ -623,8 +625,7 @@ public class ScheduleCenterController extends BaseHeraController {
     }
 
     private String checkDependencies(Integer id, boolean isGroup) {
-        List<HeraJob> allJobs = heraJobService.findAllDependencies();
-
+        List<HeraJob> allJobs = heraJobService.getAllJobDependencies();
         if (isGroup) {
             List<HeraJob> jobList = heraJobService.findByPid(id);
             StringBuilder openJob = new StringBuilder("无法删除存在任务的目录:[ ");

@@ -42,7 +42,7 @@ public interface HeraJobMapper {
 
     @Select("select * from hera_job where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
-    HeraJob findById(HeraJob heraJob);
+    HeraJob findById(Integer id);
 
     @Select("select * from hera_job where id in (#{list})")
     @Lang(HeraSelectInLangDriver.class)
@@ -56,18 +56,11 @@ public interface HeraJobMapper {
     Integer updateSwitch(Integer id);
 
 
-    @Select("select id,dependencies from hera_job where schedule_type = 1")
-    List<HeraJob> getAllJobRelation();
-
-
     @Select("select max(id) from hera_job")
     Integer selectMaxId();
 
-    @Select("select `name`,id,dependencies,auto from hera_job ")
-    List<JobRelation> getJobRelations();
-
-    @Select("select id,dependencies from hera_job")
-    List<HeraJob> findAllDependencies();
+    @Select("select `name`,id,dependencies,auto from hera_job")
+    List<HeraJob> getAllJobRelations();
 
     @Select("select count(*) count, max(id) maxId, max(gmt_modified) lastModified from hera_job")
     Judge selectTableInfo();
