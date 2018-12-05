@@ -34,6 +34,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendEmail(String title, String content, List<String> address) throws MessagingException {
+        if (address == null || address.size() == 0) {
+            return;
+        }
         int len = address.size();
         InternetAddress[] addresses = new InternetAddress[len];
         for (int i = 0; i < len; i++) {
