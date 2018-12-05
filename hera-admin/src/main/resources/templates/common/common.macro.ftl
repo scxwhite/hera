@@ -160,6 +160,10 @@
                         href="${request.contextPath}/scheduleCenter"><i class="fa fa-edit"></i> <span>调度中心</span></a>
                 </li>
 
+                <li class="nav-click" id="scheduleCenter"><a
+                        href="${request.contextPath}/adviceController"><i class="fa fa-bug"></i> <span>建议&留言</span></a>
+                </li>
+
 
             </ul>
         </section>
