@@ -151,7 +151,6 @@ public class Master {
             Dispatcher dispatcher = masterContext.getDispatcher();
             if (dispatcher != null) {
                 Map<Long, HeraAction> actionMapNew = heraActionMap;
-
                 if (actionMapNew != null && actionMapNew.size() > 0) {
                     List<Long> actionIdList = new ArrayList<>();
                     Long tmp = Long.parseLong(currDate) - MasterConstant.PRE_CHECK_MIN;
@@ -186,7 +185,7 @@ public class Master {
             String dependencies = lostJob.getDependencies();
             if (StringUtils.isNotBlank(dependencies)) {
                 List<String> jobDependList = Arrays.asList(dependencies.split(","));
-                boolean isAllComplete = true;
+                boolean isAllComplete = false;
                 HeraAction heraAction;
                 if (jobDependList.size() > 0) {
                     for (String jobDepend : jobDependList) {
