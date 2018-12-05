@@ -20,7 +20,7 @@ public class HeraDebugHistory {
 
     private String id;
 
-    private String fileId;
+    private Integer fileId;
 
     private Date startTime;
 

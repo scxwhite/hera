@@ -50,10 +50,8 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     }
 
     @Override
-    public List<HeraDebugHistory> findByFileId(String fileId) {
-        HeraDebugHistory history = HeraDebugHistory.builder().fileId(fileId).build();
-        List<HeraDebugHistory> list = heraDebugHistoryMapper.findByFileId(history);
-        return list;
+    public List<HeraDebugHistory> findByFileId(Integer fileId) {
+        return  heraDebugHistoryMapper.findByFileId(fileId);
     }
 
     @Override

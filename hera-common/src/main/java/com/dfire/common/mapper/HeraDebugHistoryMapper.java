@@ -43,7 +43,7 @@ public interface HeraDebugHistoryMapper {
 
     @Select("select * from hera_debug_history where file_id = #{fileId} order by id desc ")
     @Lang(HeraSelectLangDriver.class)
-    List<HeraDebugHistory> findByFileId(HeraDebugHistory heraDebugHistory);
+    List<HeraDebugHistory> findByFileId(Integer fileId);
 
     @Update("update hera_debug_history set status = #{status}, end_time = #{endTime} where id = #{id}")
     int updateStatus(HeraDebugHistory heraDebugHistory);

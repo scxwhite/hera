@@ -12,6 +12,7 @@ import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.protocol.JobExecuteKind;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -35,11 +35,12 @@ import java.util.concurrent.ExecutionException;
 public class DevelopCenterController extends BaseHeraController {
 
     @Autowired
-    HeraFileService heraFileService;
+    @Qualifier("heraFileMemoryService")
+    private HeraFileService heraFileService;
     @Autowired
-    HeraDebugHistoryService debugHistoryService;
+    private HeraDebugHistoryService debugHistoryService;
     @Autowired
-    WorkClient workClient;
+    private WorkClient workClient;
 
 
     @RequestMapping
@@ -57,7 +58,7 @@ public class DevelopCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/addFile", method = RequestMethod.GET)
     @ResponseBody
-    public String addFileAndFolder(HeraFile heraFile) {
+    public Integer addFileAndFolder(HeraFile heraFile) {
         heraFile.setOwner(getOwner());
         heraFile.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
         return heraFileService.insert(heraFile);
@@ -183,7 +184,7 @@ public class DevelopCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "findDebugHistory", method = RequestMethod.GET)
     @ResponseBody
-    public List<HeraDebugHistory> findDebugHistory(String fileId) {
+    public List<HeraDebugHistory> findDebugHistory(Integer fileId) {
         return debugHistoryService.findByFileId(fileId);
     }
 
@@ -192,12 +193,10 @@ public class DevelopCenterController extends BaseHeraController {
      *
      * @param id
      * @return
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
     @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask<String> cancelJob(String id) throws ExecutionException, InterruptedException {
+    public WebAsyncTask<String> cancelJob(String id) {
         JobExecuteKind.ExecuteKind kind = JobExecuteKind.ExecuteKind.DebugKind;
         return new WebAsyncTask<>(3000, () ->
                 workClient.cancelJobFromWeb(kind, id));

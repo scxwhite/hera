@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -36,6 +37,7 @@ public class WorkContext {
     @Autowired
     private HeraJobActionService heraJobActionService;
     @Autowired
+    @Qualifier("heraFileMemoryService")
     private HeraFileService heraFileService;
     @Autowired
     private HeraProfileService heraProfileService;

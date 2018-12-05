@@ -92,7 +92,7 @@ public class HeraBaseDaoTest {
 
         heraDebugHistory = HeraDebugHistory
                 .builder()
-                .fileId("1")
+                .fileId(1)
                 .hostGroupId(1)
                 .owner("import")
                 .gmtCreate(new Date())
@@ -179,7 +179,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraFileDaoTest() {
-        heraFile = heraFileService.findById("2");
+        heraFile = heraFileService.findById(2);
         System.out.println(heraFile.getName());
 
         heraFile.setContent("test");
@@ -189,10 +189,9 @@ public class HeraBaseDaoTest {
         List<HeraFile> heraFileList = heraFileService.findByIds(list);
         System.out.println(heraFileList.size());
 
-        heraFileService.delete("3");
+        heraFileService.delete(3);
 
-        heraFile.setParent("3");
-        List<HeraFile> subList = heraFileService.findByParent(heraFile);
+        List<HeraFile> subList = heraFileService.findByParent(3);
         System.out.println(subList.size());
 
         List<HeraFile> pList = heraFileService.findByOwner("biadmin");
@@ -205,7 +204,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraFileContent() {
-        HeraFile heraFile = HeraFile.builder().id("4").content("ls /").build();
+        HeraFile heraFile = HeraFile.builder().id(4).content("ls /").build();
         heraFileService.updateContent(heraFile);
 
     }

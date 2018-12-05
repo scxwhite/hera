@@ -1,8 +1,6 @@
 package com.dfire.core.event.listenter;
 
 
-import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraFile;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.core.event.HeraDebugFailEvent;
 import com.dfire.core.event.HeraDebugSuccessEvent;
@@ -24,18 +22,10 @@ public class HeraDebugListener extends AbstractListener {
 
     @Override
     public void beforeDispatch(MvcEvent mvcEvent) {
-        if(mvcEvent.getApplicationEvent() instanceof HeraDebugFailEvent) {
-            HeraDebugFailEvent event = (HeraDebugFailEvent) mvcEvent.getApplicationEvent();
-            final HeraDebugHistory history = event.getDebugHistory();
-            HeraFile heraFile = heraFileService.findById(history.getId());
-            String msg = "手动调试任务" + heraFile.getName() + "运行失败";
+        if (mvcEvent.getApplicationEvent() instanceof HeraDebugFailEvent) {
 
 
-        } else if(mvcEvent.getApplicationEvent() instanceof HeraDebugSuccessEvent) {
-            HeraDebugSuccessEvent event = (HeraDebugSuccessEvent) mvcEvent.getApplicationEvent();
-            final HeraDebugHistory history = event.getHistory();
-            HeraFile heraFile = heraFileService.findById(history.getId());
-            String msg = "手动调试任务" + heraFile.getName() + "运行成功";
+        } else if (mvcEvent.getApplicationEvent() instanceof HeraDebugSuccessEvent) {
 
         }
     }
