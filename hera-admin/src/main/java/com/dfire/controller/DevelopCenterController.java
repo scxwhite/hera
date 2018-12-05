@@ -113,14 +113,14 @@ public class DevelopCenterController extends BaseHeraController {
                 return new JsonResponse(false, "无后缀名,请设置支持的后缀名[.sh .hive .spark]");
             }
             String suffix = name.substring(suffixIndex);
-            if ((Constants.POINT + Constants.HIVE_FILE).equalsIgnoreCase(suffix)) {
+            if ((Constants.HIVE_SUFFIX).equalsIgnoreCase(suffix)) {
                 runType = Constants.HIVE_FILE;
-            } else if ((Constants.POINT + Constants.SHELL_FILE).equalsIgnoreCase(suffix)) {
+            } else if ((Constants.SHELL_SUFFIX).equalsIgnoreCase(suffix)) {
                 runType = Constants.SHELL_FILE;
-            } else if ((Constants.POINT + Constants.SPARK_FILE).equalsIgnoreCase(suffix)) {
+            } else if ((Constants.SPARK_SUFFIX).equalsIgnoreCase(suffix)) {
                 runType = Constants.SPARK_FILE;
             } else {
-                return new JsonResponse(false, "暂支持的后缀名[" + suffix + "],请设置支持的后缀名[.sh .hive .spark]");
+                return new JsonResponse(false, "暂未支持的后缀名[" + suffix + "],请设置支持的后缀名[.sh .hive .spark]");
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
