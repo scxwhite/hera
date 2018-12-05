@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.entity.model.TableResponse;
 import com.dfire.common.entity.vo.*;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
@@ -122,13 +123,12 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/getGroupTask", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse getGroupTask() {
+    public TableResponse<List<GroupTaskVo>> getGroupTask() {
         List<GroupTaskVo> groupTaskVos = new ArrayList<>();
-
         groupTaskVos.add(GroupTaskVo.builder().actionId("201811212000005497").name("card_all").status("success").readyStatus("依赖任务:201811212000005497,运行时间:11月21日 16：03").jobId(5497).build());
         groupTaskVos.add(GroupTaskVo.builder().actionId("201811212000007361").name("customer_register_all").status("failed").readyStatus("依赖任务:201811212000005497,运行时间:11月21日 16：03").jobId(5497).build());
         groupTaskVos.add(GroupTaskVo.builder().actionId("201811212000005497").name("card_all").status("success").readyStatus("依赖任务:201811212000005497,运行时间:11月21日 16：03").jobId(5497).build());
-        return new JsonResponse(true, "查询成功", groupTaskVos);
+        return new TableResponse<>("查询成功", 0, groupTaskVos);
 
     }
 

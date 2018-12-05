@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/lucario.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/layui/css/layui.css">
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
 </head>
 
@@ -103,15 +104,21 @@
 
         <section class="content">
             <div class="row">
-                <div class="col-md-3 col-sm-3 col-lg-3 colStyle" style="border: none" id="treeCon">
+                <div class="col-md-2 col-sm-2 col-lg-2 colStyle" style="border: none" id="treeCon">
                     <div class="height-self left-bar" style="overflow: hidden;">
                         <div class="box-header left-bar-head">
                             <ul class="nav nav-tabs" role="tablist">
-                                <li role="presentation" class="active" style="background-color: #fff"><a href="#" role="tab"id="myScheBtn">我的调度任务</a></li>
-                                <li role="presentation"  style="background-color: #fff"><a href="#" role="tab"id="allScheBtn">全部调度任务</a></li>
+                                <li role="presentation" class="active" style="background-color: #fff"><a href="#"
+                                                                                                         role="tab"
+                                                                                                         id="myScheBtn">我的调度任务</a>
+                                </li>
+                                <li role="presentation" style="background-color: #fff"><a href="#" role="tab"
+                                                                                          id="allScheBtn">全部调度任务</a>
+                                </li>
                             </ul>
-                            <div class="box-tools" >
-                                <button type="button" class="btn btn-box-tool" id="hideTreeBtn"><i class="fa fa-minus"></i>
+                            <div class="box-tools">
+                                <button type="button" class="btn btn-box-tool" id="hideTreeBtn"><i
+                                        class="fa fa-minus"></i>
                                 </button>
                             </div>
                         </div>
@@ -128,7 +135,21 @@
                     </div>
                 </div>
 
-                <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self" style="overflow: auto;background: transparent;border: none;" id="infoCon">
+                <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self"
+                     style="overflow: auto;background: transparent;border: none;display: none" id="showAllModal">
+                    <div class="my-box" style="margin-top: 0">
+                        <div  class="box box-body text-center">
+
+                            <div id="allTable">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self"
+                     style="overflow: auto;background: transparent;border: none;" id="infoCon">
 
                     <div class="my-box" style="margin-top: 0">
 
@@ -485,7 +506,7 @@
                     <div id="config" class="my-box" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
-                                <label class="info-title" >配置项信息</label>
+                                <label class="info-title">配置项信息</label>
                                 <textarea class="form-control"
                                 ></textarea>
                             </div>
@@ -514,12 +535,15 @@
                 </div>
 
                 <div class="col-md-1 col-lg-1 col-sm-1 colStyle">
+
                     <div id="groupOperate" style="display: none;" class="btn-con">
                         <div class="box-body">
                             <div>
                                 <ul class="list-unstyled">
                                     <li>
-                                        <button class="btn btn-xs  btn-primary btn-block" type="button" id="showAllBtn">任务总览</button>
+                                        <button class="btn btn-xs  btn-primary btn-block" type="button" id="showAllBtn">
+                                            任务总览
+                                        </button>
                                     </li>
                                     <br>
                                     <li>
@@ -531,24 +555,24 @@
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup" >
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup">
                                             添加组
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit" >编辑
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit">编辑
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addJob" >
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="addJob">
                                             添加任务
                                         </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete" >
+                                        <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete">
                                             删除
                                         </button>
                                     </li>
@@ -585,12 +609,13 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="jobDag" data-toggle="modal">依赖图
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="jobDag"
+                                            data-toggle="modal">依赖图
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit" >编辑
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="edit">编辑
                                     </button>
                                 </li>
                                 <br>
@@ -608,13 +633,13 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="switch" >
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="switch">
                                         开启/关闭
                                     </button>
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete" >删除
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete">删除
                                     </button>
 
                                 </li>
@@ -651,6 +676,29 @@
                                 <br>
                                 <li>
                                     <button class="btn btn-xs  btn-primary btn-block" type="button" name="save">保存
+                                    </button>
+                                </li>
+                                <br>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div id="overviewOperator" class="btn-con" style="display: none">
+                        <div class="box-body">
+                            <ul class="list-unstyled">
+                                <li>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="back">返回
+                                    </button>
+                                </li>
+                                <br>
+                                <li>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="">
+                                        自动任务
+                                    </button>
+                                </li>
+                                <br>
+                                <li>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="">手动任务
                                     </button>
                                 </li>
                                 <br>
@@ -717,7 +765,7 @@
                                         <option value="shell" selected>shell脚本</option>
                                         <option value="hive">hive脚本</option>
                                         <option value="spark">spark脚本</option>
-                                        <#--没有权限控制，暂时就不开放了<option value="spark2">spark2脚本</option>-->
+                                    <#--没有权限控制，暂时就不开放了<option value="spark2">spark2脚本</option>-->
                                     </select>
                                 </div>
                             </div>
@@ -915,54 +963,40 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="jobDagModal">
     <div class="modal-dialog modal-lg" role="document" id="jobDagModalCon">
         <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="box-title">任务链路图</h3>
-            <div id="biggerBtn">
-            <i class="fa fa-plus" ></i>
-            </div>
-        </div>
-        <div class="modal-body">
-
-            <form class="form-inline">
-
-                <div class="form-group">
-                    <label for="itemw">任务ID:</label>
-                    <input id="item" class="input-sm" style="width:80px; border: 1px solid #ccc;"/>
-                    <input class="btn btn-primary" type="button" value="上游任务链" onclick="keypath(0)"/>
-                    <input class="btn btn-primary" type="button" value="下游任务链" onclick="keypath(1)"/>
-                </div>
-                <div class="form-group">
-                    <input class="btn btn-primary disabled" type="button" id="expandAll" value="展示全部" >
-                </div>
-            </form>
-
-            </br>
-            <div class="row" style="margin: 0;">
-                <svg style="border: 3px solid dimgrey;height:700" class="col-lg-10">
-                    <g/>
-                </svg>
-                <textarea class="label-primary col-lg-2 col-sm-2 col-md-2" style="height: 400px;" id="jobDetail" readonly>任务信息</textarea>
-            </div>
-        </div>
-        </div>
-</div>
-</div>
-<div class="modal" id="showAllModal" tabindex="-1" role="dialog" aria-labelledby="title">
-    <div class="modal-dialog"  style="min-width: 950px;">
-        <div class="modal-content">
             <div class="modal-header">
-                <h3 class="box-title">任务总览</h3>
-                <button type="button" class="close" data-dismiss="modal"></button>
+                <h3 class="box-title">任务链路图</h3>
+                <div id="biggerBtn">
+                    <i class="fa fa-plus"></i>
+                </div>
             </div>
-            <div class="modal-body" class="text-center">
-                <div id="allTable" class="table table-striped"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="closeAll">关闭</button>
+            <div class="modal-body">
+
+                <form class="form-inline">
+
+                    <div class="form-group">
+                        <label for="itemw">任务ID:</label>
+                        <input id="item" class="input-sm" style="width:80px; border: 1px solid #ccc;"/>
+                        <input class="btn btn-primary" type="button" value="上游任务链" onclick="keypath(0)"/>
+                        <input class="btn btn-primary" type="button" value="下游任务链" onclick="keypath(1)"/>
+                    </div>
+                    <div class="form-group">
+                        <input class="btn btn-primary disabled" type="button" id="expandAll" value="展示全部">
+                    </div>
+                </form>
+
+                </br>
+                <div class="row" style="margin: 0;">
+                    <svg style="border: 3px solid dimgrey;height:700" class="col-lg-10">
+                        <g/>
+                    </svg>
+                    <textarea class="label-primary col-lg-2 col-sm-2 col-md-2" style="height: 400px;" id="jobDetail"
+                              readonly>任务信息</textarea>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <@netCommon.commonScript />
 
@@ -978,6 +1012,7 @@
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exhide.min.js"></script>
+<script src="${request.contextPath}/plugins/layui/layui.js"></script>
 
 
 <script src="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.js"></script>

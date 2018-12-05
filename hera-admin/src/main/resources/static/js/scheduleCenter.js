@@ -1,6 +1,7 @@
 var nodes, edges, g, headNode, currIndex = 0, len, inner, initialScale = 0.75, zoom, nodeIndex = {}, graphType;
-
-$(function () {
+layui.use(['table', 'form'], function () {
+    var form = layui.form;
+    var table = layui.table;
 
     $('#scheduleCenter').addClass('active');
     var focusId = -1;
@@ -465,7 +466,7 @@ $(function () {
             }
 
             function filterNodes(node) {
-                for(var i =0;i<length;i++) {
+                for (var i = 0; i < length; i++) {
                     if (node.name) {
                         //id搜索
                         if (!isNaN(keys[i])) {
@@ -518,10 +519,10 @@ $(function () {
                         }
                     }
                 }
-                if(node.checked && !node.isParent){
-                    tree.checkNode(node,false,true,false);
+                if (node.checked && !node.isParent) {
+                    tree.checkNode(node, false, true, false);
                 }
-                if(!first){
+                if (!first) {
                     tree.hideNode(node);
                 }
                 node.highlight = false;
@@ -578,8 +579,8 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateJobMessage.do",
                 data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                    "&script=" + encodeURIComponent(codeMirror.getValue()) +
-                    "&id=" + focusId,
+                "&script=" + encodeURIComponent(codeMirror.getValue()) +
+                "&id=" + focusId,
                 type: "post",
                 success: function (data) {
                     if (data.success == false) {
@@ -593,7 +594,7 @@ $(function () {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateGroupMessage.do",
                 data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                    "&resource=" + "&groupId=" + focusId,
+                "&resource=" + "&groupId=" + focusId,
                 type: "post",
                 success: function (data) {
                     if (data.success == false) {
@@ -709,7 +710,10 @@ $(function () {
 
     //搜索结果节点颜色改变
     function getFontCss(treeId, treeNode) {
-        return (!!treeNode.highlight) ? {color:"#A60000", "font-weight":"bold"} : {color:"rgba(0, 0, 0, 0.65)", "font-weight":"normal"};
+        return (!!treeNode.highlight) ? {color: "#A60000", "font-weight": "bold"} : {
+            color: "rgba(0, 0, 0, 0.65)",
+            "font-weight": "normal"
+        };
     }
 
     function leftClick() {
@@ -1019,10 +1023,12 @@ $(function () {
                 $('#treeCon').removeClass('col-md-3 col-sm-3 col-lg-3').addClass('col-md-1 col-sm-1 col-lg-1');
                 $(this).children().removeClass('fa-minus').addClass('fa-plus');
                 $('#infoCon').removeClass('col-md-8 col-sm-8 col-lg-8').addClass('col-md-10 col-sm-10 col-lg-10');
+                $('#showAllModal').removeClass('col-md-8 col-sm-8 col-lg-8').addClass('col-md-10 col-sm-10 col-lg-10');
             } else {
                 $('#treeCon').removeClass('col-md-1 col-sm-1 col-lg-1').addClass('col-md-3 col-sm-3 col-lg-3');
                 $(this).children().removeClass('fa-plus').addClass('fa-minus');
                 $('#infoCon').removeClass('col-md-10 col-sm-10 col-lg-10').addClass('col-md-8 col-sm-8 col-lg-8');
+                $('#showAllModal').removeClass('col-md-10 col-sm-10 col-lg-10').addClass('col-md-8 col-sm-8 col-lg-8');
 
             }
         })
@@ -1111,51 +1117,46 @@ $(function () {
         setJobMessageEdit(false);
     });
     $('#showAllModal').modal('hide');
+
+
+    function changeOverview(type) {
+        var overview = "", notShow = "none";
+        if (type) {
+            overview = "none";
+            notShow = "";
+        }
+        $('#showAllModal').css("display", overview);
+        $('#infoCon').css("display", notShow);
+        $('#overviewOperator').css("display", overview);
+        $('#groupOperate').css("display", notShow);
+    }
+
+    $('#overviewOperator [name="back"]').click(function () {
+        changeOverview(true);
+
+    });
     $('#showAllBtn').click(function (e) {
-        $('#allTable').bootstrapTable({
-            url: base_url + '/scheduleCenter/getGroupTask',
-            method: 'get',
-            pagination: true,
-            cache: false,
-            clickToSelect: true,
-            striped: false,
-            pageNumber: 1,              //初始化加载第一页，默认第一页
-            pageSize: 20,                //每页的记录行数（*）
-            pageList: [40, 60, 80],
-            uniqueId: 'id',
-            sidePagination: "client",
-            searchAlign:'left',
-            buttonsAlign:'left',
-            columns: [
-                {
-                    field: "actionId",
-                    title: "ActionId"
-                }, {
-                    field: "jobId",
-                    title: "JobId"
-                }, {
-                    field: "name",
-                    title: "任务名称"
-                }, {
-                    field: "status",
-                    title: "执行状态",
-                    formatter:function (val) {
-                        if(val==='success'){
-                            return '<span>'+val+'</span>'
-                        }else{
-                            return '<span style="color: #f17c67;">'+val+'</span>'
-                        }
-                    }
-                }, {
-                    field: "readyStatus",
-                    title: "依赖状态"
-                }, {
-                    field: "lastResult",
-                    title: "上一次任务情况"
-                }
-            ]
+        changeOverview(false);
+
+
+        // 表格渲染
+        var tableIns = table.render({
+            elem: '#allTable'                  //指定原始表格元素选择器（推荐id选择器）
+            ,height: "full-100"
+            , cols: [[                  //标题栏
+                 {field: 'actionId', title: 'ActionId', width: 172}
+                , {field: 'jobId', title: 'JobId', width: 71}
+                , {field: 'name', title: '任务名称', width: 200}
+                , {field: 'status', title: '执行状态', width: 90}
+                , {field: 'readyStatus', title: '依赖状态', width: 425}
+                , {field: 'lastResult', title: '上一次任务情况', width: 280}
+            ]]
+            , id: 'dataCheck'
+            , url: base_url + '/scheduleCenter/getGroupTask'
+            , method: 'get'
+            , page: true
+            , limits: [30, 60, 90, 150, 300]
         });
-        $('#showAllModal').modal('show');
     });
     $('#closeAll').click(function (e) {
         $("#showAllModal").modal('hide');
@@ -1241,7 +1242,6 @@ function expandNextNode(nodeNum) {
     }
     redraw();
 }
-
 
 
 var JobLogTable = function (jobId) {

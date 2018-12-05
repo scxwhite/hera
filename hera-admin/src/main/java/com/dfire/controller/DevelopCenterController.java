@@ -96,6 +96,9 @@ public class DevelopCenterController extends BaseHeraController {
         return new WebAsyncTask<>(10000, () -> {
             Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
+            if (file == null) {
+                return new JsonResponse(false, "脚本已被删除");
+            }
             String name = file.getName();
             String runType;
             file.setContent(heraFile.getContent());

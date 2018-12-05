@@ -286,7 +286,7 @@ public class JobHandler extends AbstractHandler {
                     ScheduleLog.info("任务无监控人，发送给owner：{}", heraActionVo.getJobId());
                     HeraUser user = heraUserService.findByName(heraActionVo.getOwner());
                     emails.add(user.getEmail().trim());
-                } else {
+                } else if (monitor != null){
                     String ids = monitor.getUserIds();
                     String[] id = ids.split(",");
                     for (String anId : id) {
