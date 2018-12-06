@@ -1,5 +1,16 @@
-var wallColor;
+var wallColor = "#dd1818";
 
+
+function addMouseOut(div) {
+    $(div).css({
+        "border": "none"
+    });
+}
+function addMouseOver(div) {
+    $(div).css({
+        "border": "2px solid #FF00FF"
+    });
+}
 
 (function ($) {
     var address = returnCitySN.cip;
@@ -9,7 +20,7 @@ var wallColor;
 
     //创建许愿页
     var createItem = function (text) {
-        $('<div class="item" onmouseout="addMouseOut(this)" onmouseover="addMouseOut(this)"> <h2>' + createTime + '</h2> <p>' + text + '</p> <h2 class="pull-right">来自：' + address + '</h2></div>').css({'background': wallColor}).appendTo(container).drag();
+        $('<div class="item" onmouseout="addMouseOut(this)" onmouseover="addMouseOver(this)"> <h2>' + createTime + '</h2> <p>' + text + '</p> <h2 class="pull-right">来自：' + address + '</h2></div>').css({'background': wallColor}).appendTo(container).drag();
     };
 
     // 定义拖拽函数
@@ -173,13 +184,9 @@ var wallColor;
         });
 
         items.on('onmouseout', function () {
-            $(this).css({
-                "border": "2px solid #FF00FF"
-            });
+            addMouseOut();
         }).on('onmouseover', function () {
-            $(this).css({
-                "border": "none"
-            });
+            addMouseOver();
         });
         layui.colorpicker.render({
             elem: '#colorPicker',
