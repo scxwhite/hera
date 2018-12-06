@@ -49,6 +49,7 @@ $(function () {
         type: "get",
         success: function (data) {
             if (data.success == false) {
+                layer.msg(data.message);
                 return;
             }
             initPieJobStatus(data.data)
@@ -61,7 +62,7 @@ $(function () {
         type: "get",
         success: function (data) {
             if (data.success == false) {
-                alert(data.message);
+                layer.msg(data.message);
                 return;
             }
             initLineJobStatus(data.data);
