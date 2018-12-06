@@ -48,6 +48,7 @@ public class MasterContext {
     @Autowired
     private QuartzSchedulerService quartzSchedulerService;
     @Autowired
+    @Qualifier("heraGroupMemoryService")
     private HeraGroupService heraGroupService;
     @Autowired
     private HeraJobHistoryService heraJobHistoryService;

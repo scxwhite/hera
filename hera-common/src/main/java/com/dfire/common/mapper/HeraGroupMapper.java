@@ -1,6 +1,7 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraGroup;
+import com.dfire.common.entity.Judge;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
@@ -34,7 +35,7 @@ public interface HeraGroupMapper {
 
     @Select("select * from hera_group where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
-    HeraGroup findById(HeraGroup heraGroup);
+    HeraGroup findById(Integer id);
 
     @Select("select * from hera_group where id in (#{list}) and existed = 1")
     @Lang(HeraSelectInLangDriver.class)
@@ -43,13 +44,17 @@ public interface HeraGroupMapper {
 
     @Select("select * from hera_group where parent = #{parent} and existed = 1")
     @Lang(HeraSelectLangDriver.class)
-    List<HeraGroup> findByParent(HeraGroup heraGroup);
+    List<HeraGroup> findByParent(Integer parent);
 
     @Select("select * from hera_group where owner = #{owner} and existed = 1")
     @Lang(HeraSelectLangDriver.class)
-    List<HeraGroup> findByOwner(HeraGroup heraGroup);
+    List<HeraGroup> findByOwner(String owner);
 
 
     @Select("select id,configs,parent from hera_group where id = #{id}")
     HeraGroup selectConfigById(Integer id);
+
+
+    @Select("select count(*) count, max(id) maxId, max(gmt_modified) lastModified from hera_group")
+    Judge selectTableInfo();
 }

@@ -33,6 +33,7 @@ public class WorkContext {
     @Autowired
     private HeraJobHistoryService heraJobHistoryService;
     @Autowired
+    @Qualifier("heraGroupMemoryService")
     private HeraGroupService heraGroupService;
     @Autowired
     private HeraJobActionService heraJobActionService;

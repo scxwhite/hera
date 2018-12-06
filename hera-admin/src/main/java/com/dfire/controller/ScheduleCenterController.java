@@ -53,6 +53,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @Autowired
     private HeraJobActionService heraJobActionService;
     @Autowired
+    @Qualifier("heraGroupMemoryService")
     private HeraGroupService heraGroupService;
     @Autowired
     private HeraJobHistoryService heraJobHistoryService;

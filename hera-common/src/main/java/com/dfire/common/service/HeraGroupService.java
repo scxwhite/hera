@@ -30,11 +30,11 @@ public interface HeraGroupService {
 
     List<HeraGroup> getAll();
 
-    HeraGroup findById(int id);
+    HeraGroup findById(Integer id);
 
     List<HeraGroup> findByIds(List<Integer> list);
 
-    List<HeraGroup> findByParent(int parentId);
+    List<HeraGroup> findByParent(Integer parentId);
 
     List<HeraGroup> findByOwner(String owner);
 
