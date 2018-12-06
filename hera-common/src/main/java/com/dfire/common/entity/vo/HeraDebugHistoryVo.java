@@ -24,7 +24,7 @@ public class HeraDebugHistoryVo {
 
     private String id;
 
-    private String fileId;
+    private Integer fileId;
 
     private String startTime;
 

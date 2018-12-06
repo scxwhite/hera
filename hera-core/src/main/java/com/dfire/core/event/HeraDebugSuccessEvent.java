@@ -17,9 +17,9 @@ public class HeraDebugSuccessEvent extends ApplicationEvent {
 
     @Getter
     private HeraDebugHistory history;
-    private String fileId;
+    private Integer fileId;
 
-    public HeraDebugSuccessEvent(HeraDebugHistory history, String fileId) {
+    public HeraDebugSuccessEvent(HeraDebugHistory history, Integer fileId) {
         super(Events.JobSucceed);
         this.fileId = fileId;
         this.history = history;

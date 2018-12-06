@@ -18,6 +18,7 @@ import com.dfire.graph.JobRelation;
 import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
@@ -34,6 +35,7 @@ public class HeraJobServiceImpl implements HeraJobService {
     @Autowired
     protected HeraJobMapper heraJobMapper;
     @Autowired
+    @Qualifier("heraGroupMemoryService")
     private HeraGroupService groupService;
     @Autowired
     private HeraJobHistoryService heraJobHistoryService;
