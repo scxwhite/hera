@@ -15,7 +15,6 @@ import com.dfire.graph.DirectionGraph;
 import com.dfire.graph.Edge;
 import com.dfire.graph.GraphNode;
 import com.dfire.graph.JobRelation;
-import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -308,7 +307,9 @@ public class HeraJobServiceImpl implements HeraJobService {
         DirectionGraph<Integer> graph = this.getDirectionGraph();
         Integer headIndex = graph.getNodeIndex(head);
         Queue<Integer> nodeQueue = new LinkedList<>();
-        nodeQueue.add(headIndex);
+        if (headIndex != null) {
+            nodeQueue.add(headIndex);
+        }
         ArrayList<Integer> graphNodes;
         Map<Integer, GraphNode<Integer>> indexMap = graph.getIndexMap();
         List<Integer> jobList = new ArrayList<>();

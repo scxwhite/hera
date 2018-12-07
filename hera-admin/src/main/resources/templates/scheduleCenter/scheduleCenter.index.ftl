@@ -13,86 +13,6 @@
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
 </head>
 
-<style type="text/css">
-
-    body .msg-class .layui-layer-title {
-        background: #202c32;
-        color: #fff;
-        border: none;
-    }
-
-    body .msg-class .layui-layer-btn {
-        border-top: 1px solid #E9E7E7
-    }
-
-    body .msg-class .layui-layer-btn a {
-        background: #333;
-    }
-
-    body .msg-class .layui-layer-btn .layui-layer-btn1 {
-        background: #999;
-    }
-
-    .box, .content {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        margin-top: 0;
-        padding-top: 0;
-    }
-
-    div #rMenu {
-        position: absolute;
-        visibility: hidden;
-        top: 0;
-        background-color: #555;
-        text-align: left;
-        padding: 2px;
-    }
-
-    div#rMenu ul {
-        margin: 0;
-        padding: 0;
-        border: 0;
-        outline: 0;
-        font-weight: inherit;
-        font-style: inherit;
-        font-size: 100%;
-        font-family: inherit;
-        vertical-align: baseline;
-    }
-
-    div#rMenu ul li {
-        margin: 1px 0;
-        padding: 0 50px;
-        cursor: pointer;
-        list-style: none outside none;
-        background-color: #DFDFDF;
-    }
-
-    .colStyle {
-        margin-right: 0px;
-        margin-left: 0px;
-        margin-top: 0px;
-        padding: 0px;
-        background-color: #eee;
-    }
-
-    .form-control-static {
-        overflow: hidden;
-    }
-
-    .node rect {
-        stroke: #333;
-        fill: #fff;
-    }
-
-    .edgePath path {
-        stroke: #333;
-        fill: #333;
-        stroke-width: 1.5px;
-    }
-</style>
-
 <body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
     <!-- header -->
@@ -138,7 +58,7 @@
                 <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self"
                      style="overflow: auto;background: transparent;border: none;display: none" id="showAllModal">
                     <div class="my-box" style="margin-top: 0">
-                        <div  class="box box-body text-center">
+                        <div class="box box-body text-center">
 
                             <div id="allTable">
 

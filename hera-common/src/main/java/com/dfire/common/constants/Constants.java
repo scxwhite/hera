@@ -24,6 +24,14 @@ public class Constants {
     public final static String STATUS_RUNNING = "running";
 
     public final static String STATUS_SUCCESS = "success";
+    public final static String HTML_FONT_RED_LEFT = "<font color=\"red\">";
+
+    public final static String HTML_FONT_GREEN_LEFT = "<font color=\"green\">";
+
+    public final static String HTML_FONT_YELLOW_LEFT = "<font color=\"yellow\">";
+
+    public final static String HTML_FONT_RIGHT = "</font>";
+
 
     public final static String STATUS_WAIT = "wait";
 
@@ -64,8 +72,13 @@ public class Constants {
 
 
     public final static String SHELL_SUFFIX = POINT + "sh";
+
     public final static String HIVE_SUFFIX = POINT + HIVE_FILE;
+
     public final static String SPARK_SUFFIX = POINT + SPARK_FILE;
+
+    public final static String NEW_LINE = "\n";
+    public final static String HTML_NEW_LINE = "<br>";
 
 
 }

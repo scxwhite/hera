@@ -6,7 +6,86 @@ div#rMenu {
     text-align: left;
     padding: 2px;
 }
+.layui-table-cell {
+    height: inherit;
+}
 
+body .msg-class .layui-layer-title {
+    background: #202c32;
+    color: #fff;
+    border: none;
+}
+
+body .msg-class .layui-layer-btn {
+    border-top: 1px solid #E9E7E7
+}
+
+body .msg-class .layui-layer-btn a {
+    background: #333;
+}
+
+body .msg-class .layui-layer-btn .layui-layer-btn1 {
+    background: #999;
+}
+
+.box, .content {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+div #rMenu {
+    position: absolute;
+    visibility: hidden;
+    top: 0;
+    background-color: #555;
+    text-align: left;
+    padding: 2px;
+}
+
+div#rMenu ul {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+
+div#rMenu ul li {
+    margin: 1px 0;
+    padding: 0 50px;
+    cursor: pointer;
+    list-style: none outside none;
+    background-color: #DFDFDF;
+}
+
+.colStyle {
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-top: 0px;
+    padding: 0px;
+    background-color: #eee;
+}
+
+.form-control-static {
+    overflow: hidden;
+}
+
+.node rect {
+    stroke: #333;
+    fill: #fff;
+}
+
+.edgePath path {
+    stroke: #333;
+    fill: #333;
+    stroke-width: 1.5px;
+}
 div#rMenu ul {
     margin: 0;
     padding: 0;

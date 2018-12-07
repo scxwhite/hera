@@ -1,7 +1,6 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraAction;
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.vo.GroupTaskVo;
@@ -21,10 +20,11 @@ public interface HeraJobActionService {
 
     /**
      * 批量插入
+     *
      * @param heraActionList
      * @return
      */
-    List<HeraAction>  batchInsert(List<HeraAction> heraActionList, Long nowAction);
+    List<HeraAction> batchInsert(List<HeraAction> heraActionList, Long nowAction);
 
     int delete(String id);
 
@@ -63,6 +63,7 @@ public interface HeraJobActionService {
 
     /**
      * 根据jobId 获取所有的版本
+     *
      * @param jobId
      * @return
      */
@@ -76,6 +77,7 @@ public interface HeraJobActionService {
 
     /**
      * 根据jobId 查询历史日志
+     *
      * @param idList
      * @return
      */

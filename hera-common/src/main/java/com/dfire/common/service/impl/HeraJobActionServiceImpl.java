@@ -2,7 +2,6 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
-import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
@@ -11,18 +10,15 @@ import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.logs.ScheduleLog;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -201,6 +197,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         return heraJobActionMapper.getFailedJob();
     }
 
+
     @Override
     public List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate) {
         if (idList == null || idList.size() == 0) {
@@ -217,33 +214,55 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             GroupTaskVo taskVo = new GroupTaskVo();
             taskVo.setActionId(String.valueOf(action.getId()));
             taskVo.setJobId(action.getJobId());
-            taskVo.setStatus(StringUtils.isBlank(action.getStatus()) ? "未执行" : action.getStatus());
             taskVo.setName(action.getName());
+
+            if (action.getStatus() != null) {
+                switch (action.getStatus()) {
+                    case Constants.STATUS_SUCCESS:
+                        taskVo.setStatus(Constants.HTML_FONT_GREEN_LEFT + Constants.STATUS_SUCCESS + Constants.HTML_FONT_RIGHT);
+                        break;
+
+                    case Constants.STATUS_RUNNING:
+                        taskVo.setStatus(Constants.HTML_FONT_YELLOW_LEFT + Constants.STATUS_RUNNING + Constants.HTML_FONT_RIGHT);
+                        break;
+
+                    case Constants.STATUS_FAILED:
+                        taskVo.setStatus(Constants.HTML_FONT_RED_LEFT + Constants.STATUS_FAILED + Constants.HTML_FONT_RIGHT);
+                        break;
+                    default:
+                        taskVo.setStatus(Constants.HTML_FONT_RED_LEFT + action.getStatus() + Constants.HTML_FONT_RIGHT);
+                        break;
+                }
+
+            } else {
+                taskVo.setStatus(Constants.HTML_FONT_RED_LEFT + "未执行" + Constants.HTML_FONT_RIGHT);
+            }
+
+            taskVo.setLastResult(action.getLastResult());
             if (action.getScheduleType() == 0) {
                 taskVo.setReadyStatus("独立任务");
-            } else if (StringUtils.isBlank(action.getStatus())) {
-                String[] dependencies = action.getDependencies().split(",");
-                Map<String, String> readyMap = StringUtil.convertStringToMap(action.getReadyDependency());
+            } else {
+                String[] dependencies = action.getDependencies().split(Constants.COMMA);
                 StringBuilder builder = new StringBuilder();
-                String endTime;
+                HeraAction heraAction;
                 for (String dependency : dependencies) {
-                    if ((endTime = readyMap.get(dependency)) != null) {
-                        builder.append("依赖任务:")
-                                .append(dependency)
-                                .append(",运行时间:")
-                                .append(ActionUtil.getFormatterDate("MM-dd HH:mm", ActionUtil.longToDate(Long.parseLong(endTime))))
-                                .append("\n");
-
+                    heraAction = this.findById(dependency);
+                    if (heraAction != null) {
+                        if (Constants.STATUS_SUCCESS.equals(heraAction.getStatus())) {
+                            builder.append(Constants.HTML_FONT_GREEN_LEFT).append("依赖任务:").append(dependency).append(",结束时间:").append(ActionUtil.getFormatterDate(ActionUtil.MON_MIN, heraAction.getStatisticEndTime()));
+                        } else if (Constants.STATUS_RUNNING.equals(heraAction.getStatus())) {
+                            builder.append(Constants.HTML_FONT_YELLOW_LEFT).append("依赖任务:").append(dependency).append(",执行中");
+                        } else if (Constants.STATUS_FAILED.equals(heraAction.getStatus())) {
+                            builder.append(Constants.HTML_FONT_RED_LEFT).append("依赖任务:").append(dependency).append(",执行失败");
+                        } else {
+                            builder.append(Constants.HTML_FONT_RED_LEFT).append("依赖任务:").append(dependency).append(",未执行");
+                        }
                     } else {
-                        builder.append("依赖任务:").append(dependency).append(",未执行\n");
+                        builder.append(Constants.HTML_FONT_RED_LEFT).append("依赖任务:").append(dependency).append(",未找到");
                     }
+                    builder.append(Constants.HTML_FONT_RIGHT).append(Constants.HTML_NEW_LINE);
                 }
                 taskVo.setReadyStatus(builder.toString());
-            } else {
-                //TODO  待开发  最好hera_action 有开始结束时间
-                String[] dependencies = action.getDependencies().split(",");
-
-
             }
             res.add(taskVo);
         });

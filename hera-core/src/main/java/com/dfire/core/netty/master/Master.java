@@ -545,12 +545,13 @@ public class Master {
                 if (StringUtils.isNotBlank(jobDependencies)) {
 
                     Map<String, List<HeraAction>> dependenciesMap = new HashMap<>(1024);
-                    String[] dependencies = jobDependencies.split(",");
+                    String[] dependencies = jobDependencies.split(Constants.COMMA);
                     for (String dependentId : dependencies) {
+                        Integer dpId = Integer.parseInt(dependentId);
                         List<HeraAction> dependActionList = new ArrayList<>();
 
                         for (Map.Entry<Long, HeraAction> entry : actionMap.entrySet()) {
-                            if (entry.getValue().getJobId().equals(dependentId)) {
+                            if (entry.getValue().getJobId().equals(dpId)) {
                                 dependActionList.add(entry.getValue());
                             }
                         }

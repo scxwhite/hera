@@ -6,7 +6,6 @@ import org.joda.time.DateTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -21,7 +20,8 @@ public class ActionUtil {
     /**
      * 精确到分钟的时间
      */
-    public static final String ACTION_MIN =  "yyyyMMddHHmm";
+    public static final String ACTION_MIN = "yyyyMMddHHmm";
+    public static final String MON_MIN = "MM-dd HH:mm";
     /**
      * ACTION 表达式
      */
@@ -64,6 +64,9 @@ public class ActionUtil {
     }
 
     public static String getFormatterDate(String formatter, Date date) {
+        if (date == null) {
+            return "";
+        }
         SimpleDateFormat sdf = new SimpleDateFormat(formatter);
         return sdf.format(date);
     }
@@ -91,7 +94,7 @@ public class ActionUtil {
         return new DateTime(nowTime).toString(ACTION_VERSION_PREFIX);
     }
 
-    public static String getCurrDate(){
+    public static String getCurrDate() {
         return new DateTime().toString(YYYY_MM_DD);
     }
 
@@ -150,12 +153,12 @@ public class ActionUtil {
 
 
     public static Integer getJobId(String action) {
-        if (StringUtils.isBlank(action) ) {
+        if (StringUtils.isBlank(action)) {
             return null;
         }
         int actionLen = action.length();
         int len = 4;
-        if (actionLen < len ) {
+        if (actionLen < len) {
             return null;
         }
         return Integer.parseInt(action.substring(actionLen - len));
@@ -163,22 +166,21 @@ public class ActionUtil {
 
     /**
      * 获取当前时间 的 下一天的版本
+     *
      * @return Long{201811290000000000}
      */
-    public static  Long getLongNextDayActionVersion(){
+    public static Long getLongNextDayActionVersion() {
         return Long.parseLong(getNextDayActionVersion());
     }
 
     /**
      * 获取当前时间 的 下一天的版本
+     *
      * @return String{201811290000000000}
      */
-    public static  String getNextDayActionVersion(){
+    public static String getNextDayActionVersion() {
         return new DateTime().plusDays(1).toString(ACTION_VERSION_INIT);
     }
-
-
-
 
 
 }
