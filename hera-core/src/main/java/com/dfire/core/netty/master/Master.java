@@ -10,6 +10,7 @@ import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.kv.Tuple;
@@ -121,7 +122,7 @@ public class Master {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 2, TimeUnit.MINUTES);
+        }, 30, TimeUnit.SECONDS);
 
         //只在整点生成版本
         masterContext.masterSchedule.scheduleAtFixedRate(() -> {
@@ -893,7 +894,10 @@ public class Master {
                 masterContext.getDispatcher().forwardEvent(event);
             }
         } else {
-            heraAction.setReadyDependency("{}");
+            //如果是依赖任务 置空依赖
+            if (JobScheduleTypeEnum.Dependent.getType().equals(heraAction.getScheduleType())) {
+                heraAction.setReadyDependency("{}");
+            }
             heraAction.setStatus(Constants.STATUS_SUCCESS);
             HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, triggerType, heraJobHistory.getId());
             masterContext.getDispatcher().forwardEvent(successEvent);

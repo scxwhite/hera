@@ -104,7 +104,7 @@ public class ScheduleCenterController extends BaseHeraController {
         StringBuilder focusUsers = new StringBuilder("[ ");
         if (monitor != null && StringUtils.isNotBlank(monitor.getUserIds())) {
             String ownerId = getOwnerId();
-            String[] ids = monitor.getUserIds().split(",");
+            String[] ids = monitor.getUserIds().split(Constants.COMMA);
             Arrays.stream(ids).forEach(id -> {
                 if (ownerId.equals(id)) {
                     heraJobVo.setFocus(true);
