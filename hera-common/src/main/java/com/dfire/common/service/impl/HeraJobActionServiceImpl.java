@@ -244,7 +244,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                                 .append("\n");
 
                     } else {
-                        builder.append("依赖任务:").append(dependency).append(",未执行");
+                        builder.append("依赖任务:").append(dependency).append(",未执行\n");
                     }
                 }
                 taskVo.setReadyStatus(builder.toString());
