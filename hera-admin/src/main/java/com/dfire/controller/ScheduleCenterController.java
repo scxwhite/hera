@@ -10,6 +10,7 @@ import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.service.*;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.util.StringUtil;
@@ -37,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -124,12 +126,22 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/getGroupTask", method = RequestMethod.GET)
     @ResponseBody
-    public TableResponse<List<GroupTaskVo>> getGroupTask() {
-        List<GroupTaskVo> groupTaskVos = new ArrayList<>();
-        groupTaskVos.add(GroupTaskVo.builder().actionId("201811212000005497").name("card_all").status("success").readyStatus("依赖任务:201811212000005497,运行时间:11月21日 16：03").jobId(5497).build());
-        groupTaskVos.add(GroupTaskVo.builder().actionId("201811212000007361").name("customer_register_all").status("failed").readyStatus("依赖任务:201811212000005497,运行时间:11月21日 16：03").jobId(5497).build());
-        groupTaskVos.add(GroupTaskVo.builder().actionId("201811212000005497").name("card_all").status("success").readyStatus("依赖任务:201811212000005497,运行时间:11月21日 16：03").jobId(5497).build());
-        return new TableResponse<>("查询成功", 0, groupTaskVos);
+    public TableResponse<List<GroupTaskVo>> getGroupTask(String groupId) {
+
+
+        List<HeraGroup> group = heraGroupService.findDownStreamGroup(getGroupId(groupId));
+
+        Set<Integer> groupSet = group.stream().map(HeraGroup::getId).collect(Collectors.toSet());
+        List<HeraJob> jobList = heraJobService.getAll();
+        Set<Integer> jobIdSet = jobList.stream().filter(job -> groupSet.contains(job.getGroupId())).map(HeraJob::getId).collect(Collectors.toSet());
+
+        //TODO  先写死
+        Calendar calendar = Calendar.getInstance();
+
+        String endDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        String startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
+        return new TableResponse<>("查询成功", 0, heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate));
 
     }
 
@@ -230,7 +242,7 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         HeraAction heraAction = heraJobActionService.findById(actionId);
-        HeraJob heraJob = heraJobService.findById(Integer.parseInt(heraAction.getJobId()));
+        HeraJob heraJob = heraJobService.findById(heraAction.getJobId());
 
         if (owner == null) {
             owner = super.getOwner();

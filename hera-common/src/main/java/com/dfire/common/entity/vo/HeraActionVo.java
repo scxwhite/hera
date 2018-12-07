@@ -25,7 +25,7 @@ public class HeraActionVo {
 
     private String id;
 
-    private String jobId;
+    private Integer jobId;
 
     private Boolean auto;
 

@@ -3,10 +3,9 @@ package com.dfire.common.mapper;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.Judge;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraListInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
-import com.dfire.graph.JobRelation;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -45,7 +44,7 @@ public interface HeraJobMapper {
     HeraJob findById(Integer id);
 
     @Select("select * from hera_job where id in (#{list})")
-    @Lang(HeraSelectInLangDriver.class)
+    @Lang(HeraListInLangDriver.class)
     List<HeraJob> findByIds(@Param("list") List<Integer> list);
 
     @Select("select * from hera_job where group_id = #{groupId}")

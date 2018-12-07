@@ -4,6 +4,7 @@ import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
+import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.common.vo.JobStatus;
 
 import java.util.List;
@@ -71,5 +72,13 @@ public interface HeraJobActionService {
     List<HeraActionVo> getNotRunScheduleJob();
 
     List<HeraActionVo> getFailedJob();
+
+
+    /**
+     * 根据jobId 查询历史日志
+     * @param idList
+     * @return
+     */
+    List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate);
 
 }

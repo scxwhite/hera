@@ -13,7 +13,6 @@ import java.util.List;
 public interface HeraGroupService {
 
     HeraGroup getRootGroup();
-
     /**
      * 获取上游任务以及组
      *
@@ -39,5 +38,8 @@ public interface HeraGroupService {
     List<HeraGroup> findByOwner(String owner);
 
     HeraGroup findConfigById(Integer id);
+
+
+    List<HeraGroup> findDownStreamGroup(Integer groupId);
 
 }

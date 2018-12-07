@@ -22,7 +22,7 @@ public class HeraJobHistory {
 
     private String actionId;
 
-    private String jobId;
+    private Integer jobId;
 
     private Date startTime;
 

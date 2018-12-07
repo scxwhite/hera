@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.dfire.common.entity.Judge;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraListInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
@@ -40,7 +40,7 @@ public interface HeraFileMapper {
     HeraFile findById(Integer id);
 
     @Select("select * from hera_file where id in (#{list})")
-    @Lang(HeraSelectInLangDriver.class)
+    @Lang(HeraListInLangDriver.class)
     List<HeraFile> findByIds(@Param("list") List<Integer> list);
 
 

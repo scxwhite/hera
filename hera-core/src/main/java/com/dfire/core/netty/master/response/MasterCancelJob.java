@@ -90,7 +90,7 @@ public class MasterCancelJob {
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         String actionId = heraJobHistory.getActionId();
-        Integer jobId = Integer.parseInt(heraJobHistory.getJobId());
+        Integer jobId = heraJobHistory.getJobId();
         //手动执行队列 查找该job是否存在
         if (remove(context.getManualQueue().iterator(), actionId)) {
             webResponse = RpcWebResponse.WebResponse.newBuilder()
@@ -146,7 +146,7 @@ public class MasterCancelJob {
         RpcWebResponse.WebResponse webResponse = null;
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
-        Integer jobId = Integer.parseInt(heraJobHistory.getJobId());
+        Integer jobId = heraJobHistory.getJobId();
 
         String actionId = heraJobHistory.getActionId();
 

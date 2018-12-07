@@ -13,6 +13,7 @@ import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -104,5 +105,22 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     @Override
     public HeraGroup findConfigById(Integer id) {
         return heraGroupMapper.selectConfigById(id);
+    }
+
+    @Override
+    public List<HeraGroup> findDownStreamGroup(Integer groupId) {
+        List<HeraGroup> res = new ArrayList<>();
+        getDownStreamGroup(this.findById(groupId), res);
+        return res;
+    }
+
+    private void getDownStreamGroup(HeraGroup heraGroup, List<HeraGroup> streamGroup) {
+        if (heraGroup.getDirectory() != 0) {
+            streamGroup.add(heraGroup);
+            return;
+        }
+        this.findByParent(heraGroup.getId()).forEach(group -> getDownStreamGroup(group, streamGroup));
+
+
     }
 }

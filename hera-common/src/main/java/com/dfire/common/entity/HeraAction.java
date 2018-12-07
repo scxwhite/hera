@@ -20,7 +20,7 @@ public class HeraAction {
 
     private Long id;
 
-    private String jobId;
+    private Integer jobId;
 
     private Integer auto = 0;
 

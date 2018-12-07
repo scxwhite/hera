@@ -478,7 +478,7 @@ public class Master {
             heraAction.setId(actionId);
             heraAction.setCronExpression(actionCron);
             heraAction.setGmtCreate(new Date());
-            heraAction.setJobId(String.valueOf(heraJob.getId()));
+            heraAction.setJobId(heraJob.getId());
             heraAction.setHistoryId(heraJob.getHistoryId());
             heraAction.setAuto(heraJob.getAuto());
             heraAction.setGmtModified(new Date());
@@ -627,7 +627,7 @@ public class Master {
                                 actionNew.setGmtCreate(new Date());
                                 actionNew.setDependencies(actionDependencies.toString());
                                 actionNew.setJobDependencies(heraJob.getDependencies());
-                                actionNew.setJobId(String.valueOf(heraJob.getId()));
+                                actionNew.setJobId(heraJob.getId());
                                 actionNew.setAuto(heraJob.getAuto());
                                 actionNew.setGmtModified(new Date());
                                 actionNew.setHostGroupId(heraJob.getHostGroupId());

@@ -1,8 +1,6 @@
 var nodes, edges, g, headNode, currIndex = 0, len, inner, initialScale = 0.75, zoom, nodeIndex = {}, graphType;
-layui.use(['table', 'form'], function () {
-    var form = layui.form;
+layui.use(['table'], function () {
     var table = layui.table;
-
     $('#scheduleCenter').addClass('active');
     var focusId = -1;
     var focusItem = null;
@@ -1138,13 +1136,13 @@ layui.use(['table', 'form'], function () {
     $('#showAllBtn').click(function (e) {
         changeOverview(false);
 
-
+        console.log(focusId)
         // 表格渲染
         var tableIns = table.render({
             elem: '#allTable'                  //指定原始表格元素选择器（推荐id选择器）
-            ,height: "full-100"
+            , height: "full-100"
             , cols: [[                  //标题栏
-                 {field: 'actionId', title: 'ActionId', width: 172}
+                {field: 'actionId', title: 'ActionId', width: 172}
                 , {field: 'jobId', title: 'JobId', width: 71}
                 , {field: 'name', title: '任务名称', width: 200}
                 , {field: 'status', title: '执行状态', width: 90}
@@ -1153,6 +1151,9 @@ layui.use(['table', 'form'], function () {
             ]]
             , id: 'dataCheck'
             , url: base_url + '/scheduleCenter/getGroupTask'
+            , where: {
+                groupId: focusId
+            }
             , method: 'get'
             , page: true
             , limits: [30, 60, 90, 150, 300]

@@ -281,7 +281,7 @@ public class JobHandler extends AbstractHandler {
         if (heraActionVo.getAuto() && event.getActionId().equals(actionId)) {
             List<String> emails = new ArrayList<>(1);
             try {
-                HeraJobMonitor monitor = heraJobMonitorService.findByJobId(Integer.parseInt(heraActionVo.getJobId()));
+                HeraJobMonitor monitor = heraJobMonitorService.findByJobId(heraActionVo.getJobId());
                 if (monitor == null && Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
                     ScheduleLog.info("任务无监控人，发送给owner：{}", heraActionVo.getJobId());
                     HeraUser user = heraUserService.findByName(heraActionVo.getOwner());

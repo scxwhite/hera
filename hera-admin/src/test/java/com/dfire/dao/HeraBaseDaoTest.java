@@ -77,7 +77,7 @@ public class HeraBaseDaoTest {
     public void doBefore() {
         heraAction = HeraAction.builder()
                 .id(1111111111111111111L)
-                .jobId("6666")
+                .jobId(6666)
                 .gmtCreate(new Date())
                 .gmtModified(new Date())
                 .groupId(1)
@@ -117,7 +117,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraActionDaoTest() {
-        HeraAction action = HeraAction.builder().id(201801010010000350L).jobId("350").build();
+        HeraAction action = HeraAction.builder().id(201801010010000350L).jobId(350).build();
         System.out.println(heraAction.getGmtCreate());
         List<HeraAction> list = heraJobActionService.getAll();
         System.out.println(list.get(5).getJobDependencies());

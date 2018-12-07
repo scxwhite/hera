@@ -6,17 +6,21 @@ import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
 import com.dfire.common.service.HeraJobActionService;
+import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.util.StringUtil;
+import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.logs.ScheduleLog;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -28,6 +32,13 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
     @Autowired
     private HeraJobActionMapper heraJobActionMapper;
+
+    @Autowired
+    @Qualifier("heraJobMemoryService")
+    private HeraJobService heraJobService;
+
+    @Autowired
+    private HeraJobHistoryService heraJobHistoryService;
 
 
     @Override
@@ -186,5 +197,59 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     @Override
     public List<HeraActionVo> getFailedJob() {
         return heraJobActionMapper.getFailedJob();
+    }
+
+    @Override
+    public List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate) {
+        if (idList == null || idList.size() == 0) {
+            return null;
+        }
+        Map<String, Object> params = new HashMap<>(3);
+
+        params.put("startDate", startDate);
+        params.put("endDate", endDate);
+        params.put("list", idList);
+        List<HeraAction> actionList = heraJobActionMapper.findByJobIds(params);
+
+        List<GroupTaskVo> res = new ArrayList<>(actionList.size());
+        actionList.forEach(action -> {
+
+            GroupTaskVo taskVo = new GroupTaskVo();
+            taskVo.setActionId(String.valueOf(action.getId()));
+            taskVo.setJobId(action.getJobId());
+            taskVo.setStatus(action.getStatus());
+            taskVo.setName(heraJobService.findById(action.getJobId()).getName());
+
+
+            if (action.getScheduleType() == 0) {
+                taskVo.setReadyStatus("独立任务");
+            } else if (StringUtils.isBlank(action.getStatus())) {
+                String[] dependencies = action.getDependencies().split(",");
+                Map<String, String> readyMap = StringUtil.convertStringToMap(action.getReadyDependency());
+                StringBuilder builder = new StringBuilder();
+                String endTime;
+                for (String dependency : dependencies) {
+                    if ((endTime = readyMap.get(dependency)) != null) {
+                        builder.append("依赖任务:")
+                                .append(dependency)
+                                .append(",运行时间:")
+                                .append(ActionUtil.getFormatterDate("MM-dd HH:mm", ActionUtil.longToDate(Long.parseLong(endTime))))
+                                .append("\n");
+
+                    } else {
+                        builder.append("依赖任务:").append(dependency).append(",未执行");
+                    }
+                }
+                taskVo.setReadyStatus(builder.toString());
+            } else {
+                //TODO  待开发  最好hera_action 有开始结束时间
+                String[] dependencies = action.getDependencies().split(",");
+
+
+
+            }
+            res.add(taskVo);
+        });
+        return res;
     }
 }

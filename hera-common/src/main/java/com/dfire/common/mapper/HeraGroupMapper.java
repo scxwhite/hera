@@ -3,7 +3,7 @@ package com.dfire.common.mapper;
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.Judge;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraListInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
@@ -38,7 +38,7 @@ public interface HeraGroupMapper {
     HeraGroup findById(Integer id);
 
     @Select("select * from hera_group where id in (#{list}) and existed = 1")
-    @Lang(HeraSelectInLangDriver.class)
+    @Lang(HeraListInLangDriver.class)
     List<HeraGroup> findByIds(@Param("list") List<Integer> list);
 
 
