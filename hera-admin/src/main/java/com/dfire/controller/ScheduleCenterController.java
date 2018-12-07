@@ -135,12 +135,11 @@ public class ScheduleCenterController extends BaseHeraController {
         List<HeraJob> jobList = heraJobService.getAll();
         Set<Integer> jobIdSet = jobList.stream().filter(job -> groupSet.contains(job.getGroupId())).map(HeraJob::getId).collect(Collectors.toSet());
 
-        //TODO  先写死
+        //TODO  先写死 只看今天
         Calendar calendar = Calendar.getInstance();
-
-        String endDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
         String startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
+        calendar.add(Calendar.DAY_OF_MONTH, +1);
+        String endDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
         return new TableResponse<>("查询成功", 0, heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate));
 
     }
