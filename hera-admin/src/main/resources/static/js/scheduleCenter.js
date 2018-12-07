@@ -715,12 +715,12 @@ layui.use(['table'], function () {
     }
 
     function leftClick() {
-        codeMirror.setValue('');
         if ($('#jobTree').css('display') === 'block') {
             selected = zTree.getSelectedNodes()[0];
         } else {
             selected = zAllTree.getSelectedNodes()[0];
         }
+        changeOverview(true);
         if (selected) {
             var id = selected.id;
             var dir = selected.directory;
@@ -746,6 +746,8 @@ layui.use(['table'], function () {
                         }
                         if (data.script != null) {
                             codeMirror.setValue(data.script);
+                        } else {
+                            codeMirror.setValue('');
                         }
                         var isShow = data.scheduleType === 0;
                         $('#dependencies').css("display", isShow ? "none" : "");

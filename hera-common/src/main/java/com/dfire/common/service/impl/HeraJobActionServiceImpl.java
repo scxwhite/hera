@@ -2,6 +2,7 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -212,15 +214,20 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         List<HeraAction> actionList = heraJobActionMapper.findByJobIds(params);
 
         List<GroupTaskVo> res = new ArrayList<>(actionList.size());
+
+        Map<Integer, HeraJob> jobMap = heraJobService.findByIds(idList).stream().collect(Collectors.toMap(HeraJob::getId, job -> job));
+
+
         actionList.forEach(action -> {
 
             GroupTaskVo taskVo = new GroupTaskVo();
             taskVo.setActionId(String.valueOf(action.getId()));
             taskVo.setJobId(action.getJobId());
-            taskVo.setStatus(action.getStatus());
-            taskVo.setName(heraJobService.findById(action.getJobId()).getName());
-
-
+            taskVo.setStatus(StringUtils.isBlank(action.getStatus()) ? "未执行" : action.getStatus());
+            HeraJob heraJob = jobMap.get(action.getJobId());
+            if (heraJob != null) {
+                taskVo.setName(heraJob.getName());
+            }
             if (action.getScheduleType() == 0) {
                 taskVo.setReadyStatus("独立任务");
             } else if (StringUtils.isBlank(action.getStatus())) {
@@ -244,7 +251,6 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             } else {
                 //TODO  待开发  最好hera_action 有开始结束时间
                 String[] dependencies = action.getDependencies().split(",");
-
 
 
             }
