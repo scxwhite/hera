@@ -17,5 +17,7 @@ public class JobRelation {
 
     private Integer auto;
 
+    private Integer pAuto;
+
 
 }

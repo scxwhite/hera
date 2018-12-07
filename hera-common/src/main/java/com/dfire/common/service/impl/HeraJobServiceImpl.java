@@ -208,8 +208,10 @@ public class HeraJobServiceImpl implements HeraJobService {
         List<HeraJob> list = this.getAllJobDependencies();
         List<JobRelation> res = new ArrayList<>(list.size() * 3);
         Map<Integer, String> map = new HashMap<>(list.size());
+        Map<Integer, Integer> parentAutoMap = new HashMap<>(list.size());
         for (HeraJob job : list) {
             map.put(job.getId(), job.getName());
+            parentAutoMap.put(job.getId(),job.getAuto());
         }
         Integer p, id;
         String dependencies;
@@ -231,6 +233,7 @@ public class HeraJobServiceImpl implements HeraJobService {
                 jr.setName(map.get(id));
                 jr.setPid(p);
                 jr.setPname(map.get(p));
+                jr.setPAuto(parentAutoMap.get(p));
                 res.add(jr);
             }
         }
@@ -397,11 +400,11 @@ public class HeraJobServiceImpl implements HeraJobService {
     public DirectionGraph<Integer> buildJobGraph(List<JobRelation> jobRelations) {
         DirectionGraph<Integer> directionGraph = new DirectionGraph<>();
         for (JobRelation jobRelation : jobRelations) {
-            GraphNode<Integer> graphNodeTwo = new GraphNode<>(jobRelation.getAuto(), jobRelation.getPid(), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
-            GraphNode<Integer> graphNodeOne = new GraphNode<>(jobRelation.getAuto(), jobRelation.getId(), "任务ID：" + jobRelation.getId() + "\n任务名称：" + jobRelation.getName() + "\n");
-            directionGraph.addNode(graphNodeOne);
-            directionGraph.addNode(graphNodeTwo);
-            directionGraph.addEdge(graphNodeOne, graphNodeTwo);
+            GraphNode<Integer> graphNodeBegin = new GraphNode<>(jobRelation.getAuto(), jobRelation.getId(), "任务ID：" + jobRelation.getId() + "\n任务名称：" + jobRelation.getName() + "\n");
+            GraphNode<Integer> graphNodeEnd= new GraphNode<>(jobRelation.getPAuto(), jobRelation.getPid(), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
+            directionGraph.addNode(graphNodeBegin);
+            directionGraph.addNode(graphNodeEnd);
+            directionGraph.addEdge(graphNodeBegin, graphNodeEnd);
         }
         return directionGraph;
     }
