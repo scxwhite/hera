@@ -212,22 +212,13 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         params.put("endDate", endDate);
         params.put("list", idList);
         List<HeraAction> actionList = heraJobActionMapper.findByJobIds(params);
-
         List<GroupTaskVo> res = new ArrayList<>(actionList.size());
-
-        Map<Integer, HeraJob> jobMap = heraJobService.findByIds(idList).stream().collect(Collectors.toMap(HeraJob::getId, job -> job));
-
-
         actionList.forEach(action -> {
-
             GroupTaskVo taskVo = new GroupTaskVo();
             taskVo.setActionId(String.valueOf(action.getId()));
             taskVo.setJobId(action.getJobId());
             taskVo.setStatus(StringUtils.isBlank(action.getStatus()) ? "未执行" : action.getStatus());
-            HeraJob heraJob = jobMap.get(action.getJobId());
-            if (heraJob != null) {
-                taskVo.setName(heraJob.getName());
-            }
+            taskVo.setName(action.getName());
             if (action.getScheduleType() == 0) {
                 taskVo.setReadyStatus("独立任务");
             } else if (StringUtils.isBlank(action.getStatus())) {
