@@ -24,11 +24,18 @@ public class Constants {
     public final static String STATUS_RUNNING = "running";
 
     public final static String STATUS_SUCCESS = "success";
-    public final static String HTML_FONT_RED_LEFT = "<font color=\"red\">";
+    public final static String STATUS_NONE = "none";
 
-    public final static String HTML_FONT_GREEN_LEFT = "<font color=\"green\">";
+    public final static Integer HTML_FONT_SIZE = 1;
 
-    public final static String HTML_FONT_YELLOW_LEFT = "<font color=\"yellow\">";
+
+    public final static String HTML_FONT_RED_LEFT = "<font color=\"red\" size=\"" + HTML_FONT_SIZE + "\" >";
+
+    public final static String HTML_FONT_GREEN_LEFT = "<font color=\"green\" size=\"" + HTML_FONT_SIZE + "\">";
+
+    public final static String HTML_FONT_YELLOW_LEFT = "<font color=\"yellow\" size=\"" + HTML_FONT_SIZE + "\">";
+
+    public final static String HTML_FONT_LEFT = "<font size=\"" + HTML_FONT_SIZE + "\">";
 
     public final static String HTML_FONT_RIGHT = "</font>";
 

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.entity.model.TablePageForm;
 import com.dfire.common.entity.model.TableResponse;
 import com.dfire.common.entity.vo.*;
 import com.dfire.common.enums.JobScheduleTypeEnum;
@@ -126,7 +127,7 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/getGroupTask", method = RequestMethod.GET)
     @ResponseBody
-    public TableResponse<List<GroupTaskVo>> getGroupTask(String groupId) {
+    public TableResponse<List<GroupTaskVo>> getGroupTask(String groupId, TablePageForm pageForm) {
 
 
         List<HeraGroup> group = heraGroupService.findDownStreamGroup(getGroupId(groupId));
@@ -140,7 +141,8 @@ public class ScheduleCenterController extends BaseHeraController {
         String startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
         calendar.add(Calendar.DAY_OF_MONTH, +1);
         String endDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
-        return new TableResponse<>("查询成功", 0, heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate));
+        List<GroupTaskVo> taskVos = heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate, pageForm);
+        return new TableResponse<>(pageForm.getCount(), 0, taskVos);
 
     }
 

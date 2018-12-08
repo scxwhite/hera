@@ -2,6 +2,7 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.model.TablePageForm;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
@@ -199,7 +200,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
 
     @Override
-    public List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate) {
+    public List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate, TablePageForm pageForm) {
         if (idList == null || idList.size() == 0) {
             return null;
         }
@@ -208,39 +209,42 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         params.put("startDate", startDate);
         params.put("endDate", endDate);
         params.put("list", idList);
-        List<HeraAction> actionList = heraJobActionMapper.findByJobIds(params);
+        params.put("page", (pageForm.getPage() - 1) * pageForm.getLimit());
+        params.put("limit", pageForm.getPage() * pageForm.getLimit());
+        pageForm.setCount(heraJobActionMapper.findByJobIdsCount(params));
+        List<HeraAction> actionList = heraJobActionMapper.findByJobIdsAndPage(params);
         List<GroupTaskVo> res = new ArrayList<>(actionList.size());
         actionList.forEach(action -> {
             GroupTaskVo taskVo = new GroupTaskVo();
-            taskVo.setActionId(String.valueOf(action.getId()));
-            taskVo.setJobId(action.getJobId());
-            taskVo.setName(action.getName());
+            taskVo.setActionId(buildFont(String.valueOf(action.getId()), Constants.STATUS_NONE));
+            taskVo.setJobId(buildFont(String.valueOf(action.getJobId()), Constants.STATUS_NONE));
+            taskVo.setName(buildFont(action.getName(), Constants.STATUS_NONE));
 
             if (action.getStatus() != null) {
                 switch (action.getStatus()) {
                     case Constants.STATUS_SUCCESS:
-                        taskVo.setStatus(Constants.HTML_FONT_GREEN_LEFT + Constants.STATUS_SUCCESS + Constants.HTML_FONT_RIGHT);
+                        taskVo.setStatus(buildFont(Constants.STATUS_SUCCESS, Constants.STATUS_SUCCESS));
                         break;
 
                     case Constants.STATUS_RUNNING:
-                        taskVo.setStatus(Constants.HTML_FONT_YELLOW_LEFT + Constants.STATUS_RUNNING + Constants.HTML_FONT_RIGHT);
+                        taskVo.setStatus(buildFont(Constants.STATUS_RUNNING, Constants.STATUS_RUNNING));
                         break;
 
                     case Constants.STATUS_FAILED:
-                        taskVo.setStatus(Constants.HTML_FONT_RED_LEFT + Constants.STATUS_FAILED + Constants.HTML_FONT_RIGHT);
+                        taskVo.setStatus(buildFont(Constants.STATUS_FAILED, Constants.STATUS_FAILED));
                         break;
                     default:
-                        taskVo.setStatus(Constants.HTML_FONT_RED_LEFT + action.getStatus() + Constants.HTML_FONT_RIGHT);
+                        taskVo.setStatus(buildFont(action.getStatus(), Constants.STATUS_FAILED));
                         break;
                 }
 
             } else {
-                taskVo.setStatus(Constants.HTML_FONT_RED_LEFT + "未执行" + Constants.HTML_FONT_RIGHT);
+                taskVo.setStatus(buildFont("未执行", Constants.STATUS_FAILED));
             }
 
             taskVo.setLastResult(action.getLastResult());
             if (action.getScheduleType() == 0) {
-                taskVo.setReadyStatus("独立任务");
+                taskVo.setReadyStatus(buildFont("独立任务", Constants.STATUS_NONE));
             } else {
                 String[] dependencies = action.getDependencies().split(Constants.COMMA);
                 StringBuilder builder = new StringBuilder();
@@ -267,5 +271,20 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             res.add(taskVo);
         });
         return res;
+    }
+
+    private String buildFont(String str, String type) {
+        switch (type) {
+            case Constants.STATUS_RUNNING:
+                return Constants.HTML_FONT_YELLOW_LEFT + str + Constants.HTML_FONT_RIGHT;
+            case Constants.STATUS_FAILED:
+                return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
+            case Constants.STATUS_SUCCESS:
+                return Constants.HTML_FONT_GREEN_LEFT + str + Constants.HTML_FONT_RIGHT;
+            case "none":
+            default:
+                return Constants.HTML_FONT_LEFT + str + Constants.HTML_FONT_RIGHT;
+
+        }
     }
 }

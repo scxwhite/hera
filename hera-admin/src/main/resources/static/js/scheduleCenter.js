@@ -1144,12 +1144,12 @@ layui.use(['table'], function () {
             elem: '#allTable'                  //指定原始表格元素选择器（推荐id选择器）
             , height: "full-100"
             , cols: [[                  //标题栏
-                {field: 'actionId', title: 'ActionId', width: 172}
-                , {field: 'jobId', title: 'JobId', width: 71}
-                , {field: 'name', title: '任务名称', width: 200}
-                , {field: 'status', title: '执行状态', width: 90}
-                , {field: 'readyStatus', title: '依赖状态', width: 425}
-                , {field: 'lastResult', title: '上一次任务情况', width: 280}
+                {field: 'actionId', title: 'ActionId', width: 151}
+                , {field: 'jobId', title: 'JobId', width: 70}
+                , {field: 'name', title: '任务名称', width: 125}
+                , {field: 'status', title: '执行状态', width: 105}
+                , {field: 'readyStatus', title: '依赖状态', width: 340}
+                , {field: 'lastResult', title: '上次执行结果', width: 125}
             ]]
             , id: 'dataCheck'
             , url: base_url + '/scheduleCenter/getGroupTask'
@@ -1158,7 +1158,7 @@ layui.use(['table'], function () {
             }
             , method: 'get'
             , page: true
-            , limits: [30, 60, 90, 150, 300]
+            , limits: [10, 30, 50]
         });
     });
     $('#closeAll').click(function (e) {

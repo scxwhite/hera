@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class GroupTaskVo {
 
     private String actionId;
-    private Integer jobId;
+    private String jobId;
     private String name;
     private String status;
     private String readyStatus;
