@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap.min.css">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/_all-skins.css">
@@ -13,7 +13,6 @@
               <link rel="stylesheet" href="${request.contextPath}/plugins/ionicons-2.0.1/css/ionicons.min.css">
 
 <#--	<link rel="stylesheet"
-          href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
 
 	    <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
 	    	<link rel="stylesheet" href="${request.contextPath}/plugins/pace/themes/pace-theme-flash.css">
@@ -31,23 +30,19 @@
 </#macro>
 
 <#macro commonScript>
-	<!-- jQuery 2.1.4 -->
-	<script src="${request.contextPath}/adminlte/plugins/jQuery/jquery-2.2.3.min.js"></script>
-	<!-- Bootstrap 3.3.5 -->
-	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap.min.js"></script>
-	<!-- FastClick -->
+    <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="${request.contextPath}/plugins/layui/layui.js"></script>
-
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 
+	<!-- AdminLTE App -->
+	<script src="${request.contextPath}/adminlte/dist/js/app.min.js"></script>
+<#-- jquery.slimscroll -->
 
 <#--
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 
-
-    <script src="${request.contextPath}/adminlte/plugins/daterangepicker/moment.min.js"></script>
-    <script src="${request.contextPath}/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
 
     -->
 

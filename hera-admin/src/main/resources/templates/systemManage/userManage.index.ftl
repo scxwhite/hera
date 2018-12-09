@@ -5,6 +5,7 @@
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
     <link rel="stylesheet" href="${request.contextPath}/css/userManage.css">
+    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
 </head>
 
 <style type="text/css">
@@ -25,13 +26,15 @@
                     <h3 class="big-title">用户管理</h3>
                 </div>
                 <div class="box-body">
-                    <div class = "jobPreview"  class="div-row" style="margin-bottom:10px">
-                        <table id="table" class="table table-striped"/></table>
+                    <div class="jobPreview" class="div-row" style="margin-bottom:10px">
+                        <table id="table" class="table table-striped"/>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <div class="modal fade" id="editUser" tabindex="-1" role="dialog" aria-labelledby="addConfig" aria-hidden="true">
+            <div class="modal fade" id="editUser" tabindex="-1" role="dialog" aria-labelledby="addConfig"
+                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -43,26 +46,26 @@
                             <label id="operateType" hidden></label>
                             <label id="isValid" hidden></label>
                             <br>
-                            <div class="input-group" >
-                                <span class="input-group-addon" >用户姓名&nbsp;&nbsp;&nbsp;</span>
+                            <div class="input-group">
+                                <span class="input-group-addon">用户姓名&nbsp;&nbsp;&nbsp;</span>
                                 <input type="text" class="form-control" name="name" id="name">
                             </div>
                             <br>
-                            <div class="input-group " >
-                                <span class="input-group-addon" >邮箱地址&nbsp;&nbsp;&nbsp;</span>
-                                <input type="text" class="form-control" name="email" id="email" >
+                            <div class="input-group ">
+                                <span class="input-group-addon">邮箱地址&nbsp;&nbsp;&nbsp;</span>
+                                <input type="text" class="form-control" name="email" id="email">
                             </div>
                             <br>
 
-                            <div class="input-group " >
+                            <div class="input-group ">
                                 <span class="input-group-addon">手机号码&nbsp;&nbsp;&nbsp;</span>
                                 <input type="text" class="form-control" name="phone" id="phone" placeholder="0~1">
                             </div>
                             <br>
 
-                            <div class="input-group " >
+                            <div class="input-group ">
                                 <span class="input-group-addon">描述&nbsp;&nbsp;&nbsp;</span>
-                                <input type="text" class="form-control" name="description" id="description" >
+                                <input type="text" class="form-control" name="description" id="description">
                             </div>
                             <br>
                         </div>
@@ -74,45 +77,53 @@
                 </div>
             </div>
 
-            <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModal" aria-hidden="false" data-keyboard="true">
+            <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModal"
+                 aria-hidden="false" data-keyboard="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                            <h4 class="modal-title" id="confirmModalLabel" ></h4>
+                            <h4 class="modal-title" id="confirmModalLabel"></h4>
                             <label id="hidden_id" hidden></label>
                         </div>
                         <div class="modal-body" id="confirmModalBody"></div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal" id="cancelModalBtn">关闭</button>
-                            <button type="button" class="btn btn-info" data-dismiss="modal" id="confirmModalBtn">确定</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal" id="cancelModalBtn">关闭
+                            </button>
+                            <button type="button" class="btn btn-info" data-dismiss="modal" id="confirmModalBtn">确定
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModal" aria-hidden="false" data-keyboard="true">
+            <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModal"
+                 aria-hidden="false" data-keyboard="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-                            <h4 class="modal-title" id="confirmModalLabel" ></h4>
+                            <h4 class="modal-title" id="confirmModalLabel"></h4>
                             <label id="hidden_id" hidden></label>
                         </div>
                         <div class="modal-body" id="confirmModalBody"></div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal" id="cancelModalBtn">关闭</button>
-                            <button type="button" class="btn btn-info" data-dismiss="modal" id="confirmModalBtn">确定</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal" id="cancelModalBtn">关闭
+                            </button>
+                            <button type="button" class="btn btn-info" data-dismiss="modal" id="confirmModalBtn">确定
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="alertSuccess" z-index="1001" class="alert alert-success text-center fade in" style="position: fixed; right: 0px;top: 0px;display: none; height: 50px;" >
+            <div id="alertSuccess" z-index="1001" class="alert alert-success text-center fade in"
+                 style="position: fixed; right: 0px;top: 0px;display: none; height: 50px;">
                 <strong id="successText"></strong>
             </div>
-            <div id="alertFailure" z-index="1001" class="alert alert-danger text-center fade in" style="position: fixed; right: 0px;top: 0px;display: none;height: 50px;" >
-                <strong id="failureText" ></strong>
+            <div id="alertFailure" z-index="1001" class="alert alert-danger text-center fade in"
+                 style="position: fixed; right: 0px;top: 0px;display: none;height: 50px;">
+                <strong id="failureText"></strong>
             </div>
         </section>
 
@@ -122,9 +133,9 @@
 <#--content-wrapper-->
 
 <@netCommon.commonScript />
-    <script src="${request.contextPath}/plugins/bootstrap-fixed-columns/bootstrap-table-fixed-columns.js"></script>
-<script src="${request.contextPath}/js/userManage.js"></script>
-
+    <script src="${request.contextPath}/js/userManage.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 </body>
 
 </html>

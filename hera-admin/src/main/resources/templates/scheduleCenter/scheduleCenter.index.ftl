@@ -4,14 +4,18 @@
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/metroStyle/metroStyle.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/lucario.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
-    <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
+    <link href="https://cdn.bootcss.com/zTree.v3/3.5.32/css/metroStyle/metroStyle.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/lucario.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.3/css/bootstrap-select.min.css">
+    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
+
 </head>
+
 
 <body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
@@ -919,27 +923,31 @@
 
 
 <@netCommon.commonScript />
-
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/lib/codemirror.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/mode/shell/shell.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/anyword-hint.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/sql-hint.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/active-line.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/mode/python/python.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.exhide.min.js"></script>
-
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.core.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exedit.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.excheck.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exhide.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/shell/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/anyword-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/sql-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/sql/sql.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 
 <script src="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 <script src="${request.contextPath}/js/jobDag.js?v=2"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js"></script>
+
+<script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
+<script src="https://cdn.bootcss.com/dagre-d3/0.4.17/dagre-d3.min.js"></script>
+
 
 
 </body>
