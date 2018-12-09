@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/lucario.css">
+    <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-tab.css">
     <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
     <link rel="stylesheet" href="${request.contextPath}/css/developCenter.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css">
+
 <#--<link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">-->
 </head>
 
@@ -41,8 +44,9 @@
         cursor: pointer;
         list-style: none outside none;
     }
-    div#rMenu ul li:hover{
-        background-color: rgba(0,0,0,0.1);
+
+    div#rMenu ul li:hover {
+        background-color: rgba(0, 0, 0, 0.1);
     }
 
 
@@ -89,7 +93,7 @@
                     </div>
                     <div id="tabContainer" class="devStyle"></div>
                     <div class="code-log-con">
-                        <div id="scriptEditor"  class="devStyle">
+                        <div id="scriptEditor" class="devStyle">
                             <textarea id="fileScript" name="editor"></textarea>
                         </div>
                         <div id="logContainer" class="log-container">
@@ -155,11 +159,13 @@
     </div>
 </div>
 
-<div id="alertSuccess" z-index="1001" class="alert alert-success text-center fade in" style="position: fixed; right: 0px;top: 0px;display: none; height: 50px;" >
+<div id="alertSuccess" z-index="1001" class="alert alert-success text-center fade in"
+     style="position: fixed; right: 0px;top: 0px;display: none; height: 50px;">
     <strong id="successText"></strong>
 </div>
-<div id="alertFailure" z-index="1001" class="alert alert-danger text-center fade in" style="position: fixed; right: 0px;top: 0px;display: none;height: 50px;" >
-    <strong id="failureText" ></strong>
+<div id="alertFailure" z-index="1001" class="alert alert-danger text-center fade in"
+     style="position: fixed; right: 0px;top: 0px;display: none;height: 50px;">
+    <strong id="failureText"></strong>
 </div>
 
 <div class="response box box-success" id="responseCon">
@@ -190,10 +196,11 @@
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-tab.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
 <script src="${request.contextPath}/js/developCenter.js?v=1"></script>
-<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.2/js/locales/zh.js"></script>
-
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js"></script>
 </body>
 
 </html>

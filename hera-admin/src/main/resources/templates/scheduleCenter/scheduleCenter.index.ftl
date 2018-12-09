@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/lucario.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/layui/css/layui.css">
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css">
 </head>
 
 <body class="hold-transition skin-black sidebar-mini">
@@ -932,14 +932,14 @@
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.exhide.min.js"></script>
-<script src="${request.contextPath}/plugins/layui/layui.js"></script>
 
 
 <script src="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 <script src="${request.contextPath}/js/jobDag.js?v=2"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.2/js/locales/zh.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js"></script>
 
 
 </body>

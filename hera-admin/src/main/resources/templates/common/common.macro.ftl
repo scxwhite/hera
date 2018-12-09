@@ -1,41 +1,33 @@
 <#macro commonStyle>
 <#-- favicon -->
-	<link rel="icon" href="favicon.ico"/>
+	<link rel="icon" href="${request.contextPath}/images/favicon.ico"/>
 	<meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <!-- Bootstrap 3.3.5 -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-tab.css">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-<#--<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/font-awesome-4.5.0/css/font-awesome.min.css">-->
-    <!-- Ionicons -->
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css"> -->
-    <link rel="stylesheet" href="${request.contextPath}/plugins/ionicons-2.0.1/css/ionicons.min.css">
-    <!-- Theme style -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">
-    <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/_all-skins.css">
 
-	<link rel="stylesheet"
+              <link rel="stylesheet" href="${request.contextPath}/plugins/ionicons-2.0.1/css/ionicons.min.css">
+
+<#--	<link rel="stylesheet"
           href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
 
-	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.css"></link>
-	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput-rtl.min.css"></link>
-    <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
+	    <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
+	    	<link rel="stylesheet" href="${request.contextPath}/plugins/pace/themes/pace-theme-flash.css">
+	-->
+    <link rel="stylesheet" href="${request.contextPath}/plugins/layui/css/layui.css">
 
     <link rel="stylesheet" href="${request.contextPath}/css/common.css">
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+
     <![endif]-->
 	<!-- pace -->
-	<link rel="stylesheet" href="${request.contextPath}/plugins/pace/themes/pace-theme-flash.css">
 </#macro>
 
 <#macro commonScript>
@@ -43,40 +35,29 @@
 	<script src="${request.contextPath}/adminlte/plugins/jQuery/jquery-2.2.3.min.js"></script>
 	<!-- Bootstrap 3.3.5 -->
 	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap.min.js"></script>
-	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-tab.js"></script>
 	<!-- FastClick -->
-	<script src="${request.contextPath}/adminlte/plugins/fastclick/fastclick.min.js"></script>
-	<!-- AdminLTE App -->
-	<script src="${request.contextPath}/adminlte/dist/js/app.min.js"></script>
-<#-- jquery.slimscroll -->
-	<script src="${request.contextPath}/adminlte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <script src="${request.contextPath}/plugins/layui/layui.js"></script>
 
-    <!-- pace -->
-    <script src="${request.contextPath}/plugins/pace/pace.min.js"></script>
-<#-- jquery cookie -->
-	<script src="${request.contextPath}/plugins/jquery/jquery.cookie.js"></script>
-<#-- layer -->
-	<script src="${request.contextPath}/plugins/layer/layer.js"></script>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 
-	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+
+<#--
 	<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.js"></script>
-	<#--<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/select-ajax.js"></script>-->
-	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 
-    <script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.js"></script>
 
     <script src="${request.contextPath}/adminlte/plugins/daterangepicker/moment.min.js"></script>
     <script src="${request.contextPath}/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
-    <script src="${request.contextPath}/plugins/echarts/echarts.js"></script>
-    <script src="${request.contextPath}/plugins/echarts/PercentPie.js"></script>
-    <script src="${request.contextPath}/plugins/echarts/macarons.js"></script>
-    <script src="${request.contextPath}/plugins/echarts/shine.js"></script>
 
-    <script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
+    -->
+
+
+
+
+<#--    <script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
     <script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
     <script src="${request.contextPath}/plugins/d3/resize.js"></script>
-    <script src="${request.contextPath}/plugins/d3/simpleTimeline.js"></script>
-
+    <script src="${request.contextPath}/plugins/d3/simpleTimeline.js"></script>-->
 <#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>
 
@@ -130,9 +111,11 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="" id="userManage"><a href="${request.contextPath}/userManage"><i class="fa fa-circle-o"></i>
+                        <li class="" id="userManage"><a href="${request.contextPath}/userManage"><i
+                                class="fa fa-circle-o"></i>
                             用户管理</a></li>
-                        <li id="hostGroupManage"><a href="${request.contextPath}/hostGroupManage"><i class="fa fa-circle-o"></i>机器组管理</a>
+                        <li id="hostGroupManage"><a href="${request.contextPath}/hostGroupManage"><i
+                                class="fa fa-circle-o"></i>机器组管理</a>
                         </li>
                     </ul>
                 </li>
@@ -145,7 +128,8 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="" id="jobDetailMenu"><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a>
+                        <li class="" id="jobDetailMenu"><a href="${request.contextPath}/jobDetail"><i
+                                class="fa fa-circle-o"></i>今日任务详情</a>
                         </li>
                         <li class="" id="jobDag"><a href="${request.contextPath}/jobDag"><i
                                 class="fa fa-circle-o"></i>任务依赖图</a></li>

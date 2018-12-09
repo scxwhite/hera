@@ -1,4 +1,4 @@
-$(function () {
+layui.use("layer",function(){
 
     airBalloon('div.air-balloon');
 

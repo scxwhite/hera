@@ -140,6 +140,10 @@
 <@netCommon.commonScript />
 <script src="${request.contextPath}/plugins/easyPie/jquery.easypiechart.min.js"></script>
 <script src="${request.contextPath}/js/machineInfo.js"></script>
+<script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js"></script>
+<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+
 
 </body>
 </html>

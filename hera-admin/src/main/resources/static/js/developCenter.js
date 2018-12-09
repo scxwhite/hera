@@ -1,5 +1,5 @@
 var codeMirror;
-$(function () {
+layui.use("layer",function(){
     $('#developManage').addClass('active');
     /**
      * 开发中心zTree初始化配置
