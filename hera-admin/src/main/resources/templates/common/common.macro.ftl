@@ -9,16 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/_all-skins.css">
-
-              <link rel="stylesheet" href="${request.contextPath}/plugins/ionicons-2.0.1/css/ionicons.min.css">
-
-<#--	<link rel="stylesheet"
-
-	    <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
-	    	<link rel="stylesheet" href="${request.contextPath}/plugins/pace/themes/pace-theme-flash.css">
-	-->
+    <link rel="stylesheet" href="${request.contextPath}/plugins/ionicons-2.0.1/css/ionicons.min.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/layui/css/layui.css">
-
     <link rel="stylesheet" href="${request.contextPath}/css/common.css">
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -36,24 +28,8 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 
-	<!-- AdminLTE App -->
 	<script src="${request.contextPath}/adminlte/dist/js/app.min.js"></script>
-<#-- jquery.slimscroll -->
 
-<#--
-	<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.js"></script>
-
-
-    -->
-
-
-
-
-<#--    <script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
-    <script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
-    <script src="${request.contextPath}/plugins/d3/resize.js"></script>
-    <script src="${request.contextPath}/plugins/d3/simpleTimeline.js"></script>-->
-<#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>
 
     <script>var base_url = '${request.contextPath}';</script>
