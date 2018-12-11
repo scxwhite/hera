@@ -1,5 +1,5 @@
 var codeMirror;
-layui.use("layer",function(){
+layui.use("layer", function () {
     $('#developManage').addClass('active');
     /**
      * 开发中心zTree初始化配置
@@ -751,7 +751,9 @@ layui.use("layer",function(){
         codeMirror.display.wrapper.style.height = 500 + "px";
         codeMirror.on('keypress', function () {
             if (!codeMirror.getOption('readOnly')) {
-                codeMirror.showHint();
+                codeMirror.showHint({
+                    completeSingle: false
+                });
             }
         });
         var saveTimer;

@@ -15,7 +15,7 @@
     <packaging>jar</packaging>
 
     <name>hera-admin</name>
-    <description>hera project for Spring Boot</description>
+    <description>hera任务调度系统</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

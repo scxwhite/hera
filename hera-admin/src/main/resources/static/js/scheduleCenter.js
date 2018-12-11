@@ -944,7 +944,9 @@ layui.use(['table'], function () {
 
         codeMirror.on('keypress', function () {
             if (!codeMirror.getOption('readOnly')) {
-                codeMirror.showHint();
+                codeMirror.showHint({
+                    completeSingle: false
+                });
             }
         });
 
