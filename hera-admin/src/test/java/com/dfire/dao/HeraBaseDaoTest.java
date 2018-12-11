@@ -164,7 +164,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraDebugHistoryDaoTest() {
-        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById("271");
+        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById(271);
         debugHistory.setStatus(StatusEnum.FAILED);
         heraDebugHistoryService.update(BeanConvertUtils.convert(debugHistory));
         HeraDebugHistory history = BeanConvertUtils.convert(debugHistory);

@@ -295,13 +295,12 @@ public class WorkClient {
     /**
      * 取消手动执行的任务
      *
-     * @param historyId
+     * @param actionId
      */
-    public void cancelManualJob(String historyId) {
-        Job job = workContext.getManualRunning().get(historyId);
-        workContext.getManualRunning().remove(historyId);
+    public void cancelManualJob(String actionId) {
+        Job job = workContext.getManualRunning().get(actionId);
+        workContext.getManualRunning().remove(actionId);
         job.cancel();
-
         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
         history.setEndTime(new Date());
         String illustrate = history.getIllustrate();

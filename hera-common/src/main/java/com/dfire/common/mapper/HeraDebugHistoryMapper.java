@@ -35,7 +35,7 @@ public interface HeraDebugHistoryMapper {
 
     @Select("select * from hera_debug_history where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
-    HeraDebugHistory findById(HeraDebugHistory heraDebugHistory);
+    HeraDebugHistory findById(Integer id);
 
     @Select("select * from hera_debug_history where id in (#{list})")
     @Lang(HeraListInLangDriver.class)

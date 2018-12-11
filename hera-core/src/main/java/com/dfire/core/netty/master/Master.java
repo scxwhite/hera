@@ -918,32 +918,32 @@ public class Master {
      * 开发中心脚本执行逻辑
      *
      * @param selectWork 所选机器
-     * @param jobId      jobId
+     * @param debugId      debugId
      */
-    private void runDebugJob(MasterWorkHolder selectWork, String jobId) {
+    private void runDebugJob(MasterWorkHolder selectWork, String debugId) {
         final MasterWorkHolder workHolder = selectWork;
         this.executeJobPool.execute(() -> {
-            HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(jobId);
+            HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
             history.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
             masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
             Exception exception = null;
             RpcResponse.Response response = null;
             Future<RpcResponse.Response> future = null;
             try {
-                future = new MasterExecuteJob().executeJob(masterContext, workHolder, JobExecuteKind.ExecuteKind.DebugKind, jobId);
+                future = new MasterExecuteJob().executeJob(masterContext, workHolder, JobExecuteKind.ExecuteKind.DebugKind, debugId);
                 response = future.get(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
             } catch (Exception e) {
                 exception = e;
                 if (future != null) {
                     future.cancel(true);
                 }
-                DebugLog.error(String.format("debugId:%s run failed", jobId), e);
+                DebugLog.error(String.format("debugId:%s run failed", debugId), e);
             }
             boolean success = response != null && response.getStatusEnum() == ResponseStatus.Status.OK;
             if (!success) {
                 exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
                 TaskLog.info("8.Master: debug job error");
-                history = masterContext.getHeraDebugHistoryService().findById(jobId);
+                history = masterContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
                 HeraDebugFailEvent failEvent = HeraDebugFailEvent.builder()
                         .debugHistory(BeanConvertUtils.convert(history))
                         .throwable(exception)

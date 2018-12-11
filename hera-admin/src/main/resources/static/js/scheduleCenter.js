@@ -934,7 +934,7 @@ layui.use(['table'], function () {
         codeMirror = CodeMirror.fromTextArea(editor[0], {
             mode: "text/x-sh",
             lineNumbers: true,
-            theme: "darcula",
+            theme: "lucario",
             readOnly: true,
             matchBrackets: true,
             smartIndent: true,
@@ -953,7 +953,7 @@ layui.use(['table'], function () {
 
         selfConfigCM = CodeMirror.fromTextArea($('#config textarea')[0], {
             mode: "text/x-sh",
-            theme: "paraiso-light",
+            theme: "base16-light",
             readOnly: true,
             matchBrackets: true,
             smartIndent: true,
@@ -961,7 +961,7 @@ layui.use(['table'], function () {
         });
         inheritConfigCM = CodeMirror.fromTextArea($('#inheritConfig textarea')[0], {
             mode: "text/x-sh",
-            theme: "paraiso-light",
+            theme: "base16-light",
             readOnly: true,
             matchBrackets: true,
             smartIndent: true,

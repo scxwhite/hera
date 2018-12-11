@@ -531,10 +531,9 @@ public class ScheduleCenterController extends BaseHeraController {
         } else {
             kind = JobExecuteKind.ExecuteKind.ScheduleKind;
         }
-        JobExecuteKind.ExecuteKind finalKind = kind;
 
         WebAsyncTask<String> webAsyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () ->
-                workClient.cancelJobFromWeb(finalKind, historyId));
+                workClient.cancelJobFromWeb(kind, historyId));
         webAsyncTask.onTimeout(() -> "任务取消执行中，请耐心等待");
         return webAsyncTask;
     }

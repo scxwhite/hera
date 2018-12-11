@@ -51,9 +51,9 @@ public class WorkHandleCancel {
     private Future<RpcResponse.Response> cancelManual(WorkContext workContext, RpcRequest.Request request, String historyId) {
         HeraJobHistory heraJobHistory = workContext.getHeraJobHistoryService().findById(historyId);
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-        final Integer jobId = history.getJobId();
-        SocketLog.info("worker receive cancel manual job, actionId =" + jobId);
-        if (!workContext.getManualRunning().containsKey(history.getId())) {
+        final String actionId = history.getActionId();
+        SocketLog.info("worker receive cancel manual job, actionId =" + actionId);
+        if (!workContext.getManualRunning().containsKey(actionId)) {
             return workContext.getWorkExecuteThreadPool().submit(() -> RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)
@@ -62,7 +62,7 @@ public class WorkHandleCancel {
                     .build());
         }
         return workContext.getWorkExecuteThreadPool().submit(() -> {
-            workContext.getWorkClient().cancelManualJob(historyId);
+            workContext.getWorkClient().cancelManualJob(actionId);
             return RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)
@@ -110,7 +110,7 @@ public class WorkHandleCancel {
      * @return
      */
     private Future<RpcResponse.Response> cancelDebug(WorkContext workContext, RpcRequest.Request request, String debugId) {
-        Future<RpcResponse.Response> future = null;
+        Future<RpcResponse.Response> future;
         if (!workContext.getDebugRunning().containsKey(debugId)) {
             future = workContext.getWorkExecuteThreadPool().submit(() -> RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
@@ -118,7 +118,7 @@ public class WorkHandleCancel {
                     .setStatusEnum(ResponseStatus.Status.ERROR)
                     .setErrorText("运行任务中查无此任务")
                     .build());
-            HeraDebugHistoryVo debugHistory = workContext.getHeraDebugHistoryService().findById(debugId);
+            HeraDebugHistoryVo debugHistory = workContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
             debugHistory.setStatus(StatusEnum.FAILED);
             debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));

@@ -213,7 +213,7 @@ public class WorkExecuteJob {
             e.printStackTrace();
         }
         String debugId = debugMessage.getDebugId();
-        HeraDebugHistoryVo history = workContext.getHeraDebugHistoryService().findById(debugId);
+        HeraDebugHistoryVo history = workContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
         return workContext.getWorkExecuteThreadPool().submit(() -> {
             int exitCode = -1;
             Exception exception = null;
@@ -236,7 +236,7 @@ public class WorkExecuteJob {
                 exception = e;
                 history.getLog().appendHeraException(e);
             } finally {
-                HeraDebugHistoryVo heraDebugHistoryVo = workContext.getHeraDebugHistoryService().findById(debugId);
+                HeraDebugHistoryVo heraDebugHistoryVo = workContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
                 heraDebugHistoryVo.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                 if (exitCode == 0) {
                     status = ResponseStatus.Status.OK;

@@ -12,19 +12,16 @@ import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.queue.JobElement;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
-import io.netty.channel.Channel;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- *
  * 取消任务统一管理类
+ *
  * @author xiaosuda
  * @date 2018/11/9
  */
@@ -32,7 +29,7 @@ public class MasterCancelJob {
     public static RpcWebResponse.WebResponse handleDebugCancel(MasterContext context, RpcWebRequest.WebRequest request) {
         RpcWebResponse.WebResponse webResponse = null;
         Integer debugId = Integer.parseInt(request.getId());
-        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(String.valueOf(debugId));
+        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
         for (JobElement element : context.getDebugQueue()) {
             if (element.getJobId().equals(String.valueOf(debugId))) {
                 webResponse = RpcWebResponse.WebResponse.newBuilder()
@@ -73,10 +70,10 @@ public class MasterCancelJob {
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
                     .setStatus(ResponseStatus.Status.ERROR)
-                    .setErrorText("开发中心任务中找不到匹配的job(" + debugHistory.getId() + "," + debugHistory.getId() + ")，无法执行取消命令")
+                    .setErrorText("开发中心任务中找不到匹配的job(" + debugId + ")，无法执行取消命令")
                     .build();
         }
-        debugHistory = context.getHeraDebugHistoryService().findById(String.valueOf(debugId));
+        debugHistory = context.getHeraDebugHistoryService().findById(debugId);
         debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         debugHistory.setStatus(StatusEnum.FAILED);
         context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
@@ -147,7 +144,6 @@ public class MasterCancelJob {
         String historyId = request.getId();
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         Integer jobId = heraJobHistory.getJobId();
-
         String actionId = heraJobHistory.getActionId();
 
         if (remove(context.getScheduleQueue().iterator(), actionId)) {

@@ -197,9 +197,8 @@ public class DevelopCenterController extends BaseHeraController {
     @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
     @ResponseBody
     public WebAsyncTask<String> cancelJob(String id) {
-        JobExecuteKind.ExecuteKind kind = JobExecuteKind.ExecuteKind.DebugKind;
         return new WebAsyncTask<>(3000, () ->
-                workClient.cancelJobFromWeb(kind, id));
+                workClient.cancelJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, id));
 
     }
 

@@ -96,8 +96,8 @@ public class MasterExecuteJob {
      * @return Future
      */
     private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder workHolder, String id) {
-        Integer jobId = Integer.parseInt(id);
-        workHolder.getDebugRunning().add(jobId);
+        Integer debugId = Integer.parseInt(id);
+        workHolder.getDebugRunning().add(debugId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Debug)
@@ -105,7 +105,7 @@ public class MasterExecuteJob {
                         .newBuilder()
                         .setDebugId(id)
                         .build().toByteString())
-                .build(), workHolder, id, TriggerTypeEnum.DEBUG, jobId);
+                .build(), workHolder, id, TriggerTypeEnum.DEBUG, debugId);
 
     }
 

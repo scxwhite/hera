@@ -17,7 +17,6 @@ import com.dfire.core.queue.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
 import com.dfire.logs.HeraLog;
-import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.*;
@@ -65,7 +64,7 @@ public class MasterHandlerWebResponse {
             TaskLog.info("MasterHandlerWebResponse: send web execute response, actionId = {} ", history.getJobId());
             return webResponse;
         } else if (request.getEk() == ExecuteKind.DebugKind) {
-            String debugId = request.getId();
+            Integer debugId = Integer.parseInt(request.getId());
             HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
             TaskLog.info("2-1.MasterHandlerWebResponse: receive web debug response, debugId = " + debugId);
             context.getMaster().debug(debugHistory);
@@ -107,7 +106,7 @@ public class MasterHandlerWebResponse {
                 return response;
             }
         }
-        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
+        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
         context.getMaster().debug(debugHistory);
         return WebResponse.newBuilder()
                 .setRid(request.getRid())
