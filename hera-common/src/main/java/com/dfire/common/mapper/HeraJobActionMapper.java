@@ -85,7 +85,7 @@ public interface HeraJobActionMapper {
      * @param params
      * @return
      */
-    @Select("select id,job_id,status,ready_dependency,dependencies,schedule_type from hera_action where job_id in (#{list}) and id &gt;= #{startDate} * 10000000000 and id &lt;= #{endDate} * 10000000000 limit #{page},#{limit}")
+    @Select("select id,job_id,status,ready_dependency,dependencies,schedule_type,last_result from hera_action where job_id in (#{list}) and id &gt;= #{startDate} * 10000000000 and id &lt;= #{endDate} * 10000000000 limit #{page},#{limit}")
     @Lang(HeraListInLangDriver.class)
     List<HeraAction> findByJobIdsAndPage(Map<String, Object> params);
 
