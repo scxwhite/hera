@@ -7,7 +7,7 @@
     <link href="https://cdn.bootcss.com/zTree.v3/3.5.32/css/metroStyle/metroStyle.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/lucario.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/darcula.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-tab.css">
     <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">

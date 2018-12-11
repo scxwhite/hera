@@ -745,7 +745,7 @@ layui.use("layer", function () {
             mode: "sql",
             lineNumbers: true,
             autofocus: true,
-            theme: "lucario",
+            theme: "darcula",
             readOnly: false
         });
         codeMirror.display.wrapper.style.height = 500 + "px";
