@@ -939,6 +939,7 @@ layui.use(['table'], function () {
             matchBrackets: true,
             smartIndent: true,
             styleActiveLine: true,
+            styleSelectedText: true,
             nonEmpty: true
         });
 

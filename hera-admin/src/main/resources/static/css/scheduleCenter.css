@@ -9,6 +9,9 @@ div#rMenu {
 .layui-table-cell {
     height: inherit;
 }
+.CodeMirror-selected {
+    background-color: #bebebe !important;
+}
 
 body .msg-class .layui-layer-title {
     background: #202c32;
