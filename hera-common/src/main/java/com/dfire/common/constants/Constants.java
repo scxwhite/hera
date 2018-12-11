@@ -33,7 +33,7 @@ public class Constants {
 
     public final static String HTML_FONT_GREEN_LEFT = "<font color=\"green\" size=\"" + HTML_FONT_SIZE + "\">";
 
-    public final static String HTML_FONT_YELLOW_LEFT = "<font color=\"yellow\" size=\"" + HTML_FONT_SIZE + "\">";
+    public final static String HTML_FONT_BLUE_LEFT = "<font color=\"blue\" size=\"" + HTML_FONT_SIZE + "\">";
 
     public final static String HTML_FONT_LEFT = "<font size=\"" + HTML_FONT_SIZE + "\">";
 

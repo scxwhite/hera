@@ -221,28 +221,12 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             taskVo.setName(buildFont(action.getName(), Constants.STATUS_NONE));
 
             if (action.getStatus() != null) {
-                switch (action.getStatus()) {
-                    case Constants.STATUS_SUCCESS:
-                        taskVo.setStatus(buildFont(Constants.STATUS_SUCCESS, Constants.STATUS_SUCCESS));
-                        break;
-
-                    case Constants.STATUS_RUNNING:
-                        taskVo.setStatus(buildFont(Constants.STATUS_RUNNING, Constants.STATUS_RUNNING));
-                        break;
-
-                    case Constants.STATUS_FAILED:
-                        taskVo.setStatus(buildFont(Constants.STATUS_FAILED, Constants.STATUS_FAILED));
-                        break;
-                    default:
-                        taskVo.setStatus(buildFont(action.getStatus(), Constants.STATUS_FAILED));
-                        break;
-                }
-
+                taskVo.setStatus(buildFont(Constants.STATUS_SUCCESS, action.getStatus()));
             } else {
                 taskVo.setStatus(buildFont("未执行", Constants.STATUS_FAILED));
             }
 
-            taskVo.setLastResult(action.getLastResult());
+            taskVo.setLastResult(buildFont(action.getLastResult(), action.getLastResult()));
             if (action.getScheduleType() == 0) {
                 taskVo.setReadyStatus(buildFont("独立任务", Constants.STATUS_NONE));
             } else {
@@ -255,7 +239,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                         if (Constants.STATUS_SUCCESS.equals(heraAction.getStatus())) {
                             builder.append(Constants.HTML_FONT_GREEN_LEFT).append("依赖任务:").append(dependency).append(",结束时间:").append(ActionUtil.getFormatterDate(ActionUtil.MON_MIN, heraAction.getStatisticEndTime()));
                         } else if (Constants.STATUS_RUNNING.equals(heraAction.getStatus())) {
-                            builder.append(Constants.HTML_FONT_YELLOW_LEFT).append("依赖任务:").append(dependency).append(",执行中");
+                            builder.append(Constants.HTML_FONT_BLUE_LEFT).append("依赖任务:").append(dependency).append(",执行中");
                         } else if (Constants.STATUS_FAILED.equals(heraAction.getStatus())) {
                             builder.append(Constants.HTML_FONT_RED_LEFT).append("依赖任务:").append(dependency).append(",执行失败");
                         } else {
@@ -274,17 +258,20 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     private String buildFont(String str, String type) {
+        if (type == null) {
+            return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
+        }
         switch (type) {
             case Constants.STATUS_RUNNING:
-                return Constants.HTML_FONT_YELLOW_LEFT + str + Constants.HTML_FONT_RIGHT;
-            case Constants.STATUS_FAILED:
-                return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
+                return Constants.HTML_FONT_BLUE_LEFT + str + Constants.HTML_FONT_RIGHT;
             case Constants.STATUS_SUCCESS:
                 return Constants.HTML_FONT_GREEN_LEFT + str + Constants.HTML_FONT_RIGHT;
-            case "none":
-            default:
+            case Constants.STATUS_NONE:
                 return Constants.HTML_FONT_LEFT + str + Constants.HTML_FONT_RIGHT;
-
+            case Constants.STATUS_FAILED:
+                return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
+            default:
+                return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
         }
     }
 }
