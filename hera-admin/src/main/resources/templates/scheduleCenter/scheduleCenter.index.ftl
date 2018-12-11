@@ -4,6 +4,7 @@
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
+    <link href="${request.contextPath}/plugins/ztree/metroStyle/metroStyle.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/zTree.v3/3.5.32/css/metroStyle/metroStyle.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.css" rel="stylesheet">
@@ -14,7 +15,6 @@
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
-
 </head>
 
 
@@ -924,7 +924,10 @@
 
 
 <@netCommon.commonScript />
-<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.core.min.js"></script>
+<#--<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.core.min.js"></script>-->
+
+<script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
+
 <script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exedit.min.js"></script>
 <script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.excheck.min.js"></script>
 <script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exhide.min.js"></script>

@@ -84,6 +84,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         List<HeraGroup> groups = groupService.getAll();
         List<HeraJob> jobs = this.getAll();
         Map<String, HeraJobTreeNodeVo> groupMap = new HashMap<>(groups.size());
+        List<HeraJobTreeNodeVo> myGroupList = new ArrayList<>();
         // 建立所有任务的树
         List<HeraJobTreeNodeVo> allNodes = groups.stream()
                 .filter(group -> group.getExisted() == 1)
@@ -95,6 +96,10 @@ public class HeraJobServiceImpl implements HeraJobService {
                             .isParent(true)
                             .name(g.getName() + Constants.LEFT_BRACKET + g.getId() + Constants.RIGHT_BRACKET)
                             .build();
+
+                    if (owner.equals(g.getOwner())) {
+                        myGroupList.add(groupNodeVo);
+                    }
                     groupMap.put(groupNodeVo.getId(), groupNodeVo);
                     return groupNodeVo;
                 })
@@ -122,6 +127,7 @@ public class HeraJobServiceImpl implements HeraJobService {
                     return build;
                 })
                 .collect(Collectors.toList());
+        myGroupList.forEach(treeNode -> getPathGroup(myGroupSet, treeNode.getId(), groupMap));
         myNodeVos.addAll(myGroupSet);
         //添加树到返回结果
         allNodes.sort(Comparator.comparing(x -> x.getName().trim()));
@@ -133,7 +139,7 @@ public class HeraJobServiceImpl implements HeraJobService {
 
     private void getPathGroup(Set<HeraJobTreeNodeVo> myGroupSet, String group, Map<String, HeraJobTreeNodeVo> allGroupMap) {
         HeraJobTreeNodeVo groupNode = allGroupMap.get(group);
-        if (groupNode == null) {
+        if (groupNode == null || myGroupSet.contains(groupNode)) {
             return;
         }
         myGroupSet.add(groupNode);
@@ -211,7 +217,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         Map<Integer, Integer> parentAutoMap = new HashMap<>(list.size());
         for (HeraJob job : list) {
             map.put(job.getId(), job.getName());
-            parentAutoMap.put(job.getId(),job.getAuto());
+            parentAutoMap.put(job.getId(), job.getAuto());
         }
         Integer p, id;
         String dependencies;
@@ -401,7 +407,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         DirectionGraph<Integer> directionGraph = new DirectionGraph<>();
         for (JobRelation jobRelation : jobRelations) {
             GraphNode<Integer> graphNodeBegin = new GraphNode<>(jobRelation.getAuto(), jobRelation.getId(), "任务ID：" + jobRelation.getId() + "\n任务名称：" + jobRelation.getName() + "\n");
-            GraphNode<Integer> graphNodeEnd= new GraphNode<>(jobRelation.getPAuto(), jobRelation.getPid(), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
+            GraphNode<Integer> graphNodeEnd = new GraphNode<>(jobRelation.getPAuto(), jobRelation.getPid(), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
             directionGraph.addNode(graphNodeBegin);
             directionGraph.addNode(graphNodeEnd);
             directionGraph.addEdge(graphNodeBegin, graphNodeEnd);
