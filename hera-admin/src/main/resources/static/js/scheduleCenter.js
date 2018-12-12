@@ -397,14 +397,16 @@ layui.use(['table'], function () {
         }
     });
 
-    $('#keyWords').on('keyup', function () {
-        var key = $.trim($(this).val());
-        searchNodeLazy(key, treeObj, "keyWords", false);
-
+    $('#keyWords').on('keydown', function (e) {
+        if (e.keyCode == '13') {
+            searchNodeLazy($.trim($(this).val()), treeObj, "keyWords", false);
+        }
     });
-    $('#dependKeyWords').on('keyup', function () {
-        var key = $.trim($(this).val());
-        searchNodeLazy(key, dependTreeObj, "dependKeyWords", false);
+
+    $('#dependKeyWords').on('keydown', function () {
+        if (e.keyCode == '13') {
+            searchNodeLazy( $.trim($(this).val()), dependTreeObj, "dependKeyWords", false);
+        }
 
     });
     var timeoutId;
@@ -437,7 +439,7 @@ layui.use(['table'], function () {
         timeoutId = setTimeout(function () {
             search(key); //lazy load ztreeFilter function
             $('#' + keyId).focus();
-        }, 1000);
+        }, 50);
 
         function search(key) {
             var keys, length;

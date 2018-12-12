@@ -49,7 +49,7 @@
                         </div>
                         <div class="box-body" style="height: 100%;padding-bottom: 10px;">
                             <div>
-                                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词(空格分割)">
+                                <input type="text" class="form-control" id="keyWords" placeholder="请输入关键词(空格分割,回车搜索)">
                                 <p id="searchInfo" style="display: none">查找中，请稍候...</p>
                                 <div class="scroll-box">
                                     <ul id="jobTree" class="ztree"></ul>

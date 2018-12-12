@@ -40,7 +40,6 @@ public class Constants {
     public final static String HTML_FONT_RIGHT = "</font>";
 
 
-    public final static String STATUS_WAIT = "wait";
 
     public final static String LEFT_BRACKET = "(";
 
@@ -53,7 +52,7 @@ public class Constants {
     /**
      * jwt  过期时间 单位 天
      */
-    public final static Integer JWT_TIME_OUT = 3;
+    public final static Integer JWT_TIME_OUT = 5;
     /**
      * cookie过期时间 单位 秒
      */
