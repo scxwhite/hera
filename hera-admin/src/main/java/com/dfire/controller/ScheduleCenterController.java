@@ -295,7 +295,6 @@ public class ScheduleCenterController extends BaseHeraController {
             list.add(HeraActionVo.builder().id(id).build());
         }
         return list;
-
     }
 
     @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)

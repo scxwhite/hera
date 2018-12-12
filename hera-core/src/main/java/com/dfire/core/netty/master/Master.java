@@ -852,6 +852,9 @@ public class Master {
                     .operator(heraAction.getOwner())
                     .build();
             masterContext.getHeraJobHistoryService().insert(heraJobHistory);
+            heraAction.setHistoryId(heraJobHistory.getId());
+            heraAction.setStatus(Constants.STATUS_RUNNING);
+            masterContext.getHeraJobActionService().update(heraAction);
             heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
             heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行\n");
             triggerType = heraJobHistoryVo.getTriggerType();

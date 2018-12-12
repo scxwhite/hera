@@ -82,6 +82,8 @@ public class HeraJob {
 
     private int hostGroupId;
 
+    private String areaId;
+
     private Long mustEndMinute;
 
 }
