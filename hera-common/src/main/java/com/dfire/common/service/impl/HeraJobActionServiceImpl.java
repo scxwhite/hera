@@ -200,7 +200,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
 
 
     @Override
-    public List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate, TablePageForm pageForm) {
+    public List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate, TablePageForm pageForm, Integer type) {
         if (idList == null || idList.size() == 0) {
             return null;
         }
@@ -211,8 +211,18 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         params.put("list", idList);
         params.put("page", (pageForm.getPage() - 1) * pageForm.getLimit());
         params.put("limit", pageForm.getPage() * pageForm.getLimit());
-        pageForm.setCount(heraJobActionMapper.findByJobIdsCount(params));
-        List<HeraAction> actionList = heraJobActionMapper.findByJobIdsAndPage(params);
+        List<HeraAction> actionList;
+        if (type == 0) {
+            params.put("status", null);
+            pageForm.setCount(heraJobActionMapper.findByJobIdsCount(params));
+            actionList = heraJobActionMapper.findByJobIdsAndPage(params);
+        } else if (type == 1) {
+            params.put("status", Constants.STATUS_RUNNING);
+            pageForm.setCount(heraJobActionMapper.findByJobIdsCount(params));
+            actionList = heraJobActionMapper.findByJobIdsAndPage(params);
+        } else {
+            return null;
+        }
         List<GroupTaskVo> res = new ArrayList<>(actionList.size());
         actionList.forEach(action -> {
             GroupTaskVo taskVo = new GroupTaskVo();
@@ -221,11 +231,10 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             taskVo.setName(buildFont(action.getName(), Constants.STATUS_NONE));
 
             if (action.getStatus() != null) {
-                taskVo.setStatus(buildFont(Constants.STATUS_SUCCESS, action.getStatus()));
+                taskVo.setStatus(buildFont(action.getStatus(), action.getStatus()));
             } else {
                 taskVo.setStatus(buildFont("未执行", Constants.STATUS_FAILED));
             }
-
             taskVo.setLastResult(buildFont(action.getLastResult(), action.getLastResult()));
             if (action.getScheduleType() == 0) {
                 taskVo.setReadyStatus(buildFont("独立任务", Constants.STATUS_NONE));

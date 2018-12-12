@@ -1,14 +1,15 @@
 var nodes, edges, g, headNode, currIndex = 0, len, inner, initialScale = 0.75, zoom, nodeIndex = {}, graphType;
+
 layui.use(['table'], function () {
     var table = layui.table;
     $('#scheduleCenter').addClass('active');
-    var focusId = -1;
     var focusItem = null;
     var isGroup;
     var treeObj, allTreeObj;
     var dependTreeObj;
     var selected;
     var triggerType;
+    var groupTaskTable, groupTaskType, focusId = -1;
     var codeMirror, inheritConfigCM, selfConfigCM;
     var editor = $('#editor');
     var setting = {
@@ -1138,35 +1139,62 @@ layui.use(['table'], function () {
         changeOverview(true);
 
     });
-    $('#showAllBtn').click(function (e) {
-        changeOverview(false);
-
-        console.log(focusId)
+    $('#showAllBtn').click(function () {
         // 表格渲染
-        var tableIns = table.render({
-            elem: '#allTable'                  //指定原始表格元素选择器（推荐id选择器）
-            , height: "full-100"
-            , cols: [[                  //标题栏
-                {field: 'actionId', title: 'ActionId', width: 151}
-                , {field: 'jobId', title: 'JobId', width: 70}
-                , {field: 'name', title: '任务名称', width: 125}
-                , {field: 'status', title: '执行状态', width: 105}
-                , {field: 'readyStatus', title: '依赖状态', width: 340}
-                , {field: 'lastResult', title: '上次执行结果', width: 125}
-            ]]
-            , id: 'dataCheck'
-            , url: base_url + '/scheduleCenter/getGroupTask'
-            , where: {
-                groupId: focusId
-            }
-            , method: 'get'
-            , page: true
-            , limits: [10, 30, 50]
-        });
+        groupTaskType = 0;
+        reloadGroupTaskTable();
+
+    });
+
+
+    $('#groupOperate [name="showRunning"]').on('click',function () {
+        groupTaskType = 1;
+        reloadGroupTaskTable();
+    });
+
+    $('#overviewOperator [name="showRunning"]').on('click',function () {
+        groupTaskType = 1;
+        reloadGroupTaskTable();
     });
     $('#closeAll').click(function (e) {
         $("#showAllModal").modal('hide');
-    })
+    });
+
+    function reloadGroupTaskTable() {
+        changeOverview(false);
+        if (!groupTaskTable) {
+            groupTaskTable = table.render({
+                elem: '#allTable'                  //指定原始表格元素选择器（推荐id选择器）
+                , height: "full-100"
+                , cols: [[                  //标题栏
+                    {field: 'actionId', title: 'ActionId', width: 151}
+                    , {field: 'jobId', title: 'JobId', width: 70}
+                    , {field: 'name', title: '任务名称', width: 125}
+                    , {field: 'status', title: '执行状态', width: 105}
+                    , {field: 'readyStatus', title: '依赖状态', width: 340}
+                    , {field: 'lastResult', title: '上次执行结果', width: 125}
+                ]]
+                , id: 'dataCheck'
+                , url: base_url + '/scheduleCenter/getGroupTask'
+                , where: {
+                    groupId: focusId,
+                    type: groupTaskType
+                }
+                , method: 'get'
+                , page: true
+                , limits: [10, 30, 50]
+            });
+        } else {
+            groupTaskTable.reload({
+                where: {
+                    groupId: focusId,
+                    type: groupTaskType
+                }
+            });
+        }
+
+    }
+
 });
 
 function keypath(type) {
@@ -1430,6 +1458,7 @@ function cancelJob(historyId, jobId) {
         $('#jobLog [name="refreshLog"]').trigger('click');
     });
 }
+
 
 function zTreeOnClick() {
 

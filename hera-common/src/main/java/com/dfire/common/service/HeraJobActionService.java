@@ -76,13 +76,7 @@ public interface HeraJobActionService {
     List<HeraActionVo> getFailedJob();
 
 
-    /**
-     * 根据jobId 查询历史日志
-     *
-     * @param idList
-     * @param pageForm
-     * @return
-     */
-    List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate, TablePageForm pageForm);
+
+    List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate, TablePageForm pageForm, Integer type);
 
 }
