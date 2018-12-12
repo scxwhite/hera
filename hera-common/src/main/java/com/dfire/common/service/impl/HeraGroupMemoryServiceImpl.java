@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ *
+ * 对于集合类的大查找  走缓存
  * @author xiaosuda
  * @date 2018/12/5
  */
@@ -44,10 +46,6 @@ public class HeraGroupMemoryServiceImpl extends HeraGroupServiceImpl {
         return new ArrayList<>(getMemoryJob().values());
     }
 
-    @Override
-    public HeraGroup findById(Integer id) {
-        return getMemoryJob().get(id);
-    }
 
     @Override
     public List<HeraGroup> findByParent(Integer parentId) {
@@ -59,8 +57,4 @@ public class HeraGroupMemoryServiceImpl extends HeraGroupServiceImpl {
         return getMemoryJob().values().stream().filter(group -> list.contains(group.getId())).collect(Collectors.toList());
     }
 
-    @Override
-    public HeraGroup findConfigById(Integer id) {
-        return getMemoryJob().get(id);
-    }
 }

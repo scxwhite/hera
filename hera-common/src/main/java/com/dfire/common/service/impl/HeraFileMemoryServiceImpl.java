@@ -45,11 +45,6 @@ public class HeraFileMemoryServiceImpl extends HeraFileServiceImpl {
     }
 
     @Override
-    public HeraFile findById(Integer id) {
-        return getMemoryJob().get(id);
-    }
-
-    @Override
     public List<HeraFile> findByOwner(String owner) {
         return getMemoryJob().values().stream().filter(heraFile -> heraFile.getOwner().equals(owner)).collect(Collectors.toList());
     }

@@ -9,7 +9,6 @@ import java.util.*;
 
 /**
  * 内存级别缓存job信息
- *
  * @author xiaosuda
  * @date 2018/12/3
  */
@@ -44,10 +43,6 @@ public class HeraJobMemoryServiceImpl extends HeraJobServiceImpl {
         return new ArrayList<>(getMemoryJob().values());
     }
 
-    @Override
-    public HeraJob findById(int id) {
-        return getMemoryJob().get(id);
-    }
 
     @Override
     public List<HeraJob> findByIds(List<Integer> list) {
