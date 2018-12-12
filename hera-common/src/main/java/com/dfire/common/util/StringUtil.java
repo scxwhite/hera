@@ -12,10 +12,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -69,8 +66,9 @@ public class StringUtil {
         try {
             jsonObject = JSONObject.parseObject(config);
         } catch (JSONPathException e) {
+            e.printStackTrace();
         }
-        Map<String, String> map = new HashMap<>(jsonObject.size());
+        Map<String, String> map = new TreeMap<>();
         for (Object key : jsonObject.keySet()) {
             map.put(key.toString(), jsonObject.getString(key.toString()));
         }
@@ -174,6 +172,4 @@ public class StringUtil {
         }
         return resource;
     }
-
-
 }

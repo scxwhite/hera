@@ -214,15 +214,15 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         List<HeraAction> actionList;
         if (type == 0) {
             params.put("status", null);
-            pageForm.setCount(heraJobActionMapper.findByJobIdsCount(params));
-            actionList = heraJobActionMapper.findByJobIdsAndPage(params);
         } else if (type == 1) {
             params.put("status", Constants.STATUS_RUNNING);
-            pageForm.setCount(heraJobActionMapper.findByJobIdsCount(params));
-            actionList = heraJobActionMapper.findByJobIdsAndPage(params);
+        } else if (type == 2) {
+            params.put("status", Constants.STATUS_FAILED);
         } else {
             return null;
         }
+        pageForm.setCount(heraJobActionMapper.findByJobIdsCount(params));
+        actionList = heraJobActionMapper.findByJobIdsAndPage(params);
         List<GroupTaskVo> res = new ArrayList<>(actionList.size());
         actionList.forEach(action -> {
             GroupTaskVo taskVo = new GroupTaskVo();

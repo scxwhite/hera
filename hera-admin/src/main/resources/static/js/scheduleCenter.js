@@ -1087,23 +1087,6 @@ layui.use(['table'], function () {
 
         var dependNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
         $.fn.zTree.init($("#dependTree"), setting, dependNodes.allJob);
-        // var testNode ={"allJob": [
-        //         {
-        //             "id": "1218",
-        //             "parent": "group_3848",
-        //             "name": "0-1. tmp_tab(1218)",
-        //             "directory": null,
-        //             "isParent": false
-        //         },
-        //         {
-        //             "id": "1219",
-        //             "parent": "group_3848",
-        //             "name": "0-2. 到店(1219)",
-        //             "directory": null,
-        //             "isParent": false
-        //         }]}
-        // $.fn.zTree.init($("#dependTree"), setting, testNode.allJob);
-
         dependTreeObj = $.fn.zTree.getZTreeObj("dependTree");
         searchNodeLazy($(this).val().split(',').join(' '), dependTreeObj, "dependKeyWords", true);
         $("#chooseDepend").bind('click', function () {
@@ -1154,6 +1137,16 @@ layui.use(['table'], function () {
 
     $('#overviewOperator [name="showRunning"]').on('click',function () {
         groupTaskType = 1;
+        reloadGroupTaskTable();
+    });
+
+    $('#overviewOperator [name="showFaild"]').on('click',function () {
+        groupTaskType = 2;
+        reloadGroupTaskTable();
+    });
+
+    $('#groupOperate [name="showFaild"]').on('click',function () {
+        groupTaskType = 2;
         reloadGroupTaskTable();
     });
     $('#closeAll').click(function (e) {

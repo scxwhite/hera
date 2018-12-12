@@ -474,7 +474,10 @@
                                     <li>
                                         <button class="btn btn-xs  btn-primary btn-block" type="button" name="showRunning">正在运行</button>
                                     </li>
-
+                                    <br>
+                                    <li>
+                                        <button class="btn btn-xs  btn-primary btn-block" type="button" name="showFaild">失败记录</button>
+                                    </li>
                                     <br>
                                     <li>
                                         <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup">
@@ -619,6 +622,9 @@
                                     </button>
                                 </li>
                                 <br>
+                                <li>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showFaild">失败记录</button>
+                                </li>
                             </ul>
                         </div>
                     </div>

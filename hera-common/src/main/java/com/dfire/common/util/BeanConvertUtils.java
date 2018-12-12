@@ -247,7 +247,6 @@ public class BeanConvertUtils {
             return heraGroupVo;
         }
         BeanUtils.copyProperties(heraGroup, heraGroupVo);
-        heraGroupVo.setConfigs(new HashMap<>(1));
         heraGroupVo.setConfigs(StringUtil.convertStringToMap(heraGroup.getConfigs()));
         heraGroupVo.setResources(new ArrayList<>());
         if (heraGroup.getResources() != null) {
