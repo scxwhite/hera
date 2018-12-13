@@ -178,6 +178,8 @@ function addMouseOver(div) {
 
     layui.use(['colorpicker'], function () {
         init();
+        $('#advice').addClass('active');
+
         var items = $('.item');
         items.each(function () {
             $(this).drag();

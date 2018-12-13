@@ -111,11 +111,11 @@
                 <li class="nav-click" id="developManage"><a
                         href="${request.contextPath}/developCenter"><i class="fa fa-book"></i> <span>开发中心</span></a>
                 </li>
-                <li class="nav-click" id="scheduleCenter"><a
+                <li class="nav-click" id="scheduleManage"><a
                         href="${request.contextPath}/scheduleCenter"><i class="fa fa-edit"></i> <span>调度中心</span></a>
                 </li>
 
-                <li class="nav-click" id="scheduleCenter"><a
+                <li class="nav-click" id="advice"><a
                         href="${request.contextPath}/adviceController"><i class="fa fa-bug"></i> <span>建议&留言</span></a>
                 </li>
 

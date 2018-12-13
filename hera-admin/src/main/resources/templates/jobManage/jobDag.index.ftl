@@ -114,6 +114,7 @@
 </body>
 
 <@netCommon.commonScript />
+<script src="${request.contextPath}/js/taskGraph.js?v=2"></script>
 <script src="${request.contextPath}/js/jobDag.js?v=2"></script>
 <script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
 <script src="https://cdn.bootcss.com/dagre-d3/0.4.17/dagre-d3.min.js"></script>

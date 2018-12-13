@@ -2,7 +2,7 @@ var nodes, edges, g, headNode, currIndex = 0, len, inner, initialScale = 0.75, z
 
 layui.use(['table'], function () {
     var table = layui.table;
-    $('#scheduleCenter').addClass('active');
+    $('#scheduleManage').addClass('active');
     var focusItem = null;
     var isGroup;
     var treeObj, allTreeObj;
@@ -28,6 +28,7 @@ layui.use(['table'], function () {
             onClick: leftClick
         }
     };
+
 
     function refreshCm() {
         selfConfigCM.refresh();
@@ -405,7 +406,7 @@ layui.use(['table'], function () {
 
     $('#dependKeyWords').on('keydown', function (e) {
         if (e.keyCode == '13') {
-            searchNodeLazy( $.trim($(this).val()), dependTreeObj, "dependKeyWords", false);
+            searchNodeLazy($.trim($(this).val()), dependTreeObj, "dependKeyWords", false);
         }
 
     });
@@ -421,7 +422,7 @@ layui.use(['table'], function () {
         }
         if (key == null || key == "" || key == undefined) {
             tree.getNodesByFilter(function (node) {
-                node.highlight = false;
+                node.highlight = 0;
                 node.checked = false;
                 tree.showNode(node);
             });
@@ -477,15 +478,14 @@ layui.use(['table'], function () {
                             if (id === keys[i]) {
                                 if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
                                     tree.checkNode(node, true, true, false);
-                                    node.highlight = true;
+                                    node.isParent ? node.highlight = 1 : node.highlight = 2;
                                     tree.showNode(node);
                                     if (i === 0) {
                                         tree.selectNode(node);
-                                        $('.curSelectedNode').trigger('click');
                                     }
                                 } else {
                                     if (!node.isParent) {
-                                        node.highlight = true;
+                                        node.highlight = 2;
                                         tree.showNode(node);
                                         if (node.name === '0-1. tmp_tab(1218)' && node.checked === false) {
                                             console.log(node)
@@ -501,16 +501,15 @@ layui.use(['table'], function () {
                             var name = node.name.substring(0, end);
                             if (name.indexOf(keys[i]) !== -1) {
                                 if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj("allTree")) {
-                                    node.highlight = true;
+                                    node.isParent ? node.highlight = 1 : node.highlight = 2;
                                     tree.showNode(node);
                                     tree.checkNode(node, true, true, false);
                                     if (i === 0) {
                                         tree.selectNode(node);
-                                        $('.curSelectedNode').trigger('click');
                                     }
                                 } else {
                                     if (!node.isParent) {
-                                        node.highlight = true;
+                                        node.highlight = 2;
                                         tree.showNode(node);
                                         if (first) tree.checkNode(node, true, true, false);
                                     }
@@ -526,7 +525,7 @@ layui.use(['table'], function () {
                 if (!first) {
                     tree.hideNode(node);
                 }
-                node.highlight = false;
+                node.highlight = 0;
                 return false;
             }
         }
@@ -711,10 +710,23 @@ layui.use(['table'], function () {
 
     //搜索结果节点颜色改变
     function getFontCss(treeId, treeNode) {
-        return (!!treeNode.highlight) ? {color: "#A60000", "font-weight": "bold"} : {
-            color: "rgba(0, 0, 0, 0.65)",
-            "font-weight": "normal"
-        };
+
+        if (treeNode.highlight === 1) {
+            return {
+                color: "#37a64d",
+                "font-weight": "bold"
+            };
+        } else if (treeNode.highlight === 2) {
+            return {
+                color: "#A60000",
+                "font-weight": "bold"
+            };
+        } else {
+            return {
+                color: "rgba(0, 0, 0, 0.65)",
+                "font-weight": "normal"
+            };
+        }
     }
 
     function leftClick() {
@@ -1132,22 +1144,22 @@ layui.use(['table'], function () {
     });
 
 
-    $('#groupOperate [name="showRunning"]').on('click',function () {
+    $('#groupOperate [name="showRunning"]').on('click', function () {
         groupTaskType = 1;
         reloadGroupTaskTable();
     });
 
-    $('#overviewOperator [name="showRunning"]').on('click',function () {
+    $('#overviewOperator [name="showRunning"]').on('click', function () {
         groupTaskType = 1;
         reloadGroupTaskTable();
     });
 
-    $('#overviewOperator [name="showFaild"]').on('click',function () {
+    $('#overviewOperator [name="showFaild"]').on('click', function () {
         groupTaskType = 2;
         reloadGroupTaskTable();
     });
 
-    $('#groupOperate [name="showFaild"]').on('click',function () {
+    $('#groupOperate [name="showFaild"]').on('click', function () {
         groupTaskType = 2;
         reloadGroupTaskTable();
     });
