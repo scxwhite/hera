@@ -75,7 +75,7 @@
 
 
                 <div class="col-md-8 col-sm-8 col-lg-8 colStyle height-self"
-                     style="overflow: auto;background: transparent;border: none;" id="infoCon">
+                     style="overflow: auto;" id="infoCon">
 
                     <div class="my-box" style="margin-top: 0">
 

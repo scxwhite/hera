@@ -1,6 +1,6 @@
 <#macro commonStyle>
 <#-- favicon -->
-	<link rel="icon" href="${request.contextPath}/images/favicon.ico"/>
+	<link rel="shortcut icon" type="image/ico" href="${request.contextPath}/images/favicon.png"/>
 	<meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Tell the browser to be responsive to screen width -->
