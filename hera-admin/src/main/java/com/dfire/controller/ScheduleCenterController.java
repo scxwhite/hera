@@ -127,10 +127,11 @@ public class ScheduleCenterController extends BaseHeraController {
 
     /**
      * 组下搜索任务
-     * @param groupId       groupId
-     * @param type          0：all 所有任务 1:running 运行中的任务
-     * @param pageForm      layui table分页参数
-     * @return  结果
+     *
+     * @param groupId  groupId
+     * @param type     0：all 所有任务 1:running 运行中的任务
+     * @param pageForm layui table分页参数
+     * @return 结果
      */
     @RequestMapping(value = "/getGroupTask", method = RequestMethod.GET)
     @ResponseBody
@@ -339,6 +340,10 @@ public class ScheduleCenterController extends BaseHeraController {
                     return new RestfulResponse(false, "不允许依赖关闭状态的任务:" + sb.toString());
                 }
             }
+        } else if (heraJobVo.getScheduleType() == 0) {
+            heraJobVo.setDependencies("");
+        } else {
+            return new RestfulResponse(false, "无法识别的调度类型");
         }
         return heraJobService.checkAndUpdate(BeanConvertUtils.convertToHeraJob(heraJobVo));
     }

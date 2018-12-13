@@ -79,11 +79,11 @@ hera:
    spark-home : /home/hadoop/spark161-hadoop26
    env: @env@
 mail:
-  host: smtp.aliyun.com
+  host: smtp.mxhichina.com
   protocol: smtp
   port: 465
-  user: scx_hera@aliyun.com
-  password: aaascx521
+  user: datacenter@2dfire.com
+  password: 9c0af3
 
 logging:
   config: classpath:logback-spring.xml
