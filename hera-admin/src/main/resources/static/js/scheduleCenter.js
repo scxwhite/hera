@@ -403,7 +403,7 @@ layui.use(['table'], function () {
         }
     });
 
-    $('#dependKeyWords').on('keydown', function () {
+    $('#dependKeyWords').on('keydown', function (e) {
         if (e.keyCode == '13') {
             searchNodeLazy( $.trim($(this).val()), dependTreeObj, "dependKeyWords", false);
         }

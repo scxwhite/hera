@@ -89,7 +89,7 @@ public class ZeusToHera {
         while (resultSet.next()) {
             String id = resultSet.getString("id");
             CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpGet httpGet = new HttpGet("http://10.1.28.81:8080/hera/scheduleCenter/execute?id=" + id + "&owner=biadmin");
+            HttpGet httpGet = new HttpGet("http://hera.office.2dfire.in/hera/scheduleCenter/execute?id=" + id + "&owner=biadmin");
             httpClient.execute(httpGet);
             System.out.println("--------------------------" + id + ": ok--------------------------");
         }

@@ -11,7 +11,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/lucario.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/base16-light.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.3/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.3/css/bootstrap-select.min.css">
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
@@ -30,7 +31,7 @@
         <section class="content">
             <div class="row">
                 <div class="col-md-3 col-sm-3 col-lg-3 colStyle" style="border: none" id="treeCon">
-                    <div class="height-self left-bar" style="overflow: hidden;">
+                    <div class="height-self left-bar" style="overflow: auto;">
                         <div class="box-header left-bar-head">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li role="presentation" class="active" style="background-color: #fff"><a href="#"
@@ -472,11 +473,15 @@
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-xs  btn-primary btn-block" type="button" name="showRunning">正在运行</button>
+                                        <button class="btn btn-xs  btn-primary btn-block" type="button"
+                                                name="showRunning">正在运行
+                                        </button>
                                     </li>
                                     <br>
                                     <li>
-                                        <button class="btn btn-xs  btn-primary btn-block" type="button" name="showFaild">失败记录</button>
+                                        <button class="btn btn-xs  btn-primary btn-block" type="button"
+                                                name="showFaild">失败记录
+                                        </button>
                                     </li>
                                     <br>
                                     <li>
@@ -623,7 +628,9 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showFaild">失败记录</button>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showFaild">
+                                        失败记录
+                                    </button>
                                 </li>
                             </ul>
                         </div>
@@ -947,9 +954,6 @@
 <script src="${request.contextPath}/js/jobDag.js?v=2"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
-
-
-
 
 
 </body>
