@@ -79,7 +79,7 @@
 
                     <div class="my-box" style="margin-top: 0">
 
-                        <div id="groupMessage" class="box box-body text-center" style="display: none">
+                        <div id="groupMessage" class="box-body text-center" style="display: none">
                             <label class="info-title">基本信息</label>
                             <form class="form-horizontal form-group-sm">
 
