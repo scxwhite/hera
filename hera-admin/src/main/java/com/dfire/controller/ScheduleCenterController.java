@@ -263,7 +263,7 @@ public class ScheduleCenterController extends BaseHeraController {
         actionHistory.setJobId(heraAction.getJobId());
         actionHistory.setActionId(heraAction.getId().toString());
         actionHistory.setTriggerType(triggerTypeEnum.getId());
-        actionHistory.setOperator(owner.equals(HeraGlobalEnvironment.getAdmin()) ? heraJob.getOwner() : owner);
+        actionHistory.setOperator(heraJob.getOwner());
         actionHistory.setIllustrate(owner);
         actionHistory.setStatus(StatusEnum.RUNNING.toString());
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
