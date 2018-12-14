@@ -94,9 +94,10 @@ public class HeraJobServiceImpl implements HeraJobService {
                             .parent(Constants.GROUP_PREFIX + g.getParent())
                             .directory(g.getDirectory())
                             .isParent(true)
+                            .jobId(g.getId())
+                            .jobName(g.getName())
                             .name(g.getName() + Constants.LEFT_BRACKET + g.getId() + Constants.RIGHT_BRACKET)
                             .build();
-
                     if (owner.equals(g.getOwner())) {
                         myGroupList.add(groupNodeVo);
                     }
@@ -108,6 +109,8 @@ public class HeraJobServiceImpl implements HeraJobService {
                 .id(String.valueOf(job.getId()))
                 .parent(Constants.GROUP_PREFIX + job.getGroupId())
                 .isParent(false)
+                .jobName(job.getName())
+                .jobId(job.getId())
                 .name(job.getName() + Constants.LEFT_BRACKET + job.getId() + Constants.RIGHT_BRACKET)
                 .build())
                 .collect(Collectors.toList()));
@@ -121,6 +124,8 @@ public class HeraJobServiceImpl implements HeraJobService {
                             .id(String.valueOf(job.getId()))
                             .parent(Constants.GROUP_PREFIX + job.getGroupId())
                             .isParent(false)
+                            .jobId(job.getId())
+                            .jobName(job.getName())
                             .name(job.getName() + Constants.LEFT_BRACKET + job.getId() + Constants.RIGHT_BRACKET)
                             .build();
                     getPathGroup(myGroupSet, build.getParent(), groupMap);

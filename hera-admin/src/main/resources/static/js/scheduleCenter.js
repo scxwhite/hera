@@ -52,7 +52,6 @@ layui.use(['table'], function () {
          * @param id    节点ID
          */
         function setDefaultSelectNode(id) {
-
             if (id === null || id === undefined) {
                 id = localStorage.getItem("defaultId");
             }
@@ -354,28 +353,20 @@ layui.use(['table'], function () {
         let timeoutId;
 
         function searchNodeLazy(key, tree, keyId, first) {
-            if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
-                $('#searchInfo').show();
-                $('#searchInfo').text('查找中，请稍候...');
-            } else {
-                $('#deSearchInfo').show();
-                $('#deSearchInfo').text('查找中，请稍候...');
-            }
-            if (key == null || key == "" || key == undefined) {
-                tree.getNodesByFilter(function (node) {
-                    node.highlight = 0;
-                    node.checked = false;
-                    tree.showNode(node);
-                });
-                if (tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree')) {
-                    setDefaultSelectNode();
-                    $('#searchInfo').hide();
-                } else {
-                    $('#deSearchInfo').hide();
-                }
-                tree.refresh();
+            let searchInfo = $('#searchInfo');
+            let deSearchInfo = $('#deSearchInfo');
+            let isDepen = tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree');
+            if (key == null || key === "" || key === undefined) {
                 return;
             }
+            if (isDepen) {
+                searchInfo.show();
+                searchInfo.text('查找中，请稍候...');
+            } else {
+                deSearchInfo.show();
+                deSearchInfo.text('查找中，请稍候...');
+            }
+
             if (timeoutId) {
                 clearTimeout(timeoutId);
             }
@@ -385,27 +376,26 @@ layui.use(['table'], function () {
             }, 50);
 
             function search(key) {
-                let keys, length, isDepen;
+                let keys, length;
                 if (key !== null && key !== "" && key !== undefined) {
                     keys = key.split(" ");
                     length = keys.length;
-                    isDepen = tree === $.fn.zTree.getZTreeObj("jobTree") || tree === $.fn.zTree.getZTreeObj('allTree');
                     let nodeShow = tree.getNodesByFilter(filterNodes);
                     if (nodeShow && nodeShow.length > 0) {
                         nodeShow.forEach(function (node) {
                             expandParent(node, tree);
                         });
                         if (isDepen) {
-                            $('#searchInfo').hide();
+                            searchInfo.hide();
                         } else {
-                            $('#deSearchInfo').hide();
+                            deSearchInfo.hide();
                         }
                         tree.refresh();
                     } else {
                         if (isDepen) {
-                            $('#searchInfo').text('未找到该节点');
+                            searchInfo.text('未找到该节点');
                         } else {
-                            $('#deSearchInfo').text('未找到该节点');
+                            deSearchInfo.text('未找到该节点');
                         }
                         layer.msg("如果是新加节点，请刷新网页后再搜索一次哟");
                     }
@@ -413,55 +403,49 @@ layui.use(['table'], function () {
 
                 function filterNodes(node) {
                     for (let i = 0; i < length; i++) {
-                        if (node.name) {
-                            //id搜索
-                            if (!isNaN(keys[i])) {
-                                let start = node.name.lastIndexOf('(');
-                                let end = node.name.lastIndexOf(')');
-                                let id = node.name.substring(++start, end);
-                                if (id === keys[i]) {
-                                    if (isDepen) {
-                                        tree.checkNode(node, true, true, false);
-                                        node.isParent ? node.highlight = 1 : node.highlight = 2;
-                                        tree.showNode(node);
-                                        if (i === 0) {
-                                            tree.selectNode(node);
-                                        }
-                                    } else {
-                                        if (!node.isParent) {
-                                            node.highlight = 2;
-                                            tree.showNode(node);
-                                            if (node.name === '0-1. tmp_tab(1218)' && node.checked === false) {
-                                                console.log('start node unchecked');
-                                            }
-                                            if (first) tree.checkNode(node, true, true, false);
-                                        }
+                        //id搜索
+                        if (!isNaN(keys[i])) {
+                            if (node.jobId == keys[i]) {
+                                if (isDepen) {
+                                    tree.checkNode(node, true, true, false);
+                                    node.isParent ? node.highlight = 1 : node.highlight = 2;
+                                    tree.showNode(node);
+                                    if (i === 0) {
+                                        tree.selectNode(node);
                                     }
-                                    return true;
-                                }
-                            } else {//name搜索
-                                let end = node.name.lastIndexOf('(');
-                                let name = node.name.substring(0, end);
-                                if (name.indexOf(keys[i]) !== -1) {
-                                    if (isDepen) {
-                                        node.isParent ? node.highlight = 1 : node.highlight = 2;
+                                } else {
+                                    if (!node.isParent) {
+                                        node.highlight = 2;
                                         tree.showNode(node);
-                                        tree.checkNode(node, true, true, false);
-                                        if (i === 0) {
-                                            tree.selectNode(node);
+                                        if (node.name === '0-1. tmp_tab(1218)' && node.checked === false) {
+                                            console.log('start node unchecked');
                                         }
-                                    } else {
-                                        if (!node.isParent) {
-                                            node.highlight = 2;
-                                            tree.showNode(node);
-                                            if (first) tree.checkNode(node, true, true, false);
-                                        }
+                                        if (first) tree.checkNode(node, true, true, false);
                                     }
-                                    return true;
                                 }
+                                return true;
+                            }
+                        } else {//name搜索
+                            if (node.jobName.indexOf(keys[i]) != -1) {
+                                if (isDepen) {
+                                    node.isParent ? node.highlight = 1 : node.highlight = 2;
+                                    tree.showNode(node);
+                                    tree.checkNode(node, true, true, false);
+                                    if (i === 0) {
+                                        tree.selectNode(node);
+                                    }
+                                } else {
+                                    if (!node.isParent) {
+                                        node.highlight = 2;
+                                        tree.showNode(node);
+                                        if (first) tree.checkNode(node, true, true, false);
+                                    }
+                                }
+                                return true;
                             }
                         }
                     }
+
                     if (node.checked && !node.isParent) {
                         tree.checkNode(node, false, true, false);
                     }
