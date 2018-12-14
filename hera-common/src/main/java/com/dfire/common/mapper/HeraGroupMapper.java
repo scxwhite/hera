@@ -50,10 +50,8 @@ public interface HeraGroupMapper {
     @Lang(HeraSelectLangDriver.class)
     List<HeraGroup> findByOwner(String owner);
 
-
     @Select("select id,configs,parent from hera_group where id = #{id}")
     HeraGroup selectConfigById(Integer id);
-
 
     @Select("select count(*) count, max(id) maxId, max(gmt_modified) lastModified from hera_group")
     Judge selectTableInfo();

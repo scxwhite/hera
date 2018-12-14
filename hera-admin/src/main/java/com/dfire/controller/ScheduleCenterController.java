@@ -70,6 +70,8 @@ public class ScheduleCenterController extends BaseHeraController {
     private WorkClient workClient;
     @Autowired
     private HeraHostGroupService heraHostGroupService;
+    @Autowired
+    private HeraAreaService heraAreaService;
 
     private ThreadPoolExecutor poolExecutor;
 
@@ -708,6 +710,16 @@ public class ScheduleCenterController extends BaseHeraController {
             return new JsonResponse(false, "当前任务不存在");
         }
         return new JsonResponse(true, "成功", graph);
+    }
+
+    @RequestMapping(value = "/getAllArea", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse getAllArea() {
+        List<HeraArea> heraAreas = heraAreaService.findAll();
+        if (heraAreas == null) {
+            return new JsonResponse(false, "查询异常");
+        }
+        return new JsonResponse(true, "成功", heraAreas);
     }
 
     private Integer getGroupId(String group) {

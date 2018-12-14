@@ -26,7 +26,6 @@ public class HeraListInLangDriver extends XMLLanguageDriver implements LanguageD
                     "separator=\",\" close=\")\" > #{_item} </foreach>");
         }
 
-
         script = "<script> " + script + " </script>";
         return super.createSqlSource(configuration, script, parameterType);
     }
