@@ -3,6 +3,9 @@ package com.dfire.threadpool;
 import org.joda.time.DateTime;
 import org.joda.time.DurationFieldType;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +19,57 @@ public class SchedulePoolTest {
 
     public static void main(String[] args) {
 
-        test4();
+        test6();
+
+    }
+
+
+
+    public static void test6() {
+        CompletableFuture<String> one = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("first");
+            return "first";
+        });
+
+        CompletableFuture<String> two = CompletableFuture.supplyAsync(() -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("second");
+            return "second";
+        });
+
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(one, two);
+
+        allOf.join();
+
+        System.out.println("全部完成");
+
+    }
+
+    public static void test5() {
+
+        int maxNum = 9000000;
+        List<Integer> list = new ArrayList<>(maxNum);
+
+        for (int i = 0; i <= maxNum; i++) {
+            list.add(i);
+        }
+
+        long start = System.currentTimeMillis();
+        list.parallelStream().forEach((x) -> {
+            if (x == maxNum) {
+                System.out.println("last");
+            }
+        });
+        System.out.println(System.currentTimeMillis() - start);
 
     }
 

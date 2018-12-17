@@ -315,11 +315,15 @@ public class ScheduleCenterController extends BaseHeraController {
             return new RestfulResponse(false, "定时表达式不准确，请核实后再保存");
         }
 
+        if (StringUtils.isBlank(heraJobVo.getAreaId())) {
+            return new RestfulResponse(false, "至少选择一个任务所在区域");
+        }
+
         //如果是依赖任务
         if (heraJobVo.getScheduleType() == 1) {
             String dependencies = heraJobVo.getDependencies();
             if (StringUtils.isNotBlank(dependencies)) {
-                String[] jobs = dependencies.split(",");
+                String[] jobs = dependencies.split(Constants.COMMA);
                 HeraJob heraJob;
                 boolean jobAuto = true;
                 StringBuilder sb = null;

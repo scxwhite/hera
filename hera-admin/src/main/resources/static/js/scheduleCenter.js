@@ -9,6 +9,7 @@ layui.use(['table'], function () {
         let dependTreeObj;
         let selected;
         let triggerType;
+        let allArea = [];
         let groupTaskTable, groupTaskType, focusId = -1;
         let codeMirror, inheritConfigCM, selfConfigCM;
         let editor = $('#editor');
@@ -102,6 +103,14 @@ layui.use(['table'], function () {
             initVal(focusItem.configs, "jobMsgEditForm");
             changeEditStyle(0);
             setJobMessageEdit(focusItem.scheduleType === 0)
+            let areaId= $('#jobMessageEdit [name="areaId"]');
+
+            let areas = new Array();
+            focusItem.areaId.split(",").forEach(function (val) {
+                areas.push(val);
+            });
+            areaId.selectpicker('val', areas);
+            areaId.selectpicker('refresh');
         });
 
         /**
@@ -696,6 +705,18 @@ layui.use(['table'], function () {
                             selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
                             $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
                             $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
+
+                            let areas = '';
+                            $.each(data.areaId.split(","), function (index, id) {
+                                if (index === 0) {
+                                    areas = allArea[id];
+                                } else {
+                                    areas = areas + "," + allArea[id];
+                                }
+                            });
+
+
+                            $('#jobMessage [name="area"]').val(areas);
                             inheritConfigCM.setValue(parseJson(data.inheritConfig));
 
 
@@ -821,152 +842,170 @@ layui.use(['table'], function () {
         }
 
 
-        let zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
-
+        let zNodes;
 
         $(document).ready(function () {
-            $('#allScheBtn').click(function (e) {
-                e.stopPropagation();
-                $('#jobTree').hide();
-                $('#allTree').show();
-                $(this).parent().addClass('active');
-                $('#myScheBtn').parent().removeClass('active');
-                $.fn.zTree.init($("#allTree"), setting, zNodes.allJob);
-                focusTree = $.fn.zTree.getZTreeObj("allTree");
-                searchNodeLazy($('#keyWords').val(), focusTree, "keyWords", false);
-            });
-            $.fn.zTree.init($("#jobTree"), setting, zNodes.myJob);
-            focusTree = $.fn.zTree.getZTreeObj("jobTree");
-            $('#myScheBtn').click(function (e) {
-                e.stopPropagation();
-                $('#jobTree').show();
-                $('#allTree').hide();
-                $(this).parent().addClass('active');
-                $('#allScheBtn').parent().removeClass('active');
+                $.ajax({
+                    url: base_url + "/scheduleCenter/getAllArea",
+                    async: false,
+                    type: "get",
+                    success: function (data) {
+                        let areaOption = '';
+                        $.each(data.data, function (index, area) {
+                            allArea[area.id] = area.name;
+                            areaOption = areaOption + '<option value="' + area.id + '">' + area.name + '</option>';
+                        });
+                        let areas = $('#jobMessageEdit [name="areaId"]');
+                        areas.empty();
+                        areas.append(areaOption);
+                        areas.selectpicker('refresh');
+                    }
+                });
+                zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
+                $('#allScheBtn').click(function (e) {
+                    e.stopPropagation();
+                    $('#jobTree').hide();
+                    $('#allTree').show();
+                    $(this).parent().addClass('active');
+                    $('#myScheBtn').parent().removeClass('active');
+                    $.fn.zTree.init($("#allTree"), setting, zNodes.allJob);
+                    focusTree = $.fn.zTree.getZTreeObj("allTree");
+                    searchNodeLazy($('#keyWords').val(), focusTree, "keyWords", false);
+                });
+                $.fn.zTree.init($("#jobTree"), setting, zNodes.myJob);
                 focusTree = $.fn.zTree.getZTreeObj("jobTree");
-                searchNodeLazy($('#keyWords').val(), focusTree, "keyWords", false);
-            });
-            $.each($(".content .row .height-self"), function (i, n) {
-                $(n).css("height", (screenHeight - 50) + "px");
-            });
-            codeMirror = CodeMirror.fromTextArea(editor[0], {
-                mode: "text/x-sh",
-                lineNumbers: true,
-                theme: "lucario",
-                readOnly: true,
-                matchBrackets: true,
-                smartIndent: true,
-                styleActiveLine: true,
-                styleSelectedText: true,
-                nonEmpty: true
-            });
+                $('#myScheBtn').click(function (e) {
+                    e.stopPropagation();
+                    $('#jobTree').show();
+                    $('#allTree').hide();
+                    $(this).parent().addClass('active');
+                    $('#allScheBtn').parent().removeClass('active');
+                    focusTree = $.fn.zTree.getZTreeObj("jobTree");
+                    searchNodeLazy($('#keyWords').val(), focusTree, "keyWords", false);
+                });
+                $.each($(".content .row .height-self"), function (i, n) {
+                    $(n).css("height", (screenHeight - 50) + "px");
+                });
+                codeMirror = CodeMirror.fromTextArea(editor[0], {
+                    mode: "text/x-sh",
+                    lineNumbers: true,
+                    theme: "lucario",
+                    readOnly: true,
+                    matchBrackets: true,
+                    smartIndent: true,
+                    styleActiveLine: true,
+                    styleSelectedText: true,
+                    nonEmpty: true
+                });
 
-            codeMirror.on('keypress', function () {
-                if (!codeMirror.getOption('readOnly')) {
-                    codeMirror.showHint({
-                        completeSingle: false
-                    });
-                }
-            });
+                codeMirror.on('keypress', function () {
+                    if (!codeMirror.getOption('readOnly')) {
+                        codeMirror.showHint({
+                            completeSingle: false
+                        });
+                    }
+                });
 
-            selfConfigCM = CodeMirror.fromTextArea($('#config textarea')[0], {
-                mode: "text/x-sh",
-                theme: "base16-light",
-                readOnly: true,
-                matchBrackets: true,
-                smartIndent: true,
-                nonEmpty: true
-            });
-            inheritConfigCM = CodeMirror.fromTextArea($('#inheritConfig textarea')[0], {
-                mode: "text/x-sh",
-                theme: "base16-light",
-                readOnly: true,
-                matchBrackets: true,
-                smartIndent: true,
-                nonEmpty: true
-            });
+                selfConfigCM = CodeMirror.fromTextArea($('#config textarea')[0], {
+                    mode: "text/x-sh",
+                    theme: "base16-light",
+                    readOnly: true,
+                    matchBrackets: true,
+                    smartIndent: true,
+                    nonEmpty: true
+                });
+                inheritConfigCM = CodeMirror.fromTextArea($('#inheritConfig textarea')[0], {
+                    mode: "text/x-sh",
+                    theme: "base16-light",
+                    readOnly: true,
+                    matchBrackets: true,
+                    smartIndent: true,
+                    nonEmpty: true
+                });
 
-            codeMirror.setSize('auto', 'auto');
-            inheritConfigCM.setSize('auto', 'auto');
-            selfConfigCM.setSize('auto', 'auto');
-            setDefaultSelectNode();
-            $.ajax({
-                url: base_url + "/scheduleCenter/getHostGroupIds",
-                type: "get",
-                success: function (data) {
-                    let hostGroup = $('#jobMessageEdit [name="hostGroupId"]');
-                    let option = '';
-                    data.forEach(function (val) {
-                        option = option + '"<option value="' + val.id + '">' + val.name + '</option>';
-                    });
-                    hostGroup.empty();
-                    hostGroup.append(option);
-                }
+                codeMirror.setSize('auto', 'auto');
+                inheritConfigCM.setSize('auto', 'auto');
+                selfConfigCM.setSize('auto', 'auto');
+                setDefaultSelectNode();
+                $.ajax({
+                    url: base_url + "/scheduleCenter/getHostGroupIds",
+                    type: "get",
+                    success: function (data) {
+                        let hostGroup = $('#jobMessageEdit [name="hostGroupId"]');
+                        let option = '';
+                        data.forEach(function (val) {
+                            option = option + '"<option value="' + val.id + '">' + val.name + '</option>';
+                        });
+                        hostGroup.empty();
+                        hostGroup.append(option);
+                    }
 
-            })
-            $('#timeChange').focus(function (e) {
-                e.stopPropagation();
-                $('#timeModal').modal('toggle');
-                let para = $.trim($('#timeChange').val());
-                let arr = para.split(' ');
-                let min = arr[1];
-                let hour = arr[2];
-                let day = arr[3];
-                let month = arr[4];
-                let week = arr[5];
-                $('#inputMin').val(min);
-                $('#inputHour').val(hour);
-                $('#inputDay').val(day);
-                $('#inputMonth').val(month);
-                $('#inputWeek').val(week);
-            });
-            $('#saveTimeBtn').click(function (e) {
-                e.stopPropagation();
-                let min = $.trim($('#inputMin').val());
-                let hour = $.trim($('#inputHour').val());
-                let day = $.trim($('#inputDay').val());
-                let month = $.trim($('#inputMonth').val());
-                let week = $.trim($('#inputWeek').val());
-                let para = '0 ' + min + ' ' + hour + ' ' + day + ' ' + month + ' ' + week;
-                $('#timeChange').val(para);
-                $('#timeModal').modal('toggle');
-            });
+                })
+                $('#timeChange').focus(function (e) {
+                    e.stopPropagation();
+                    $('#timeModal').modal('toggle');
+                    let para = $.trim($('#timeChange').val());
+                    let arr = para.split(' ');
+                    let min = arr[1];
+                    let hour = arr[2];
+                    let day = arr[3];
+                    let month = arr[4];
+                    let week = arr[5];
+                    $('#inputMin').val(min);
+                    $('#inputHour').val(hour);
+                    $('#inputDay').val(day);
+                    $('#inputMonth').val(month);
+                    $('#inputWeek').val(week);
+                });
+                $('#saveTimeBtn').click(function (e) {
+                    e.stopPropagation();
+                    let min = $.trim($('#inputMin').val());
+                    let hour = $.trim($('#inputHour').val());
+                    let day = $.trim($('#inputDay').val());
+                    let month = $.trim($('#inputMonth').val());
+                    let week = $.trim($('#inputWeek').val());
+                    let para = '0 ' + min + ' ' + hour + ' ' + day + ' ' + month + ' ' + week;
+                    $('#timeChange').val(para);
+                    $('#timeModal').modal('toggle');
+                });
 
-            //隐藏
-            $('.hideBtn').click(function (e) {
-                e.stopPropagation();
-                $(this).parent().hide();
-            })
-            //隐藏树
-            $('#hideTreeBtn').click(function (e) {
-                e.stopPropagation();
-                if ($(this).children().hasClass('fa-minus')) {
-                    $('#treeCon').removeClass('col-md-3 col-sm-3 col-lg-3').addClass('col-md-1 col-sm-1 col-lg-1');
-                    $(this).children().removeClass('fa-minus').addClass('fa-plus');
-                    $('#infoCon').removeClass('col-md-8 col-sm-8 col-lg-8').addClass('col-md-10 col-sm-10 col-lg-10');
-                    $('#showAllModal').removeClass('col-md-8 col-sm-8 col-lg-8').addClass('col-md-10 col-sm-10 col-lg-10');
-                } else {
-                    $('#treeCon').removeClass('col-md-1 col-sm-1 col-lg-1').addClass('col-md-3 col-sm-3 col-lg-3');
-                    $(this).children().removeClass('fa-plus').addClass('fa-minus');
-                    $('#infoCon').removeClass('col-md-10 col-sm-10 col-lg-10').addClass('col-md-8 col-sm-8 col-lg-8');
-                    $('#showAllModal').removeClass('col-md-10 col-sm-10 col-lg-10').addClass('col-md-8 col-sm-8 col-lg-8');
+                //隐藏
+                $('.hideBtn').click(function (e) {
+                    e.stopPropagation();
+                    $(this).parent().hide();
+                })
+                //隐藏树
+                $('#hideTreeBtn').click(function (e) {
+                    e.stopPropagation();
+                    if ($(this).children().hasClass('fa-minus')) {
+                        $('#treeCon').removeClass('col-md-3 col-sm-3 col-lg-3').addClass('col-md-1 col-sm-1 col-lg-1');
+                        $(this).children().removeClass('fa-minus').addClass('fa-plus');
+                        $('#infoCon').removeClass('col-md-8 col-sm-8 col-lg-8').addClass('col-md-10 col-sm-10 col-lg-10');
+                        $('#showAllModal').removeClass('col-md-8 col-sm-8 col-lg-8').addClass('col-md-10 col-sm-10 col-lg-10');
+                    } else {
+                        $('#treeCon').removeClass('col-md-1 col-sm-1 col-lg-1').addClass('col-md-3 col-sm-3 col-lg-3');
+                        $(this).children().removeClass('fa-plus').addClass('fa-minus');
+                        $('#infoCon').removeClass('col-md-10 col-sm-10 col-lg-10').addClass('col-md-8 col-sm-8 col-lg-8');
+                        $('#showAllModal').removeClass('col-md-10 col-sm-10 col-lg-10').addClass('col-md-8 col-sm-8 col-lg-8');
 
-                }
-            })
+                    }
+                })
 
-            $('#nextNode').on("click", function () {
-                let expand = $('#expand').val();
-                if (expand == null || expand == undefined || expand == "") {
-                    expand = 0;
-                }
-                expandNextNode(expand);
+                $('#nextNode').on("click", function () {
+                    let expand = $('#expand').val();
+                    if (expand == null || expand == undefined || expand == "") {
+                        expand = 0;
+                    }
+                    expandNextNode(expand);
 
-            });
-            $('#expandAll').on("click", function () {
-                expandNextNode(len);
-            });
+                });
+                $('#expandAll').on("click", function () {
+                    expandNextNode(len);
+                });
 
-        });
+            }
+        )
+        ;
         $('#biggerBtn').click(function (e) {
             e.stopPropagation();
             if ($(this).children().hasClass('fa-plus')) {

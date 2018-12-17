@@ -382,20 +382,20 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">脚本是否可见:</label>
-                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <select class="form-control">
-                                                    <option value="不可见">不可见</option>
-                                                    <option value="可见">可见</option>
-                                                </select>
-                                            </div>
-                                        </div>
+
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">预计时长(分):</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                 <input class="form-control" type="text" name="jobName">
 
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">区域:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select name="areaId" class="selectpicker form-control" data-live-search="true" multiple data-done-button="true">
+
+                                                </select>
                                             </div>
                                         </div>
                                     </div>

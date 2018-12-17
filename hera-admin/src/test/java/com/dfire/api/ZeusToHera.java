@@ -34,7 +34,7 @@ public class ZeusToHera {
     private String driver = "com.mysql.jdbc.Driver";
     private Connection heraConnection = null;
     private Connection zeusConnection = null;
-    private final String env = "daily1";
+    private final String env = "daily";
     private final boolean isAll = true;
 
     private String tableName = "hera_group";
@@ -47,7 +47,7 @@ public class ZeusToHera {
     public void init() throws SQLException, ClassNotFoundException {
         Class.forName(driver);
         if (env.equals("daily")) {
-            hera_url = "jdbc:mysql://common101.my.2dfire-daily.com:3306/hera";
+            hera_url = "jdbc:mysql://common101.my.2dfire-daily.com:3306/lineage_db";
             hera_username = "twodfire";
             hera_password = "123456";
 
@@ -80,6 +80,7 @@ public class ZeusToHera {
 
     }
 
+
     @Test
     public void parallelTest() throws SQLException, IOException {
         PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job where auto = 1 and schedule_type = 0");
@@ -92,6 +93,32 @@ public class ZeusToHera {
             HttpGet httpGet = new HttpGet("http://hera.office.2dfire.in/hera/scheduleCenter/execute?id=" + id + "&owner=biadmin");
             httpClient.execute(httpGet);
             System.out.println("--------------------------" + id + ": ok--------------------------");
+        }
+    }
+
+
+    @Test
+    public void fix() throws SQLException {
+        PreparedStatement statement = heraConnection.prepareStatement("select job_id,run_type from hera_action where id < 201812160000000000 and id >= 201812150000000000");
+
+        ResultSet resultSet = statement.executeQuery();
+
+
+        HashSet<Integer> ids = new HashSet<>();
+        int cnt = 0, jobId;
+        while (resultSet.next()) {
+            jobId = resultSet.getInt("job_id");
+            System.out.println(jobId);
+            if (!ids.contains(jobId)) {
+                ids.add(jobId);
+                PreparedStatement prepareStatement = heraConnection.prepareStatement("update hera_job set run_type = ? where id = ?");
+                prepareStatement.setString(1, resultSet.getString("run_type"));
+                prepareStatement.setInt(2, jobId);
+                System.out.println(++cnt + " " + prepareStatement.executeUpdate());
+                prepareStatement.close();
+            }
+
+
         }
     }
 
