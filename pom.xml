@@ -180,7 +180,6 @@
             </dependency>
 
 
-
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
@@ -214,6 +213,16 @@
 
         </dependencies>
     </dependencyManagement>
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <url>http://nexus.2dfire-dev.com/repository/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>http://nexus.2dfire-dev.com/repository/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <profiles>
         <profile>
