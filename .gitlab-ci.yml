@@ -12,7 +12,7 @@ build:
 sonar:
  stage: sonar
  script:
-  - mvn -q -Dmaven.multiModuleProjectDirectory=$MAVEN_HOME clean org.jacoco:jacoco-maven-plugin:prepare-agent test checkstyle:checkstyle sonar:sonar -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.branch.target=master
+  - mvn -q -Dmaven.test.skip -Dmaven.multiModuleProjectDirectory=$MAVEN_HOME clean org.jacoco:jacoco-maven-plugin:prepare-agent test checkstyle:checkstyle sonar:sonar -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.branch.target=master
  tags:
   - java
  only:
