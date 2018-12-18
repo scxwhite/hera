@@ -4,21 +4,19 @@ stages:
 
 build:
  stage: build
-  script:
+ script:
  - "mvn clean package -B -Dmaven.test.skip"
  only:
- - master
  - develop
-  tags:
+ tags:
  - java
 
 sonar:
  stage: sonar
-  script:
+ script:
  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dmaven.test.failure.ignore=true -Ptest -Dsonar.inclusions=**/service/**,**/biz/**,**/dao/**
-  only:
- - master
+ only:
  - develop
-  tags:
+ tags:
  - java
-  allow_failure: true
+ allow_failure: true
