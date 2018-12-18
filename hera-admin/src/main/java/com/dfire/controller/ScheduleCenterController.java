@@ -656,25 +656,46 @@ public class ScheduleCenterController extends BaseHeraController {
     private String checkDependencies(Integer id, boolean isGroup) {
         List<HeraJob> allJobs = heraJobService.getAllJobDependencies();
         if (isGroup) {
-            List<HeraJob> jobList = heraJobService.findByPid(id);
-            StringBuilder openJob = new StringBuilder("无法删除存在任务的目录:[ ");
-            for (HeraJob job : jobList) {
-                openJob.append(job.getId()).append(" ");
+
+            HeraGroup heraGroup = heraGroupService.findById(id);
+            if (heraGroup == null) {
+                return "组不存在";
+            } else if (heraGroup.getDirectory() == 1) {
+                //如果是小目录
+                List<HeraJob> jobList = heraJobService.findByPid(id);
+                StringBuilder openJob = new StringBuilder("无法删除存在任务的目录:[ ");
+                for (HeraJob job : jobList) {
+                    openJob.append(job.getId()).append(" ");
+                }
+                openJob.append("]");
+                if (jobList.size() > 0) {
+                    return openJob.toString();
+                }
+                return null;
+            } else {
+                //如果是大目录
+                List<HeraGroup> parent = heraGroupService.findByParent(id);
+
+                if (parent == null || parent.size() == 0) {
+                    return null;
+                }
+                StringBuilder openGroup = new StringBuilder("无法删除存在目录的目录:[ ");
+                for (HeraGroup group : parent) {
+                    if (group.getExisted() == 1) {
+                        openGroup.append(group.getId()).append(" ");
+                    }
+                }
+                openGroup.append("]");
+                return openGroup.toString();
             }
-            openJob.append("]");
-            if (jobList.size() > 0) {
-                return openJob.toString();
-            }
-            return null;
+
         } else {
             HeraJob job = heraJobService.findById(id);
             if (job.getAuto() == 1) {
                 return "无法删除正在开启的任务";
             }
-
             boolean canDelete = true;
             boolean isFirst = true;
-
             String deleteJob = String.valueOf(job.getId());
             StringBuilder dependenceJob = new StringBuilder("任务依赖: ");
             String[] dependenceJobs;
