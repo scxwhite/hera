@@ -13,7 +13,7 @@ import java.sql.Statement;
  */
 public class ThriftServerTest {
 
-    @Test
+   /* @Test
     public void executeSql() {
 
         String url = "jdbc:hive2://10.10.18.215:10000";
@@ -47,5 +47,5 @@ public class ThriftServerTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }
