@@ -17,12 +17,12 @@ public interface HeraLockMapper {
 
     @Select("select * from hera_lock where subgroup = #{subgroup}")
     @Lang(HeraSelectLangDriver.class)
-    HeraLock findById(HeraLock heraLock);
+    HeraLock findBySubgroup(String subgroup);
 
     @Insert("insert into hera_lock (#{heraLock})")
     @Lang(HeraInsertLangDriver.class)
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
-    int insert(HeraLock heraLock);
+    Integer insert(HeraLock heraLock);
 
 
     @Update("update hera_lock (#{heraLock}) where id = #{id}")

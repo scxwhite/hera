@@ -38,6 +38,8 @@ public class DistributeLock {
 
     private final long timeout = 1000 * 60 * 5L;
 
+    private final String ON_LINE = "online";
+
     @PostConstruct
     public void init() {
 
@@ -51,13 +53,21 @@ public class DistributeLock {
     }
 
     public void checkLock() {
-        HeraLock heraLock = heraLockService.findById("online");
+        HeraLock heraLock = heraLockService.findBySubgroup(ON_LINE);
         if (heraLock == null) {
+            Date date = new Date();
             heraLock = HeraLock.builder()
+                    .id(1)
                     .host(WorkContext.host)
-                    .serverUpdate(new Date())
+                    .serverUpdate(date)
+                    .subgroup(ON_LINE)
+                    .gmtCreate(date)
+                    .gmtModified(date)
                     .build();
-            heraLockService.insert(heraLock);
+            Integer lock = heraLockService.insert(heraLock);
+            if (lock == null || lock <= 0) {
+                return;
+            }
         }
 
         if (WorkContext.host.equals(heraLock.getHost().trim())) {

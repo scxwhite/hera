@@ -242,7 +242,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraLockDaoTest() {
-        HeraLock lock = heraLockService.findById("online");
+        HeraLock lock = heraLockService.findBySubgroup("online");
         lock.setServerUpdate(new Date());
         heraLockService.update(lock);
 

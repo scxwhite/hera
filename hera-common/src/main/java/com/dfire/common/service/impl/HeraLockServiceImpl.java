@@ -25,13 +25,12 @@ public class HeraLockServiceImpl implements HeraLockService {
     @Bean(name = "lock")
     @Scope("prototype")
     @Override
-    public HeraLock findById(String group) {
-        HeraLock heraLock = HeraLock.builder().subgroup(group).build();
-        return heraLockMapper.findById(heraLock);
+    public HeraLock findBySubgroup(String group) {
+        return heraLockMapper.findBySubgroup(group);
     }
 
     @Override
-    public int insert(HeraLock heraLock) {
+    public Integer insert(HeraLock heraLock) {
         return heraLockMapper.insert(heraLock);
     }
 
