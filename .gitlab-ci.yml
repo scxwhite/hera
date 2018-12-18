@@ -1,23 +1,24 @@
 stages:
- - javadoc
+ - build
  - sonar
 
-javadoc:
- stage: javadoc
- script:
-   - "mvn javadoc:aggregate --fail-never"
-   - "mkdir -p /usr/share/nginx/javadoc/${PWD##*/}"
-   - "cp -r ./target/site/apidocs /usr/share/nginx/javadoc/${PWD##*/}"
- tags:
-  - java
+build:
+ stage: build
+  script:
+ - "mvn clean package -B -Dmaven.test.skip"
  only:
-  - develop
+ - master
+ - develop
+  tags:
+ - java
 
 sonar:
  stage: sonar
- script:
-  - mvn -q -Dmaven.multiModuleProjectDirectory=$MAVEN_HOME clean org.jacoco:jacoco-maven-plugin:prepare-agent test checkstyle:checkstyle sonar:sonar -Dsonar.branch.name=$CI_COMMIT_REF_NAME -Dsonar.branch.target=develop
- tags:
-  - java
- only:
-  - develop
+  script:
+ - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dmaven.test.failure.ignore=true -Ptest -Dsonar.inclusions=**/service/**,**/biz/**,**/dao/**
+  only:
+ - master
+ - develop
+  tags:
+ - java
+  allow_failure: true
