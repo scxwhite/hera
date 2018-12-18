@@ -157,7 +157,7 @@ public class ActionUtil {
             return null;
         }
         int actionLen = action.length();
-        int len = 4;
+        int len = 6;
         if (actionLen < len) {
             return null;
         }
