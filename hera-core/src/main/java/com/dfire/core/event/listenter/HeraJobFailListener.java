@@ -27,9 +27,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
- * @time: Created in 下午5:38 2018/4/19
- * @desc 任务失败的监听, 当任务失败，需要发送邮件给相关人员
+ * 任务失败的预处理
+ * @author xiaosuda
  */
 public class HeraJobFailListener extends AbstractListener {
 
@@ -59,8 +58,7 @@ public class HeraJobFailListener extends AbstractListener {
                 return;
             }
             HeraJob heraJob = heraJobService.findById(jobId);
-
-            //非自动调度不处理  最好能把这些抽取出去 提供接口实现
+            //非开启任务不处理  最好能把这些抽取出去 提供接口实现
             if (heraJob.getAuto() == 0) {
                 return ;
             }
