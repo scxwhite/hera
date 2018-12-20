@@ -270,43 +270,8 @@ public class JobHandler extends AbstractHandler {
 
 
     private void handleFailedEvent(HeraJobFailedEvent event) {
-        HeraActionVo heraActionVo = cache.getHeraActionVo();
-        if (heraActionVo == null) {
-            autoRecovery();
-            return;
-        }
-        if (!heraActionVo.getAuto()) {
-            return;
-        }
-        if (heraActionVo.getAuto() && event.getActionId().equals(actionId)) {
-            List<String> emails = new ArrayList<>(1);
-            try {
-                HeraJobMonitor monitor = heraJobMonitorService.findByJobId(heraActionVo.getJobId());
-                if (monitor == null && Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
-                    ScheduleLog.info("任务无监控人，发送给owner：{}", heraActionVo.getJobId());
-                    HeraUser user = heraUserService.findByName(heraActionVo.getOwner());
-                    emails.add(user.getEmail().trim());
-                } else if (monitor != null) {
-                    String ids = monitor.getUserIds();
-                    String[] id = ids.split(",");
-                    for (String anId : id) {
-                        if (StringUtils.isBlank(anId)) {
-                            continue;
-                        }
-                        HeraUser user = heraUserService.findById(HeraUser.builder().id(Integer.parseInt(anId)).build());
-                        if (user != null && user.getEmail() != null) {
-                            emails.add(user.getEmail());
-                        }
-                    }
-                }
-                if (emails.size() > 0) {
-                    emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
-                }
-            } catch (MessagingException e) {
-                e.printStackTrace();
-                ErrorLog.error("发送邮件失败");
-            }
-        }
+        //处理任务失败的事件
+
     }
 
     /**
