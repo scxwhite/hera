@@ -49,7 +49,6 @@ public class HeraJobFailListener extends AbstractListener {
                 1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory(), new ThreadPoolExecutor.AbortPolicy());
     }
 
-
     @Override
     public void beforeDispatch(MvcEvent mvcEvent) {
         if (mvcEvent.getApplicationEvent() instanceof HeraJobFailedEvent) {

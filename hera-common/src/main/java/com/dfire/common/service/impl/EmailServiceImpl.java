@@ -1,6 +1,7 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.service.EmailService;
+import com.dfire.logs.MonitorLog;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -60,8 +61,8 @@ public class EmailServiceImpl implements EmailService {
         transport.connect(mailHost, mailUser, mailPassword);
 
         Message message = createSimpleMessage(session, title, content, addresses);
-
         transport.sendMessage(message, message.getAllRecipients());
+        MonitorLog.info("发送邮件成功,内容:{}, 联系人:{}", content, address);
         transport.close();
     }
 
