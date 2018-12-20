@@ -889,7 +889,7 @@ layui.use(['table'], function () {
                 codeMirror = CodeMirror.fromTextArea(editor[0], {
                     mode: "text/x-sh",
                     lineNumbers: true,
-                    theme: "default",
+                    theme: "eclipse",
                     readOnly: true,
                     matchBrackets: true,
                     smartIndent: true,

@@ -179,6 +179,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             f.setAccessible(true);
             processId = f.getInt(process);
         } catch (Throwable e) {
+            log(e.getMessage());
         }
         return processId;
     }
@@ -212,7 +213,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         private String threadName;
         private CountDownLatch latch;
 
-        public StreamThread(InputStream inputStream, String threadName, CountDownLatch latch) {
+        private StreamThread(InputStream inputStream, String threadName, CountDownLatch latch) {
             this.inputStream = inputStream;
             this.threadName = threadName;
             this.latch = latch;
