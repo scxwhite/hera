@@ -62,9 +62,9 @@ public class MasterServer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        if (channelFuture.isSuccess()) {
+        if (channelFuture != null && channelFuture.isSuccess()) {
             HeraLog.info("start master server success");
-        } else if (!channelFuture.isSuccess()) {
+        } else {
             ErrorLog.error("start master server success");
         }
 
