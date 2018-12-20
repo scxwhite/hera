@@ -50,8 +50,7 @@ public class WorkHandleCancel {
      */
     private Future<RpcResponse.Response> cancelManual(WorkContext workContext, RpcRequest.Request request, String historyId) {
         HeraJobHistory heraJobHistory = workContext.getHeraJobHistoryService().findById(historyId);
-        HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-        final String actionId = history.getActionId();
+        final String actionId = heraJobHistory.getActionId();
         SocketLog.info("worker receive cancel manual job, actionId =" + actionId);
         if (!workContext.getManualRunning().containsKey(actionId)) {
             return workContext.getWorkExecuteThreadPool().submit(() -> RpcResponse.Response.newBuilder()

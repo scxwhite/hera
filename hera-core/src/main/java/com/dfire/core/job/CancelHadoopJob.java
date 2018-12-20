@@ -1,5 +1,8 @@
 package com.dfire.core.job;
 
+import com.dfire.common.constants.Constants;
+import com.dfire.common.vo.LogContent;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,20 +32,26 @@ public class CancelHadoopJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
-        String logContent = null;
-        if(jobContext.getHeraJobHistory() != null) {
-            logContent = jobContext.getHeraJobHistory().getLog().getContent();
-        } else if(jobContext.getDebugHistory() != null) {
-            logContent = jobContext.getDebugHistory().getLog().getContent();
+        LogContent logContent;
+        if (jobContext.getHeraJobHistory() != null) {
+            logContent = jobContext.getHeraJobHistory().getLog();
+        } else if (jobContext.getDebugHistory() != null) {
+            logContent = jobContext.getDebugHistory().getLog();
+        } else {
+            logContent = LogContent.builder().build();
         }
-        if(logContent != null) {
+        String taskLog = logContent.toString();
+        if (taskLog != null) {
             String hadoopCmd = getHadoopCmd(envMap);
-            commands = Arrays.asList(logContent.split("\n")).stream().filter(line-> line.startsWith("Starting Job ="))
+            commands = Arrays.stream(taskLog.split(Constants.LOG_SPLIT)).filter(line -> line.contains("Starting Job ="))
                     .map(line -> {
-                        String jobId = line.substring(line.lastIndexOf("job_"));
+                        String jobId = line.substring(line.indexOf("job_"), line.indexOf(Constants.COMMA));
                         return hadoopCmd + " job -kill " + jobId;
                     }).collect(Collectors.toList());
-
+        }
+        for (String command : commands) {
+            logContent.append(command);
+            logContent.append(Constants.LOG_SPLIT);
         }
         return commands;
     }

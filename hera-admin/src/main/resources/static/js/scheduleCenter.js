@@ -1392,3 +1392,11 @@ let JobLogTable = function (jobId) {
     };
     return oTableInit;
 };
+function cancelJob(historyId, jobId) {
+    var url = base_url + "/scheduleCenter/cancelJob.do";
+    var parameter = {historyId: historyId, jobId: jobId};
+    $.get(url, parameter, function (data) {
+        layer.msg(data);
+        $('#jobLog [name="refreshLog"]').trigger('click');
+    });
+}

@@ -40,7 +40,6 @@ public class Constants {
     public final static String HTML_FONT_RIGHT = "</font>";
 
 
-
     public final static String LEFT_BRACKET = "(";
 
     public final static String RIGHT_BRACKET = ")";
@@ -85,6 +84,9 @@ public class Constants {
 
     public final static String NEW_LINE = "\n";
     public final static String HTML_NEW_LINE = "<br>";
+
+
+    public final static String LOG_SPLIT = "<br><br>";
 
 
 }

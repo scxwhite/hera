@@ -18,7 +18,6 @@ public class LogContent {
 
     private int lines;
 
-    private final String SPLIT = "<br><br>";
     private final String CONSOLE = "<b>CONSOLE#</b> ";
     private final String HERA = "<b>HERA#</b> ";
     private StringBuffer content;
@@ -38,9 +37,9 @@ public class LogContent {
                     || log.contains("Permission denied")) {
                 content.append(CONSOLE).append("<font style=\"color:red\">")
                         .append(log).append("</font>")
-                        .append(SPLIT);
+                        .append(Constants.LOG_SPLIT);
             } else {
-                content.append(CONSOLE).append(log).append(SPLIT);
+                content.append(CONSOLE).append(log).append(Constants.LOG_SPLIT);
             }
             if (++lines >= COUNT) {
                 content.append(HERA).append("控制台输出信息过多，停止记录，建议您优化自己的Job");
@@ -54,7 +53,7 @@ public class LogContent {
             content = new StringBuffer();
         }
         if (lines < COUNT) {
-            content.append(HERA).append(log).append(SPLIT);
+            content.append(HERA).append(log).append(Constants.LOG_SPLIT);
         }
     }
 
@@ -64,7 +63,7 @@ public class LogContent {
             content = new StringBuffer();
         }
         if (lines < COUNT) {
-            content.append(HERA).append(log).append(SPLIT);
+            content.append(HERA).append(log).append(Constants.LOG_SPLIT);
         }
     }
 
