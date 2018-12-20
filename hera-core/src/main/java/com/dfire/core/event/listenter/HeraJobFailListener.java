@@ -59,6 +59,11 @@ public class HeraJobFailListener extends AbstractListener {
                 return;
             }
             HeraJob heraJob = heraJobService.findById(jobId);
+
+            //非自动调度不处理  最好能把这些抽取出去 提供接口实现
+            if (heraJob.getAuto() == 0) {
+                return ;
+            }
             executor.execute(() -> {
                 List<String> emails = new ArrayList<>(1);
                 try {
