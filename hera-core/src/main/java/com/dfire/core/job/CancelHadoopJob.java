@@ -1,7 +1,6 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.Constants;
-import com.dfire.common.vo.LogContent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,32 +25,29 @@ public class CancelHadoopJob extends ProcessJob {
     }
 
     /**
+     * 解析日志  查找map-reduce 的jobId 根据id进行kill
+     *
      * @return
-     * @desc 从日志中解析出hadoop job 任务id, 拼接出kill job的命令,目前只考虑hive次一种任务
      */
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
-        LogContent logContent;
+        String logContent = null;
         if (jobContext.getHeraJobHistory() != null) {
-            logContent = jobContext.getHeraJobHistory().getLog();
+            logContent = jobContext.getHeraJobHistory().getLog().toString();
         } else if (jobContext.getDebugHistory() != null) {
-            logContent = jobContext.getDebugHistory().getLog();
-        } else {
-            logContent = LogContent.builder().build();
+            logContent = jobContext.getDebugHistory().getLog().toString();
         }
-        String taskLog = logContent.toString();
-        if (taskLog != null) {
+        if (logContent != null) {
             String hadoopCmd = getHadoopCmd(envMap);
-            commands = Arrays.stream(taskLog.split(Constants.LOG_SPLIT)).filter(line -> line.contains("Starting Job ="))
+            commands = Arrays.stream(logContent.split(Constants.LOG_SPLIT)).filter(line -> line.contains("Starting Job ="))
                     .map(line -> {
                         String jobId = line.substring(line.indexOf("job_"), line.indexOf(Constants.COMMA));
                         return hadoopCmd + " job -kill " + jobId;
                     }).collect(Collectors.toList());
         }
         for (String command : commands) {
-            logContent.append(command);
-            logContent.append(Constants.LOG_SPLIT);
+            log(command);
         }
         return commands;
     }
