@@ -2,7 +2,6 @@ package com.dfire.core.tool;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.logs.ErrorLog;
-import com.dfire.logs.HeraLog;
 import com.dfire.protocol.RpcWorkInfo;
 import com.dfire.protocol.RpcWorkInfo.OSInfo;
 import com.dfire.protocol.RpcWorkInfo.ProcessMonitor;
@@ -133,7 +132,6 @@ public class OsProcessJob extends RunShell {
         } else if (used.contains(GB)) {
             res = parseFloat(used) * 1024;
         }
-
         return res;
     }
 
@@ -172,11 +170,17 @@ public class OsProcessJob extends RunShell {
                             if (StringUtils.isBlank(first)) {
                                 continue;
                             }
-                            if ("Cpu(s):".equals(first)) {
+                            if (first.contains("Cpu")) {
                                 try {
-                                    user = Float.parseFloat(words[1].replace("%us,", ""));
-                                    system = Float.parseFloat(words[2].replace("%sy,", ""));
-                                    cpu = Float.parseFloat(words[4].replace("%id,", ""));
+                                    if ("Cpu(s):".equals(first)) {
+                                        user = Float.parseFloat(words[1].replace("%us,", ""));
+                                        system = Float.parseFloat(words[2].replace("%sy,", ""));
+                                        cpu = Float.parseFloat(words[4].replace("%id,", ""));
+                                    } else if ("%Cpu(s)".equals(first)) {
+                                        user = Float.parseFloat(words[1]);
+                                        system = Float.parseFloat(words[3]);
+                                        cpu = Float.parseFloat(words[6].replace("ni,", ""));
+                                    }
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -189,6 +193,16 @@ public class OsProcessJob extends RunShell {
                                 swapUsed = parseKb(words[3]);
                                 swapFree = parseKb(words[5]);
                                 swapCached = parseKb(words[7]);
+                            } else if ("KiB".equals(first)) {
+                                if ("Mem".equals(words[1])) {
+                                    memTotal = parseKb(words[3]);
+                                    memFree = parseKb(words[5]);
+                                    memBuffers = parseKb(words[9]);
+                                } else if ("Swap".equals(words[1])) {
+                                    swapTotal = parseKb(words[2]);
+                                    swapFree = parseKb(words[4]);
+                                    swapCached = parseKb(words[8]);
+                                }
 
                             } else if (StringUtils.isNumeric(first)) {
                                 try {

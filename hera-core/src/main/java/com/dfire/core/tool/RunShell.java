@@ -74,8 +74,9 @@ public class RunShell {
     }
 
     public static void main(String[] args) throws IOException {
-        RunShell shell = new RunShell("top -s 0 -n 30 -o mem -O cpu -l 2  -stats pid,user,cpu,time,mem,command");
+        RunShell shell = new RunShell("top -b -n 1");
         shell.run();
+        System.out.println(shell.getResult());
     }
 
 }
