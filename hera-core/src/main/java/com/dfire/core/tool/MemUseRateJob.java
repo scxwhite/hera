@@ -3,7 +3,6 @@ package com.dfire.core.tool;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.logs.SocketLog;
 import lombok.Data;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.util.regex.Matcher;
@@ -88,7 +87,13 @@ public class MemUseRateJob {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            IOUtils.closeQuietly(reader);
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         rate = (memTotal - memAvailable) / memTotal;
     }

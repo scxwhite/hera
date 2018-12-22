@@ -3,10 +3,10 @@
 <head>
     <title>机器组管理</title>
     <base href="${request.contextPath}" id="contextPath">
+    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
-
 </head>
 
 
@@ -86,6 +86,8 @@
 <@netCommon.commonScript />
 <script src="${request.contextPath}/plugins/jquery/jquery.validate.min.js"></script>
 <script src="${request.contextPath}/plugins/jquery/messages_zh.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 <script>
     var contextPath = $('#contextPath').attr("href");
     var form = $("#hostGroupTable");

@@ -4,7 +4,6 @@ import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.io.File;
@@ -55,7 +54,9 @@ public class SparkJob extends ProcessJob {
         } catch (Exception e) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         } finally {
-            IOUtils.closeQuietly(writer);
+            if (writer != null) {
+                writer.close();
+            }
         }
 
         getProperties().setProperty(RunningJobKeyConstant.RUN_SPARK_PATH, file.getAbsolutePath());
@@ -120,7 +121,13 @@ public class SparkJob extends ProcessJob {
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
-                    IOUtils.closeQuietly(tmpWriter);
+                   if (tmpWriter != null) {
+                       try {
+                           tmpWriter.close();
+                       } catch (IOException e) {
+                           e.printStackTrace();
+                       }
+                   }
                 }
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
                 list.add(shellPrefix + " sh " + tmpFilePath);
