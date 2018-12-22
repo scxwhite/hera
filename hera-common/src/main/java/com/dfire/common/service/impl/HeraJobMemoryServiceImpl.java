@@ -9,6 +9,7 @@ import java.util.*;
 
 /**
  * 内存级别缓存job信息
+ *
  * @author xiaosuda
  * @date 2018/12/3
  */
@@ -21,6 +22,10 @@ public class HeraJobMemoryServiceImpl extends HeraJobServiceImpl {
 
     private Map<Integer, HeraJob> getMemoryJob() {
         Judge newJudge = heraJobMapper.selectTableInfo();
+
+        if (newJudge.getMaxId() == null || newJudge.getLastModified() == null || newJudge.getCount() == null) {
+            return new HashMap<>(0);
+        }
         if (judge == null || !newJudge.getCount().equals(judge.getCount()) || !newJudge.getLastModified().equals(judge.getLastModified()) || !newJudge.getMaxId().equals(judge.getMaxId())) {
             synchronized (this) {
                 if (judge == null || !newJudge.getCount().equals(judge.getCount()) || !newJudge.getLastModified().equals(judge.getLastModified()) || !newJudge.getMaxId().equals(judge.getMaxId())) {

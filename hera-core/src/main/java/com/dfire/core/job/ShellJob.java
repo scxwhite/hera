@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.util.CommandUtils;
-import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,7 +55,13 @@ public class ShellJob extends ProcessJob {
         } catch (IOException e) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         } finally {
-            IOUtils.closeQuietly(outputStreamWriter);
+            try {
+                if (outputStreamWriter != null) {
+                    outputStreamWriter.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         String shellFilePath = getProperty(RunningJobKeyConstant.RUN_SHELL_PATH, "");
         List<String> list = new ArrayList<>();
@@ -110,7 +113,13 @@ public class ShellJob extends ProcessJob {
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
-                    IOUtils.closeQuietly(tmpWriter);
+                    if (tmpWriter != null) {
+                        try {
+                            tmpWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
             list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));

@@ -20,7 +20,6 @@
     <properties>
         <quartz.version>2.2.1</quartz.version>
         <jwt.version>3.3.0</jwt.version>
-        <hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
         <lang3.version>3.4</lang3.version>
         <hera.common.version>1.0-SNAPSHOT</hera.common.version>
         <hera.protocol.version>1.0-SNAPSHOT</hera.protocol.version>
@@ -115,29 +114,7 @@
             <version>${lang3.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-common</artifactId>
-            <version>${hadoop.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.eclipse.jdt</groupId>
-                    <artifactId>core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>tomcat</groupId>
-                    <artifactId>jasper-compiler</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>tomcat</groupId>
-                    <artifactId>jasper-runtime</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.protobuf</groupId>
-                    <artifactId>protobuf-java</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
 
         <dependency>
             <groupId>commons-lang</groupId>
