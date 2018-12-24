@@ -35,6 +35,15 @@
     <script>var base_url = '${request.contextPath}';</script>
 
     <script>var screenHeight = document.body.clientHeight</script>
+<script>
+    $.get(base_url + '/isAdmin', function (data) {
+        if (data.data === true) {
+            $('#sysManager').css("display", "block");
+        } else {
+            $('#sysManager').css("display", "none");
+        }
+    });
+</script>
 
 </#macro>
 
@@ -74,7 +83,9 @@
                 <li class="nav-click" id="machineInfoMenu"><a
                         href="${request.contextPath}/machineInfo"><i class="fa fa-book"></i> <span>机器组监控</span></a>
                 </li>
-                <li class="treeview menu-closed my-tree" id="sysManager">
+
+
+                <li class="treeview menu-closed my-tree" id="sysManager" style="display: none">
                     <a href="#">
                         <i class="fa fa-folder"></i> <span>系统管理</span>
                         <span class="pull-right-container">
@@ -218,3 +229,4 @@
         </div>
     </footer>
 </#macro>
+
