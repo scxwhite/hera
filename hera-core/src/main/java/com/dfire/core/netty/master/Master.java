@@ -538,7 +538,6 @@ public class Master {
      */
     public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount, Long nowAction, Set<Integer> ids) {
         retryCount++;
-        int noCompleteCount = 0;
         //最大递归次数
         int maxRetryCount = 80;
         List<Integer> notGenerate = new ArrayList<>();
@@ -601,7 +600,6 @@ public class Master {
                     }
                     //新加任务 可能无版本
                     if (!isComplete) {
-                        noCompleteCount++;
                         notGenerate.add(heraJob.getId());
                     } else {
                         List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
@@ -649,9 +647,9 @@ public class Master {
         }
         batchInsertList(insertActionList, actionMap, nowAction);
 
-        if (noCompleteCount > 0 && retryCount < maxRetryCount) {
+        if (notGenerate.size() > 0 && retryCount < maxRetryCount) {
             generateDependJobAction(jobList, actionMap, retryCount, nowAction, ids);
-        } else if (retryCount == maxRetryCount && noCompleteCount > 0) {
+        } else if (retryCount == maxRetryCount && notGenerate.size() > 0) {
             ScheduleLog.warn("未找到版本的ID:{}, 未找到版本个数:{} , 重试次数:{}", JSONObject.toJSONString(notGenerate), notGenerate.size(), retryCount);
         }
     }
