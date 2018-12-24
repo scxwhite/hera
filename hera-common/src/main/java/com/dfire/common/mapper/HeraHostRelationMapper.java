@@ -20,7 +20,7 @@ public interface HeraHostRelationMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insert(HeraHostRelation heraHostRelation);
 
-    @Update("update hera_host_relation set effective = 0 where id = #{id}")
+    @Update("delete from  hera_host_relation where id = #{id}")
     int delete(@Param("id") int id);
 
     @Update("update hera_host_relation (#{heraHostRelation}) where id = #{id}")

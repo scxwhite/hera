@@ -82,11 +82,14 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="" id="userManage"><a href="${request.contextPath}/userManage"><i
+                        <li id="userManage"><a href="${request.contextPath}/userManage"><i
                                 class="fa fa-circle-o"></i>
                             用户管理</a></li>
                         <li id="hostGroupManage"><a href="${request.contextPath}/hostGroupManage"><i
                                 class="fa fa-circle-o"></i>机器组管理</a>
+                        </li>
+                        <li id="workManage"><a href="${request.contextPath}/workManage"><i
+                                class="fa fa-circle-o"></i>worker管理</a>
                         </li>
                     </ul>
                 </li>

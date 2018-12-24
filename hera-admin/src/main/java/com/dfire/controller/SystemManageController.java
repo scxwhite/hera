@@ -1,7 +1,10 @@
 package com.dfire.controller;
 
+import com.dfire.common.entity.HeraHostRelation;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.entity.model.TableResponse;
 import com.dfire.common.entity.vo.HeraActionVo;
+import com.dfire.common.service.HeraHostRelationService;
 import com.dfire.common.service.HeraJobActionService;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
@@ -34,11 +37,19 @@ public class SystemManageController {
     private HeraJobActionService heraJobActionService;
 
     @Autowired
+    private HeraHostRelationService heraHostRelationService;
+
+    @Autowired
     private WorkClient workClient;
 
     @RequestMapping("/userManage")
     public String userManage() {
         return "systemManage/userManage.index";
+    }
+
+    @RequestMapping("/workManage")
+    public String workManage() {
+        return "systemManage/workManage.index";
     }
 
     @RequestMapping("/hostGroupManage")
@@ -61,6 +72,47 @@ public class SystemManageController {
         return "machineInfo";
     }
 
+    @RequestMapping(value = "/workManage/list", method = RequestMethod.GET)
+    @ResponseBody
+    public TableResponse<List<HeraHostRelation>> workManageList() {
+        List<HeraHostRelation> hostRelations = heraHostRelationService.getAll();
+        if (hostRelations == null) {
+            return new TableResponse<>(-1, "查询失败");
+        }
+        return new TableResponse<>(hostRelations.size(), 0, hostRelations);
+    }
+
+    @RequestMapping(value = "/workManage/add", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse workManageAdd(HeraHostRelation heraHostRelation) {
+        int insert = heraHostRelationService.insert(heraHostRelation);
+        if (insert > 0) {
+            return new JsonResponse(true, "插入成功");
+        }
+        return new JsonResponse(false, "插入失败");
+
+    }
+
+    @RequestMapping(value = "/workManage/del", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse workManageDel(Integer id) {
+        int delete = heraHostRelationService.delete(id);
+        if (delete > 0) {
+            return new JsonResponse(true, "删除成功");
+        }
+        return new JsonResponse(false, "删除失败");
+
+    }
+    @RequestMapping(value = "/workManage/update", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse workManageUpdate(HeraHostRelation heraHostRelation) {
+        int update = heraHostRelationService.update(heraHostRelation);
+        if (update > 0) {
+            return new JsonResponse(true, "更新成功");
+        }
+        return new JsonResponse(false, "更新失败");
+
+    }
     /**
      * 任务管理页面今日任务详情
      *
@@ -141,6 +193,7 @@ public class SystemManageController {
 
     /**
      * 今日所有任务状态明细，线形图初始化
+     *
      * @return
      */
     @RequestMapping(value = "/homePage/getFailJob", method = RequestMethod.GET)

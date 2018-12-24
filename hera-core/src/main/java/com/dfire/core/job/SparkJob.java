@@ -121,13 +121,13 @@ public class SparkJob extends ProcessJob {
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
-                    try {
-                        if (tmpWriter != null) {
-                            tmpWriter.close();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                   if (tmpWriter != null) {
+                       try {
+                           tmpWriter.close();
+                       } catch (IOException e) {
+                           e.printStackTrace();
+                       }
+                   }
                 }
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
                 list.add(shellPrefix + " sh " + tmpFilePath);

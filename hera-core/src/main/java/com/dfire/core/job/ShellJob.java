@@ -55,12 +55,12 @@ public class ShellJob extends ProcessJob {
         } catch (IOException e) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         } finally {
-            try {
-                if (outputStreamWriter != null) {
+            if(outputStreamWriter != null) {
+                try {
                     outputStreamWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         String shellFilePath = getProperty(RunningJobKeyConstant.RUN_SHELL_PATH, "");
