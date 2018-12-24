@@ -5,11 +5,26 @@
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
     <link href="${request.contextPath}/plugins/ztree/metroStyle/metroStyle.css" rel="stylesheet">
-<#--    <link href="https://cdn.bootcss.com/zTree.v3/3.5.32/css/metroStyle/metroStyle.min.css" rel="stylesheet">-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/eclipse.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/eclipse.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/lucario.min.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/3024-day.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/3024-night.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/ambiance.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/base16-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/base16-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/bespin.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/blackboard.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/colorforth.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/dracula.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/duotone-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/duotone-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/erlang-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/gruvbox-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/mbo.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/material.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/solarized.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/base16-light.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css">
     <link rel="stylesheet"
@@ -17,6 +32,7 @@
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
+
 </head>
 
 
@@ -394,7 +410,8 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">区域:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <select name="areaId" class="selectpicker form-control" data-live-search="true" multiple data-done-button="true">
+                                                <select name="areaId" class="selectpicker form-control"
+                                                        data-live-search="true" multiple data-done-button="true">
 
                                                 </select>
                                             </div>
@@ -422,9 +439,32 @@
                     <div id="script" class="my-box" style="display: none">
                         <div class="box-body">
                             <div class="form-group">
-                                <label class="info-title">脚本</label>
-                                <textarea id="editor" name="editor"
-                                ></textarea>
+                                <label class="info-title" style="display: inline">脚本</label>
+                                <select class="pull-right center-block" onchange="selectTheme()" id="themeSelect">
+                                    <option value="default">default</option>
+                                    <option value="lucario">lucario</option>
+                                    <option value="eclipse">eclipse</option>
+                                    <option value="3024-day">3024-day</option>
+                                    <option value="ambiance">ambiance</option>
+                                    <option value="base16-dark">base16-dark</option>
+                                    <option value="base16-light">base16-light</option>
+                                    <option value="bespin">bespin</option>
+                                    <option value="blackboard">blackboard</option>
+                                    <option value="colorforth">colorforth</option>
+                                    <option value="dracula">dracula</option>
+                                    <option value="duotone-dark">duotone-dark</option>
+                                    <option value="duotone-light">duotone-light</option>
+                                    <option value="erlang-dark">erlang-dark</option>
+                                    <option value="gruvbox-dark">gruvbox-dark</option>
+                                    <option value="mbo">mbo</option>
+                                    <option value="material">material</option>
+                                    <option value="solarized">solarized</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                  <textarea id="editor" name="editor"
+                                  ></textarea>
                             </div>
                         </div>
                     </div>
@@ -910,7 +950,6 @@
 
 
 <@netCommon.commonScript />
-<#--<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.core.min.js"></script>-->
 
 <script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
 

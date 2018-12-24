@@ -4,11 +4,27 @@
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link href="https://cdn.bootcss.com/zTree.v3/3.5.32/css/metroStyle/metroStyle.min.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/ztree/metroStyle/metroStyle.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/eclipse.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/lucario.min.css" rel="stylesheet">
-
+    <link href="${request.contextPath}/plugins/codemirror/theme/3024-day.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/3024-night.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/ambiance.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/base16-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/base16-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/bespin.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/blackboard.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/colorforth.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/dracula.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/duotone-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/duotone-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/erlang-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/gruvbox-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/mbo.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/material.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/solarized.css" rel="stylesheet">
     <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-tab.css">
     <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
     <link rel="stylesheet" href="${request.contextPath}/css/developCenter.css">
@@ -198,6 +214,7 @@
 <script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.core.min.js"></script>
 <script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exedit.min.js"></script>
 <script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.excheck.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exhide.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>

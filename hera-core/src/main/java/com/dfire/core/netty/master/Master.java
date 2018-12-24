@@ -638,10 +638,8 @@ public class Master {
                                 insertActionList.add(actionNew);
                                 ids.add(heraJob.getId());
                             }
-
                         }
                     }
-
                 }
             }
         }

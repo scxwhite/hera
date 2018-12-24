@@ -1,4 +1,5 @@
-let nodes, edges, g, headNode, currIndex = 0, len, inner, initialScale = 0.75, zoom, nodeIndex = {}, graphType;
+let nodes, edges, g, headNode, currIndex = 0, len, inner, initialScale = 0.75, zoom, nodeIndex = {}, graphType,
+    codeMirror, themeSelect = $('#themeSelect');
 
 layui.use(['table'], function () {
         let table = layui.table;
@@ -11,7 +12,7 @@ layui.use(['table'], function () {
         let triggerType;
         let allArea = [];
         let groupTaskTable, groupTaskType, focusId = -1;
-        let codeMirror, inheritConfigCM, selfConfigCM;
+        let inheritConfigCM, selfConfigCM;
         let editor = $('#editor');
         let setting = {
             view: {
@@ -53,6 +54,12 @@ layui.use(['table'], function () {
          * @param id    节点ID
          */
         function setDefaultSelectNode(id) {
+
+            if (localStorage.getItem("taskGroup") === 'all') {
+                allJobTree();
+            } else {
+                myJobTree();
+            }
             if (id === null || id === undefined) {
                 id = localStorage.getItem("defaultId");
             }
@@ -103,7 +110,7 @@ layui.use(['table'], function () {
             initVal(focusItem.configs, "jobMsgEditForm");
             changeEditStyle(0);
             setJobMessageEdit(focusItem.scheduleType === 0)
-            let areaId= $('#jobMessageEdit [name="areaId"]');
+            let areaId = $('#jobMessageEdit [name="areaId"]');
 
             let areas = new Array();
             focusItem.areaId.split(",").forEach(function (val) {
@@ -210,7 +217,7 @@ layui.use(['table'], function () {
                 success: function (data) {
                     $('#addGroupModal').modal('hide');
                     if (data.success == true) {
-                        localStorage.setItem("defaultId", data.msg);
+                        setCurrentId(data.msg);
                         location.reload(false);
                     } else {
                         alert(data.msg);
@@ -325,7 +332,7 @@ layui.use(['table'], function () {
                 },
                 success: function (data) {
                     if (data.success == true) {
-                        localStorage.setItem("defaultId", data.msg)
+                        setCurrentId(data.msg)
                         location.reload(false);
                     } else {
                         alert(data.msg);
@@ -843,8 +850,11 @@ layui.use(['table'], function () {
 
 
         let zNodes;
+        let firstAllTreeInit = true;
+        let firstMyTreeInit = true;
 
         $(document).ready(function () {
+
                 $.ajax({
                     url: base_url + "/scheduleCenter/getAllArea",
                     async: false,
@@ -864,32 +874,28 @@ layui.use(['table'], function () {
                 zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
                 $('#allScheBtn').click(function (e) {
                     e.stopPropagation();
-                    $('#jobTree').hide();
-                    $('#allTree').show();
-                    $(this).parent().addClass('active');
-                    $('#myScheBtn').parent().removeClass('active');
-                    $.fn.zTree.init($("#allTree"), setting, zNodes.allJob);
-                    focusTree = $.fn.zTree.getZTreeObj("allTree");
-                    searchNodeLazy($('#keyWords').val(), focusTree, "keyWords", false);
+                    allJobTree();
+                    localStorage.setItem("taskGroup", 'all');
                 });
-                $.fn.zTree.init($("#jobTree"), setting, zNodes.myJob);
-                focusTree = $.fn.zTree.getZTreeObj("jobTree");
+
                 $('#myScheBtn').click(function (e) {
                     e.stopPropagation();
-                    $('#jobTree').show();
-                    $('#allTree').hide();
-                    $(this).parent().addClass('active');
-                    $('#allScheBtn').parent().removeClass('active');
-                    focusTree = $.fn.zTree.getZTreeObj("jobTree");
-                    searchNodeLazy($('#keyWords').val(), focusTree, "keyWords", false);
+                    myJobTree();
+                    localStorage.setItem("taskGroup", 'mySelf');
                 });
                 $.each($(".content .row .height-self"), function (i, n) {
                     $(n).css("height", (screenHeight - 50) + "px");
                 });
+
+                let theme = localStorage.getItem("theme");
+                if (theme == null) {
+                    theme = 'default';
+                }
+                themeSelect.val(theme);
                 codeMirror = CodeMirror.fromTextArea(editor[0], {
                     mode: "text/x-sh",
                     lineNumbers: true,
-                    theme: "eclipse",
+                    theme: theme,
                     readOnly: true,
                     matchBrackets: true,
                     smartIndent: true,
@@ -1055,6 +1061,33 @@ layui.use(['table'], function () {
         });
         $('#showAllModal').modal('hide');
 
+
+        function allJobTree() {
+            $('#jobTree').hide();
+            $('#allTree').show();
+            $('#allScheBtn').parent().addClass('active');
+            $('#myScheBtn').parent().removeClass('active');
+
+            if (firstAllTreeInit) {
+                firstAllTreeInit = false;
+                $.fn.zTree.init($("#allTree"), setting, zNodes.allJob);
+            }
+            focusTree = $.fn.zTree.getZTreeObj("allTree");
+
+
+        }
+
+        function myJobTree() {
+            $('#jobTree').show();
+            $('#allTree').hide();
+            $('#myScheBtn').parent().addClass('active');
+            $('#allScheBtn').parent().removeClass('active');
+            if (firstMyTreeInit) {
+                firstMyTreeInit = false;
+                $.fn.zTree.init($("#jobTree"), setting, zNodes.myJob);
+            }
+            focusTree = $.fn.zTree.getZTreeObj("jobTree");
+        }
 
         function changeOverview(type) {
             let overview = "", notShow = "none";
@@ -1392,9 +1425,17 @@ let JobLogTable = function (jobId) {
     };
     return oTableInit;
 };
+
+
+function selectTheme() {
+    let theme = themeSelect.val();
+    codeMirror.setOption("theme", theme);
+    localStorage.setItem("theme", theme);
+}
+
 function cancelJob(historyId, jobId) {
-    var url = base_url + "/scheduleCenter/cancelJob.do";
-    var parameter = {historyId: historyId, jobId: jobId};
+    let url = base_url + "/scheduleCenter/cancelJob.do";
+    let parameter = {historyId: historyId, jobId: jobId};
     $.get(url, parameter, function (data) {
         layer.msg(data);
         $('#jobLog [name="refreshLog"]').trigger('click');

@@ -1,4 +1,4 @@
-var codeMirror;
+var codeMirror, zTree;
 layui.use("layer", function () {
     $('#developManage').addClass('active');
     /**
@@ -35,8 +35,7 @@ layui.use("layer", function () {
     };
 
     function add(e) {
-        var zTree = $.fn.zTree.getZTreeObj("documentTree"),
-            isParent = e.data.isParent,
+        var isParent = e.data.isParent,
             nodes = zTree.getSelectedNodes(),
             treeNode = nodes[0];
         hideRMenu();
@@ -202,7 +201,6 @@ layui.use("layer", function () {
 
 
     $("#removeFile").click(function () {
-        var zTree = $.fn.zTree.getZTreeObj("documentTree"),
             nodes = zTree.getSelectedNodes(),
             treeNode = nodes[0];
         if (nodes.length === 0) {
@@ -255,7 +253,7 @@ layui.use("layer", function () {
     /**
      * zTree 右键菜单初始化数据
      */
-    var zTree, rMenu;
+    var rMenu;
 
     /**
      * tab项数据
@@ -303,21 +301,11 @@ layui.use("layer", function () {
             return;
         }
 
-        var parameter = "id=" + id;
-        var url = base_url + "/developCenter/find.do";
-        var result = getDataByGet(url, parameter)
-        var script = result['content'];
-        if (script == null || script == '') {
-            script = '';
-        }
-
         setScript(id);
 
         var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
-        localStorage.setItem("id", id);//记录活动选项卡id
         tabData = JSON.parse(localStorage.getItem('tabData'));
-        var b = isInArray(tabData, tabDetail);
-        if (b == false) {
+        if (isInArray(tabData, tabDetail) === false) {
             tabData.push(tabDetail);
             tabObj = $("#tabContainer").tabs({
                 data: tabDetail,
@@ -729,6 +717,7 @@ layui.use("layer", function () {
     });
 
 
+
     /**
      * 初始化开发中心页面
      *
@@ -739,13 +728,16 @@ layui.use("layer", function () {
         zTree = $.fn.zTree.getZTreeObj("documentTree");
         rMenu = $("#rMenu");
         fixIcon();
-        var currentId;
-
+        let currentId;
+        let theme = localStorage.getItem("theme");
+        if (theme == null) {
+            theme = 'default';
+        }
         codeMirror = CodeMirror.fromTextArea(editor[0], {
             mode: "sql",
             lineNumbers: true,
             autofocus: true,
-            theme: "lucario",
+            theme: theme,
             readOnly: false
         });
         codeMirror.display.wrapper.style.height = 500 + "px";
@@ -756,6 +748,7 @@ layui.use("layer", function () {
                 });
             }
         });
+
         var saveTimer;
         //监听codemirror change事件 实时保存
         codeMirror.on('change', function () {
@@ -778,7 +771,7 @@ layui.use("layer", function () {
                     contentType: "application/json",
                     dataType: "json",
                     success: function (data) {
-                        layer.msg(data.msg)
+                        console.log(data.msg)
                     },
                     error: function (err) {
                         layer.msg(err);
@@ -789,15 +782,17 @@ layui.use("layer", function () {
 
         var storeData = JSON.parse(localStorage.getItem('tabData'));
         if (storeData != null) {
-            for (var i = 0; i < storeData.length; i++) {
+            for (let i = 0; i < storeData.length; i++) {
                 $("#tabContainer").tabs({
                     data: storeData[i],
                     showIndex: 0,
                     loadAll: true
                 });
                 $("#tabContainer").data("tabs").addTab(storeData[i]);
-                currentId = storeData[i]['id'];
-                setScript(storeData[i]['id']);
+                if (i === storeData.length - 1) {
+                    currentId = storeData[i]['id'];
+                    setScript(currentId);
+                }
             }
         } else {
             var tmp = new Array();
@@ -823,7 +818,6 @@ layui.use("layer", function () {
     //初始化tabs的长度
     function tabInitLength(tabContainer) {
         tabContainer.tabsLength = 0;
-        var ul = tabContainer.children('ul');
         if (tabContainer.children('ul').length > 0) {
             var lis = tabContainer.children('ul').children();
             //初始tabs width
@@ -1061,17 +1055,19 @@ function cancelJob(historyId) {
 
 
 function setScript(id) {
-
+    setDefaultSelectNode(id);
     var parameter = "id=" + id;
     var url = base_url + "/developCenter/find.do";
     var result = getDataByGet(url, parameter)
 
-
-    var type = result['type'];
-    if (type == '2') {
+    var name = result['name'];
+    if (name.indexOf('hive') != -1) {
         codeMirror.setOption("mode", "text/x-hive");
-    } else if (type == '1') {
+        console.log("hive")
+    } else {
         codeMirror.setOption("mode", "text/x-sh");
+        console.log("shell")
+
     }
     var script = result['content'];
     if (script == null || script == '') {
@@ -1080,3 +1076,27 @@ function setScript(id) {
     codeMirror.setValue(script);
 }
 
+function setDefaultSelectNode(id) {
+
+    if (id === null || id === undefined) {
+        id = localStorage.getItem("id");
+    }
+    if (id !== undefined && id !== null) {
+        let node = zTree.getNodeByParam("id", id);
+        expandParent(node);
+        zTree.selectNode(node);
+    }
+
+}
+
+function expandParent(node) {
+    if (node) {
+        let path = node.getPath();
+        if (path && path.length > 0) {
+            for (let i = 0; i < path.length - 1; i++) {
+                zTree.showNode(path[i]);
+                zTree.expandNode(path[i], true);
+            }
+        }
+    }
+}
