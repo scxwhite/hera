@@ -1,10 +1,10 @@
 package com.dfire.core.job;
 
+import com.dfire.common.constants.Constants;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -23,26 +23,36 @@ public class CancelHadoopJob extends ProcessJob {
     }
 
     /**
+     * 解析日志  查找map-reduce 的jobId 根据id进行kill
+     *
      * @return
-     * @desc 从日志中解析出hadoop job 任务id, 拼接出kill job的命令,目前只考虑hive次一种任务
      */
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
         String logContent = null;
-        if(jobContext.getHeraJobHistory() != null) {
-            logContent = jobContext.getHeraJobHistory().getLog().getContent();
-        } else if(jobContext.getDebugHistory() != null) {
-            logContent = jobContext.getDebugHistory().getLog().getContent();
+        if (jobContext.getHeraJobHistory() != null) {
+            logContent = jobContext.getHeraJobHistory().getLog().toString();
+        } else if (jobContext.getDebugHistory() != null) {
+            logContent = jobContext.getDebugHistory().getLog().toString();
         }
-        if(logContent != null) {
+        if (logContent != null) {
             String hadoopCmd = getHadoopCmd(envMap);
-            commands = Arrays.asList(logContent.split("\n")).stream().filter(line-> line.startsWith("Starting Job ="))
-                    .map(line -> {
-                        String jobId = line.substring(line.lastIndexOf("job_"));
-                        return hadoopCmd + " job -kill " + jobId;
-                    }).collect(Collectors.toList());
-
+            String[] logLine = logContent.split(Constants.LOG_SPLIT);
+            String killCommand;
+            for (String line : logLine) {
+                if (line.contains("Starting Job =")) {
+                    String jobId = line.substring(line.indexOf("job_"), line.indexOf(Constants.COMMA));
+                    killCommand = hadoopCmd + " job -kill " + jobId;
+                    commands.add(killCommand);
+                    log(killCommand);
+                } else if (line.contains("Submitted application")) {
+                    String appId = line.substring(line.indexOf("application_")).replace(Constants.LOG_SPLIT, "");
+                    killCommand = "yarn application -kill " + appId;
+                    commands.add(killCommand);
+                    log(killCommand);
+                }
+            }
         }
         return commands;
     }

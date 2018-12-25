@@ -16,13 +16,17 @@ public class HierarchyProperties {
     protected Map<String, String> properties;
 
     public HierarchyProperties(Map<String, String> properties) {
-        this.properties = properties;
+        if (properties != null) {
+            this.properties = properties;
+        } else {
+            this.properties = new HashMap<>(0);
+        }
     }
 
     public HierarchyProperties(HierarchyProperties parent, Map<String, String> properties) {
         this.parent = parent;
         if (properties == null) {
-            this.properties = new HashMap<>();
+            this.properties = new HashMap<>(0);
         } else {
             this.properties = new HashMap<>(properties);
         }
@@ -108,26 +112,13 @@ public class HierarchyProperties {
     }
 
     /**
+     * 获得层级属性
      *
      * @return
-     * @desc 获取所有的属性对，(包含继承属性，并且上级继承属性会被下级继承属性覆盖)
      */
     public Map<String, String> getAllProperties() {
-        if(parent != null) {
-
-            Map<String, String> parentMap = new HashMap<>(16);
-            if(parent.getAllProperties() != null) {
-                parentMap = new HashMap<>(parent.getAllProperties());
-            }
-            parentMap.putAll(getLocalProperties());
-            return parentMap;
-        }
-        return getLocalProperties();
-    }
-
-    public Map<String, String> getAllProperties(String dateString) {
-        if(parent != null){
-            Map<String, String> parentMap=new HashMap<>(parent.getAllProperties());
+        if (parent != null) {
+            Map<String, String> parentMap = new HashMap<>(parent.getAllProperties());
             parentMap.putAll(getLocalProperties());
             return parentMap;
         }

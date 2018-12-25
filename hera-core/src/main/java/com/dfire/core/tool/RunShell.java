@@ -1,28 +1,34 @@
 package com.dfire.core.tool;
 
+import com.dfire.core.config.HeraGlobalEnvironment;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author xiaosuda
  * @date 2018/8/6
  */
-@Slf4j
 @Data
 public class RunShell {
     private List<String> commands;
     private ProcessBuilder builder;
     private Integer exitCode = -1;
     private Process process;
+    private String directory = "/tmp";
 
     public RunShell(String command) {
+        setCommand(command);
+    }
+
+    public RunShell() {
+
+    }
+
+    public void setCommand(String command) {
         commands = new ArrayList<>(3);
         commands.add("sh");
         commands.add("-c");
@@ -31,29 +37,34 @@ public class RunShell {
 
     public Integer run() {
         builder = new ProcessBuilder(commands);
+        builder.directory(new File(directory));
+        builder.environment().putAll(HeraGlobalEnvironment.userEnvMap);
         try {
             process = builder.start();
-            exitCode = process.waitFor();
+            if (process.waitFor(2, TimeUnit.SECONDS)) {
+                return exitCode = 0;
+            }
             return exitCode;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return exitCode;
+    }
+
+    public void setDirectory(String directory) {
+        this.directory = directory;
     }
 
     public String getResult() throws IOException {
         if (exitCode == 0) {
             return readFromInputStream(process.getInputStream());
         } else {
-            log.error(readFromInputStream(process.getErrorStream()));
+            return readFromInputStream(process.getErrorStream());
         }
-        return null;
     }
 
     private String readFromInputStream(InputStream inputStream) throws IOException {
-        BufferedReader input = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader input = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
         String line;
         StringBuilder result = new StringBuilder();
         while ((line = input.readLine()) != null) {
@@ -61,4 +72,11 @@ public class RunShell {
         }
         return result.toString().trim();
     }
+
+    public static void main(String[] args) throws IOException {
+        RunShell shell = new RunShell("top -b -n 1");
+        shell.run();
+        System.out.println(shell.getResult());
+    }
+
 }

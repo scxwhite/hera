@@ -1,8 +1,12 @@
 package com.dfire.core.config;
 
+import com.dfire.common.enums.OperatorSystemEnum;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author xiaosuda
@@ -19,48 +23,54 @@ public class HeraGlobalEnvironment {
     public static String preemptionMasterGroup;
 
     @Getter
+    private static long requestTimeout = 60 * 1000L;
+
+    @Getter
+    private static long channelTimeout = 1000L;
+
+    @Getter
     private static String env;
 
     @Getter
-    private static Float   maxMemRate;
+    private static Float maxMemRate;
     @Getter
-    private static Float   maxCpuLoadPerCore;
+    private static Float maxCpuLoadPerCore;
     @Getter
-    private static Float   perTaskUseMem;
+    private static Float perTaskUseMem;
     @Getter
-    private static Float   systemMemUsed;
+    private static Float systemMemUsed;
     @Getter
     private static Integer scanRate;
     @Getter
     private static Integer connectPort;
     @Getter
-    private static String  downloadDir;
+    private static String downloadDir;
     @Getter
     private static Integer maxParallelNum;
     @Getter
     private static Integer heartBeat;
     @Getter
-    private static String  admin;
+    private static String admin;
     @Getter
     private static Integer taskTimeout;
     @Getter
-    private static String  sparkAddress;
+    private static String sparkAddress;
     @Getter
-    private static String  sparkDriver;
+    private static String sparkDriver;
     @Getter
-    private static String  sparkUser;
+    private static String sparkUser;
     @Getter
-    private static String  sparkPassword;
+    private static String sparkPassword;
     @Getter
-    private static String  sparkMaster;
+    private static String sparkMaster;
     @Getter
-    private static String  sparkDriverMemory;
+    private static String sparkDriverMemory;
     @Getter
-    private static String  sparkDriverCores;
+    private static String sparkDriverCores;
     @Getter
-    private static String  sparkExecutorMemory;
+    private static String sparkExecutorMemory;
     @Getter
-    private static String  sparkExecutorCores;
+    private static String sparkExecutorCores;
 
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
@@ -142,6 +152,16 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
     }
 
+    @Value("${hera.requestTimeout}")
+    public void setTimeout(Long requestTimeout) {
+        HeraGlobalEnvironment.requestTimeout = requestTimeout;
+    }
+
+    @Value("${hera.channelTimeout}")
+    public void setChannelTimeout(Long channelTimeout) {
+        HeraGlobalEnvironment.channelTimeout = channelTimeout;
+    }
+
     @Value("${spark.address}")
     public void setSparkAddress(String sparkAddress) {
         HeraGlobalEnvironment.sparkAddress = sparkAddress;
@@ -190,15 +210,32 @@ public class HeraGlobalEnvironment {
     /**
      * 判断是否是linux 环境，有些命令不一样
      */
-    private static boolean linuxSystem = true;
+    private static boolean linuxSystem = false;
+
+
+    @Getter
+    private static OperatorSystemEnum systemEnum;
+
+    /**
+     * 用户环境变量
+     */
+    public static Map<String, String> userEnvMap = new HashMap<>();
 
     static {
         String os = System.getProperties().getProperty("os.name");
         if (os != null) {
-            if (os.toLowerCase().startsWith("win") || os.toLowerCase().startsWith("mac")) {
-                linuxSystem = false;
+            if (os.toLowerCase().startsWith("win")) {
+                systemEnum = OperatorSystemEnum.WIN;
+            } else if (os.toLowerCase().startsWith("mac")) {
+                systemEnum = OperatorSystemEnum.MAC;
+            } else {
+                systemEnum = OperatorSystemEnum.LINUX;
+                linuxSystem = true;
             }
         }
+        // 全局配置，支持中文不乱
+        userEnvMap.putAll(System.getenv());
+        userEnvMap.put("LANG", "zh_CN.UTF-8");
     }
 
     public static boolean isLinuxSystem() {

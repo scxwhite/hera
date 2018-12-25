@@ -6,6 +6,7 @@ import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.service.*;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.vo.RestfulResponse;
@@ -75,8 +76,8 @@ public class HeraBaseDaoTest {
     @Before
     public void doBefore() {
         heraAction = HeraAction.builder()
-                .id("1111111111111111111")
-                .jobId("6666")
+                .id(1111111111111111111L)
+                .jobId(6666)
                 .gmtCreate(new Date())
                 .gmtModified(new Date())
                 .groupId(1)
@@ -91,7 +92,7 @@ public class HeraBaseDaoTest {
 
         heraDebugHistory = HeraDebugHistory
                 .builder()
-                .fileId("1")
+                .fileId(1)
                 .hostGroupId(1)
                 .owner("import")
                 .gmtCreate(new Date())
@@ -116,15 +117,30 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraActionDaoTest() {
-        HeraAction action = HeraAction.builder().id("201801010010000350").jobId("350").build();
+        HeraAction action = HeraAction.builder().id(201801010010000350L).jobId(350).build();
         System.out.println(heraAction.getGmtCreate());
         List<HeraAction> list = heraJobActionService.getAll();
         System.out.println(list.get(5).getJobDependencies());
-        heraJobActionService.insert(heraAction);
+        heraJobActionService.insert(heraAction, Long.parseLong(ActionUtil.getCurrActionVersion()));
         heraJobActionService.delete("1111111111111111111");
 
         HeraAction heraAction = heraJobActionService.findById("201806190000000002");
         System.out.println(heraAction.getJobDependencies());
+
+    }
+
+    @Test
+    public void heraActionBatchDaoTest() {
+//        heraJobActionService.delete("1111111111111111111");
+
+//        heraJobActionService.insert(heraAction);
+        HeraAction heraAction = heraJobActionService.findById("201806190000000002");
+        List<HeraAction> list = Arrays.asList(heraAction);
+
+        heraJobActionService.batchInsert(list, Long.parseLong(ActionUtil.getCurrActionVersion()));
+//
+//        HeraAction heraAction = heraJobActionService.findById("201806190000000002");
+//        System.out.println(heraAction.getJobDependencies());
 
     }
 
@@ -148,7 +164,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraDebugHistoryDaoTest() {
-        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById("271");
+        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById(271);
         debugHistory.setStatus(StatusEnum.FAILED);
         heraDebugHistoryService.update(BeanConvertUtils.convert(debugHistory));
         HeraDebugHistory history = BeanConvertUtils.convert(debugHistory);
@@ -163,7 +179,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraFileDaoTest() {
-        heraFile = heraFileService.findById("2");
+        heraFile = heraFileService.findById(2);
         System.out.println(heraFile.getName());
 
         heraFile.setContent("test");
@@ -173,10 +189,9 @@ public class HeraBaseDaoTest {
         List<HeraFile> heraFileList = heraFileService.findByIds(list);
         System.out.println(heraFileList.size());
 
-        heraFileService.delete("3");
+        heraFileService.delete(3);
 
-        heraFile.setParent("3");
-        List<HeraFile> subList = heraFileService.findByParent(heraFile);
+        List<HeraFile> subList = heraFileService.findByParent(3);
         System.out.println(subList.size());
 
         List<HeraFile> pList = heraFileService.findByOwner("biadmin");
@@ -189,7 +204,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraFileContent() {
-        HeraFile heraFile = HeraFile.builder().id("4").content("ls /").build();
+        HeraFile heraFile = HeraFile.builder().id(4).content("ls /").build();
         heraFileService.updateContent(heraFile);
 
     }
@@ -227,7 +242,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraLockDaoTest() {
-        HeraLock lock = heraLockService.findById("online");
+        HeraLock lock = heraLockService.findBySubgroup("online");
         lock.setServerUpdate(new Date());
         heraLockService.update(lock);
 
@@ -246,11 +261,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraJobDaoTest() {
-        List<HeraJobTreeNodeVo> list = heraJobService.buildJobTree();
-        System.out.println(list.size());
-        String s = "91";
-        String[] a = s.split(",");
-        System.out.println(a.length);
+
     }
 
     @Test
@@ -264,8 +275,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void dagTest() {
-        JsonResponse restfulResponse = heraJobService.findCurrentJobGraph(119,0);
-        System.out.println(restfulResponse.getData());
+
     }
 
     @Test
@@ -283,18 +293,16 @@ public class HeraBaseDaoTest {
                 MasterContext masterContext = (MasterContext) masterContextField.get(heraSchedule);
                 if(masterContext != null) {
                     Master master = masterContext.getMaster();
-                    List<Integer> integerList = Arrays.asList(new Integer[] {38,37});
 
                     Calendar calendar = Calendar.getInstance();
                     Date now = calendar.getTime();
-                    SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
 
                     Map<Long, HeraAction> actionMap = new HashMap<>();
 
                     List<HeraJob> heraJobList = heraJobService.getAll();
-
-                    master.generateScheduleJobAction(heraJobList, now, dfDate, actionMap);
-                    master.generateDependJobAction(heraJobList, actionMap, 0);
+                    String  cronDate = ActionUtil.getActionVersionByTime(now);
+                    master.generateScheduleJobAction(heraJobList, cronDate, actionMap, Long.parseLong(cronDate));
+                    master.generateDependJobAction(heraJobList, actionMap, 0, Long.parseLong(cronDate), new HashSet<>());
 
                 }
             }
@@ -320,7 +328,7 @@ public class HeraBaseDaoTest {
                 MasterContext masterContext = (MasterContext) masterContextField.get(heraSchedule);
                 if(masterContext != null) {
                     Master master = masterContext.getMaster();
-                    master.generateSingleAction(1918);
+                    master.generateBatchAction();
                 }
             }
         } catch (NoSuchFieldException e) {

@@ -7,7 +7,7 @@ package com.dfire.common.enums;
  */
 public enum TriggerTypeEnum {
 
-    SCHEDULE(1), MANUAL(2), MANUAL_RECOVER(3);
+    SCHEDULE(1), MANUAL(2), MANUAL_RECOVER(3),DEBUG(4);
     private Integer id;
 
     TriggerTypeEnum(Integer id) {
@@ -26,6 +26,8 @@ public enum TriggerTypeEnum {
             return "手动触发";
         } else if (id == 3) {
             return "手动恢复";
+        } else if (id == 4) {
+            return "debug执行";
         }
         return "未知";
     }

@@ -1,12 +1,10 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
-import com.dfire.common.service.HeraFileService;
 import com.dfire.core.config.HeraGlobalEnvironment;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,18 +20,13 @@ import java.util.List;
  * @Date ： 15:53 2018/8/20
  * @Modified :
  */
-@Slf4j
 public class SparkJob extends ProcessJob {
 
     public final String UDF_SQL_NAME = "hera_udf.sql";
 
-    private HeraFileService    heraFileService;
-    private ApplicationContext applicationContext;
 
-    public SparkJob(JobContext jobContext, ApplicationContext applicationContext) {
+    public SparkJob(JobContext jobContext) {
         super(jobContext);
-        this.applicationContext = applicationContext;
-        this.heraFileService = (HeraFileService) this.applicationContext.getBean("heraFileService");
         jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "SparkJob");
     }
 
@@ -49,7 +42,7 @@ public class SparkJob extends ProcessJob {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                log.error("创建.spark失败");
+                ErrorLog.error("创建.spark失败");
             }
         }
 
@@ -61,7 +54,9 @@ public class SparkJob extends ProcessJob {
         } catch (Exception e) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         } finally {
-            IOUtils.closeQuietly(writer);
+            if (writer != null) {
+                writer.close();
+            }
         }
 
         getProperties().setProperty(RunningJobKeyConstant.RUN_SPARK_PATH, file.getAbsolutePath());
@@ -85,7 +80,7 @@ public class SparkJob extends ProcessJob {
         } else if (jobContext.getRunType() == 4) {
             shellPrefix = "";
         } else {
-            log.info("没有运行类型 runType = " + jobContext.getRunType());
+            HeraLog.info("没有运行类型 runType = " + jobContext.getRunType());
         }
 
         String[] excludeFile = HeraGlobalEnvironment.excludeFile.split(";");
@@ -108,9 +103,9 @@ public class SparkJob extends ProcessJob {
         sb.append(" -f " + sparkFilePath + " " +
                 HeraGlobalEnvironment.getSparkMaster() + " " +
                 HeraGlobalEnvironment.getSparkDriverCores() + " " +
-                HeraGlobalEnvironment.getSparkDriverMemory() + " " +
-                HeraGlobalEnvironment.getSparkExecutorCores() + " " +
-                HeraGlobalEnvironment.getSparkExecutorMemory());
+                HeraGlobalEnvironment.getSparkDriverMemory());
+//                HeraGlobalEnvironment.getSparkExecutorCores() + " " +
+//                HeraGlobalEnvironment.getSparkExecutorMemory());
 
         if (shellPrefix.trim().length() > 0) {
 
@@ -126,7 +121,13 @@ public class SparkJob extends ProcessJob {
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
-                    IOUtils.closeQuietly(tmpWriter);
+                   if (tmpWriter != null) {
+                       try {
+                           tmpWriter.close();
+                       } catch (IOException e) {
+                           e.printStackTrace();
+                       }
+                   }
                 }
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
                 list.add(shellPrefix + " sh " + tmpFilePath);

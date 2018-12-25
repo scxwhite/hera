@@ -1,7 +1,7 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.service.EmailService;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.MonitorLog;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +11,13 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 import java.util.Properties;
 
 /**
  * @author xiaosuda
  * @date 2018/7/31
  */
-@Slf4j
 @Service("emailServiceImpl")
 public class EmailServiceImpl implements EmailService {
 
@@ -34,11 +34,14 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
-    public void sendEmail(String title, String content, String... address) throws MessagingException {
-        int len = address.length;
+    public void sendEmail(String title, String content, List<String> address) throws MessagingException {
+        if (address == null || address.size() == 0) {
+            return;
+        }
+        int len = address.size();
         InternetAddress[] addresses = new InternetAddress[len];
         for (int i = 0; i < len; i++) {
-            addresses[i] = new InternetAddress(address[i]);
+            addresses[i] = new InternetAddress(address.get(i));
         }
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", mailHost);
@@ -58,8 +61,8 @@ public class EmailServiceImpl implements EmailService {
         transport.connect(mailHost, mailUser, mailPassword);
 
         Message message = createSimpleMessage(session, title, content, addresses);
-
         transport.sendMessage(message, message.getAllRecipients());
+        MonitorLog.info("发送邮件成功,内容:{}, 联系人:{}", content, address);
         transport.close();
     }
 

@@ -1,6 +1,6 @@
 $(function () {
-    $('#home').addClass('active');
-
+    $('#home').addClass('active menu-open');
+    $('#home').removeClass('menu-closed');
     var option = {
         title: {
             show: true
@@ -42,13 +42,14 @@ $(function () {
             }
             initJobTopTen(data.data);
         }
-    })
+    });
 
     jQuery.ajax({
         url: base_url + "/homePage/findAllJobStatus",
         type: "get",
         success: function (data) {
             if (data.success == false) {
+                layer.msg(data.message);
                 return;
             }
             initPieJobStatus(data.data)
@@ -61,12 +62,12 @@ $(function () {
         type: "get",
         success: function (data) {
             if (data.success == false) {
-                alert(data.message);
+                layer.msg(data.message);
                 return;
             }
             initLineJobStatus(data.data);
         }
-    })
+    });
 
     function initLineJobStatus(data) {
         initOption();

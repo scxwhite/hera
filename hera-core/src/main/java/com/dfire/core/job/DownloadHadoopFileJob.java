@@ -1,8 +1,6 @@
 package com.dfire.core.job;
 
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +9,6 @@ import java.util.List;
  * @time: Created in 下午5:18 2018/5/1
  * @desc
  */
-@Slf4j
 public class DownloadHadoopFileJob extends ProcessJob {
 
     private String hadoopPath;

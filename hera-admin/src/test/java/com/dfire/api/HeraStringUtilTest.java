@@ -1,6 +1,6 @@
 package com.dfire.api;
 
-import com.dfire.common.util.DateUtil;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.RenderHierarchyProperties;
 import com.dfire.common.util.StringUtil;
 import com.dfire.core.job.ProcessJob;
@@ -36,7 +36,7 @@ public class HeraStringUtilTest {
         System.out.println(s);
         s = RenderHierarchyProperties.render("${yesterday}");
         System.out.println(s);
-
+        System.out.println( RenderHierarchyProperties.render("${zdt.format(\"yyyyMMddHHmmss\")}"));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class HeraStringUtilTest {
         System.out.println( LocalDate.parse("2018-09-23", formatter));
         System.out.println( LocalDate.parse("09-23-2018", formatter));
         System.out.println( LocalDate.parse("23/09/2018", formatter));
-        System.out.println(DateUtil.getNowStringForAction());
+        System.out.println(ActionUtil.getCurrActionVersion());
     }
 
     @Test
@@ -75,10 +75,10 @@ public class HeraStringUtilTest {
 
     @Test
     public void testDateUtil() {
-        System.out.println(DateUtil.getNowStringForAction());
+        System.out.println(ActionUtil.getCurrActionVersion());
 
-        String currString = DateUtil.getNextDayString().getSource();
-        Date nextDay = DateUtil.getNextDayString().getTarget();
+        String currString = ActionUtil.getNextDayString().getSource();
+        Date nextDay = ActionUtil.getNextDayString().getTarget();
         SimpleDateFormat dfDate = new SimpleDateFormat("yyyy-MM-dd");
 
         System.out.println(currString);
@@ -112,7 +112,7 @@ public class HeraStringUtilTest {
 
     @Test
     public void getDate() {
-        System.out.println(DateUtil.longToDate(System.currentTimeMillis()));
+        System.out.println(ActionUtil.longToDate(System.currentTimeMillis()));
     }
 
     @Test

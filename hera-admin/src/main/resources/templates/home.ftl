@@ -4,6 +4,30 @@
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
+    <link rel="stylesheet" href="${request.contextPath}/plugins/easyPie/style.css">
+    <style>
+        .my-easy-pie{
+            text-align: center;
+            margin-top: 50px;
+            font-size: 20px;
+            color: #666;
+        }
+        .btn-default {
+            background-color: #fff !important;
+            color: #444;
+            border-color: #ddd;
+        }
+        .box-header {
+            padding: 12px;
+        }
+        .table-hover>tbody>tr:hover {
+             background-color: #fff;
+        }
+        #machineList{
+            width: auto;
+            display: inline;
+        }
+    </style>
 </head>
 
 
@@ -39,7 +63,7 @@
                         <!-- small box -->
                         <div class="small-box bg-aqua">
                             <div class="inner">
-                                <h3 id="allJobsNum"></h3>
+                                <h3 id="allJobsNum">&nbsp;</h3>
 
                                 <p>今日总任务数</p>
                             </div>
@@ -125,7 +149,7 @@
             </div>
         </div>
     </div>
-
+           
     </section>
     <!-- /.content -->
 </div>
@@ -137,6 +161,12 @@
 </div>
 <!-- ./wrapper -->
 <@netCommon.commonScript />
+<script src="${request.contextPath}/plugins/easyPie/jquery.easypiechart.min.js"></script>
+<script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.common.min.js"></script>
+<script src="${request.contextPath}/plugins/echarts/PercentPie.js"></script>
+<script src="${request.contextPath}/plugins/echarts/macarons.js"></script>
+<script src="${request.contextPath}/plugins/echarts/shine.js"></script>
+
 <script src="${request.contextPath}/js/home.js"></script>
 
 </body>

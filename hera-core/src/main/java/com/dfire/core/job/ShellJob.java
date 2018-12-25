@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.util.CommandUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
+import com.dfire.logs.TaskLog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,7 +20,6 @@ import java.util.List;
  * @desc shell脚本执行类，拼接shell文件，执行文件执行命令
  */
 
-@Slf4j
 public class ShellJob extends ProcessJob {
 
     private String shell;
@@ -57,7 +55,13 @@ public class ShellJob extends ProcessJob {
         } catch (IOException e) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         } finally {
-            IOUtils.closeQuietly(outputStreamWriter);
+            if(outputStreamWriter != null) {
+                try {
+                    outputStreamWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         String shellFilePath = getProperty(RunningJobKeyConstant.RUN_SHELL_PATH, "");
         List<String> list = new ArrayList<>();
@@ -109,24 +113,21 @@ public class ShellJob extends ProcessJob {
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
-                    IOUtils.closeQuietly(tmpWriter);
+                    if (tmpWriter != null) {
+                        try {
+                            tmpWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-                list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-                list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
-//                String command = "sh " + tmpFilePath;
-//                list.add(command);
-            } else {
-                list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-                list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
-
-//                String command = "sh " + tmpFilePath;
-//                list.add(command);
             }
-
+            list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
+            list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
         } else {
             list.add("sh " + shellFilePath);
         }
-        log.info("命令：{}", JSONObject.toJSONString(list));
+        TaskLog.info("5.1 命令：{}", JSONObject.toJSONString(list));
         return list;
     }
 

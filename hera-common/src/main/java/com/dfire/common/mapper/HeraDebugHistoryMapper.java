@@ -2,7 +2,7 @@ package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraListInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
@@ -35,15 +35,15 @@ public interface HeraDebugHistoryMapper {
 
     @Select("select * from hera_debug_history where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
-    HeraDebugHistory findById(HeraDebugHistory heraDebugHistory);
+    HeraDebugHistory findById(Integer id);
 
     @Select("select * from hera_debug_history where id in (#{list})")
-    @Lang(HeraSelectInLangDriver.class)
+    @Lang(HeraListInLangDriver.class)
     List<HeraDebugHistory> findByIds(@Param("list") List<Integer> list);
 
     @Select("select * from hera_debug_history where file_id = #{fileId} order by id desc ")
     @Lang(HeraSelectLangDriver.class)
-    List<HeraDebugHistory> findByFileId(HeraDebugHistory heraDebugHistory);
+    List<HeraDebugHistory> findByFileId(Integer fileId);
 
     @Update("update hera_debug_history set status = #{status}, end_time = #{endTime} where id = #{id}")
     int updateStatus(HeraDebugHistory heraDebugHistory);

@@ -1,7 +1,9 @@
 package com.dfire.controller;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
@@ -9,8 +11,8 @@ import com.dfire.common.vo.RestfulResponse;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.protocol.JobExecuteKind;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,27 +24,23 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 16:34 2018/1/13
  * @desc 开发中心页面控制器
  */
-@Slf4j
 @Controller
 @RequestMapping("/developCenter")
 public class DevelopCenterController extends BaseHeraController {
 
     @Autowired
-    HeraFileService heraFileService;
+    @Qualifier("heraFileMemoryService")
+    private HeraFileService heraFileService;
     @Autowired
-    HeraDebugHistoryService debugHistoryService;
+    private HeraDebugHistoryService debugHistoryService;
     @Autowired
-    WorkClient workClient;
+    private WorkClient workClient;
 
 
     @RequestMapping
@@ -60,40 +58,30 @@ public class DevelopCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/addFile", method = RequestMethod.GET)
     @ResponseBody
-    public String addFileAndFolder(HeraFile heraFile) {
+    public Integer addFileAndFolder(HeraFile heraFile) {
         heraFile.setOwner(getOwner());
         heraFile.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
-        String id = heraFileService.insert(heraFile);
-        return id;
+        return heraFileService.insert(heraFile);
     }
 
     @RequestMapping(value = "/find", method = RequestMethod.GET)
     @ResponseBody
     public HeraFile getHeraFile(HeraFile heraFile) {
         heraFile.setOwner(getOwner());
-        HeraFile file = heraFileService.findById(heraFile.getId());
-        return file;
+        return heraFileService.findById(heraFile.getId());
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     @ResponseBody
     public String delete(HeraFile heraFile) {
-        HeraFile file = heraFileService.findById(heraFile.getId());
-        String response = "";
-        heraFileService.delete(heraFile.getId());
-        response = "删除成功";
-        return response;
+        return heraFileService.delete(heraFile.getId()) > 0 ? "删除成功" : "删除失败";
     }
 
     @RequestMapping(value = "/rename", method = RequestMethod.GET)
     @ResponseBody
     public String rename(HeraFile heraFile) {
-        int result = heraFileService.updateFileName(heraFile);
-        String response = "";
-        response = "更新成功";
-        return response;
+        return heraFileService.updateFileName(heraFile) > 0 ? "更新成功" : "更新失败";
     }
-
 
 
     /**
@@ -101,18 +89,19 @@ public class DevelopCenterController extends BaseHeraController {
      *
      * @param heraFile
      * @return
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
     @RequestMapping(value = "/debug", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<Map<String,Object>> debug(@RequestBody HeraFile heraFile) throws ExecutionException, InterruptedException {
+    public WebAsyncTask<JsonResponse> debug(@RequestBody HeraFile heraFile) {
 
         return new WebAsyncTask<>(10000, () -> {
-            Map<String,Object> res = new HashMap<>(2);
+            Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
+            if (file == null) {
+                return new JsonResponse(false, "脚本已被删除");
+            }
             String name = file.getName();
-            String runType = "1";
+            String runType;
             file.setContent(heraFile.getContent());
             heraFileService.updateContent(heraFile);
 
@@ -121,32 +110,28 @@ public class DevelopCenterController extends BaseHeraController {
                     .script(heraFile.getContent())
                     .startTime(new Date())
                     .owner(file.getOwner())
-                    .hostGroupId(file.getHostGroupId())
+                    .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnvironment.defaultWorkerGroup : file.getHostGroupId())
                     .build();
-            String postfix = name.substring(name.lastIndexOf("."));
-            if (".hive".equalsIgnoreCase(postfix)) {
-                runType = "hive";
-            } else if (".sh".equalsIgnoreCase(postfix)) {
-                runType = "shell";
+            int suffixIndex = name.lastIndexOf(Constants.POINT);
+            if (suffixIndex == -1) {
+                return new JsonResponse(false, "无后缀名,请设置支持的后缀名[.sh .hive .spark]");
+            }
+            String suffix = name.substring(suffixIndex);
+            if ((Constants.HIVE_SUFFIX).equalsIgnoreCase(suffix)) {
+                runType = Constants.HIVE_FILE;
+            } else if ((Constants.SHELL_SUFFIX).equalsIgnoreCase(suffix)) {
+                runType = Constants.SHELL_FILE;
+            } else if ((Constants.SPARK_SUFFIX).equalsIgnoreCase(suffix)) {
+                runType = Constants.SPARK_FILE;
+            } else {
+                return new JsonResponse(false, "暂未支持的后缀名[" + suffix + "],请设置支持的后缀名[.sh .hive .spark]");
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
-
-            ExecutorService pool = Executors.newSingleThreadExecutor();
-            pool.submit(() -> {
-                try {
-                    workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-
-//            workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
+            workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
             res.put("fileId", file.getId());
             res.put("debugId", newId);
-            return res;
+            return new JsonResponse(true, "执行成功", res);
         });
     }
 
@@ -155,16 +140,14 @@ public class DevelopCenterController extends BaseHeraController {
      *
      * @param heraFile
      * @return
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
     @RequestMapping(value = "/debugSelectCode", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<Map<String,Object>> debugSelectCode(@RequestBody HeraFile heraFile) {
+    public WebAsyncTask<Map<String, Object>> debugSelectCode(@RequestBody HeraFile heraFile) {
 
         String owner = getOwner();
-        return new WebAsyncTask<>(10000, () -> {
-            Map<String,Object> res = new HashMap<>(2);
+        return new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
+            Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
             file.setContent(heraFile.getContent());
             String name = file.getName();
@@ -174,13 +157,15 @@ public class DevelopCenterController extends BaseHeraController {
                     .script(heraFile.getContent())
                     .startTime(new Date())
                     .owner(owner)
-                    .hostGroupId(file.getHostGroupId())
+                    .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnvironment.defaultWorkerGroup : file.getHostGroupId())
                     .build();
             String postfix = name.substring(name.lastIndexOf("."));
             if (".hive".equalsIgnoreCase(postfix)) {
                 runType = "hive";
             } else if (".sh".equalsIgnoreCase(postfix)) {
                 runType = "shell";
+            } else if (".spark".equalsIgnoreCase(postfix)) {
+                runType = "spark";
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
@@ -199,9 +184,8 @@ public class DevelopCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "findDebugHistory", method = RequestMethod.GET)
     @ResponseBody
-    public List<HeraDebugHistory> findDebugHistory(String fileId) {
-        List<HeraDebugHistory> list = debugHistoryService.findByFileId(fileId);
-        return list;
+    public List<HeraDebugHistory> findDebugHistory(Integer fileId) {
+        return debugHistoryService.findByFileId(fileId);
     }
 
     /**
@@ -209,15 +193,12 @@ public class DevelopCenterController extends BaseHeraController {
      *
      * @param id
      * @return
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
     @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask<String> cancelJob(String id) throws ExecutionException, InterruptedException {
-        JobExecuteKind.ExecuteKind kind = JobExecuteKind.ExecuteKind.DebugKind;
+    public WebAsyncTask<String> cancelJob(String id) {
         return new WebAsyncTask<>(3000, () ->
-                workClient.cancelJobFromWeb(kind, id));
+                workClient.cancelJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, id));
 
     }
 
@@ -234,6 +215,4 @@ public class DevelopCenterController extends BaseHeraController {
         int result = heraFileService.updateContent(heraFile);
         return RestfulResponse.builder().success(true).msg("保存成功").results(result).build();
     }
-
-
 }

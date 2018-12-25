@@ -1,12 +1,21 @@
 package com.dfire.core.netty.worker;
 
+import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
-import com.dfire.protocol.*;
+import com.dfire.core.netty.worker.request.WorkHandlerRequest;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.SocketLog;
+import com.dfire.logs.TaskLog;
+import com.dfire.protocol.RpcRequest.Request;
+import com.dfire.protocol.RpcResponse.Response;
+import com.dfire.protocol.RpcSocketMessage.SocketMessage;
+import com.dfire.protocol.RpcWebResponse.WebResponse;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -16,10 +25,18 @@ import java.util.concurrent.*;
  * @time: Created in 1:32 2018/1/4
  * @desc SocketMessage为RPC消息体
  */
-@Slf4j
-public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.SocketMessage> {
+public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
-    private CompletionService<RpcResponse.Response> completionService = new ExecutorCompletionService<>(Executors.newCachedThreadPool());
+
+    private WorkHandlerRequest handlerRequest = new WorkHandlerRequest();
+
+    private CompletionService<Response> completionService = new ExecutorCompletionService<>(
+            new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L,
+                    TimeUnit.SECONDS,
+                    new SynchronousQueue<>(),
+                    new NamedThreadFactory("worker-send:", false),
+                    new ThreadPoolExecutor.AbortPolicy()));
+
     private WorkContext workContext;
 
     public WorkHandler(final WorkContext workContext) {
@@ -28,21 +45,22 @@ public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.So
         Executor executor = Executors.newSingleThreadExecutor();
 
         executor.execute(() -> {
+            Response response = null;
+            Future<Response> future;
             while (true) {
                 try {
-                    Future<RpcResponse.Response> future = completionService.take();
-                    RpcResponse.Response response = future.get();
-                    if (workContext.getServerChannel() != null) {
-                        workContext.getServerChannel().writeAndFlush(wrapper(response));
-                    }
-                    log.info("worker get response thread success");
-                } catch (Exception e) {
-                    log.error("worker handler take future exception");
-                    throw new RuntimeException(e);
+                    future = completionService.take();
+                    response = future.get();
+                    workContext.getServerChannel().writeAndFlush(wrapper(response));
+                    TaskLog.info("1.WorkHandler: worker send response,rid={}", response.getRid());
+                } catch (InterruptedException | ExecutionException | RemotingException e) {
+                    e.printStackTrace();
+                    ErrorLog.error("1.WorkHandler: worker send response timeout,rid={}", response == null ? null : response.getRid());
                 }
             }
         });
     }
+
 
     private List<ResponseListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -54,69 +72,95 @@ public class WorkHandler extends SimpleChannelInboundHandler<RpcSocketMessage.So
         listeners.add(listener);
     }
 
-    public RpcSocketMessage.SocketMessage wrapper(RpcResponse.Response response) {
-        return RpcSocketMessage.SocketMessage
+    public SocketMessage wrapper(Response response) {
+        return SocketMessage
                 .newBuilder()
-                .setKind(RpcSocketMessage.SocketMessage.Kind.RESPONSE)
+                .setKind(SocketMessage.Kind.RESPONSE)
                 .setBody(response.toByteString()).build();
     }
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RpcSocketMessage.SocketMessage socketMessage) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, SocketMessage socketMessage) throws Exception {
         switch (socketMessage.getKind()) {
             case REQUEST:
-                final RpcRequest.Request request = RpcRequest.Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                RpcOperate.Operate operate = request.getOperate();
-                if (operate == RpcOperate.Operate.Schedule || operate == RpcOperate.Operate.Manual || operate == RpcOperate.Operate.Debug) {
-                    completionService.submit(() ->
-                            new WorkExecuteJob().execute(workContext, request).get());
-                } else if (operate == RpcOperate.Operate.Cancel) {
-                    completionService.submit(() ->
-                            new WorkHandleCancel().handleCancel(workContext, request).get());
+                final Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                switch (request.getOperate()) {
+                    case Schedule:
+                    case Manual:
+                    case Debug:
+                        completionService.submit(() ->
+                                new WorkExecuteJob().execute(workContext, request).get());
+                        break;
+                    case Cancel:
+                        completionService.submit(() ->
+                                new WorkHandleCancel().handleCancel(workContext, request).get());
+                        break;
+                    case GetWorkInfo:
+                        workContext.getWorkExecuteThreadPool().execute(() -> handlerRequest.getWorkInfo(ctx.channel()));
+                        break;
+                    default:
+                        ErrorLog.error("unknow operate value {}", request.getOperateValue());
+                        break;
                 }
-                break;
             case RESPONSE:
-                final RpcResponse.Response response = RpcResponse.Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                for (ResponseListener listener : listeners) {
-                    listener.onResponse(response);
-                }
+                workContext.getWorkWebThreadPool().execute(() -> {
+                    Response response = null;
+                    try {
+                        response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                    } catch (InvalidProtocolBufferException e) {
+                        e.printStackTrace();
+                    }
+                    TaskLog.info("4.WorkHandler:receiver: socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
+                    for (ResponseListener listener : listeners) {
+
+                        listener.onResponse(response);
+                    }
+                });
+
                 break;
             case WEB_RESPONSE:
-                final RpcWebResponse.WebResponse webResponse = RpcWebResponse.WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
-                for (ResponseListener listener : listeners) {
-                    listener.onWebResponse(webResponse);
-                }
+                workContext.getWorkWebThreadPool().execute(() -> {
+                    WebResponse webResponse = null;
+                    try {
+                        webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
+                    } catch (InvalidProtocolBufferException e) {
+                        e.printStackTrace();
+                    }
+                    TaskLog.info("4.WorkHandler:receiver socket info from master {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
+                    for (ResponseListener listener : listeners) {
+                        listener.onWebResponse(webResponse);
+                    }
+                });
                 break;
             default:
-                log.error("can not recognition ");
+                ErrorLog.error("WorkHandler:can not recognition ");
                 break;
 
         }
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        log.info("客户端与服务端连接开启");
+    public void channelActive(ChannelHandlerContext ctx) {
+        SocketLog.info("客户端与服务端连接开启");
         ctx.fireChannelActive();
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.error("客户端与服务端连接关闭");
+    public void channelInactive(ChannelHandlerContext ctx) {
+        SocketLog.warn("客户端与服务端连接关闭");
         workContext.setServerChannel(null);
         ctx.fireChannelInactive();
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        log.info("worker complete read message ");
+    public void channelReadComplete(ChannelHandlerContext ctx) {
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.info("work exception");
-        super.exceptionCaught(ctx, cause);
+        cause.printStackTrace();
+        ErrorLog.error("work exception: {}, {}", ctx.channel().remoteAddress(), cause.toString());
     }
 
 }

@@ -12,14 +12,21 @@ enum WebOperate {
     UpdateJob = 0;
 
     //手动执行或者手动恢复job
-    ExecuteJob = 2;
+    ExecuteJob = 1;
 
     //手动取消任务
-    CancelJob = 3;
+    CancelJob = 2;
 
     //调试任务
-    ExecuteDebug = 4;
+    ExecuteDebug = 3;
 
     //生成版本
-    GenerateAction = 5;
+    GenerateAction = 4;
+
+    //获得心跳信息
+    GetAllHeartBeatInfo = 5;
+
+    //获得所有机器信息
+    GetAllWorkInfo = 6;
+
 }

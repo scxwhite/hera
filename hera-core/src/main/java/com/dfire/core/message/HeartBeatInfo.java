@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,19 +27,19 @@ public class HeartBeatInfo {
 
     private List<String> debugRunning;
 
-    private Date timestamp;
+    private Long timestamp;
+
+    private String date;
 
     private String host;
 
     /**
      * cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量
-     *
      */
     private Float cpuLoadPerCore;
 
     /**
      * 每个机器的总内存数
-     *
      */
     private Float memTotal;
 

@@ -1,6 +1,6 @@
 package com.dfire.config;
 
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.HeraLog;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,7 +13,6 @@ import java.util.Arrays;
  * @author xiaosuda
  * @date 2018/8/1
  */
-@Slf4j
 @Aspect
 @Component
 public class HeraAspect {
@@ -30,7 +29,7 @@ public class HeraAspect {
         Object res = joinPoint.proceed();
         Long end = System.currentTimeMillis();
         if (start - end >= 10 * 1000L) {
-            log.info("方法名:{},参数:{},耗时:{}ms", joinPoint.getSignature().getName(), Arrays.asList(joinPoint.getArgs()), end - start);
+            HeraLog.info("方法名:{},参数:{},耗时:{}ms", joinPoint.getSignature().getName(), Arrays.asList(joinPoint.getArgs()), end - start);
         }
         return res;
     }

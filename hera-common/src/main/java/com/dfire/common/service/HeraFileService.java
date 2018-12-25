@@ -13,19 +13,19 @@ import java.util.List;
 public interface HeraFileService {
 
 
-    String insert(HeraFile heraFile);
+    Integer insert(HeraFile heraFile);
 
-    int delete(String id);
+    int delete(Integer id);
 
     int update(HeraFile heraFile);
 
     List<HeraFile> getAll();
 
-    HeraFile findById(String id);
+    HeraFile findById(Integer id);
 
     List<HeraFile> findByIds(List<Integer> list);
 
-    List<HeraFile> findByParent(HeraFile heraFile);
+    List<HeraFile> findByParent(Integer parent);
 
     List<HeraFile> findByOwner(String heraFile);
 

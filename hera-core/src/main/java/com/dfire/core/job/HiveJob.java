@@ -1,12 +1,10 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
-import com.dfire.common.service.HeraFileService;
 import com.dfire.core.config.HeraGlobalEnvironment;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.ArrayUtils;
-import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,7 +12,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,31 +19,27 @@ import java.util.List;
  * @time: Created in 上午7:59 2018/5/12
  * @desc
  */
-@Slf4j
 public class HiveJob extends ProcessJob {
 
-    private ApplicationContext applicationContext;
 
-    public HiveJob(JobContext jobContext, ApplicationContext applicationContext) {
+    public HiveJob(JobContext jobContext) {
         super(jobContext);
-        this.applicationContext = applicationContext;
         jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "HiveJob");
     }
 
     @Override
     public int run() throws Exception {
-        Integer exitCode = runInner();
-        return exitCode;
+        return runInner();
     }
 
     private Integer runInner() throws Exception {
         String script = getProperties().getLocalProperty(RunningJobKeyConstant.JOB_SCRIPT);
-        File file = new File(jobContext.getWorkDir() + File.separator + new Date().getTime() + ".hive");
+        File file = new File(jobContext.getWorkDir() + File.separator + System.currentTimeMillis() + ".hive");
         if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                log.error("创建.hive失败");
+                ErrorLog.error("创建.hive失败");
             }
         }
 
@@ -55,11 +48,16 @@ public class HiveJob extends ProcessJob {
             writer = new OutputStreamWriter(new FileOutputStream(file),
                     Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
             writer.write(script.replaceAll("^--.*", "--"));
-
         } catch (Exception e) {
-            jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+            if (jobContext.getHeraJobHistory() != null) {
+                jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+            } else {
+                jobContext.getDebugHistory().getLog().appendHeraException(e);
+            }
         } finally {
-            IOUtils.closeQuietly(writer);
+            if (writer != null) {
+                writer.close();
+            }
         }
 
         getProperties().setProperty(RunningJobKeyConstant.RUN_HIVE_PATH, file.getAbsolutePath());
@@ -83,7 +81,7 @@ public class HiveJob extends ProcessJob {
         } else if (jobContext.getRunType() == 4) {
             shellPrefix = "";
         } else {
-            log.info("没有运行类型 runType = " + jobContext.getRunType());
+            HeraLog.info("没有运行类型 runType = " + jobContext.getRunType());
         }
 
         String[] excludeFile = HeraGlobalEnvironment.excludeFile.split(";");
@@ -119,7 +117,13 @@ public class HiveJob extends ProcessJob {
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
-                    IOUtils.closeQuietly(tmpWriter);
+                    if (tmpWriter != null) {
+                        try {
+                            tmpWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
                 list.add(shellPrefix + " sh " + tmpFilePath);

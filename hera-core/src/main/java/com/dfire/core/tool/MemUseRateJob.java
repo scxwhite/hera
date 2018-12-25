@@ -1,9 +1,8 @@
 package com.dfire.core.tool;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.logs.SocketLog;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.util.regex.Matcher;
@@ -14,7 +13,6 @@ import java.util.regex.Pattern;
  * @date 2018/4/13
  */
 @Data
-@Slf4j
 public class MemUseRateJob {
 
     private float rate;
@@ -46,8 +44,8 @@ public class MemUseRateJob {
      */
     public void readMemUsed() {
         if (!HeraGlobalEnvironment.isLinuxSystem()) {
-            rate = 0.6f;
-            memTotal = 4096f;
+            rate = 0.1f;
+            memTotal = 10240f;
             return;
         }
         File file = new File(MEM_INFO_PATH);
@@ -55,7 +53,7 @@ public class MemUseRateJob {
         try {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
         } catch (FileNotFoundException e) {
-            log.info("文件不存在：{}", MEM_INFO_PATH);
+            SocketLog.info("文件不存在：{}", MEM_INFO_PATH);
             e.printStackTrace();
         }
         String line;
@@ -89,7 +87,13 @@ public class MemUseRateJob {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            IOUtils.closeQuietly(reader);
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         rate = (memTotal - memAvailable) / memTotal;
     }

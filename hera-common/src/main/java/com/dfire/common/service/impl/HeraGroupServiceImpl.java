@@ -1,15 +1,19 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraGroup;
+import com.dfire.common.entity.model.HeraGroupBean;
 import com.dfire.common.entity.model.HeraJobBean;
+import com.dfire.common.entity.vo.HeraActionVo;
+import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraGroupMapper;
-import com.dfire.common.mapper.HeraJobMapper;
 import com.dfire.common.service.HeraGroupService;
-import graph.JobGroupGraphTool;
+import com.dfire.common.service.HeraJobActionService;
+import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,22 +25,40 @@ import java.util.List;
 public class HeraGroupServiceImpl implements HeraGroupService {
 
     @Autowired
-    private HeraGroupMapper heraGroupMapper;
+    protected HeraGroupMapper heraGroupMapper;
+
     @Autowired
-    private HeraJobMapper heraJobMapper;
+    private HeraJobActionService heraJobActionService;
 
     @Override
     public HeraGroup getRootGroup() {
-        //TODO ROOT不应该直接指定 因该根据parent = 0 进行判断
-        HeraGroup rootGroup = findById(-1);
-        return rootGroup;
+        return this.findById(-1);
     }
-
 
     @Override
     public HeraJobBean getUpstreamJobBean(String actionId) {
-        //todo 完成层级属性封装
-        return JobGroupGraphTool.getUpstreamJobBean(actionId);
+        Tuple<HeraActionVo, JobStatus> tuple = heraJobActionService.findHeraActionVo(actionId);
+        if (tuple != null) {
+            HeraJobBean jobBean = HeraJobBean.builder()
+                    .heraActionVo(tuple.getSource())
+                    .jobStatus(tuple.getTarget())
+                    .build();
+            jobBean.setGroupBean(getUpstreamGroupBean(tuple.getSource().getGroupId()));
+            return jobBean;
+        }
+        return null;
+    }
+
+    private HeraGroupBean getUpstreamGroupBean(Integer groupId) {
+        HeraGroup heraGroup = this.findById(groupId);
+        HeraGroupBean result = HeraGroupBean.builder()
+                .groupVo(BeanConvertUtils.convert(heraGroup))
+                .build();
+        if (heraGroup != null && heraGroup.getParent() != null) {
+            HeraGroupBean parentGroupBean = getUpstreamGroupBean(heraGroup.getParent());
+            result.setParentGroupBean(parentGroupBean);
+        }
+        return result;
     }
 
 
@@ -61,9 +83,8 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     }
 
     @Override
-    public HeraGroup findById(int id) {
-        HeraGroup heraGroup = HeraGroup.builder().id(id).build();
-        return heraGroupMapper.findById(heraGroup);
+    public HeraGroup findById(Integer id) {
+        return heraGroupMapper.findById(id);
     }
 
     @Override
@@ -72,19 +93,34 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     }
 
     @Override
-    public List<HeraGroup> findByParent(int parentId) {
-        HeraGroup heraGroup = HeraGroup.builder().parent(parentId).build();
-        return heraGroupMapper.findByParent(heraGroup);
+    public List<HeraGroup> findByParent(Integer parentId) {
+        return heraGroupMapper.findByParent(parentId);
     }
 
     @Override
     public List<HeraGroup> findByOwner(String owner) {
-        HeraGroup heraGroup = HeraGroup.builder().owner(owner).build();
-        return heraGroupMapper.findByOwner(heraGroup);
+        return heraGroupMapper.findByOwner(owner);
     }
 
     @Override
     public HeraGroup findConfigById(Integer id) {
         return heraGroupMapper.selectConfigById(id);
+    }
+
+    @Override
+    public List<HeraGroup> findDownStreamGroup(Integer groupId) {
+        List<HeraGroup> res = new ArrayList<>();
+        getDownStreamGroup(this.findById(groupId), res);
+        return res;
+    }
+
+    private void getDownStreamGroup(HeraGroup heraGroup, List<HeraGroup> streamGroup) {
+        if (heraGroup.getDirectory() != 0) {
+            streamGroup.add(heraGroup);
+            return;
+        }
+        this.findByParent(heraGroup.getId()).forEach(group -> getDownStreamGroup(group, streamGroup));
+
+
     }
 }

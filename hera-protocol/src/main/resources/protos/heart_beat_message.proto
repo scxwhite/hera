@@ -5,6 +5,11 @@ option java_package = "com.dfire.protocol";
 option java_outer_classname = "RpcHeartBeatMessage";
 
 
+message AllHeartBeatInfoMessage {
+    map<string, HeartBeatMessage> values= 1;
+}
+
+
 message HeartBeatMessage {
 
     //正在运行的自动调度job列表
@@ -30,4 +35,6 @@ message HeartBeatMessage {
 
     //总内存大小，默认4096M
     float mem_total = 4096;
+
+    int32 cores = 8;
 }

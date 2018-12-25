@@ -1,24 +1,22 @@
 package com.dfire.core.netty.worker;
 
-import com.dfire.common.service.HeraDebugHistoryService;
-import com.dfire.common.service.HeraGroupService;
-import com.dfire.common.service.HeraJobActionService;
-import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.common.service.*;
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
+import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.tool.RunShell;
-import io.netty.channel.Channel;
+import com.dfire.core.util.NetUtils;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -27,27 +25,49 @@ import java.util.concurrent.Executors;
  */
 @Data
 @NoArgsConstructor
+@Component
 public class WorkContext {
 
+    @Autowired
+    private HeraDebugHistoryService heraDebugHistoryService;
+    @Autowired
+    private HeraJobHistoryService heraJobHistoryService;
+    @Autowired
+    @Qualifier("heraGroupMemoryService")
+    private HeraGroupService heraGroupService;
+    @Autowired
+    private HeraJobActionService heraJobActionService;
+    @Autowired
+    @Qualifier("heraFileMemoryService")
+    private HeraFileService heraFileService;
+    @Autowired
+    private HeraProfileService heraProfileService;
     public static String host;
     public static Integer cpuCoreNum;
     public String serverHost;
-    private Channel serverChannel;
+    private HeraChannel serverChannel;
     private Map<String, Job> running = new ConcurrentHashMap<>();
     private Map<String, Job> manualRunning = new ConcurrentHashMap<>();
     private Map<String, Job> debugRunning = new ConcurrentHashMap<>();
     private WorkHandler handler;
     private WorkClient workClient;
-    private ExecutorService workThreadPool = Executors.newCachedThreadPool();
-    private ApplicationContext applicationContext;
+    /**
+     * 处理web 异步请求
+     */
+    private ExecutorService workWebThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 1L, TimeUnit.MINUTES,
+            new SynchronousQueue<>(), new NamedThreadFactory("worker-web"), new ThreadPoolExecutor.AbortPolicy());
+
+    /**
+     * 执行任务
+     */
+    private ExecutorService workExecuteThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 1L, TimeUnit.MINUTES,
+            new SynchronousQueue<>(), new NamedThreadFactory("worker-execute"), new ThreadPoolExecutor.AbortPolicy());
+
+
     private static final String loadStr = "cat /proc/cpuinfo |grep processor | wc -l";
 
     static {
-        try {
-            host = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        host = NetUtils.getLocalAddress();
         if (HeraGlobalEnvironment.isLinuxSystem()) {
             RunShell shell = new RunShell(loadStr);
             Integer exitCode = shell.run();
@@ -63,22 +83,6 @@ public class WorkContext {
             cpuCoreNum = 4;
         }
 
-    }
-
-    public HeraDebugHistoryService getDebugHistoryService() {
-        return (HeraDebugHistoryService) applicationContext.getBean("heraDebugHistoryService");
-    }
-
-    public HeraJobHistoryService getJobHistoryService() {
-        return (HeraJobHistoryService) applicationContext.getBean("heraJobHistoryService");
-    }
-
-    public HeraGroupService getHeraGroupService() {
-        return (HeraGroupService) applicationContext.getBean("heraGroupService");
-    }
-
-    public HeraJobActionService getHeraJobActionService() {
-        return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
     }
 
 

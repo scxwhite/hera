@@ -3,7 +3,7 @@ package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraPermission;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraListInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
@@ -38,7 +38,7 @@ public interface HeraPermissionMapper {
     HeraPermission findById(HeraPermission heraPermission);
 
     @Select("select * from hera_permission where id in (#{list})")
-    @Lang(HeraSelectInLangDriver.class)
+    @Lang(HeraListInLangDriver.class)
     List<HeraPermission> findByIds(@Param("list") List<Integer> list);
 
 

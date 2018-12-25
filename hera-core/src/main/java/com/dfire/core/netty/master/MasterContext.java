@@ -2,18 +2,20 @@ package com.dfire.core.netty.master;
 
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.service.*;
+import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
 import io.netty.channel.Channel;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -27,120 +29,102 @@ import java.util.concurrent.*;
  * @desc hera调度器执行上下文
  */
 
-@Slf4j
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Component
+@Order(2)
 public class MasterContext {
 
+    @Autowired
     private Master master;
 
     private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<>();
-    private ApplicationContext applicationContext;
-
+    @Autowired
+    private HeraHostGroupService heraHostGroupService;
+    @Autowired
+    @Qualifier("heraFileMemoryService")
+    private HeraFileService heraFileService;
+    @Autowired
+    private QuartzSchedulerService quartzSchedulerService;
+    @Autowired
+    @Qualifier("heraGroupMemoryService")
+    private HeraGroupService heraGroupService;
+    @Autowired
+    private HeraJobHistoryService heraJobHistoryService;
+    @Autowired
+    private HeraUserService heraUserService;
+    @Autowired
+    private HeraJobMonitorService heraJobMonitorService;
+    @Autowired
+    @Qualifier("heraJobMemoryService")
+    private HeraJobService heraJobService;
+    @Autowired
+    private HeraDebugHistoryService heraDebugHistoryService;
+    @Autowired
+    private HeraJobActionService heraJobActionService;
+    @Autowired
+    private EmailService emailService;
 
     private Dispatcher dispatcher;
     private Map<Integer, HeraHostGroupVo> hostGroupCache;
     private Queue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, Comparator.comparing(JobElement::getPriorityLevel));
-    private Queue<JobElement> debugQueue = new ArrayBlockingQueue<>(1000);
-    private Queue<JobElement> manualQueue = new ArrayBlockingQueue<>(1000);
+    private Queue<JobElement> debugQueue = new LinkedBlockingQueue<>(1000);
+    private Queue<JobElement> manualQueue = new LinkedBlockingQueue<>(1000);
 
     private MasterHandler handler;
     private MasterServer masterServer;
-    private ExecutorService threadPool = Executors.newCachedThreadPool();
+    private ExecutorService threadPool;
 
     /**
      * todo 参数可配置
-     *
      */
-    protected Timer masterTimer = null;
 
-    public MasterContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
+    protected ScheduledThreadPoolExecutor masterSchedule;
 
     public void init() {
-        masterTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 10, TimeUnit.MILLISECONDS);
+        threadPool = new ThreadPoolExecutor(
+                0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-wait-response"), new ThreadPoolExecutor.AbortPolicy());
+        masterSchedule = new ScheduledThreadPoolExecutor(5, new NamedThreadFactory("master-schedule", false));
+        masterSchedule.setKeepAliveTime(5, TimeUnit.MINUTES);
+        masterSchedule.allowCoreThreadTimeOut(true);
         this.getQuartzSchedulerService().start();
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);
         masterServer = new MasterServer(handler);
         masterServer.start(HeraGlobalEnvironment.getConnectPort());
-        master = new Master(this);
-        log.info("end init master content success ");
+        master.init(this);
+        HeraLog.info("end init master content success ");
     }
 
     public void destroy() {
         threadPool.shutdown();
-        masterTimer.stop();
+        masterSchedule.shutdown();
         if (masterServer != null) {
             masterServer.shutdown();
         }
-        if (this.getQuartzSchedulerService() != null) {
+        if (quartzSchedulerService != null) {
             try {
-                this.getQuartzSchedulerService().shutdown();
-                log.info("quartz schedule shutdown success");
+                quartzSchedulerService.shutdown();
+                HeraLog.info("quartz schedule shutdown success");
             } catch (Exception e) {
                 e.printStackTrace();
-                log.error("quartz schedule shutdown error");
+                ErrorLog.error("quartz schedule shutdown error");
             }
         }
-        log.info("destroy master context success");
+        HeraLog.info("destroy master context success");
     }
 
     public synchronized Map<Integer, HeraHostGroupVo> getHostGroupCache() {
         return hostGroupCache;
     }
 
-    public HeraHostGroupService getHeraHostGroupService() {
-        return (HeraHostGroupService) applicationContext.getBean("heraHostGroupService");
-    }
-
-    public HeraFileService getHeraFileService() {
-        return (HeraFileService) applicationContext.getBean("heraFileService");
-    }
-
-    public QuartzSchedulerService getQuartzSchedulerService() {
-        return (QuartzSchedulerService) applicationContext.getBean("quartzSchedulerService");
-    }
-
-    public HeraGroupService getHeraGroupService() {
-        return (HeraGroupService) applicationContext.getBean("heraGroupService");
-    }
-
-    public HeraJobHistoryService getHeraJobHistoryService() {
-        return (HeraJobHistoryService) applicationContext.getBean("heraJobHistoryService");
-    }
-
-    public HeraUserService getHeraUserService() {
-        return (HeraUserService) applicationContext.getBean("heraUserService");
-    }
-
-    public HeraJobMonitorService getHeraMonitorService() {
-        return (HeraJobMonitorService) applicationContext.getBean("heraJobMonitorServiceImpl");
-    }
-
-    public HeraJobService getHeraJobService() {
-        return (HeraJobService) applicationContext.getBean("heraJobService");
-    }
-
-    public HeraDebugHistoryService getHeraDebugHistoryService() {
-        return (HeraDebugHistoryService) applicationContext.getBean("heraDebugHistoryService");
-    }
-
-    public HeraJobActionService getHeraJobActionService() {
-        return (HeraJobActionService) applicationContext.getBean("heraJobActionService");
-    }
-    public EmailService getEmailService() {
-        return (EmailService) applicationContext.getBean("emailServiceImpl");
-    }
 
     public synchronized void refreshHostGroupCache() {
         try {
             hostGroupCache = getHeraHostGroupService().getAllHostGroupInfo();
         } catch (Exception e) {
-            log.info("refresh host group error");
+            HeraLog.info("refresh host group error");
         }
     }
 

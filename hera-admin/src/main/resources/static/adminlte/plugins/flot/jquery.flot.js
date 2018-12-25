@@ -504,7 +504,7 @@ Licensed under the MIT license.
                     noColumns: 1, // number of colums in legend table
                     labelFormatter: null, // fn: string -> string
                     labelBoxBorderColor: "#ccc", // border color for the little label boxes
-                    container: null, // container (as jQuery object) to put legend in, null means default on top of graph
+                    container: null, // container (as jQuery object) to put legend in, null means default on top of com.dfire.graph
                     position: "ne", // position of default legend container within plot
                     margin: 5, // distance from grid edge to default legend container within plot
                     backgroundColor: null, // null means auto-detect
@@ -2870,7 +2870,7 @@ Licensed under the MIT license.
                         if (x == null)
                             continue;
 
-                        // for a bar graph, the cursor must be inside the bar
+                        // for a bar com.dfire.graph, the cursor must be inside the bar
                         if (series[i].bars.horizontal ?
                             (mx <= Math.max(b, x) && mx >= Math.min(b, x) &&
                              my >= y + barLeft && my <= y + barRight) :

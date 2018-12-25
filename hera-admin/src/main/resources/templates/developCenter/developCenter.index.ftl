@@ -4,13 +4,33 @@
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link rel="stylesheet" href="${request.contextPath}/plugins/ztree/zTreeStyle.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/codemirror/theme/paraiso-light.css">
+    <link href="${request.contextPath}/plugins/ztree/metroStyle/metroStyle.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/eclipse.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/lucario.min.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/3024-day.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/3024-night.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/ambiance.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/base16-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/base16-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/bespin.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/blackboard.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/colorforth.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/dracula.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/duotone-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/duotone-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/erlang-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/gruvbox-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/mbo.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/material.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/solarized.css" rel="stylesheet">
+    <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-tab.css">
     <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
     <link rel="stylesheet" href="${request.contextPath}/css/developCenter.css">
-<#--<link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">-->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css">
+    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+
 </head>
 
 <style type="text/css">
@@ -19,9 +39,9 @@
         position: absolute;
         visibility: hidden;
         top: 0;
-        background-color: #40a8e4;
         text-align: left;
-        padding: 2px;
+        width: 100px;
+        z-index: 9999;
     }
 
     div#rMenu ul {
@@ -37,11 +57,13 @@
     }
 
     div#rMenu ul li {
-        margin: 1px 0;
-        padding: 0 5px;
+        padding: 1px 5px;
         cursor: pointer;
         list-style: none outside none;
-        background-color: #40a8e4;
+    }
+
+    div#rMenu ul li:hover {
+        background-color: rgba(0, 0, 0, 0.1);
     }
 
 
@@ -57,15 +79,16 @@
     <div class="content-wrapper">
         <section class="content">
             <div class="row myPanel">
-                <div class="col-md-2 panel panel-primary">
+                <div class="col-md-2 panel panel-primary left-bar">
                     <div style="overflow: auto;" class="height-self">
                         <ul id="documentTree" class="ztree"></ul>
                     </div>
-                    <div id="rMenu">
-                        <ul style="font-size: 15px;color: black">
+                    <div id="rMenu" class="box box-primary">
+                        <ul>
                             <li id="addFolder">增加文件夹</li>
                             <li id="addHiveFile">新建Hive</li>
                             <li id="addShellFile">新建Shell</li>
+                            <li id="addSparkFile">新建Spark</li>
                             <li id="rename">重命名</li>
                             <li id="removeFile">删除</li>
                         </ul>
@@ -87,7 +110,7 @@
                     </div>
                     <div id="tabContainer" class="devStyle"></div>
                     <div class="code-log-con">
-                        <div id="scriptEditor" class="box box-primary " class="devStyle">
+                        <div id="scriptEditor" class="devStyle">
                             <textarea id="fileScript" name="editor"></textarea>
                         </div>
                         <div id="logContainer" class="log-container">
@@ -145,8 +168,7 @@
             </div>
 
             <div class="modal-footer">
-                <input multiple id="fileForm" name="fileForm" type="file" class="file-loading" data-show-preview="false"
-                       data-allowed-file-extensions='["py","jar","sql","hive","sh","js"]'>
+                <input multiple id="fileForm" name="fileForm" type="file" class="file-loading">
                 <br>
                 <button class="btn btn-primary" id="closeUploadModal">关闭</button>
             </div>
@@ -154,31 +176,52 @@
     </div>
 </div>
 
-<div id="alertSuccess" z-index="1001" class="alert alert-success text-center fade in" style="position: fixed; right: 0px;top: 0px;display: none; height: 50px;" >
+<div id="alertSuccess" z-index="1001" class="alert alert-success text-center fade in"
+     style="position: fixed; right: 0px;top: 0px;display: none; height: 50px;">
     <strong id="successText"></strong>
 </div>
-<div id="alertFailure" z-index="1001" class="alert alert-danger text-center fade in" style="position: fixed; right: 0px;top: 0px;display: none;height: 50px;" >
-    <strong id="failureText" ></strong>
+<div id="alertFailure" z-index="1001" class="alert alert-danger text-center fade in"
+     style="position: fixed; right: 0px;top: 0px;display: none;height: 50px;">
+    <strong id="failureText"></strong>
 </div>
 
 <div class="response box box-success" id="responseCon">
     <p id="response"></p>
 </div>
 
+<div class="modal fade" tabindex="-1" role="dialog" id="cancelSrueModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>确认取消running中任务吗?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">不了</button>
+                <button type="button" class="btn btn-primary" id="sureCancelBtn">确认</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <@netCommon.commonScript />
-<script src="${request.contextPath}/plugins/codemirror/lib/codemirror.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/mode/shell/shell.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/anyword-hint.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/sql-hint.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/mode/python/python.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.exedit.js"></script>
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.excheck.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/shell/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/anyword-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/sql-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/sql/sql.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.core.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exedit.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.excheck.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exhide.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-tab.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
-<script src="${request.contextPath}/js/developCenter.js"></script>
-
+<script src="${request.contextPath}/js/developCenter.js?v=1"></script>
 </body>
 
 </html>

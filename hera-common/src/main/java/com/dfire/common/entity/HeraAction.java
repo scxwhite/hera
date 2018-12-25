@@ -18,9 +18,9 @@ import java.util.Date;
 @NoArgsConstructor
 public class HeraAction {
 
-    private String id;
+    private Long id;
 
-    private String jobId;
+    private Integer jobId;
 
     private Integer auto = 0;
 

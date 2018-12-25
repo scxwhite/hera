@@ -1,16 +1,16 @@
 package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dfire.common.constants.RunningJobKeyConstant;
+import com.dfire.common.constants.Constants;
 import com.dfire.common.util.HierarchyProperties;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.exception.HeraCaughtExceptionHandler;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.HeraLog;
+import com.dfire.logs.TaskLog;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -20,15 +20,16 @@ import java.util.concurrent.CountDownLatch;
  * @time: Created in 11:01 2018/3/23
  * @desc 通过操作系统创建进程Process的Job任务
  */
-@Slf4j
 public abstract class ProcessJob extends AbstractJob implements Job {
 
-    protected volatile Process             process;
-    protected final    Map<String, String> envMap;
+    protected volatile Process process;
+    protected final Map<String, String> envMap;
+    private int exitCode;
+
 
     public ProcessJob(JobContext jobContext) {
         super(jobContext);
-        envMap = new HashMap<>(System.getenv());
+        envMap = HeraGlobalEnvironment.userEnvMap;
     }
 
     /**
@@ -40,13 +41,10 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
     @Override
     public int run() throws Exception {
-        int exitCode = -999;
+        exitCode = Constants.DEFAULT_EXIT_CODE;
         jobContext.getProperties().getAllProperties().keySet().stream()
-                .filter(key -> jobContext.getProperties().getProperty(key) != null && (key.startsWith("instance.") || key.startsWith("secret.")))
+                .filter(key -> jobContext.getProperties().getProperty(key) != null && (key.startsWith("secret.")))
                 .forEach(k -> envMap.put(k, jobContext.getProperties().getProperty(k)));
-        envMap.put("instance.workDir", jobContext.getWorkDir());
-        log.info("获取命令");
-
         List<String> commands = getCommandList();
 
         for (String command : commands) {
@@ -69,19 +67,17 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 threadName = "not-normal-job";
             }
             CountDownLatch latch = new CountDownLatch(2);
-            InputStream inputStream = process.getInputStream();
-            InputStream errorStream = process.getErrorStream();
-            Thread inputThread = new StreamThread(inputStream, threadName, latch);
-            Thread outputThread = new StreamThread(errorStream, threadName, latch);
+            Thread inputThread = new StreamThread(process.getInputStream(), threadName, latch);
+            Thread outputThread = new StreamThread(process.getErrorStream(), threadName, latch);
             inputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
             outputThread.setUncaughtExceptionHandler(new HeraCaughtExceptionHandler());
             inputThread.start();
             outputThread.start();
-            exitCode = -999;
             try {
                 exitCode = process.waitFor();
                 latch.await();
             } catch (InterruptedException e) {
+                exitCode = Constants.INTERRUPTED_EXIT_CODE;
                 log(e);
             } finally {
                 process = null;
@@ -143,7 +139,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             String arg = builder.toString();
             commands.add(arg);
         }
-        log.info("组装后的命令为：{}", JSONObject.toJSONString(commands));
+        TaskLog.info("5.2 ProcessJob :组装后的命令为：{}", JSONObject.toJSONString(commands));
         return commands.toArray(new String[commands.size()]);
     }
 
@@ -184,6 +180,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             f.setAccessible(true);
             processId = f.getInt(process);
         } catch (Throwable e) {
+            log(e.getMessage());
         }
         return processId;
     }
@@ -213,11 +210,11 @@ public abstract class ProcessJob extends AbstractJob implements Job {
      * @desc job输出流日志接收线程
      */
     public class StreamThread extends Thread {
-        private InputStream    inputStream;
-        private String         threadName;
+        private InputStream inputStream;
+        private String threadName;
         private CountDownLatch latch;
 
-        public StreamThread(InputStream inputStream, String threadName, CountDownLatch latch) {
+        private StreamThread(InputStream inputStream, String threadName, CountDownLatch latch) {
             this.inputStream = inputStream;
             this.threadName = threadName;
             this.latch = latch;
@@ -226,13 +223,14 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         @Override
         public void run() {
             try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     logConsole(line);
                 }
             } catch (Exception e) {
-                log(e);
+                exitCode = Constants.LOG_EXIT_CODE;
+                HeraLog.error("接受日志异常:{}", e);
                 log(threadName + ": 接收日志出错，退出日志接收");
             } finally {
                 latch.countDown();

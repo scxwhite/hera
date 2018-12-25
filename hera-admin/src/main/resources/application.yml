@@ -26,7 +26,7 @@ druid:
     username: twodfire  #数据库用户名
     password: 123456      #数据库密码
     driver-class-name: com.mysql.jdbc.Driver  #数据库驱动
-    url: jdbc:mysql://common101.my.2dfire-daily.com:3306/hera?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+    url: jdbc:mysql://common101.my.2dfire-daily.com:3306/lineage_db?useUnicode=true&amp;characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     initial-size: 5    #初始化连接池数量
     min-idle: 1        #最小生存连接数
     max-active: 16     #最大连接池数量
@@ -55,19 +55,21 @@ hera:
    defaultWorkerGroup : 1 #默认worker的host组id
    preemptionMasterGroup : 1  #抢占master的host组id
    excludeFile: jar;war
-   maxMemRate : 0.75       #已使用内存占总内存的最大比例,默认0.75
-   maxCpuLoadPerCore : 3.0   #cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量，默认3.0
-   scanRate : 3        #队列扫描频率(秒)
+   maxMemRate : 0.80       #已使用内存占总内存的最大比例,默认0.75
+   maxCpuLoadPerCore : 1.0   #cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量，默认1.0
+   scanRate : 1000        #队列扫描频率(毫秒)
    systemMemUsed : 4000  # 系统占用内存
-   perTaskUseMem : 400          # 每个任务使用内存300M
-   heartBeat : 2           # 心跳传递时间频率
+   requestTimeout: 10000 # 异步请求超时时间
+   channelTimeout: 1000 # netty请求超时时间
+   perTaskUseMem : 500          # 每个任务使用内存300M
+   heartBeat : 3           # 心跳传递时间频率
    downloadDir : /opt/logs/spring-boot
    hdfsLibPath : /hera/hdfs-upload-dir #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上
    schedule-group : online
-   maxParallelNum: 1000
+   maxParallelNum: 2000
    connectPort : 9887 #netty通信的端口
    admin: biadmin
-   taskTimeout: 3  #单个任务执行的最大时间  单位：小时
+   taskTimeout: 12  #单个任务执行的最大时间  单位：小时
    #hadoop 配置文件路径
    hadoop-home : /opt/cloudera/parcels/CDH/lib/hadoop
    hadoop-conf-dir : /etc/hadoop/conf
@@ -77,18 +79,21 @@ hera:
    spark-home : /home/hadoop/spark161-hadoop26
    env: @env@
 mail:
-  host: smtp.aliyun.com
+  host: smtp.mxhichina.com
   protocol: smtp
   port: 465
-  user: scx_white@aliyun.com
-  password: aaascx521
+  user: datacenter@2dfire.com
+  password: 9c0af3
 
 logging:
   config: classpath:logback-spring.xml
   path: /opt/logs/spring-boot
-  allLevel: info
   level:
-      com.dfire.common.mapper: error
+    root: INFO
+    org.springframework: ERROR
+    com.dfire.common.mapper: ERROR
+
+
 mybatis:
   configuration:
     mapUnderscoreToCamelCase: true
@@ -107,9 +112,16 @@ spark :
 ---
 spring:
   profiles: dev
+
+logging:
+  level:
+    com.dfire.logs.ScheduleLog: ERROR
+    com.dfire.logs.HeartLog: ERROR
+
 ---
 spring:
   profiles: daily
+
 ---
 spring:
   profiles: pre
@@ -120,12 +132,12 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
-  address : jdbc:hive2://10.10.18.215:10000
+  address : jdbc:hive2://spark-server001.2dfire-inc.com:10000
   master : --master yarn
-  driver-memory : --driver-memory 1g
+  driver-memory : --driver-memory 2g
   driver-cores : --driver-cores 1
-  executor-memory : -- executor-memory 4g
-  executor-cores : --executor-cores 2
+  executor-memory : -- executor-memory 2g
+  executor-cores : --executor-cores 1
 ---
 spring:
   profiles: publish
@@ -136,9 +148,9 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
-  address : jdbc:hive2://10.10.18.215:10000
+  address : jdbc:hive2://spark-server001.2dfire-inc.com:10000
   master : --master yarn
-  driver-memory : --driver-memory 1g
+  driver-memory : --driver-memory 2g
   driver-cores : --driver-cores 1
-  executor-memory : -- executor-memory 4g
-  executor-cores : --executor-cores 2
+  executor-memory : -- executor-memory 2g
+  executor-cores : --executor-cores 1

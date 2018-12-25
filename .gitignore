@@ -1,11 +1,34 @@
-# Created by .ignore support plugin (hsz.mobi)
-
-.idea
-*.iml
-target
-hera-common-1.0-SNAPSHOT.jar
+#maven ignore
 target/
-*.log
-*.log.*
+*.tar.gz
+*.jar
+*.war
+*.ear
 
-hera.tar.gz
+#idea ignore
+.idea/
+*.iml
+*.ipr
+*.iws
+
+
+
+#eclipse ignore
+.settings/
+.project
+.classpath
+
+#temp ignore
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+#system ignore
+.DS_Store
+Thumbs.db
+.idea
+
+# other edit
+*.vscode

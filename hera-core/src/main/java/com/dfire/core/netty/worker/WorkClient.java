@@ -1,20 +1,34 @@
 package com.dfire.core.netty.worker;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.common.vo.MachineInfoVo;
+import com.dfire.common.vo.OSInfoVo;
+import com.dfire.common.vo.ProcessMonitorVo;
+import com.dfire.common.vo.WorkInfoVo;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
-import com.dfire.core.lock.DistributeLock;
-import com.dfire.core.netty.worker.request.*;
-import com.dfire.core.schedule.ScheduleInfoLog;
-import com.dfire.protocol.JobExecuteKind;
+import com.dfire.core.message.HeartBeatInfo;
+import com.dfire.core.netty.NettyChannel;
+import com.dfire.core.netty.worker.request.WorkerHandleWebRequest;
+import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeartLog;
+import com.dfire.logs.HeraLog;
+import com.dfire.logs.SocketLog;
+import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.ResponseStatus;
+import com.dfire.protocol.RpcHeartBeatMessage.AllHeartBeatInfoMessage;
+import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
 import com.dfire.protocol.RpcSocketMessage;
 import com.dfire.protocol.RpcWebResponse;
+import com.dfire.protocol.RpcWorkInfo.*;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -28,19 +42,13 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
-import io.netty.util.Timer;
-import io.netty.util.TimerTask;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -50,17 +58,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @time: Created in 10:34 2018/1/10
  * @desc
  */
-@Slf4j
 @Data
 @Component
 public class WorkClient {
 
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
-    private WorkContext workContext = new WorkContext();
+    @Autowired
+    private WorkContext workContext;
     private ScheduledExecutorService service;
-    public final Timer workClientTimer = new HashedWheelTimer(Executors.defaultThreadFactory(), 1, TimeUnit.SECONDS);
     private AtomicBoolean clientSwitch = new AtomicBoolean(false);
+    public ScheduledThreadPoolExecutor workSchedule;
+
+    {
+        workSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("work-schedule", false));
+        workSchedule.setKeepAliveTime(5, TimeUnit.MINUTES);
+        workSchedule.allowCoreThreadTimeOut(true);
+    }
+
     /**
      * ProtobufVarint32FrameDecoder:  针对protobuf协议的ProtobufVarint32LengthFieldPrepender()所加的长度属性的解码器
      * <pre>
@@ -70,7 +85,7 @@ public class WorkClient {
      *  * | 0xAC02 |  (300 bytes)  |      |  (300 bytes)  |
      *  * +--------+---------------+      +---------------+
      * </pre>
-     *
+     * <p>
      * ProtobufVarint32LengthFieldPrepender: 对protobuf协议的的消息头上加上一个长度为32的整形字段,用于标志这个消息的长度。
      * <pre>
      * * BEFORE DECODE (300 bytes)       AFTER DECODE (302 bytes)
@@ -80,12 +95,12 @@ public class WorkClient {
      *  * +---------------+               +--------+---------------+
      * </pre>
      */
-    public void init(ApplicationContext applicationContext) {
+    public void init() {
         if (!clientSwitch.compareAndSet(false, true)) {
-            return ;
+            return;
         }
+
         workContext.setWorkClient(this);
-        workContext.setApplicationContext(applicationContext);
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)
@@ -101,119 +116,119 @@ public class WorkClient {
                                 .addLast(new WorkHandler(workContext));
                     }
                 });
-        log.info("init work client success ");
+        HeraLog.info("init work client success ");
 
-        workClientTimer.newTimeout(new TimerTask() {
+        workSchedule.schedule(new Runnable() {
 
             private WorkerHandlerHeartBeat workerHandlerHeartBeat = new WorkerHandlerHeartBeat();
             private int failCount = 0;
 
             @Override
-            public void run(Timeout timeout) {
+            public void run() {
                 try {
                     if (workContext.getServerChannel() != null) {
-                        ChannelFuture channelFuture = workerHandlerHeartBeat.send(workContext);
-                        channelFuture.addListener((future) -> {
-                            if (!future.isSuccess()) {
-                                failCount++;
-                                log.error("send heart beat failed ,failCount :" + failCount);
-                            } else {
-                                failCount = 0;
-                                log.debug("send heart beat success:{}", workContext.getServerChannel().remoteAddress());
-                            }
-                            if (failCount > 10) {
-                                future.cancel(true);
-                                log.debug("cancel connect server ,failCount:" + failCount);
-                            }
-                        });
+                        boolean send = workerHandlerHeartBeat.send(workContext);
+                        if (!send) {
+                            failCount++;
+                            ErrorLog.error("send heart beat failed ,failCount :" + failCount);
+                        } else {
+                            failCount = 0;
+                            HeartLog.info("send heart beat success:{}", workContext.getServerChannel().getRemoteAddress());
+                        }
                     } else {
-                        log.info("server channel can not find on " + DistributeLock.host);
+                        ErrorLog.error("server channel can not find on " + WorkContext.host);
                     }
                 } catch (Exception e) {
-                    log.info("heart beat send failed ：" + failCount);
-                    log.error("heart beat error:", e);
+                    ErrorLog.error("heart beat error:", e);
                 } finally {
-                    workClientTimer.newTimeout(this, (failCount + 1) * HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
+                    workSchedule.schedule(this, (failCount + 1) * HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
                 }
             }
         }, HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
 
-        workClientTimer.newTimeout(new TimerTask() {
-            private void editLog(Job job, Exception e) {
+        /**
+         * 定时 刷新日志到数据库
+         */
+        workSchedule.scheduleWithFixedDelay(new Runnable() {
+            /**
+             * 处理任务调度的异常日志
+             * @param job
+             * @param e
+             */
+            private void  printScheduleLog(Job job, Exception e) {
                 try {
                     HeraJobHistoryVo his = job.getJobContext().getHeraJobHistory();
                     String logContent = his.getLog().getContent();
                     if (logContent == null) {
                         logContent = "";
                     }
-                    log.error("log output error!\n" +
+                    ErrorLog.error("log output error!\n" +
                             "[actionId:" + his.getJobId() +
                             ", hisId:" + his.getId() +
                             ", logLength:" +
                             logContent.length() + "]", e);
                 } catch (Exception ex) {
-                    log.error("log exception error!");
+                    ErrorLog.error("log exception error!");
                 }
             }
 
-
-            private void editDebugLog(Job job, Exception e) {
+            /**
+             * 处理 开发中心的日志
+             * @param job
+             * @param e
+             */
+            private void printDebugLog(Job job, Exception e) {
                 try {
                     HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
                     String logContent = history.getLog().getContent();
                     if (logContent == null) {
                         logContent = "";
                     }
-                    log.error(new StringBuilder("log output error!\n")
-                            .append("[fileId:").append(history.getFileId())
-                            .append(", hisId:").append(history.getId())
-                            .append(", logLength:")
-                            .append(logContent.length()).append("]")
-                            .toString(), e);
+                    ErrorLog.error("log output error!\n" +
+                            "[fileId:" + history.getFileId() +
+                            ", hisId:" + history.getId() +
+                            ", logLength:" +
+                            logContent.length() + "]", e);
                 } catch (Exception ex) {
-                    log.error("log exception error!");
+                    ErrorLog.error("log exception error!");
                 }
             }
 
             @Override
-            public void run(Timeout timeout) {
-
+            public void run() {
                 try {
-                    for (Job job : new HashSet<>(workContext.getRunning().values())) {
+                    for (Job job : workContext.getRunning().values()) {
                         try {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
-                            workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+                            workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
-                            editDebugLog(job, e);
+                            printScheduleLog(job, e);
                         }
                     }
 
-                    for (Job job : new HashSet<>(workContext.getManualRunning().values())) {
+                    for (Job job : workContext.getManualRunning().values()) {
                         try {
                             HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
-                            workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+                            workContext.getHeraJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
-                            editLog(job, e);
+                            printScheduleLog(job, e);
                         }
                     }
 
-                    for (Job job : new HashSet<>(workContext.getDebugRunning().values())) {
+                    for (Job job : workContext.getDebugRunning().values()) {
                         try {
                             HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
-                            workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
+                            workContext.getHeraDebugHistoryService().updateLog(BeanConvertUtils.convert(history));
                         } catch (Exception e) {
-                            editDebugLog(job, e);
+                            printDebugLog(job, e);
                         }
                     }
                 } catch (Exception e) {
-                    log.error(JSONObject.toJSONString(e));
-                    throw new RuntimeException(e);
-                } finally {
-                    workClientTimer.newTimeout(this, 5, TimeUnit.SECONDS);
+                    ErrorLog.error("job log flush exception:{}", e.toString());
                 }
 
             }
-        }, 5, TimeUnit.SECONDS);
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     /**
@@ -236,8 +251,8 @@ public class WorkClient {
         ChannelFutureListener futureListener = (future) -> {
             try {
                 if (future.isSuccess()) {
-                    workContext.setServerChannel(future.channel());
-                    log.info(workContext.getServerChannel().toString());
+                    workContext.setServerChannel(new NettyChannel(future.channel()));
+                    SocketLog.info(workContext.getServerChannel().toString());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -247,7 +262,7 @@ public class WorkClient {
         };
         ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, HeraGlobalEnvironment.getConnectPort()));
         connectFuture.addListener(futureListener);
-        if (!latch.await(2, TimeUnit.SECONDS)) {
+        if (!latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS)) {
             connectFuture.removeListener(futureListener);
             connectFuture.cancel(true);
             throw new ExecutionException(new TimeoutException("connect server consumption of 2 seconds"));
@@ -256,7 +271,7 @@ public class WorkClient {
             throw new RuntimeException("connect server failed " + host,
                     connectFuture.cause());
         }
-        ScheduleInfoLog.info("connect server success");
+        SocketLog.info("connect server success");
     }
 
     /**
@@ -268,27 +283,24 @@ public class WorkClient {
         Job job = workContext.getDebugRunning().get(debugId);
         job.cancel();
         workContext.getDebugRunning().remove(debugId);
-
         HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
         history.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         history.setStatus(StatusEnum.FAILED);
-        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
+        workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
-
+        workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
 
     }
 
     /**
      * 取消手动执行的任务
      *
-     * @param historyId
+     * @param actionId
      */
-    public void cancelManualJob(String historyId) {
-        Job job = workContext.getManualRunning().get(historyId);
-        workContext.getManualRunning().remove(historyId);
+    public void cancelManualJob(String actionId) {
+        Job job = workContext.getManualRunning().get(actionId);
+        workContext.getManualRunning().remove(actionId);
         job.cancel();
-
         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
         history.setEndTime(new Date());
         String illustrate = history.getIllustrate();
@@ -299,7 +311,7 @@ public class WorkClient {
         }
         history.setStatusEnum(StatusEnum.FAILED);
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(history));
+        workContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(history));
 
     }
 
@@ -322,9 +334,8 @@ public class WorkClient {
             history.setIllustrate("手动取消该任务");
         }
         history.setStatusEnum(StatusEnum.FAILED);
-        workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
         history.getLog().appendHera("任务被取消");
-        workContext.getJobHistoryService().updateHeraJobHistoryLog(BeanConvertUtils.convert(history));
+        workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
 
     }
 
@@ -337,36 +348,124 @@ public class WorkClient {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public void executeJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        RpcWebResponse.WebResponse response = new WorkerHandleWebExecute().handleWebExecute(workContext, kind, id).get();
+    public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse response = WorkerHandleWebRequest.handleWebExecute(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            log.error("netty manual web request get jobStatus error");
+            ErrorLog.error(response.getErrorText());
         }
     }
 
-    public String cancelJobFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        RpcWebResponse.WebResponse webResponse = new WorkHandleWebCancel().handleCancel(workContext, kind, id).get();
+    public String cancelJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse webResponse = WorkerHandleWebRequest.handleCancel(workContext, kind, id).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
-            log.error("cancel from web exception");
+            ErrorLog.error(webResponse.getErrorText());
+            return webResponse.getErrorText();
         }
-        return "cancel job success";
+        return "取消任务成功";
     }
 
     public void updateJobFromWeb(String jobId) throws ExecutionException, InterruptedException {
-        RpcWebResponse.WebResponse webResponse = new WorkHandleWebUpdate().handleUpdate(workContext, jobId).get();
+        RpcWebResponse.WebResponse webResponse = WorkerHandleWebRequest.handleUpdate(workContext, jobId).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
-            log.error("cancel from web exception");
+            ErrorLog.error(webResponse.getErrorText());
         }
     }
 
-    public String generateActionFromWeb(JobExecuteKind.ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
-        RpcWebResponse.WebResponse response = new WorkerHandleWebAction().handleWebAction(workContext, kind, id).get();
+    public String generateActionFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+        RpcWebResponse.WebResponse response = WorkerHandleWebRequest.handleWebAction(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
-            log.error("generate action error");
+            ErrorLog.error("generate action error");
             return "生成版本失败";
         }
         return "生成版本成功";
     }
 
+    public Map<String, HeartBeatInfo> getJobQueueInfoFromWeb() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
+        RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getJobQueueInfoFromMaster(workContext).get();
+        if (response.getStatus() == ResponseStatus.Status.ERROR) {
+            ErrorLog.error("获取心跳信息失败:{}", response.getErrorText());
+            return null;
+        }
+        Map<String, HeartBeatMessage> map = AllHeartBeatInfoMessage.parseFrom(response.getBody()).getValuesMap();
+        Map<String, HeartBeatInfo> infoMap = new HashMap<>(map.size());
+        for (Map.Entry<String, HeartBeatMessage> entry : map.entrySet()) {
+            HeartBeatMessage beatMessage = entry.getValue();
+            infoMap.put(entry.getKey(), HeartBeatInfo.builder()
+                    .cpuLoadPerCore(beatMessage.getCpuLoadPerCore())
+                    .debugRunning(beatMessage.getDebugRunningsList())
+                    .manualRunning(beatMessage.getManualRunningsList())
+                    .running(beatMessage.getRunningsList())
+                    .memRate(beatMessage.getMemRate())
+                    .memTotal(beatMessage.getMemTotal())
+                    .host(beatMessage.getHost())
+                    .cores(beatMessage.getCores())
+                    .timestamp(beatMessage.getTimestamp())
+                    .date(ActionUtil.getDefaultFormatterDate(new Date(beatMessage.getTimestamp())))
+                    .build());
+        }
+
+        return infoMap;
+    }
+
+    public HashMap<String, WorkInfoVo> getAllWorkInfo() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
+        RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getAllWorkInfoFromMaster(workContext).get();
+        if (response == null || response.getStatus() == ResponseStatus.Status.ERROR) {
+            ErrorLog.error("获取work信息失败:{}", response.getErrorText());
+            return null;
+        }
+        Map<String, WorkInfo> allWorkInfo = AllWorkInfo.parseFrom(response.getBody()).getValuesMap();
+
+        HashMap<String, WorkInfoVo> workInfoHashMap = new HashMap<>(allWorkInfo.size());
+
+        allWorkInfo.forEach((ip, workInfo) -> {
+            WorkInfoVo workInfoVo = new WorkInfoVo();
+            List<ProcessMonitor> monitorList = workInfo.getProcessMonitorList();
+            if (monitorList != null && monitorList.size() > 0) {
+                List<ProcessMonitorVo> monitorVoList = new ArrayList<>(monitorList.size());
+                monitorList.forEach(m -> {
+                    ProcessMonitorVo monitorVo = new ProcessMonitorVo();
+                    monitorVo.setUser(m.getUser());
+                    monitorVo.setViri(m.getViri());
+                    monitorVo.setTime(m.getTime());
+                    monitorVo.setRes(m.getRes());
+                    monitorVo.setMem(m.getMem());
+                    monitorVo.setPid(m.getPid());
+                    monitorVo.setCommand(m.getCommand());
+                    monitorVo.setCpu(m.getCpu());
+                    monitorVoList.add(monitorVo);
+                });
+                workInfoVo.setProcessMonitor(monitorVoList);
+            }
+            OSInfo osInfo = workInfo.getOSInfo();
+            if (osInfo != null) {
+                OSInfoVo osInfoVo = new OSInfoVo();
+                osInfoVo.setCpu(osInfo.getCpu());
+                osInfoVo.setSwap(osInfo.getSwap());
+                osInfoVo.setSystem(osInfo.getSystem());
+                osInfoVo.setUser(osInfo.getUser());
+                osInfoVo.setMem(osInfo.getMem());
+                workInfoVo.setOsInfo(osInfoVo);
+            }
+            List<MachineInfo> machineInfoList = workInfo.getMachineInfoList();
+            if (machineInfoList != null && machineInfoList.size() > 0) {
+                List<MachineInfoVo> machineInfoVoList = new ArrayList<>(machineInfoList.size());
+                machineInfoList.forEach(m -> {
+                    MachineInfoVo machineInfoVo = new MachineInfoVo();
+                    machineInfoVo.setSize(m.getSize());
+                    machineInfoVo.setMountedOn(m.getMountedOn());
+                    machineInfoVo.setType(m.getType());
+                    machineInfoVo.setFilesystem(m.getFilesystem());
+                    machineInfoVo.setAvail(m.getAvail());
+                    machineInfoVo.setUse(m.getUse());
+                    machineInfoVoList.add(machineInfoVo);
+                });
+                workInfoVo.setMachineInfo(machineInfoVoList);
+            }
+
+            workInfoHashMap.put(ip, workInfoVo);
+        });
+
+        return workInfoHashMap;
+    }
 
 }

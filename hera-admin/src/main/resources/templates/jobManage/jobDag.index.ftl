@@ -49,14 +49,13 @@
                     rgba(235, 235, 235, 0.85) 20px
             );
         }
-
+        svg {
+            border: 3px solid #eee !important;
+        }
 
     </style>
 
     <style id="css">
-        body {
-            font: 300 14px 'Helvetica Neue', Helvetica;
-        }
 
         .node rect {
             stroke: #333;
@@ -83,34 +82,31 @@
         <section class="content">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">机器组管理</h3>
+                    <h3 class="big-title">任务链路图</h3>
                 </div>
                 <div class="box-body">
 
-            <form class="form-inline">
+                    <form class="form-inline">
 
-                <div class="form-group">
-                    <label for="itemw">任务ID:</label>
-                    <input id="item" class="input-sm" style="width:80px;"/>
-                    <input class="btn btn-primary" type="button" value="上游任务链" onclick="keypath(0)"/>
-                    <input class="btn btn-primary" type="button" value="下游任务链" onclick="keypath(1)"/>
-                </div>
+                        <div class="form-group">
+                            <label for="itemw">任务ID:</label>
+                            <input id="item" class="input-sm" style="width:80px; border: 1px solid #ccc;"/>
+                            <input class="btn btn-primary" type="button" value="上游任务链" onclick="keypath(0)"/>
+                            <input class="btn btn-primary" type="button" value="下游任务链" onclick="keypath(1)"/>
+                        </div>
 
-                <div class="form-group">
-                    <#--<label for="expand">&nbsp;&nbsp;&nbsp;展示个数:</label>-->
-                    <#--<input id="expand" class="input-sm" style="width:80px;" value="1"/>-->
-                    <#--<input class="btn btn-info" type="button" id="nextNode" value="展示">-->
-                    <input class="btn btn-primary" type="button" id="expandAll" value="展示全部">
-                </div>
-            </form>
+                        <div class="form-group">
+                            <input class="btn btn-primary" type="button" id="expandAll" value="展示全部">
+                        </div>
+                    </form>
 
-            </br>
-            <div class="row" style="margin: 0;">
-                <svg style="border: 3px solid dimgrey;height:700" class="col-lg-10">
-                    <g/>
-                </svg>
-                <textarea class="label-primary col-lg-2" style="height: 300px" id="jobDetail" readonly>任务信息</textarea>
-            </div>
+                    </br>
+                    <div class="row" style="margin: 0;">
+                        <svg style="border: 3px solid dimgrey;height:700" class="col-lg-10">
+                            <g/>
+                        </svg>
+                        <textarea class="label-primary col-lg-2" style="height: 700px" id="jobDetail" readonly>任务信息</textarea>
+                    </div>
                 </div>
         </section>
     </div>
@@ -118,7 +114,10 @@
 </body>
 
 <@netCommon.commonScript />
-<script src="${request.contextPath}/js/jobDag.js"></script>
+<script src="${request.contextPath}/js/taskGraph.js?v=2"></script>
+<script src="${request.contextPath}/js/jobDag.js?v=2"></script>
+<script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
+<script src="https://cdn.bootcss.com/dagre-d3/0.4.17/dagre-d3.min.js"></script>
 
 </body>
 </html>

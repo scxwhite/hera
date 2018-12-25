@@ -10,6 +10,7 @@ var indexList = new Array();
 $(function () {
     $('#userManage').addClass('active');
     $('#userManage').parent().addClass('menu-open');
+    $('#userManage').parent().parent().addClass('menu-open');
     $('#sysManager').addClass('active');
     $(".add-btn").click(function () {
 
@@ -72,6 +73,8 @@ $(function () {
                 url: base_url + '/userManage/initUser.do',
                 method: 'post',
                 toolbar: '#toolbar',
+                searchAlign:'left',
+                buttonsAlign:'left',
                 pagination: true,
                 cache: false,
                 clickToSelect: true,
@@ -99,13 +102,36 @@ $(function () {
                         title: '用户姓名'
                     }, {
                         field: 'email',
-                        title: '用户邮箱 '
+                        title: '用户邮箱 ',
+                        formatter: function (val) {
+                            if (val.length > 20) {
+                                return val.substr(0, 20) + '...'
+                            } else {
+                                return val
+                            }
+                        }
                     }, {
                         field: 'phone',
-                        title: '手机号码'
+                        title: '手机号码',
+                        formatter: function (val) {
+                            if (val.length > 20) {
+                                return val.substr(0, 20) + '...'
+                            } else {
+                                return val
+                            }
+                        }
                     }, {
                         field: 'description',
-                        title: '描述'
+                        title: '描述',
+                        formatter: function (val) {
+                            if(val){
+                                if (val.length > 20) {
+                                    return val.substr(0, 20) + '...'
+                                } else {
+                                    return val
+                                }
+                            }
+                        }
                     }, {
                         field: 'gmtModified',
                         title: '更新时间'
@@ -134,6 +160,7 @@ $(function () {
 
                 ]
             });
+            table.bootstrapTable('hideLoading');
         }
         return oTableInit;
     }
@@ -144,7 +171,7 @@ $(function () {
 
 function edit(index) {
     var user = userList[index];
-    tinyInt1isBit = false
+    tinyInt1isBit = false;
 
     $('#editUser #title').text("编辑用户信息");
     $('#editUser #id').text(user.id);

@@ -4,7 +4,6 @@ import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.mapper.HeraFileMapper;
 import com.dfire.common.service.HeraFileService;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,23 +18,17 @@ import java.util.stream.Collectors;
 @Service("heraFileService")
 public class HeraFileServiceImpl implements HeraFileService {
 
-   static String PERSONAL = "个人文档";
-   static String SHARE = "共享文档";
-
-    static String FILE = "2";
-    static String FOLDER = "1";
-
     @Autowired
-    private HeraFileMapper heraFileMapper;
+    protected HeraFileMapper heraFileMapper;
 
     @Override
-    public String insert(HeraFile heraFile) {
-         heraFileMapper.insert(heraFile);
-         return heraFile.getId();
+    public Integer insert(HeraFile heraFile) {
+        heraFileMapper.insert(heraFile);
+        return heraFile.getId();
     }
 
     @Override
-    public int delete(String id) {
+    public int delete(Integer id) {
         return heraFileMapper.delete(id);
     }
 
@@ -50,9 +43,8 @@ public class HeraFileServiceImpl implements HeraFileService {
     }
 
     @Override
-    public HeraFile findById(String id) {
-        HeraFile heraFile = HeraFile.builder().id(id).build();
-        return heraFileMapper.findById(heraFile);
+    public HeraFile findById(Integer id) {
+        return heraFileMapper.findById(id);
     }
 
     @Override
@@ -61,14 +53,13 @@ public class HeraFileServiceImpl implements HeraFileService {
     }
 
     @Override
-    public List<HeraFile> findByParent(HeraFile heraFile) {
-        return heraFileMapper.findByParent(heraFile);
+    public List<HeraFile> findByParent(Integer parent) {
+        return heraFileMapper.findByParent(parent);
     }
 
     @Override
     public List<HeraFile> findByOwner(String owner) {
-        HeraFile heraFile = HeraFile.builder().owner(owner).build();
-        return heraFileMapper.findByOwner(heraFile);
+        return heraFileMapper.findByOwner(owner);
     }
 
     /**
@@ -80,10 +71,10 @@ public class HeraFileServiceImpl implements HeraFileService {
     @Override
     public List<HeraFileTreeNodeVo> buildFileTree(String user) {
         List<HeraFile> fileVoList = this.findByOwner(user);
-        List<HeraFileTreeNodeVo> list = fileVoList.stream().map(file -> {
+        return fileVoList.stream().map(file -> {
             HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
-            if (file.getParent() == null || StringUtils.isBlank(file.getParent())) {
-                vo.setParent("root");
+            if (file.getParent() == null) {
+                vo.setParent(-1);
             } else {
                 vo.setParent(file.getParent());
             }
@@ -94,7 +85,6 @@ public class HeraFileServiceImpl implements HeraFileService {
             }
             return vo;
         }).collect(Collectors.toList());
-        return list;
     }
 
     @Override

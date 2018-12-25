@@ -1,76 +1,97 @@
 package com.dfire.core.event.listenter;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraJob;
-import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.service.HeraGroupService;
-import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.common.entity.HeraJobMonitor;
+import com.dfire.common.entity.HeraUser;
+import com.dfire.common.service.EmailService;
+import com.dfire.common.service.HeraJobMonitorService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.service.HeraUserService;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.HeraJobFailedEvent;
 import com.dfire.core.event.base.MvcEvent;
 import com.dfire.core.netty.master.MasterContext;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.ScheduleLog;
+import org.apache.commons.lang.StringUtils;
 
-import java.util.concurrent.*;
+import javax.mail.MessagingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
- * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
- * @time: Created in 下午5:38 2018/4/19
- * @desc 任务失败的监听, 当任务失败，需要发送邮件给相关人员
+ * 任务失败的预处理
+ * @author xiaosuda
  */
-@Slf4j
 public class HeraJobFailListener extends AbstractListener {
 
-    private HeraJobHistoryService heraJobHistoryService;
-    private HeraJobService heraJobService;
     private HeraUserService heraUserService;
-    private HeraGroupService heraGroupService;
-
+    private HeraJobMonitorService heraJobMonitorService;
+    private HeraJobService heraJobService;
+    private EmailService emailService;
+    private Executor executor;
     //告警接口，待开发
 
     public HeraJobFailListener(MasterContext context) {
-        heraJobHistoryService = context.getHeraJobHistoryService();
-        heraJobService = context.getHeraJobService();
         heraUserService = context.getHeraUserService();
-        heraGroupService = context.getHeraGroupService();
+        heraJobMonitorService = context.getHeraJobMonitorService();
+        emailService = context.getEmailService();
+        heraJobService = context.getHeraJobService();
+        executor = new ThreadPoolExecutor(
+                1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory(), new ThreadPoolExecutor.AbortPolicy());
     }
-
 
     @Override
     public void beforeDispatch(MvcEvent mvcEvent) {
         if (mvcEvent.getApplicationEvent() instanceof HeraJobFailedEvent) {
             HeraJobFailedEvent failedEvent = (HeraJobFailedEvent) mvcEvent.getApplicationEvent();
-            String jobId = failedEvent.getActionId();
-            HeraJobHistory heraJobHistory = heraJobHistoryService.findById(jobId);
-
-            HeraJob heraJob = heraJobService.findById(Integer.parseInt(jobId));
-            Executor executor = new ThreadPoolExecutor(
-                    1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory(), new ThreadPoolExecutor.AbortPolicy());
-
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(6000);
-                        StringBuffer sb = new StringBuffer();
-                        sb.append("Job任务(").append(jobId).append(")").append(heraJob.getName()).append("运行失败");
-                        sb.append("<br/>");
-                        String config = heraJob.getConfigs();
-                        //TODO 任务失败逻辑，执行告警，短信告警，待开发
-
-                    } catch (Exception e) {
+            String actionId = failedEvent.getActionId();
+            Integer jobId = ActionUtil.getJobId(actionId);
+            if (jobId == null) {
+                return;
+            }
+            HeraJob heraJob = heraJobService.findById(jobId);
+            //非开启任务不处理  最好能把这些抽取出去 提供接口实现
+            if (heraJob.getAuto() == 0) {
+                return ;
+            }
+            executor.execute(() -> {
+                List<String> emails = new ArrayList<>(1);
+                try {
+                    HeraJobMonitor monitor = heraJobMonitorService.findByJobId(heraJob.getId());
+                    if (monitor == null && Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
+                        ScheduleLog.info("任务无监控人，发送给owner：{}", heraJob.getId());
+                        HeraUser user = heraUserService.findByName(heraJob.getOwner());
+                        emails.add(user.getEmail().trim());
+                    } else if (monitor != null) {
+                        String ids = monitor.getUserIds();
+                        String[] id = ids.split(Constants.COMMA);
+                        for (String anId : id) {
+                            if (StringUtils.isBlank(anId)) {
+                                continue;
+                            }
+                            HeraUser user = heraUserService.findById(HeraUser.builder().id(Integer.parseInt(anId)).build());
+                            if (user != null && user.getEmail() != null) {
+                                emails.add(user.getEmail());
+                            }
+                        }
                     }
+                    if (emails.size() > 0) {
+                        emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
+                    }
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                    ErrorLog.error("发送邮件失败");
                 }
             });
 
-
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("任务失败逻辑，执行告警，短信告警，待开发");
-                }
-            });
 
         }
     }

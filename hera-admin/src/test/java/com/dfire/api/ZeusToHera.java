@@ -1,10 +1,9 @@
 package com.dfire.api;
 
+import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.HeraJob;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import com.dfire.common.entity.HeraUser;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -39,7 +38,7 @@ public class ZeusToHera {
     private final boolean isAll = true;
 
     private String tableName = "hera_group";
-    private Class<?> clazz = HeraGroup.class;
+    private Class<?> clazz = HeraJob.class;
 
     private List<Integer> jobs = Arrays.asList(6625, 6628, 971);
 
@@ -48,7 +47,7 @@ public class ZeusToHera {
     public void init() throws SQLException, ClassNotFoundException {
         Class.forName(driver);
         if (env.equals("daily")) {
-            hera_url = "jdbc:mysql://common101.my.2dfire-daily.com:3306/hera";
+            hera_url = "jdbc:mysql://common101.my.2dfire-daily.com:3306/lineage_db";
             hera_username = "twodfire";
             hera_password = "123456";
 
@@ -60,6 +59,10 @@ public class ZeusToHera {
             tableName = "_group";
         } else if (clazz == HeraJob.class) {
             tableName = "_job";
+        } else if (clazz == HeraFile.class) {
+            tableName = "_file";
+        } else if (clazz == HeraUser.class) {
+            tableName = "_user";
         }
 
 
@@ -77,18 +80,62 @@ public class ZeusToHera {
 
     }
 
+
     @Test
     public void parallelTest() throws SQLException, IOException {
-        PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job where auto = 1");
+        PreparedStatement statement = heraConnection.prepareStatement("select id from hera_job where auto = 1 and schedule_type = 0");
 
         ResultSet resultSet = statement.executeQuery();
 
         while (resultSet.next()) {
             String id = resultSet.getString("id");
             CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpGet httpGet = new HttpGet("http://10.1.28.81:8080/hera/scheduleCenter/execute?id=" + id +"&owner=biadmin");
+            HttpGet httpGet = new HttpGet("http://hera.office.2dfire.in/hera/scheduleCenter/execute?id=" + id + "&owner=biadmin");
             httpClient.execute(httpGet);
             System.out.println("--------------------------" + id + ": ok--------------------------");
+        }
+    }
+
+
+    @Test
+    public void fix() throws SQLException {
+        PreparedStatement statement = heraConnection.prepareStatement("select job_id,run_type from hera_action where id < 201812160000000000 and id >= 201812150000000000");
+
+        ResultSet resultSet = statement.executeQuery();
+
+
+        HashSet<Integer> ids = new HashSet<>();
+        int cnt = 0, jobId;
+        while (resultSet.next()) {
+            jobId = resultSet.getInt("job_id");
+            System.out.println(jobId);
+            if (!ids.contains(jobId)) {
+                ids.add(jobId);
+                PreparedStatement prepareStatement = heraConnection.prepareStatement("update hera_job set run_type = ? where id = ?");
+                prepareStatement.setString(1, resultSet.getString("run_type"));
+                prepareStatement.setInt(2, jobId);
+                System.out.println(++cnt + " " + prepareStatement.executeUpdate());
+                prepareStatement.close();
+            }
+
+
+        }
+    }
+
+    @Test
+    public void moveParam() throws SQLException {
+        PreparedStatement statement = zeusConnection.prepareStatement("select id, descr from zeus_group");
+
+        ResultSet resultSet = statement.executeQuery();
+
+        int cnt = 0;
+        while (resultSet.next()) {
+            PreparedStatement prepareStatement = heraConnection.prepareStatement("update hera_group set description = ? where id = ?");
+            prepareStatement.setString(1, resultSet.getString("descr"));
+            prepareStatement.setInt(2, resultSet.getInt("id"));
+            System.out.println(++cnt + " " + prepareStatement.executeUpdate());
+            prepareStatement.close();
+
         }
     }
 
@@ -123,6 +170,7 @@ public class ZeusToHera {
         PreparedStatement heraPs;
         PreparedStatement preparedStatement = heraConnection.prepareStatement(deleteSql.toString());
         preparedStatement.executeUpdate();
+        int cnt = 0;
         while (resultSet.next()) {
             Map<String, String> res = new HashMap<>();
             insertSql.delete(0, insertSql.length());
@@ -144,7 +192,7 @@ public class ZeusToHera {
                     .append(valueStr.substring(0, valueStr.length() - 1)).append(")").append(";");
 
             heraPs = heraConnection.prepareStatement(insertSql.toString());
-            System.out.println("执行结果：" + heraPs.executeUpdate());
+            System.out.println("序号：" + (++cnt) + "执行结果：" + heraPs.executeUpdate());
         }
     }
 

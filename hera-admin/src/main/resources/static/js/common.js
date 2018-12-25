@@ -172,16 +172,15 @@ function uploadFile() {
 
     $("#fileForm").fileinput({
         uploadUrl: base_url + "/uploadResource/upload.do",
-        maxFileCount: 10,
+        maxFileCount: 1,
         enctype: 'multipart/form-data',
-        uploadExtraData:function (previewId, index) {
-            return {
-                "id": 1
-            };
-        }
+        language: 'zh',
+        allowedFileExtensions: ['py','jar','sql','hive','sh','js','txt','png','jpg','gif'],
+        msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！"
     }).on("fileuploaded", function (event, data) {
         var response = data.response;
         var message = response.msg;
+        console.log(data)
         var msg = "<b>" +"hadoop文件使用路径: "+ message + "</b>"
         if (response.success == false) {
             $("#responseResult").html(msg);
@@ -210,3 +209,6 @@ function clearAllCookie() {
         }
     }
 }
+$('.my-tree').click(function (e) {
+    $(this).addClass('menu-open');
+})

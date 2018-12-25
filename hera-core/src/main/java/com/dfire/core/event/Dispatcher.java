@@ -7,6 +7,8 @@ import com.dfire.core.event.base.MvcEvent;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.AbstractListener;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.ScheduleLog;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +22,6 @@ import java.util.List;
  * @time: Created in 11:00 2018/1/4
  * @desc hera中的任务事件observer,接受事件，全局广播dispatch
  */
-@Slf4j
 public class Dispatcher extends AbstractObservable {
 
     public static final EventType beforeDispatch = new EventType();
@@ -91,7 +92,7 @@ public class Dispatcher extends AbstractObservable {
                 fireEvent(afterDispatch, mvcEvent);
             }
         } catch (Exception e) {
-            log.error("global dispatch job event error");
+            ErrorLog.error("global dispatch job event error");
             throw new RuntimeException(e);
         }
 

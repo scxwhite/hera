@@ -1,5 +1,7 @@
 package com.dfire.core.netty.master;
 
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
 import com.dfire.protocol.RpcSocketMessage;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -11,7 +13,6 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  * @time: Created in 10:34 2018/1/10
  * @desc
  */
-@Slf4j
 public class MasterServer {
 
     private ServerBootstrap serverBootstrap;
@@ -38,7 +38,7 @@ public class MasterServer {
         //服务端接受客户端的连接， Reactor线程组
         bossGroup = new NioEventLoopGroup(1);
         //SocketChannel的网络读写
-        workGroup = new NioEventLoopGroup();
+        workGroup = new NioEventLoopGroup(1);
         serverBootstrap.group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -62,10 +62,10 @@ public class MasterServer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        if (channelFuture.isSuccess()) {
-            log.info("start master server success");
-        } else if (!channelFuture.isSuccess()) {
-
+        if (channelFuture != null && channelFuture.isSuccess()) {
+            HeraLog.info("start master server success");
+        } else {
+            ErrorLog.error("start master server success");
         }
 
         return true;
@@ -74,7 +74,7 @@ public class MasterServer {
     public synchronized boolean shutdown() {
         bossGroup.shutdownGracefully();
         workGroup.shutdownGracefully();
-        log.info("stop master server gracefully");
+        HeraLog.info("stop master server gracefully");
         return true;
     }
 

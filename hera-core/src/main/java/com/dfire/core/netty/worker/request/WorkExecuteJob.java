@@ -1,11 +1,13 @@
 package com.dfire.core.netty.worker.request;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -13,9 +15,10 @@ import com.dfire.core.job.Job;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.util.JobUtils;
+import com.dfire.logs.ScheduleLog;
+import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -27,7 +30,6 @@ import java.util.concurrent.Future;
  * @time: Created in 下午4:20 2018/4/25
  * @desc worker job 最终执行体，收到master handler执行请求的时候，开始创建Job processor
  */
-@Slf4j
 public class WorkExecuteJob {
 
     public Future<RpcResponse.Response> execute(final WorkContext workContext, final RpcRequest.Request request) {
@@ -52,19 +54,21 @@ public class WorkExecuteJob {
 
 
     private Future<RpcResponse.Response> manual(WorkContext workContext, RpcRequest.Request request) {
-        RpcExecuteMessage.ExecuteMessage message = null;
+        RpcExecuteMessage.ExecuteMessage message;
         try {
             message = RpcExecuteMessage.ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
+            return null;
         }
-        final String historyId = message.getActionId();
-        log.info("worker received master request to run manual job, historyId = {}", historyId);
-        final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getJobHistoryService().findById(historyId));
-        return workContext.getWorkThreadPool().submit(() -> {
+        final String actionId = message.getActionId();
+        SocketLog.info("worker received master request to run manual job, actionId = {}", actionId);
+        HeraAction heraAction = workContext.getHeraJobActionService().findById(actionId);
+        final HeraJobHistoryVo history = BeanConvertUtils.convert(workContext.getHeraJobHistoryService().findById(heraAction.getHistoryId()));
+        return workContext.getWorkExecuteThreadPool().submit(() -> {
             history.setExecuteHost(WorkContext.host);
             history.setStartTime(new Date());
-            workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
+            workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
 
             String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
             File directory = new File(HeraGlobalEnvironment.getDownloadDir()
@@ -74,8 +78,8 @@ public class WorkExecuteJob {
             }
             HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getActionId());
             final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN),
-                    jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
-            workContext.getManualRunning().put(historyId, job);
+                    jobBean, history, directory.getAbsolutePath(), workContext);
+            workContext.getManualRunning().put(actionId, job);
 
             Integer exitCode = -1;
             Exception exception = null;
@@ -85,19 +89,16 @@ public class WorkExecuteJob {
                 exception = e;
                 history.getLog().appendHeraException(e);
             } finally {
-                String res = exitCode == 0 ? StatusEnum.SUCCESS.toString() : StatusEnum.FAILED.toString();
+                String res = exitCode == 0 ? Constants.STATUS_SUCCESS : Constants.STATUS_FAILED;
                 //更新状态和日志
-                workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
+                workContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(
                         HeraJobHistory.builder()
                                 .id(history.getId())
                                 .log(history.getLog().getContent())
                                 .status(res)
                                 .endTime(new Date())
                                 .build());
-
-                workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
-
-                workContext.getManualRunning().remove(historyId);
+                workContext.getManualRunning().remove(actionId);
             }
 
             ResponseStatus.Status status = ResponseStatus.Status.OK;
@@ -115,7 +116,7 @@ public class WorkExecuteJob {
                     .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
-            log.info("send execute message, historyId = {}", historyId);
+            SocketLog.info("send execute message, actionId = {}", actionId);
             return response;
         });
     }
@@ -137,35 +138,24 @@ public class WorkExecuteJob {
         }
         // 查看master分发 actionHistoryId
         final String jobId = message.getActionId();
-        log.info("worker received master request to run schedule, actionId :" + jobId);
-        if (workContext.getRunning().containsKey(jobId)) {
-            log.info("job is running, can not run again, actionId :" + jobId);
-            return workContext.getWorkThreadPool().submit(() ->
-                    RpcResponse.Response.newBuilder()
-                            .setRid(request.getRid())
-                            .setOperate(RpcOperate.Operate.Schedule)
-                            .setStatusEnum(ResponseStatus.Status.ERROR)
-                            .build()
-            );
-        }
-
+        SocketLog.info("worker received master request to run schedule, actionId :" + jobId);
         final JobStatus jobStatus = workContext.getHeraJobActionService().findJobStatus(jobId);
-        final HeraJobHistory heraJobHistory = workContext.getJobHistoryService().findById(jobStatus.getHistoryId());
+        final HeraJobHistory heraJobHistory = workContext.getHeraJobHistoryService().findById(jobStatus.getHistoryId());
         HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-        return workContext.getWorkThreadPool().submit(() -> {
+        return workContext.getWorkExecuteThreadPool().submit(() -> {
             history.setExecuteHost(WorkContext.host);
             history.setStartTime(new Date());
-            workContext.getJobHistoryService().update(BeanConvertUtils.convert(history));
+            workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
 
             HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(jobId);
-            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+            String date = ActionUtil.getCurrDate();
             File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                     + File.separator + date + File.separator + history.getId());
             if (!directory.exists()) {
                 directory.mkdirs();
             }
 
-            final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext.getApplicationContext());
+            final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext);
             workContext.getRunning().put(jobId, job);
 
             Integer exitCode = -1;
@@ -176,19 +166,9 @@ public class WorkExecuteJob {
                 exception = e;
                 history.getLog().appendHeraException(e);
             } finally {
-                String res;
-                if (exitCode == 0) {
-                    res = StatusEnum.SUCCESS.toString();
-                    //action表更新放在work端  用于信号丢失的检测
-                   // workContext.getHeraJobActionService().updateStatusAndReadDependency(HeraAction.builder().id(history.getActionId()).status(res).readyDependency("{}").build());
-                } else {
-                    res = StatusEnum.FAILED.toString();
-                    //action表更新放在work端   用于信号丢失的检测
-                    //workContext.getHeraJobActionService().updateStatus(HeraAction.builder().id(history.getActionId()).status(res).build());
-
-                }
+                String res = exitCode == 0 ? Constants.STATUS_SUCCESS : Constants.STATUS_FAILED;
                 //更新状态和日志
-                workContext.getJobHistoryService().updateHeraJobHistoryLogAndStatus(
+                workContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(
                         HeraJobHistory.builder().
                                 id(history.getId()).
                                 log(history.getLog().getContent()).status(res).
@@ -212,7 +192,7 @@ public class WorkExecuteJob {
                     .setStatusEnum(status)
                     .setErrorText(errorText)
                     .build();
-            log.info("send execute message, actionId = " + jobId);
+            ScheduleLog.info("send execute message, resId = {} actionId = {}", request.getRid(), jobId);
             return response;
         });
 
@@ -233,46 +213,44 @@ public class WorkExecuteJob {
             e.printStackTrace();
         }
         String debugId = debugMessage.getDebugId();
-        HeraDebugHistoryVo history = workContext.getDebugHistoryService().findById(debugId);
-        return workContext.getWorkThreadPool().submit(() -> {
-            history.setExecuteHost(WorkContext.host);
-            workContext.getDebugHistoryService().update(BeanConvertUtils.convert(history));
-
-            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator + "debug-" + debugId);
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-            Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
-                    directory.getAbsolutePath(), workContext.getApplicationContext());
-            workContext.getDebugRunning().putIfAbsent(debugId, job);
-
+        HeraDebugHistoryVo history = workContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
+        return workContext.getWorkExecuteThreadPool().submit(() -> {
             int exitCode = -1;
             Exception exception = null;
+            ResponseStatus.Status status;
             try {
+
+                history.setExecuteHost(WorkContext.host);
+                workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
+
+                String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator + "debug-" + debugId);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+                Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
+                        directory.getAbsolutePath(), workContext);
+                workContext.getDebugRunning().putIfAbsent(debugId, job);
                 exitCode = job.run();
             } catch (Exception e) {
                 exception = e;
                 history.getLog().appendHeraException(e);
             } finally {
-                HeraDebugHistoryVo heraDebugHistoryVo = workContext.getDebugHistoryService().findById(debugId);
+                HeraDebugHistoryVo heraDebugHistoryVo = workContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
                 heraDebugHistoryVo.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                 if (exitCode == 0) {
+                    status = ResponseStatus.Status.OK;
                     heraDebugHistoryVo.setStatus(StatusEnum.SUCCESS);
                 } else {
+                    status = ResponseStatus.Status.ERROR;
                     heraDebugHistoryVo.setStatus(StatusEnum.FAILED);
                 }
-                workContext.getDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
+                workContext.getHeraDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
                 HeraDebugHistoryVo debugHistory = workContext.getDebugRunning().get(debugId).getJobContext().getDebugHistory();
-                workContext.getDebugHistoryService().updateLog(BeanConvertUtils.convert(debugHistory));
+                workContext.getHeraDebugHistoryService().updateLog(BeanConvertUtils.convert(debugHistory));
                 workContext.getDebugRunning().remove(debugId);
-
             }
-            ResponseStatus.Status status = ResponseStatus.Status.OK;
             String errorText = "";
-            if (exitCode != 0) {
-                status = ResponseStatus.Status.ERROR;
-            }
             if (exception != null && exception.getMessage() != null) {
                 errorText = exception.getMessage();
             }
@@ -285,13 +263,4 @@ public class WorkExecuteJob {
         });
     }
 
-    public static void main(String[] args) {
-        String x = new String("1") + new String("2");
-
-        String y = "12";
-
-        String z = "1" + "2";
-        System.out.println(x == y);
-        System.out.println(z == y);
-    }
 }

@@ -18,13 +18,13 @@ import java.util.Date;
 @NoArgsConstructor
 public class HeraFile {
 
-    private String id;
+    private Integer id;
 
     private String name;
 
     private String owner;
 
-    private String parent;
+    private Integer parent;
 
     /**
      * 脚本内容
@@ -32,7 +32,7 @@ public class HeraFile {
     private String content;
 
     /**
-     * 1 shell 2 hive
+     * 1 文件夹 2 文件
      */
     private String type;
 

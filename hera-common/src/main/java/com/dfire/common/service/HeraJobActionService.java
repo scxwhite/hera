@@ -1,8 +1,10 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.model.TablePageForm;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
+import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.common.vo.JobStatus;
 
 import java.util.List;
@@ -15,7 +17,15 @@ import java.util.List;
 public interface HeraJobActionService {
 
 
-    int insert(HeraAction heraAction);
+    int insert(HeraAction heraAction, Long nowAction);
+
+    /**
+     * 批量插入
+     *
+     * @param heraActionList
+     * @return
+     */
+    List<HeraAction> batchInsert(List<HeraAction> heraActionList, Long nowAction);
 
     int delete(String id);
 
@@ -51,5 +61,22 @@ public interface HeraJobActionService {
 
 
     List<HeraAction> getTodayAction();
+
+    /**
+     * 根据jobId 获取所有的版本
+     *
+     * @param jobId
+     * @return
+     */
+    List<String> getActionVersionByJobId(Long jobId);
+
+
+    List<HeraActionVo> getNotRunScheduleJob();
+
+    List<HeraActionVo> getFailedJob();
+
+
+
+    List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate, TablePageForm pageForm, Integer type);
 
 }

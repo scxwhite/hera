@@ -2,7 +2,6 @@ package com.dfire.core.tool;
 
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkContext;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
@@ -10,30 +9,31 @@ import java.io.IOException;
  * @author xiaosuda
  * @date 2018/8/6
  */
-@Slf4j
-public class CpuLoadPerCoreJob {
+public class CpuLoadPerCoreJob extends RunShell {
 
-    private float loadPerCore = 100f;
-
-    private final String loadCommand = "uptime";
+    private float loadPerCore = 1f;
     private final String keys = "load average:";
     private final Integer keysLen = keys.length();
 
-    public void run() {
-        if (!HeraGlobalEnvironment.isLinuxSystem()) {
-            return ;
-        }
-        RunShell runShell = new RunShell(loadCommand);
+    public CpuLoadPerCoreJob() {
+        super("uptime");
+    }
 
-        Integer exitCode = runShell.run();
+    @Override
+    public Integer run() {
+        if (!HeraGlobalEnvironment.isLinuxSystem()) {
+            return -1;
+        }
+        Integer exitCode = super.run();
         if (exitCode == 0) {
             try {
-                String result = runShell.getResult();
+                String result = super.getResult();
                 loadPerCore = getCpuLoad(result) / WorkContext.cpuCoreNum;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return exitCode;
     }
 
 

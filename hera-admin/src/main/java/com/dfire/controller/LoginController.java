@@ -1,5 +1,6 @@
 package com.dfire.controller;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraUser;
 import com.dfire.common.enums.HttpCode;
 import com.dfire.common.service.HeraUserService;
@@ -39,7 +40,7 @@ public class LoginController {
 
     @RequestMapping("/login")
     public String login() {
-        return "login";
+        return "/login";
     }
 
     @RequestMapping("/home")
@@ -62,7 +63,7 @@ public class LoginController {
             if (pwd.equals(password)) {
                 restfulResponse.setHttpCode(HttpCode.REQUEST_SUCCESS);
                 Cookie cookie = new Cookie(WebSecurityConfig.TOKEN_NAME, JwtUtils.createToken(userName, String.valueOf(user.getId())));
-                cookie.setMaxAge(3 * 60 * 60 * 24);
+                cookie.setMaxAge(Constants.LOGIN_TIME_OUT);
                 response.addCookie(cookie);
             } else {
                 restfulResponse.setHttpCode(HttpCode.USER_NOT_LOGIN);

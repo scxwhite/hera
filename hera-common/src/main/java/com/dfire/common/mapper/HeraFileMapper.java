@@ -4,8 +4,9 @@ import com.dfire.common.entity.HeraFile;
 
 import java.util.List;
 
+import com.dfire.common.entity.Judge;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraListInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
@@ -24,7 +25,7 @@ public interface HeraFileMapper {
     int insert(HeraFile heraFile);
 
     @Delete("delete from hera_file where id = #{id}")
-    int delete(@Param("id") String id);
+    int delete(@Param("id") Integer id);
 
     @Update("update hera_file (#{heraFile}) where id = #{id}")
     @Lang(HeraUpdateLangDriver.class)
@@ -36,24 +37,28 @@ public interface HeraFileMapper {
 
     @Select("select * from hera_file where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
-    HeraFile findById(HeraFile heraFile);
+    HeraFile findById(Integer id);
 
     @Select("select * from hera_file where id in (#{list})")
-    @Lang(HeraSelectInLangDriver.class)
+    @Lang(HeraListInLangDriver.class)
     List<HeraFile> findByIds(@Param("list") List<Integer> list);
 
 
     @Select("select * from hera_file where parent = #{parent}")
     @Lang(HeraSelectLangDriver.class)
-    List<HeraFile> findByParent(HeraFile heraFile);
+    List<HeraFile> findByParent(Integer parent);
 
     @Select("select * from hera_file where owner = #{owner}")
     @Lang(HeraSelectLangDriver.class)
-    List<HeraFile> findByOwner(HeraFile heraFile);
+    List<HeraFile> findByOwner(String owner);
 
     @Update("update hera_file set content = #{content} where id = #{id}")
     int updateContent(HeraFile heraFile);
 
     @Update("update hera_file set name = #{name} where id = #{id}")
     int updateFileName(HeraFile heraFile);
+
+
+    @Select("select count(*) count, max(id) maxId, max(gmt_modified) lastModified from hera_file")
+    Judge selectTableInfo();
 }

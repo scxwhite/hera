@@ -1,86 +1,49 @@
 <#macro commonStyle>
 <#-- favicon -->
-	<link rel="icon" href="favicon.ico"/>
+	<link rel="shortcut icon" type="image/ico" href="${request.contextPath}/images/favicon.png"/>
 	<meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <!-- Bootstrap 3.3.5 -->
-    <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-tab.css">
-    <!-- Font Awesome -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-<#--<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/font-awesome-4.5.0/css/font-awesome.min.css">-->
-    <!-- Ionicons -->
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css"> -->
-    <link rel="stylesheet" href="${request.contextPath}/plugins/ionicons-2.0.1/css/ionicons.min.css">
-    <!-- Theme style -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">
-    <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/_all-skins.css">
-
-	<link rel="stylesheet"
-          href="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.css"></link>
-
-	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.css"></link>
-	<link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput-rtl.min.css"></link>
-    <link rel="stylesheet" href="${request.contextPath}/css/iconfont.css">
-
+    <link rel="stylesheet" href="${request.contextPath}/plugins/ionicons-2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/layui/css/layui.css">
     <link rel="stylesheet" href="${request.contextPath}/css/common.css">
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+
     <![endif]-->
 	<!-- pace -->
-	<link rel="stylesheet" href="${request.contextPath}/plugins/pace/themes/pace-theme-flash.css">
 </#macro>
 
 <#macro commonScript>
-	<!-- jQuery 2.1.4 -->
-	<script src="${request.contextPath}/adminlte/plugins/jQuery/jquery-2.2.3.min.js"></script>
-	<!-- Bootstrap 3.3.5 -->
-	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap.min.js"></script>
-	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-tab.js"></script>
-	<!-- FastClick -->
-	<script src="${request.contextPath}/adminlte/plugins/fastclick/fastclick.min.js"></script>
-	<!-- AdminLTE App -->
+    <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="${request.contextPath}/plugins/layui/layui.js"></script>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+
 	<script src="${request.contextPath}/adminlte/dist/js/app.min.js"></script>
-<#-- jquery.slimscroll -->
-	<script src="${request.contextPath}/adminlte/plugins/slimScroll/jquery.slimscroll.min.js"></script>
 
-    <!-- pace -->
-    <script src="${request.contextPath}/plugins/pace/pace.min.js"></script>
-<#-- jquery cookie -->
-	<script src="${request.contextPath}/plugins/jquery/jquery.cookie.js"></script>
-<#-- layer -->
-	<script src="${request.contextPath}/plugins/layer/layer.js"></script>
-
-	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-	<script src="${request.contextPath}/adminlte/plugins/bootstrap-select/bootstrap-select.min.js"></script>
-	<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
-
-    <script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.js"></script>
-
-    <script src="${request.contextPath}/adminlte/plugins/daterangepicker/moment.min.js"></script>
-    <script src="${request.contextPath}/adminlte/plugins/daterangepicker/daterangepicker.js"></script>
-    <script src="${request.contextPath}/plugins/echarts/echarts.common.min.js"></script>
-    <script src="${request.contextPath}/plugins/echarts/macarons.js"></script>
-    <script src="${request.contextPath}/plugins/echarts/shine.js"></script>
-
-    <script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
-    <script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
-    <script src="${request.contextPath}/plugins/d3/resize.js"></script>
-    <script src="${request.contextPath}/plugins/d3/simpleTimeline.js"></script>
-
-<#-- common -->
     <script src="${request.contextPath}/js/common.js"></script>
 
     <script>var base_url = '${request.contextPath}';</script>
 
     <script>var screenHeight = document.body.clientHeight</script>
+<script>
+    $.get(base_url + '/isAdmin', function (data) {
+        if (data.data === true) {
+            $('#sysManager').css("display", "block");
+        } else {
+            $('#sysManager').css("display", "none");
+        }
+    });
+</script>
 
 </#macro>
 
@@ -112,16 +75,17 @@
         <!-- sidebar: style can be found in sidebar.less -->
         <section class="sidebar">
             <ul class="sidebar-menu tree">
-                <li class="treeview menu-open" id="home">
+                <li class="treeview menu-closed" id="home">
                     <a href="${request.contextPath}/home">
                         <i class="fa fa-dashboard"></i> <span>首页</span>
-                        <span class="pull-right-container">
-                              <i class="fa fa-angle-left pull-right"></i>
-                        </span>
                     </a>
                 </li>
+                <li class="nav-click" id="machineInfoMenu"><a
+                        href="${request.contextPath}/machineInfo"><i class="fa fa-book"></i> <span>机器组监控</span></a>
+                </li>
 
-                <li class="treeview" id="sysManager">
+
+                <li class="treeview menu-closed my-tree" id="sysManager" style="display: none">
                     <a href="#">
                         <i class="fa fa-folder"></i> <span>系统管理</span>
                         <span class="pull-right-container">
@@ -129,14 +93,19 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="" id="userManage"><a href="${request.contextPath}/userManage"><i class="fa fa-circle-o"></i>
+                        <li id="userManage"><a href="${request.contextPath}/userManage"><i
+                                class="fa fa-circle-o"></i>
                             用户管理</a></li>
-                        <li id="hostGroupManage"><a href="${request.contextPath}/hostGroupManage"><i class="fa fa-circle-o"></i>机器组管理</a>
+                        <li id="hostGroupManage"><a href="${request.contextPath}/hostGroupManage"><i
+                                class="fa fa-circle-o"></i>机器组管理</a>
+                        </li>
+                        <li id="workManage"><a href="${request.contextPath}/workManage"><i
+                                class="fa fa-circle-o"></i>worker管理</a>
                         </li>
                     </ul>
                 </li>
 
-                <li class=" treeview" id="jobManage">
+                <li class=" treeview menu-closed my-tree" id="jobManage">
                     <a href="#">
                         <i class="fa fa-folder"></i> <span>任务管理</span>
                         <span class="pull-right-container">
@@ -144,7 +113,8 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li class="" id="jobDetail"><a href="${request.contextPath}/jobDetail"><i class="fa fa-circle-o"></i>今日任务详情</a>
+                        <li class="" id="jobDetailMenu"><a href="${request.contextPath}/jobDetail"><i
+                                class="fa fa-circle-o"></i>今日任务详情</a>
                         </li>
                         <li class="" id="jobDag"><a href="${request.contextPath}/jobDag"><i
                                 class="fa fa-circle-o"></i>任务依赖图</a></li>
@@ -155,8 +125,12 @@
                 <li class="nav-click" id="developManage"><a
                         href="${request.contextPath}/developCenter"><i class="fa fa-book"></i> <span>开发中心</span></a>
                 </li>
-                <li class="nav-click" id="scheduleCenter"><a
+                <li class="nav-click" id="scheduleManage"><a
                         href="${request.contextPath}/scheduleCenter"><i class="fa fa-edit"></i> <span>调度中心</span></a>
+                </li>
+
+                <li class="nav-click" id="advice"><a
+                        href="${request.contextPath}/adviceController"><i class="fa fa-bug"></i> <span>建议&留言</span></a>
                 </li>
 
 
@@ -248,10 +222,11 @@
         Powered by <b>hera</b> 1.0.0（快照版本）
         <div class="pull-right hidden-xs">
             <strong>Copyright &copy; 2018-${.now?string('yyyy')} &nbsp;
-                <a href="#" target="_blank">lingxiao</a>
+                <a href="#" target="_blank">基础架构</a>
                 &nbsp;
                 <a href="" target="_blank">2dfire</a>
             </strong><!-- All rights reserved. -->
         </div>
     </footer>
 </#macro>
+

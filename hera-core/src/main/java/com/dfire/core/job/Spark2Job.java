@@ -1,10 +1,9 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
-import com.dfire.common.service.HeraFileService;
 import com.dfire.core.tool.pool.JdbcDataSourcePool;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -17,18 +16,15 @@ import java.util.List;
  * @Date ： 14:02 2018/8/22
  * @Modified :
  */
-@Slf4j
 public class Spark2Job extends ProcessJob {
 
-    private ApplicationContext applicationContext;
 
     private JdbcDataSourcePool jdbcDataSourcePool = new JdbcDataSourcePool();
 
     private final int maxOutputNum = 2000;
 
-    public Spark2Job(JobContext jobContext, ApplicationContext applicationContext) {
+    public Spark2Job(JobContext jobContext) {
         super(jobContext);
-        this.applicationContext = applicationContext;
         jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "Spark2Job");
     }
 
@@ -87,7 +83,7 @@ public class Spark2Job extends ProcessJob {
                 connection.close();
             } catch (Exception e) {
                 e.printStackTrace();
-                log.error("连接归还失败");
+                ErrorLog.error("连接归还失败");
             }
         }
         return true;

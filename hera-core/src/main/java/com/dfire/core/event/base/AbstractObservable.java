@@ -36,7 +36,7 @@ public class AbstractObservable implements Observable {
             listeners.add((Listener) listener);
             listMap.put(eventType.getId(), listeners);
         } else {
-            if (listeners.contains(listener)) {
+            if (!listeners.contains(listener)) {
                 listeners.add((Listener) listener);
             }
         }

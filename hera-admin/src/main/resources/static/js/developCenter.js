@@ -1,5 +1,5 @@
-var codeMirror;
-$(function () {
+var codeMirror, zTree;
+layui.use("layer", function () {
     $('#developManage').addClass('active');
     /**
      * 开发中心zTree初始化配置
@@ -7,7 +7,9 @@ $(function () {
      */
     var setting = {
         view: {
-            showLine: false
+            // addHoverDom:addHoverDom,
+            // removeHoverDom: removeHoverDom,
+            selectedMulti: false
         },
         data: {
             simpleData: {
@@ -15,24 +17,243 @@ $(function () {
                 idKey: "id",
                 pIdKey: "parent",
                 rootPId: 0
-
+            },
+            keep: {
+                parent: true
             }
         },
         callback: {
-            // onRightClick: OnRightClick,
+            onRightClick: OnRightClick,
             onClick: leftClick,
-            onRename:renameFile,
-            onRemove:removeFile
+            onRename: renameFile,
+            beforeRemove: beforeRemove
         },
-        edit:{
-            enable:true
+        edit: {
+            enable: true,
+            editNameSelectAll: true,
         }
     };
+
+    function add(e) {
+        var isParent = e.data.isParent,
+            nodes = zTree.getSelectedNodes(),
+            treeNode = nodes[0];
+        hideRMenu();
+        var selected = zTree.getSelectedNodes()[0];
+        var id = selected['id'];
+        addCount++;
+        if (e.data.type === 1) {
+            //new folder
+            var name = "文件夹" + addCount;
+            var parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
+            $.ajax({
+                url: base_url + "/developCenter/addFile.do",
+                type: "get",
+                async: false,
+                data: parameter,
+                success: function (data) {
+                    if (treeNode) {
+                        treeNode = zTree.addNodes(treeNode, {
+                            id: data,
+                            pId: treeNode.id,
+                            isParent: isParent,
+                            name: name
+                        });
+                    } else {
+                        treeNode = zTree.addNodes(null, {id: data, pId: 0, isParent: isParent, name: name});
+                    }
+                    if (treeNode) {
+                        zTree.editName(treeNode[0]);
+                    } else {
+                        layer.msg("叶子节点被锁定，无法增加子节点");
+                    }
+                }
+            });
+        } else if (e.data.type === 2) {
+            //new .hive file
+            var name = addCount + ".hive";
+            var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+            $.ajax({
+                url: base_url + "/developCenter/addFile.do",
+                type: "get",
+                async: false,
+                data: parameter,
+                success: function (data) {
+                    if (treeNode) {
+                        treeNode = zTree.addNodes(treeNode, {
+                            id: data,
+                            pId: treeNode.id,
+                            isParent: isParent,
+                            name: name
+                        });
+                    } else {
+                        treeNode = zTree.addNodes(null, {id: data, pId: 0, isParent: isParent, name: name});
+                    }
+                    if (treeNode) {
+                        zTree.editName(treeNode[0]);
+                    } else {
+                        layer.msg("叶子节点被锁定，无法增加子节点");
+                    }
+                }
+            });
+
+        } else if (e.data.type === 3) {
+            //new .sh file
+            var name = addCount + ".sh";
+            var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+            $.ajax({
+                url: base_url + "/developCenter/addFile.do",
+                type: "get",
+                async: false,
+                data: parameter,
+                success: function (data) {
+                    if (treeNode) {
+                        treeNode = zTree.addNodes(treeNode, {
+                            id: data,
+                            pId: treeNode.id,
+                            isParent: isParent,
+                            name: name
+                        });
+                    } else {
+                        treeNode = zTree.addNodes(null, {id: data, pId: 0, isParent: isParent, name: name});
+                    }
+                    if (treeNode) {
+                        zTree.editName(treeNode[0]);
+                    } else {
+                        layer.msg("叶子节点被锁定，无法增加子节点");
+                    }
+                }
+            });
+        } else if (e.data.type === 4) {
+            //new .spark file
+            var name = addCount + ".spark";
+            var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+            $.ajax({
+                url: base_url + "/developCenter/addFile.do",
+                type: "get",
+                async: false,
+                data: parameter,
+                success: function (data) {
+                    if (treeNode) {
+                        treeNode = zTree.addNodes(treeNode, {
+                            id: data,
+                            pId: treeNode.id,
+                            isParent: isParent,
+                            name: name
+                        });
+                    } else {
+                        treeNode = zTree.addNodes(null, {id: data, pId: 0, isParent: isParent, name: name});
+                    }
+                    if (treeNode) {
+                        zTree.editName(treeNode[0]);
+                    } else {
+                        layer.msg("叶子节点被锁定，无法增加子节点");
+                    }
+                }
+            });
+        }
+    };
+
+    //修改文件名后回调
+    function renameFile(event, treeId, treeNode, isCancel) {
+        $.ajax({
+            url: base_url + "/developCenter/rename.do",
+            type: 'get',
+            data: {
+                id: treeNode.id,
+                name: treeNode.name
+            },
+            success: function (res) {
+                layer.msg(res);
+                //同步修改codemirror上的tab名
+                var id = treeNode.id;
+                var name = treeNode.name;
+                var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
+                tabData = JSON.parse(localStorage.getItem('tabData'));
+                tabObj = $("#tabContainer").tabs({
+                    data: tabDetail,
+                    showIndex: 0,
+                    loadAll: true
+                });
+                if (isInArray(tabData, tabDetail)) {
+                    tabObj = $("#tabContainer").data("tabs").changeText(id, name);
+                    //更改localStorage内的值
+                    for (var i = 0; i < tabData.length; i++) {
+                        if (tabData[i].id === id) {
+                            tabData.splice(i, 1);
+                            break;
+                        }
+                    }
+                } else {
+                    tabObj = $('#tabContainer').data('tabs').addTab(tabDetail);
+                    setScript(id)
+                }
+                if (!treeNode.isParent) {
+                    tabData.push(tabDetail);
+                }
+                localStorage.setItem("tabData", JSON.stringify(tabData));
+            },
+            error: function (err) {
+                layer.msg(err);
+            }
+        })
+    }
+
+
+    $("#removeFile").click(function () {
+            nodes = zTree.getSelectedNodes(),
+            treeNode = nodes[0];
+        if (nodes.length === 0) {
+            layer.msg("请先选择一个节点");
+            return;
+        }
+        zTree.removeNode(treeNode, true);
+    });
+
+    function beforeRemove(event, treeNode) {
+        layer.confirm("确认删除 :" + treeNode.name + "?", {
+            icon: 0,
+            skin: 'msg-class',
+            btn: ['确定', '取消'],
+            anim: 0
+        }, function (index, layero) {
+            layer.close(index)
+            $.ajax({
+                url: base_url + "/developCenter/delete.do",
+                type: 'get',
+                data: {
+                    id: treeNode.id
+                },
+                success: function (res) {
+                    layer.msg(res);
+                    //从localStorage中删除
+                    tabData = JSON.parse(localStorage.getItem('tabData'));
+                    for (var i = 0; i < tabData.length; i++) {
+                        if (tabData[i].id === treeNode.id) {
+                            tabData.splice(i, 1);
+                            break;
+                        }
+                    }
+                    //localStorage delete
+                    localStorage.setItem('tabData', JSON.stringify(tabData));
+                    //移除tab
+                    tabObj = $("#tabContainer").data("tabs").remove(treeNode.id);
+                    zTree.removeNode(treeNode);
+                },
+                error: function (err) {
+                    layer.msg(err);
+                }
+            });
+        }, function (index) {
+            layer.close(index)
+        });
+        return false;
+    }
 
     /**
      * zTree 右键菜单初始化数据
      */
-    var zTree, rMenu;
+    var rMenu;
 
     /**
      * tab项数据
@@ -80,21 +301,11 @@ $(function () {
             return;
         }
 
-        var parameter = "id=" + id;
-        var url = base_url + "/developCenter/find.do";
-        var result = getDataByGet(url, parameter)
-        var script = result['content'];
-        if (script == null || script == '') {
-            script = '';
-        }
-
         setScript(id);
 
         var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
-        localStorage.setItem("id", id);//记录活动选项卡id
         tabData = JSON.parse(localStorage.getItem('tabData'));
-        var b = isInArray(tabData, tabDetail);
-        if (b == false) {
+        if (isInArray(tabData, tabDetail) === false) {
             tabData.push(tabDetail);
             tabObj = $("#tabContainer").tabs({
                 data: tabDetail,
@@ -117,7 +328,8 @@ $(function () {
         localStorage.setItem("tabData", JSON.stringify(tabData));
 
     }
-    tabContainer.on('deleteTab',function (e,length) {
+
+    tabContainer.on('deleteTab', function (e, length) {
         e.stopPropagation();
         tabContainer.tabsLength -= length;
     })
@@ -141,7 +353,7 @@ $(function () {
     })
 
     //显示日志
-    function showLogs(){
+    function showLogs() {
         var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
         var parameter = {fileId: targetId};
         var actionRow = new Object();
@@ -150,7 +362,7 @@ $(function () {
         $.ajax({
             url: base_url + "/developCenter/getLog.do",
             data: {
-                fileId:actionRow.id
+                fileId: actionRow.id
             },
             success: function (data) {
                 if (data.status != 'running') {
@@ -184,11 +396,13 @@ $(function () {
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
-                successMsg(data);
+                layer.msg(data.msg);
+            },
+            error: function (err) {
+                layer.msg(err);
             }
         });
-
-     });
+    });
 
     /**
      * 树形菜单右击事件
@@ -197,8 +411,11 @@ $(function () {
      * @param treeNode
      * @constructor
      */
+    var rightClickNode;
+
     function OnRightClick(event, treeId, treeNode) {
         zTree.selectNode(treeNode);
+        rightClickNode = treeNode;
         var selected = zTree.getSelectedNodes()[0];
         var isParent = selected['isParent'];//true false
         if (isParent == true) {
@@ -220,12 +437,14 @@ $(function () {
             $("#addFolder").show();
             $("#addHiveFile").show();
             $("#addShellFile").show();
+            $("#addSparkFile").show();
             $("#rename").show();
             $("#removeFile").show();
         } else if (type == "node") {
             $("#addFolder").hide();
             $("#addHiveFile").hide();
             $("#addShellFile").hide();
+            $("#addSparkFile").hide();
         }
 
         y += document.body.scrollTop;
@@ -235,58 +454,7 @@ $(function () {
 
         $("body").bind("mousedown", onBodyMouseDown);
     }
-    //修改文件名后回调
-    function renameFile(event, treeId, treeNode, isCancel) {
-        $.ajax({
-            url: base_url + "/developCenter/rename.do",
-            type:'get',
-            data:{
-                id:treeNode.id,
-                name:treeNode.name
-            },
-            success:function (res) {
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html(res);
-            },
-            error:function (err) {
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html(err);
-            }
-        })
 
-    }
-    //删除文件后回调
-    function removeFile(event, treeId, treeNode) {
-        $.ajax({
-            url: base_url + "/developCenter/delete.do",
-            type:'get',
-            data:{
-                id:treeNode.id
-            },
-            success:function (res) {
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html(res);
-            },
-            error:function (err) {
-                $('#responseCon').animate({right:'20px'},500)
-                setTimeout(function () {
-                    $('#responseCon').animate({right:'-140px'},500);
-                },1000);
-                $('#response').html(err);
-
-            }
-        })
-
-    }
     /**
      * 隐藏菜单
      */
@@ -305,139 +473,17 @@ $(function () {
         }
     }
 
-    $("#addFolder").click(function () {
+    $("#addFolder").bind('click', {isParent: true, type: 1}, add);
+    $("#addHiveFile").bind('click', {isParent: false, type: 2}, add);
+    $("#addShellFile").bind('click', {isParent: false, type: 3}, add);
+    $("#addSparkFile").bind('click', {isParent: false, type: 4}, add);
+
+    //重命名
+    $("#rename").bind('click', {node: rightClickNode}, function () {
         hideRMenu();
         var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var name = "文件夹" + addCount;
-
-        var newNode = {name: name, isParent: true, parent: id};
-        addCount++;
-
-        var parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
-
-        $.ajax({
-            url: base_url + "/developCenter/addFile.do",
-            type: "get",
-            async: false,
-            data: parameter,
-            success: function (data) {
-                newNode['id'] = data;
-            }
-        });
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
-        }
-
-        fixIcon();//调用修复图标的方法。方法如下：
-        location.reload();
-
-
-    });
-
-
-    $("#addHiveFile").click(function () {
-        hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var parent = selected['parent'];
-        var name = selected['name'];
-
-        var newNode = {name: +addCount + name, isParent: true};
-        addCount++;
-        var name = addCount + ".hive";
-
-        var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-
-        $.ajax({
-            url: base_url + "/developCenter/addFile.do",
-            type: "get",
-            async: false,
-            data: parameter,
-            success: function (data) {
-            }
-        });
-
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
-        }
-
-        fixIcon();//调用修复图标的方法。方法如下：
-        location.reload();
-
-
-    });
-
-
-    $("#addShellFile").click(function () {
-        hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var parent = selected['parent'];
-        var name = selected['name'];
-
-        var newNode = {name: +addCount + name, isParent: true};
-        addCount++;
-        var name = addCount + ".sh";
-
-        var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-
-        $.ajax({
-            url: base_url + "/developCenter/addFile.do",
-            type: "get",
-            async: false,
-            data: parameter,
-            success: function (data) {
-
-            }
-        });
-
-        if (zTree.getSelectedNodes()[0]) {
-            newNode.checked = zTree.getSelectedNodes()[0].checked;
-            zTree.addNodes(zTree.getSelectedNodes()[0].getParentNode(), newNode);
-        }
-        fixIcon();//调用修复图标的方法。方法如下：
-        location.reload();
-
-
-    });
-
-
-    $("#rename").click(function () {
-        hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var parent = selected['parent'];
-
-    });
-
-
-    $("#removeFile").click(function () {
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
-        var parameter = "id=" + id;
-
-        var tabData = JSON.parse(localStorage.getItem('tabData'));
-        tabData = tabData.filter(function (item) {
-            return item['id'] != id;
-        });
-        localStorage.setItem("tabData", JSON.stringify(tabData));
-
-        $.ajax({
-            url: base_url + "/developCenter/delete.do",
-            type: "get",
-            async: false,
-            data: parameter,
-            success: function (data) {
-            }
-        });
-
-        fixIcon();//调用修复图标的方法。方法如下：
-        location.reload();
-
-
+        var treeObj = $.fn.zTree.getZTreeObj("documentTree");
+        treeObj.editName(selected);
     });
 
 
@@ -467,7 +513,6 @@ $(function () {
             id: fileId,
             content: fileScript
         };
-        var result = null;
         var url = base_url + "/developCenter/debug.do";
 
         $.ajax({
@@ -476,17 +521,99 @@ $(function () {
             data: JSON.stringify(parameter),
             contentType: "application/json",
             dataType: "json",
-            success: function (data) {
-                result = data;
-                debugId=data.debugId;
-                showRightNowLog(data.fileId,data.debugId);
+            success: function (res) {
+                if (res.success === true) {
+                    showRightNowLog(res.data.fileId, res.data.debugId);
+                } else {
+                    layer.msg(res.message);
+                }
             }
         });
-
-
     });
-    //获得当前log
-    function getRightNowLog(){
+
+    //显示当前日志
+    function showRightNowLog(id, debugId) {
+        //tab
+        var ul = logTabContainer.children('ul');
+        ul.children().removeClass('active-log');
+        ul.prepend("<li class=\"logs-id active-log\">DebugId : " + debugId + "<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
+        var lis = ul.children();
+        logTabContainer.tabsLength += lis[lis.length - 1].clientWidth;
+        showPrevNext(logTabContainer);
+        ul.children('li:first').attr('his-id', debugId);
+
+        //日志
+        rightNowLogCon.children().removeClass('show-right-now-log');
+        rightNowLogCon.prepend('<div class=\"right-now-log show-right-now-log \" id=\"log' + debugId + '\"></div>');
+        var timer = setInterval(function () {
+            $.ajax({
+                url: base_url + "/developCenter/getLog.do",
+                type: "get",
+                data: {
+                    id: debugId
+                },
+                success: function (data) {
+                    if (data.status !== 'running') {
+                        clearInterval(timer);
+                        set('log' + debugId, data.log, true);
+                    }
+                    if (data.status === 'failed') {
+                        $('li[his-id=' + debugId + ']').css('color', 'orangered');
+                        set('log' + debugId, data.log, false);
+                    }
+                    $('#log' + debugId).html(data.log);
+
+                }
+            })
+        }, 2000);
+    }
+
+
+    //检查localStorage 有则显示日志
+    function showStorageLog() {
+        var last;
+        for (var i = 0; i < localStorage.length; i++) {
+            if (localStorage.key(i).indexOf('log') !== -1) {
+                last = localStorage.key(i);
+                var key = localStorage.key(i);
+                var ul = logTabContainer.children('ul');
+                ul.children().removeClass('active-log');
+                ul.prepend("<li class=\"logs-id active-log\">DebugId : " + key.slice(3) + "<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
+                ul.children('li:first').attr('his-id', key.slice(3));
+                showPrevNext(logTabContainer);
+                rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"' + key + '\"></div>');
+                var logArea = $('#' + key);
+                logArea.html(localStorage.getItem(key));
+                if (JSON.parse(localStorage.getItem(key)).success === false) {
+                    $('li[his-id=' + key.slice(3) + ']').css('color', 'orangered');
+                }
+            }
+        }
+        var logArea = $('#' + last);
+        logArea.addClass('show-right-now-log');
+    }
+
+    showStorageLog();
+    //单击当前日志tab
+    logTabContainer.on('click', 'li', function (e) {
+        e.stopPropagation();
+        logTabContainer.children('ul').children().removeClass('active-log');
+        $(this).addClass('active-log');
+        debugId = $(this).attr('his-id');
+        rightNowLogCon.children().removeClass('show-right-now-log');
+        rightNowLogCon.children('#log' + debugId).addClass('show-right-now-log');
+        var storageLog = get('log' + debugId, 1000 * 60 * 60 * 24);
+        if (storageLog) {
+            rightNowLogCon.children('#log' + debugId).html(storageLog);
+        }
+    });
+    //关闭日志
+    logTabContainer.on('click', 'span', function (e) {
+        e.stopPropagation();
+        var _this = $(this);
+        var li = _this.parent();
+        var width = li.width();
+        var debugId = li.attr('his-id');
         $.ajax({
             url: base_url + "/developCenter/getLog.do",
             type: "get",
@@ -494,84 +621,36 @@ $(function () {
                 id: debugId,
             },
             success: function (data) {
-                console.log("data.status " + data.status)
-                if (data.status !== 'running') {
-                    clearInterval(rightTimer);
-                    set('log'+debugId,data.log);
+                if (data.status === 'running') {
+                    $('#cancelSrueModal').modal('show');
+                } else {
+                    logTabContainer.tabsLength -= width;
+                    localStorage.removeItem('log' + debugId);
+                    li.prev().addClass('active-log');
+                    li.remove();
+                    $('.show-right-now-log').prev().addClass('show-right-now-log');
+                    $('.show-right-now-log:last').remove();
                 }
-                var logArea = $('#log' + debugId);
-                logArea.html(data.log);
-
             }
         })
-    }
-    //检查localStorage 有则显示日志
-    function showStorageLog() {
-        var last;
-        for(var i =0;i<localStorage.length;i++){
-            if(localStorage.key(i).indexOf('log')!==-1){
-                last = localStorage.key(i);
-                var ul = logTabContainer.children('ul');
-                ul.children().removeClass('active-log');
-                ul.prepend("<li class=\"logs-id active-log\">DebugId : "+localStorage.key(i).slice(3)+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
-                ul.children('li:first').attr('his-id',localStorage.key(i).slice(3));
-                showPrevNext(logTabContainer);
-            }
-        }
-        rightNowLogCon.children().first().remove();
-        rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"'+last+'\"></div>');
-        var logArea = $('#' + last);
-        logArea.html(localStorage.getItem(last));
-    }
-    showStorageLog();
-    //显示当前日志
-    function showRightNowLog(id,debugId){
-        //tab
-        var ul = logTabContainer.children('ul');
-        ul.children().removeClass('active-log');
-        ul.prepend("<li class=\"logs-id active-log\">DebugId : "+debugId+"<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
-        var lis=ul.children();
-        logTabContainer.tabsLength += lis[lis.length - 1].clientWidth;
-        showPrevNext(logTabContainer);
-        ul.children('li:first').attr('his-id',debugId);
-        //日志
-        rightNowLogCon.children().first().remove();
-        rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"log'+debugId+'\"></div>');
-        if(rightTimer){
+        $('#sureCancelBtn').click(function (e) {
+            e.stopPropagation();
+            $('#cancelSrueModal').modal('hide');
+            logTabContainer.tabsLength -= width;
+            localStorage.removeItem('log' + debugId);
+            li.prev().addClass('active-log');
+            li.remove();
+            $('.show-right-now-log').prev().addClass('show-right-now-log');
+            $('.show-right-now-log:last').remove();
             clearInterval(rightTimer);
-        }
-        rightTimer=setInterval(getRightNowLog,2000);
-    }
-    //单击当前日志tab
-    logTabContainer.on('click','li',function (e) {
-        e.stopPropagation();
-        logTabContainer.children('ul').children().removeClass('active-log');
-        $(this).addClass('active-log');
-        debugId=$(this).attr('his-id');
-        rightNowLogCon.children().first().remove();
-        rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"log'+debugId+'\"></div>');
-        var storageLog=get('log'+debugId,1000*60*60*24);
-        if(storageLog){
-            rightNowLogCon.children('#log'+debugId).html(storageLog);
-        }else {
-            if(rightTimer){
-                clearInterval(rightTimer);
-            }
-            rightTimer=setInterval(getRightNowLog,2000);
-        }
-    })
-    //关闭日志
-    logTabContainer.on('click','span',function(e){
-        e.stopPropagation();
-        var li = $(this).parent();
-        var width = li.width();
-        logTabContainer.tabsLength -=width;
-        var debugId=li.attr('his-id');
-        localStorage.removeItem('log'+debugId);
-        li.remove();
-        clearInterval(rightTimer);
-
-    })
+            var url = base_url + "/developCenter/cancelJob.do";
+            var parameter = {id: debugId};
+            $.get(url, parameter, function (data) {
+                layer.msg(data);
+            });
+        });
+        showPrevNext(logTabContainer);
+    });
 
     /**
      * 点击执行选中代码执行逻辑
@@ -594,30 +673,32 @@ $(function () {
             dataType: "json",
             success: function (data) {
                 result = data;
+                debugId = data.debugId;
+                showRightNowLog(data.fileId, data.debugId);
             }
         });
 
     });
+
     //封装过期控制代码
-    function set(key,value){
+    function set(key, value, success) {
         var curTime = new Date().getTime();
-        localStorage.setItem(key,JSON.stringify({data:value,time:curTime}));
+        localStorage.setItem(key, JSON.stringify({data: value, time: curTime, success: success}));
     }
-    function get(key,exp){
+
+    function get(key, exp) {
         var data = localStorage.getItem(key);
         var dataObj = JSON.parse(data);
-        if(dataObj){
-            if (new Date().getTime() - dataObj.time>exp) {
+        if (dataObj) {
+            if (new Date().getTime() - dataObj.time > exp) {
                 console.log('信息已过期');
-            }else{
-                //console.log("data="+dataObj.data);
-                //console.log(JSON.parse(dataObj.data));
+            } else {
                 var dataObjDatatoJson = dataObj.data;
                 return dataObjDatatoJson;
             }
-
         }
     }
+
     /**
      * 弹出日志div
      */
@@ -636,6 +717,7 @@ $(function () {
     });
 
 
+
     /**
      * 初始化开发中心页面
      *
@@ -646,34 +728,71 @@ $(function () {
         zTree = $.fn.zTree.getZTreeObj("documentTree");
         rMenu = $("#rMenu");
         fixIcon();
-        var currentId;
-
+        let currentId;
+        let theme = localStorage.getItem("theme");
+        if (theme == null) {
+            theme = 'default';
+        }
         codeMirror = CodeMirror.fromTextArea(editor[0], {
             mode: "sql",
             lineNumbers: true,
             autofocus: true,
-            theme: "paraiso-light",
+            theme: theme,
             readOnly: false
         });
         codeMirror.display.wrapper.style.height = 500 + "px";
         codeMirror.on('keypress', function () {
             if (!codeMirror.getOption('readOnly')) {
-                codeMirror.showHint();
+                codeMirror.showHint({
+                    completeSingle: false
+                });
             }
         });
 
+        var saveTimer;
+        //监听codemirror change事件 实时保存
+        codeMirror.on('change', function () {
+            if (saveTimer) {
+                clearTimeout(saveTimer);
+            }
+            saveTimer = setTimeout(function () {
+                var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+                var fileScript = codeMirror.getValue();
+                var parameter = {
+                    id: fileId,
+                    content: fileScript
+                };
+                var url = base_url + "/developCenter/saveScript.do";
+
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    data: JSON.stringify(parameter),
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data.msg)
+                    },
+                    error: function (err) {
+                        layer.msg(err);
+                    }
+                });
+            }, 1000);
+        });
 
         var storeData = JSON.parse(localStorage.getItem('tabData'));
         if (storeData != null) {
-            for (var i = 0; i < storeData.length; i++) {
+            for (let i = 0; i < storeData.length; i++) {
                 $("#tabContainer").tabs({
                     data: storeData[i],
                     showIndex: 0,
                     loadAll: true
                 });
                 $("#tabContainer").data("tabs").addTab(storeData[i]);
-                currentId = storeData[i]['id'];
-                setScript(storeData[i]['id']);
+                if (i === storeData.length - 1) {
+                    currentId = storeData[i]['id'];
+                    setScript(currentId);
+                }
             }
         } else {
             var tmp = new Array();
@@ -687,96 +806,106 @@ $(function () {
         showPrevNext(tabContainer);
         tabInitLength(logTabContainer);
         showPrevNext(logTabContainer);
+
+
     });
+
     //初始化log
-    function logInit(){
+    function logInit() {
 
     }
 
     //初始化tabs的长度
-    function tabInitLength(tabContainer){
-        tabContainer.tabsLength=0;
-        var ul = tabContainer.children('ul');
-        if(tabContainer.children('ul').length > 0) {
+    function tabInitLength(tabContainer) {
+        tabContainer.tabsLength = 0;
+        if (tabContainer.children('ul').length > 0) {
             var lis = tabContainer.children('ul').children();
             //初始tabs width
             for (var i = 0; i < lis.length; i++) {
                 tabContainer.tabsLength += lis[i].clientWidth;
             }
-            console.log('tab init',tabContainer.tabsLength);
         }
     }
+
     //计算tabs长度是否超过container
-    function showPrevNext(tabContainer){
-        tabContainer.tabContainerWidth =  tabContainer.width();
-        if(tabContainer.tabsLength > tabContainer.tabContainerWidth){
+    function showPrevNext(tabContainer) {
+        tabContainer.tabContainerWidth = tabContainer.width();
+        if (tabContainer.tabsLength > tabContainer.tabContainerWidth) {
+            tabContainer.siblings('.prev-next-con').children('.prev-tab').removeClass('hide');
+            tabContainer.siblings('.prev-next-con').children('.next-tab').removeClass('hide');
             tabContainer.siblings('.prev-next-con').children('.prev-tab').addClass('show');
             tabContainer.siblings('.prev-next-con').children('.next-tab').addClass('show');
-            tabContainer.css({"left": "30px"});
+            tabContainer.children('ul').css({"padding-left": "30px"});
+        } else if (tabContainer.tabsLength < tabContainer.tabContainerWidth) {
+            tabContainer.siblings('.prev-next-con').children('.prev-tab').removeClass('show');
+            tabContainer.siblings('.prev-next-con').children('.next-tab').removeClass('show');
+            tabContainer.siblings('.prev-next-con').children('.prev-tab').addClass('hide');
+            tabContainer.siblings('.prev-next-con').children('.next-tab').addClass('hide');
+            tabContainer.children('ul').css({"padding-left": "0"});
         }
     }
 
     //tab超出范围出现左右调整框
     //单击左右按钮
-    $('#prevNextCon').on('click','.prev-tab',tabContainer,function (e) {
+    $('#prevNextCon').on('click', '.prev-tab', tabContainer, function (e) {
         e.stopPropagation();
-        var ul =tabContainer.children('ul');
+        var ul = tabContainer.children('ul');
         var positionLeft = ul.position().left;
-        if(positionLeft<0){
-            if(-positionLeft+tabContainer.tabContainerWidth>tabContainer.tabsLength+100){
+        if (positionLeft < 0) {
+            if (-positionLeft + tabContainer.tabContainerWidth > tabContainer.tabsLength + 100) {
                 ul.stop();
-            }else{
+            } else {
                 ul.animate({
-                    left:'-=60px'
-                },100)
+                    left: '-=60px'
+                }, 100)
             }
-        }else {
+        } else {
             ul.animate({
-                left:'-=60px'
-            },100)
+                left: '-=60px'
+            }, 100)
         }
     });
-    $('#prevNextCon').on('click','.next-tab',tabContainer,function (e) {
+    $('#prevNextCon').on('click', '.next-tab', tabContainer, function (e) {
         e.stopPropagation();
-        var ul =tabContainer.children('ul');
+        var ul = tabContainer.children('ul');
         var positionLeft = ul.position().left;
-        if(positionLeft<=0){
+        if (positionLeft <= 0) {
             ul.animate({
-                left:'+=50px'
-            },100)
-        }else{
+                left: '+=50px'
+            }, 100)
+        } else {
             ul.stop();
         }
     });
-    $('#logContainer').on('click','.prev-tab',logTabContainer,function (e) {
+    $('#logContainer').on('click', '.prev-tab', logTabContainer, function (e) {
         e.stopPropagation();
         var tabContainer = e.data;
-        var ul =tabContainer.children('ul');
+        var ul = tabContainer.children('ul');
         var positionLeft = ul.position().left;
-        if(positionLeft<0){
-            if(-positionLeft+tabContainer.tabContainerWidth>tabContainer.tabsLength+100){
+        if (positionLeft < 0) {
+            if (-positionLeft + tabContainer.tabContainerWidth > tabContainer.tabsLength + 100) {
                 ul.stop();
-            }else{
+            } else {
                 ul.animate({
-                    left:'-=50px'
-                },100)
+                    left: '-=50px'
+                }, 100)
             }
-        }else {
+        } else {
             ul.animate({
-                left:'-=50px'
-            },100)
+                left: '-=50px'
+            }, 100)
         }
     });
-    $('#logContainer').on('click','.next-tab',logTabContainer,function (e) {
+    $('#logContainer').on('click', '.next-tab', logTabContainer, function (e) {
         e.stopPropagation();
         var tabContainer = e.data;
-        var ul =tabContainer.children('ul');
+        var ul = tabContainer.children('ul');
         var positionLeft = ul.position().left;
-        if(positionLeft<=0){
+        if (positionLeft <= 0) {
             ul.animate({
-                left:'+=50px'
-            },100)
-        }else{
+                left: '+=50px'
+            }, 100)
+        } else {
             ul.stop();
         }
     });
@@ -913,12 +1042,10 @@ var TableInit = function (targetId) {
 function cancelJob(historyId) {
     var url = base_url + "/developCenter/cancelJob.do";
     var parameter = {id: historyId};
-
-
     $.get(url, parameter, function (data) {
         layer.msg(data);
+        $('#debugLog [name="refreshLog"]').trigger('click');
     });
-
 }
 
 /**
@@ -928,17 +1055,19 @@ function cancelJob(historyId) {
 
 
 function setScript(id) {
-
+    setDefaultSelectNode(id);
     var parameter = "id=" + id;
     var url = base_url + "/developCenter/find.do";
     var result = getDataByGet(url, parameter)
 
-
-    var type = result['type'];
-    if (type == '2') {
+    var name = result['name'];
+    if (name.indexOf('hive') != -1) {
         codeMirror.setOption("mode", "text/x-hive");
-    } else if (type == '1') {
+        console.log("hive")
+    } else {
         codeMirror.setOption("mode", "text/x-sh");
+        console.log("shell")
+
     }
     var script = result['content'];
     if (script == null || script == '') {
@@ -947,3 +1076,27 @@ function setScript(id) {
     codeMirror.setValue(script);
 }
 
+function setDefaultSelectNode(id) {
+
+    if (id === null || id === undefined) {
+        id = localStorage.getItem("id");
+    }
+    if (id !== undefined && id !== null) {
+        let node = zTree.getNodeByParam("id", id);
+        expandParent(node);
+        zTree.selectNode(node);
+    }
+
+}
+
+function expandParent(node) {
+    if (node) {
+        let path = node.getPath();
+        if (path && path.length > 0) {
+            for (let i = 0; i < path.length - 1; i++) {
+                zTree.showNode(path[i]);
+                zTree.expandNode(path[i], true);
+            }
+        }
+    }
+}

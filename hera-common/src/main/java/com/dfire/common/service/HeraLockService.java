@@ -11,9 +11,9 @@ import java.util.Date;
  */
 public interface HeraLockService {
 
-    HeraLock findById(String group);
+    HeraLock findBySubgroup(String group);
 
-    int insert(HeraLock heraLock);
+    Integer insert(HeraLock heraLock);
 
     int update(HeraLock heraLock);
 

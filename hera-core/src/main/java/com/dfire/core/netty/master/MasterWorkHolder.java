@@ -1,11 +1,12 @@
 package com.dfire.core.netty.master;
 
 import com.dfire.core.message.HeartBeatInfo;
-import io.netty.channel.Channel;
+import com.dfire.core.netty.HeraChannel;
+import com.dfire.protocol.RpcWorkInfo.WorkInfo;
 import lombok.Data;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -16,17 +17,26 @@ import java.util.concurrent.ConcurrentHashMap;
 @Data
 public class MasterWorkHolder {
 
-    private Channel channel;
+    private HeraChannel channel;
 
-    private Map<String, Boolean> running = new ConcurrentHashMap<>();
-
-    private Map<String, Boolean> manningRunning = new ConcurrentHashMap<>();
-
-    private Map<String, Boolean> debugRunning = new ConcurrentHashMap<>();
+    /**
+     * 存放的jobId
+     */
+    private Set<Integer> running = new HashSet<>();
+    /**
+     * 存放的jobId
+     */
+    private Set<Integer> manningRunning = new HashSet<>();
+    /**
+     * 存放的debugId
+     */
+    private Set<Integer> debugRunning = new HashSet<>();
 
     private HeartBeatInfo heartBeatInfo;
 
-    public MasterWorkHolder(Channel channel) {
+    private volatile WorkInfo workInfo;
+
+    public MasterWorkHolder(HeraChannel channel) {
         this.channel = channel;
     }
 

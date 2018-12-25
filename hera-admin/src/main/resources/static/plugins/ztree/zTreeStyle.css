@@ -59,7 +59,9 @@ website:	http://code.google.com/p/jquerytree/
 .ztree li span.button.roots_open{background-position:-92px 0}
 .ztree li span.button.roots_close{background-position:-74px 0}
 .ztree li span.button.center_open{background-position:-92px -18px}
+.ztree li span.button.center_open2{background-position:-92px -18px}
 .ztree li span.button.center_close{background-position:-74px -18px}
+.ztree li span.button.center_close2{background-position:-74px -18px}
 .ztree li span.button.bottom_open{background-position:-92px -36px}
 .ztree li span.button.bottom_close{background-position:-74px -36px}
 .ztree li span.button.noline_open{background-position:-92px -72px}
@@ -75,10 +77,10 @@ website:	http://code.google.com/p/jquerytree/
 
 
 .ztree li span.button.ico_open{margin-right:2px; background:url("./img/diy/1_open.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
-.ztree li span.button.ico_open2{margin-right:2px; background:url("./img/diy/3.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_open2{margin-right:2px; background:url("./img/diy/1_open.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
 .ztree li span.button.ico_docu{margin-right:2px; background:url("./img/diy/5.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
 .ztree li span.button.ico_close{margin-right:2px; background:url("./img/diy/1_open.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
-.ztree li span.button.ico_close2{margin-right:2px; background:url("./img/diy/3.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
+.ztree li span.button.ico_close2{margin-right:2px; background:url("./img/diy/1_open.png") no-repeat scroll 0 0 transparent; vertical-align:top; *vertical-align:middle}
 
 .ztree li span.button.edit {margin-right:2px; background-position:-110px -48px; vertical-align:top; *vertical-align:middle}
 .ztree li span.button.remove {margin-right:2px; background-position:-110px -64px; vertical-align:top; *vertical-align:middle}

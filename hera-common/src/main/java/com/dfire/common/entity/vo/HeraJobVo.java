@@ -102,6 +102,8 @@ public class HeraJobVo {
 
     private String uIdS;
 
+    private String areaId;
+
     private String focusUser;
 
 }

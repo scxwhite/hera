@@ -4,9 +4,10 @@ import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.vo.RestfulResponse;
-import graph.JobRelation;
+import com.dfire.graph.JobRelation;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -34,13 +35,13 @@ public interface HeraJobService {
      *
      * @return
      */
-    List<HeraJobTreeNodeVo> buildJobTree();
+    Map<String, List<HeraJobTreeNodeVo>> buildJobTree(String owner);
 
     boolean changeSwitch(Integer id);
 
     RestfulResponse checkAndUpdate(HeraJob heraJob);
 
-    JsonResponse findCurrentJobGraph(int jobId, Integer type);
+    Map<String, Object> findCurrentJobGraph(int jobId, Integer type);
 
     /**
      * 构建依赖图边
@@ -50,6 +51,11 @@ public interface HeraJobService {
     List<JobRelation> getJobRelations();
 
 
-    List<HeraJob> findAllDependencies();
+    List<HeraJob> findDownStreamJob(Integer jobId);
+
+    List<HeraJob> findUpStreamJob(Integer jobId);
+
+    List<HeraJob> getAllJobDependencies();
+
 
 }

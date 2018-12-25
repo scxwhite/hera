@@ -15,8 +15,8 @@ import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.service.*;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.DateUtil;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.core.config.HeraGlobalEnvironment;
@@ -24,14 +24,15 @@ import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import com.dfire.core.job.CancelHadoopJob;
-import com.dfire.core.quartz.HeraQuartzJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
+import com.dfire.core.quartz.HeraQuartzJob;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.ScheduleLog;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.*;
 
@@ -46,7 +47,6 @@ import java.util.*;
  */
 
 @Builder
-@Slf4j
 @AllArgsConstructor
 public class JobHandler extends AbstractHandler {
 
@@ -69,7 +69,7 @@ public class JobHandler extends AbstractHandler {
         this.heraJobActionService = masterContext.getHeraJobActionService();
         this.heraUserService = masterContext.getHeraUserService();
         this.emailService = masterContext.getEmailService();
-        this.heraJobMonitorService = masterContext.getHeraMonitorService();
+        this.heraJobMonitorService = masterContext.getHeraJobMonitorService();
         this.cache = JobGroupCache.builder().actionId(actionId).heraJobActionService(heraJobActionService).build();
         this.master = master;
         this.masterContext = masterContext;
@@ -118,7 +118,7 @@ public class JobHandler extends AbstractHandler {
         if (heraAction != null) {
             //对版本表中处于running状态的任务进行重试
             if (StatusEnum.RUNNING.toString().equals(heraAction.getStatus())) {
-                log.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
+                ErrorLog.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
                 //有历史版本
                 if (heraAction.getHistoryId() != null) {
                     HeraJobHistory jobHistory = jobHistoryService.findById(heraAction.getHistoryId());
@@ -138,8 +138,8 @@ public class JobHandler extends AbstractHandler {
                             e.printStackTrace();
                         }
                         //TODO  未测试
-                    } else if (heraJobHistory != null && heraJobHistory.getStatusEnum().equals(StatusEnum.FAILED) &&
-                            heraJobHistory.getIllustrate().equals(LogConstant.WORK_DISCONNECT_LOG)) {
+                    } else if (heraJobHistory != null && StatusEnum.FAILED.equals(heraJobHistory.getStatusEnum()) &&
+                            LogConstant.WORK_DISCONNECT_LOG.equals(heraJobHistory.getIllustrate())) {
                         try {
                             JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
                             heraJobHistory.setIllustrate(LogConstant.WORK_DISCONNECT_LOG);
@@ -154,7 +154,7 @@ public class JobHandler extends AbstractHandler {
 
                     HeraJobHistory heraJobHistory = HeraJobHistory.builder()
                             .jobId(heraAction.getJobId())
-                            .actionId(heraAction.getId())
+                            .actionId(heraAction.getId().toString())
                             .triggerType(TriggerTypeEnum.MANUAL_RECOVER.getId())
                             .illustrate(LogConstant.SERVER_START_JOB_LOG)
                             .log(LogConstant.SERVER_START_JOB_LOG)
@@ -179,7 +179,7 @@ public class JobHandler extends AbstractHandler {
             } catch (Exception e) {
                 if (e instanceof SchedulerException) {
                     heraActionVo.setAuto(false);
-                    log.error("create job quartz schedule error");
+                    ErrorLog.error("create job quartz schedule error");
                 }
                 throw new RuntimeException(e);
             }
@@ -225,12 +225,12 @@ public class JobHandler extends AbstractHandler {
                         String date = simpleDateFormat.format(new Date(Long.valueOf(dependencies.get(key))));
                         if (!now.equals(date)) {
                             jobStatus.getReadyDependency().remove(key);
-                            log.info("remove overwrite dependency");
+                            ScheduleLog.info("remove overwrite dependency");
                         }
                     }
                 }
             }
-            log.info("received a success dependency job with actionId = " + jobId);
+            ScheduleLog.info("received a success dependency job with actionId = " + jobId);
             jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
             heraJobActionService.updateStatus(jobStatus);
         }
@@ -242,10 +242,10 @@ public class JobHandler extends AbstractHandler {
             }
         }
         if (allComplete) {
-            log.info("JobId:" + jobId + " all dependency jobs is ready,run!");
+            ScheduleLog.info("JobId:" + jobId + " all dependency jobs is ready,run!");
             startNewJob(event.getTriggerType(), heraActionVo);
         } else {
-            log.info("some of dependency is not ready, waiting");
+            ScheduleLog.info("some of dependency is not ready, waiting");
         }
     }
 
@@ -264,50 +264,14 @@ public class JobHandler extends AbstractHandler {
         if (historyVo.getStatusEnum() == StatusEnum.FAILED) {
             HeraJobFailedEvent jobFailedEvent = new HeraJobFailedEvent(heraActionVo.getId(), triggerType, historyVo);
             masterContext.getDispatcher().forwardEvent(jobFailedEvent);
-            log.info("job execute error, dispatch job failed event");
+            ScheduleLog.info("job execute error, dispatch job failed event");
         }
     }
 
 
     private void handleFailedEvent(HeraJobFailedEvent event) {
-        HeraActionVo heraActionVo = cache.getHeraActionVo();
-        if (heraActionVo == null) {
-            autoRecovery();
-            return;
-        }
-        if (!heraActionVo.getAuto()) {
-            return;
-        }
-        if (heraActionVo.getAuto() && event.getActionId().equals(actionId)) {
-            try {
-                HeraJobMonitor monitor = heraJobMonitorService.findByJobId(Integer.parseInt(heraActionVo.getJobId()));
-                if (monitor == null) {
-                    log.info("任务无监控人：{}", heraActionVo.getJobId());
-                } else {
+        //处理任务失败的事件
 
-                    String ids = monitor.getUserIds();
-                    String[] id = ids.split(",");
-
-                    String[] emails = new String[id.length];
-                    int index = 0;
-                    for (String anId : id) {
-                        if (StringUtils.isBlank(anId)) {
-                            continue;
-                        }
-                        HeraUser user = heraUserService.findById(HeraUser.builder().id(Integer.parseInt(anId)).build());
-                        if (user != null && user.getEmail() != null) {
-                            emails[index++] = user.getEmail();
-                        }
-                    }
-                    emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
-
-                }
-
-            } catch (MessagingException e) {
-                e.printStackTrace();
-                log.error("发送邮件失败");
-            }
-        }
     }
 
     /**
@@ -349,6 +313,7 @@ public class JobHandler extends AbstractHandler {
         if (heraActionVo == null) {
             masterContext.getDispatcher().removeJobHandler(this);
             destroy();
+            ScheduleLog.info("heraAction 为空， 删除{}", actionId);
             return;
         }
         //自动调度关闭
@@ -395,7 +360,7 @@ public class JobHandler extends AbstractHandler {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
 
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
-                    if (Long.parseLong(actionId) < Long.parseLong( DateUtil.getNowStringForAction())) {
+                    if (Long.parseLong(actionId) < Long.parseLong(ActionUtil.getCurrActionVersion())) {
                         HeraJobHistory history = HeraJobHistory.builder()
                                 .illustrate(LogConstant.LOST_JOB_LOG)
                                 .actionId(heraActionVo.getId())
@@ -407,7 +372,7 @@ public class JobHandler extends AbstractHandler {
                                 .build();
                         masterContext.getHeraJobHistoryService().insert(history);
                         master.run(BeanConvertUtils.convert(history));
-                        log.info("lost job, start schedule :{}", actionId);
+                        ScheduleLog.info("lost job, start schedule :{}", actionId);
                     }
                 }
             }
@@ -422,7 +387,7 @@ public class JobHandler extends AbstractHandler {
      */
 
     private void createScheduleJob(Dispatcher dispatcher, HeraActionVo heraActionVo) throws SchedulerException {
-        if (!DateUtil.isNow(actionId)) {
+        if (!ActionUtil.isCurrActionVersion(actionId)) {
             return;
         }
         JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
@@ -433,7 +398,7 @@ public class JobHandler extends AbstractHandler {
             CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression().trim());
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, Constants.HERA_GROUP).withSchedule(scheduleBuilder).build();
             masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
-            log.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
+            ScheduleLog.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
         }
     }
 

@@ -1,9 +1,14 @@
 package com.dfire.controller;
 
-import com.dfire.common.service.HeraUserService;
-import com.dfire.core.netty.master.MasterContext;
-import com.dfire.core.queue.JobElement;
+import com.dfire.common.entity.HeraHostRelation;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.entity.model.TableResponse;
+import com.dfire.common.entity.vo.HeraActionVo;
+import com.dfire.common.service.HeraHostRelationService;
+import com.dfire.common.service.HeraJobActionService;
+import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.logs.ErrorLog;
 import com.dfire.monitor.service.JobManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.WebAsyncTask;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -22,45 +27,101 @@ import java.util.Queue;
  * @desc 系统管理
  */
 @Controller
-public class SystemManageController {
+public class SystemManageController extends BaseHeraController {
 
     @Autowired
-    HeraUserService heraUserService;
+    private JobManageService jobManageService;
 
     @Autowired
-    MasterContext masterContext;
+    private HeraJobActionService heraJobActionService;
 
     @Autowired
-    JobManageService jobManageService;
+    private HeraHostRelationService heraHostRelationService;
 
-    @RequestMapping("userManage")
+    @Autowired
+    private WorkClient workClient;
+
+    @RequestMapping("/userManage")
     public String userManage() {
-        return "systemManage/userManage.index";
+        if (checkAdmin()) {
+            return "systemManage/userManage.index";
+        }
+        return "home";
     }
 
-    @RequestMapping("hostGroupManage")
+    @RequestMapping("/workManage")
+    public String workManage() {
+        if (checkAdmin()) {
+            return "systemManage/workManage.index";
+        }
+        return "home";
+    }
+
+    @RequestMapping("/hostGroupManage")
     public String hostGroupManage() {
-        return "systemManage/hostGroupManage.index";
+        if (checkAdmin()) {
+            return "systemManage/hostGroupManage.index";
+        }
+        return "home";
     }
 
-    @RequestMapping("jobDetail")
+    @RequestMapping("/jobDetail")
     public String jobManage() {
         return "jobManage/jobDetail.index";
     }
 
-    @RequestMapping("jobDag")
+    @RequestMapping("/jobDag")
     public String jobDag() {
         return "jobManage/jobDag.index";
     }
 
-    @RequestMapping("/getTaskQueueStatus")
-    @ResponseBody
-    public Map getTaskQueueStatus() {
-        Map<String, Queue<JobElement>> res = new HashMap<>(4);
-        res.put("schedule", masterContext.getScheduleQueue());
-        return res;
+    @RequestMapping("/machineInfo")
+    public String machineInfo() {
+        return "machineInfo";
     }
 
+    @RequestMapping(value = "/workManage/list", method = RequestMethod.GET)
+    @ResponseBody
+    public TableResponse<List<HeraHostRelation>> workManageList() {
+        List<HeraHostRelation> hostRelations = heraHostRelationService.getAll();
+        if (hostRelations == null) {
+            return new TableResponse<>(-1, "查询失败");
+        }
+        return new TableResponse<>(hostRelations.size(), 0, hostRelations);
+    }
+
+    @RequestMapping(value = "/workManage/add", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse workManageAdd(HeraHostRelation heraHostRelation) {
+        int insert = heraHostRelationService.insert(heraHostRelation);
+        if (insert > 0) {
+            return new JsonResponse(true, "插入成功");
+        }
+        return new JsonResponse(false, "插入失败");
+
+    }
+
+    @RequestMapping(value = "/workManage/del", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse workManageDel(Integer id) {
+        int delete = heraHostRelationService.delete(id);
+        if (delete > 0) {
+            return new JsonResponse(true, "删除成功");
+        }
+        return new JsonResponse(false, "删除失败");
+
+    }
+
+    @RequestMapping(value = "/workManage/update", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse workManageUpdate(HeraHostRelation heraHostRelation) {
+        int update = heraHostRelationService.update(heraHostRelation);
+        if (update > 0) {
+            return new JsonResponse(true, "更新成功");
+        }
+        return new JsonResponse(false, "更新失败");
+
+    }
 
     /**
      * 任务管理页面今日任务详情
@@ -107,6 +168,74 @@ public class SystemManageController {
     @ResponseBody
     public JsonResponse findAllJobStatusDetail() {
         return jobManageService.findAllJobStatusDetail();
+    }
+
+    /**
+     * 今日所有任务状态明细，线形图初始化
+     *
+     * @return
+     */
+    @RequestMapping(value = "/homePage/getJobQueueInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public WebAsyncTask getJobQueueInfo() {
+
+        return new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
+            try {
+                return workClient.getJobQueueInfoFromWeb();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+    }
+
+    /**
+     * 今日所有任务状态明细，线形图初始化
+     *
+     * @return
+     */
+    @RequestMapping(value = "/homePage/getNotRunJob", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse getNotRunJob() {
+        List<HeraActionVo> scheduleJob = heraJobActionService.getNotRunScheduleJob();
+        return new JsonResponse(true, "查询成功", scheduleJob);
+    }
+
+    /**
+     * 今日所有任务状态明细，线形图初始化
+     *
+     * @return
+     */
+    @RequestMapping(value = "/homePage/getFailJob", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse getScheduleFailJob() {
+        List<HeraActionVo> failedJob = heraJobActionService.getFailedJob();
+        return new JsonResponse(true, "查询成功", failedJob);
+    }
+
+    @RequestMapping(value = "/homePage/getAllWorkInfo", method = RequestMethod.GET)
+    @ResponseBody
+    public WebAsyncTask getAllWorkInfo() {
+
+        WebAsyncTask webAsyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> workClient.getAllWorkInfo());
+
+        webAsyncTask.onTimeout(() -> {
+            ErrorLog.error("获取work信息超时");
+            return null;
+        });
+        return webAsyncTask;
+    }
+
+
+    @RequestMapping(value = "/isAdmin", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse isAdmin() {
+        boolean isAdmin = checkAdmin();
+        return new JsonResponse(true, isAdmin ? "是" : "否", isAdmin);
+    }
+
+    private boolean checkAdmin() {
+        return getOwner().equals(HeraGlobalEnvironment.getAdmin());
     }
 
 

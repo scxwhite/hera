@@ -51,6 +51,7 @@ public class BeanConvertUtils {
         heraJobHistoryVo.setProperties(StringUtil.convertStringToMap(heraJobHistory.getProperties()));
         heraJobHistoryVo.setStatusEnum(StatusEnum.parse(heraJobHistory.getStatus()));
         heraJobHistoryVo.setTriggerType(TriggerTypeEnum.parser(heraJobHistory.getTriggerType()));
+        heraJobHistoryVo.setHostGroupId(heraJobHistory.getHostGroupId());
         return heraJobHistoryVo;
 
     }
@@ -169,7 +170,7 @@ public class BeanConvertUtils {
     public static Tuple<HeraActionVo, JobStatus> convert(HeraAction action) {
         HeraActionVo heraActionVo = transform(action);
         JobStatus jobStatus = JobStatus.builder().build();
-        jobStatus.setActionId(action.getId());
+        jobStatus.setActionId(action.getId().toString());
         jobStatus.setHistoryId(action.getHistoryId());
         jobStatus.setStatus(StatusEnum.parse(action.getStatus()));
         jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()));
@@ -199,6 +200,7 @@ public class BeanConvertUtils {
         heraActionVo.setConfigs(StringUtil.convertStringToMap(action.getConfigs()));
         heraActionVo.setRunType(JobRunTypeEnum.parser(action.getRunType()));
         heraActionVo.setScheduleType(JobScheduleTypeEnum.parser(action.getScheduleType()));
+        heraActionVo.setId(String.valueOf(action.getId()));
         if (action.getAuto().equals(auto)) {
             heraActionVo.setAuto(true);
         } else {
@@ -214,9 +216,11 @@ public class BeanConvertUtils {
             return heraAction;
         }
 
-        heraAction.setId(jobStatus.getActionId());
+        heraAction.setId(Long.parseLong(jobStatus.getActionId()));
         heraAction.setStatus(jobStatus.getStatus() == null ? null : jobStatus.getStatus().toString());
         heraAction.setHistoryId(jobStatus.getHistoryId());
+        heraAction.setStartTime(jobStatus.getStartTime());
+        heraAction.setLastEndTime(jobStatus.getEndTime());
         heraAction.setReadyDependency(StringUtil.convertMapToString(jobStatus.getReadyDependency()));
         return heraAction;
     }
@@ -243,7 +247,6 @@ public class BeanConvertUtils {
             return heraGroupVo;
         }
         BeanUtils.copyProperties(heraGroup, heraGroupVo);
-        heraGroupVo.setConfigs(new HashMap<>(1));
         heraGroupVo.setConfigs(StringUtil.convertStringToMap(heraGroup.getConfigs()));
         heraGroupVo.setResources(new ArrayList<>());
         if (heraGroup.getResources() != null) {

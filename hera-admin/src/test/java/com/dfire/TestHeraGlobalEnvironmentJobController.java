@@ -20,6 +20,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.mail.MessagingException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -73,16 +75,6 @@ public class TestHeraGlobalEnvironmentJobController {
 
     @Test
     public void sendEmail() {
-        try {
-
-            String [] emails = new String[3];
-            emails[0] = "suchengxiang1241@dingtalk.com";
-            emails[1] = "xiaosuda@2dfire.com";
-            emails[2] = "1142819049@qq.com";
-            emailService.sendEmail("hera任务失败了", "任务Id :", emails);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
 
     }
 

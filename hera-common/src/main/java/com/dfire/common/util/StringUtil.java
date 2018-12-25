@@ -6,15 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPathException;
 import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.Processor;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.StringUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -22,7 +20,6 @@ import java.util.Map;
  * @desc 字符串处理工具类
  */
 
-@Slf4j
 public class StringUtil {
 
     /**
@@ -38,7 +35,7 @@ public class StringUtil {
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            log.error("MD5 错误");
+            ErrorLog.error("MD5 错误");
         }
         md.update(sourceStr.getBytes());
         byte b[] = md.digest();
@@ -69,8 +66,9 @@ public class StringUtil {
         try {
             jsonObject = JSONObject.parseObject(config);
         } catch (JSONPathException e) {
+            e.printStackTrace();
         }
-        Map<String, String> map = new HashMap<>(jsonObject.size());
+        Map<String, String> map = new TreeMap<>();
         for (Object key : jsonObject.keySet()) {
             map.put(key.toString(), jsonObject.getString(key.toString()));
         }
@@ -174,6 +172,4 @@ public class StringUtil {
         }
         return resource;
     }
-
-
 }

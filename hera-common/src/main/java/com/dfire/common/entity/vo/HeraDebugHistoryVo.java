@@ -15,15 +15,17 @@ import java.util.Date;
  * @time: Created in 下午12:05 2018/5/16
  * @desc
  */
+
 @Builder
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class HeraDebugHistoryVo {
 
     private String id;
 
-    private String fileId;
+    private Integer fileId;
 
     private String startTime;
 

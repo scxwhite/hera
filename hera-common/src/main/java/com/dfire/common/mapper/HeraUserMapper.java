@@ -2,7 +2,7 @@ package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraUser;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectInLangDriver;
+import com.dfire.common.mybatis.HeraListInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
@@ -46,7 +46,7 @@ public interface HeraUserMapper {
     HeraUser getByName(HeraUser heraUser);
 
     @Select("select * from hera_user where id in (#{list})")
-    @Lang(HeraSelectInLangDriver.class)
+    @Lang(HeraListInLangDriver.class)
     List<HeraUser> findByIds(@Param("list") List<Integer> list);
 
     @Update("update hera_user set is_effective = #{isEffective} where id = #{id}")

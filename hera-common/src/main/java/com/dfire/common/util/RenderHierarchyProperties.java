@@ -1,7 +1,7 @@
 package com.dfire.common.util;
 
 import com.dfire.common.constants.TimeFormatConstant;
-import lombok.extern.slf4j.Slf4j;
+import com.dfire.logs.ErrorLog;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
  * @time: Created in 15:40 2018/3/22
  * @desc 层次结构属性解析，hera时间配置解析
  */
-@Slf4j
 public class RenderHierarchyProperties extends HierarchyProperties {
 
     private HierarchyProperties properties;
@@ -26,7 +25,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
         try {
             Velocity.init();
         } catch (Exception e) {
-            log.error("velocity init fail", e);
+            ErrorLog.error("velocity init fail", e);
         }
     }
 
@@ -55,11 +54,11 @@ public class RenderHierarchyProperties extends HierarchyProperties {
                 context.put("zdt", new HeraDateTool(new Date()));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
-                    log.error("render fail with target:" + m);
+                    ErrorLog.error("render fail with target:" + m);
                     break;
                 }
             } catch (Exception e) {
-                log.error("zdt render error", e);
+                ErrorLog.error("zdt render error", e);
                 break;
             }
             template = template.replace(m, sw.toString());
@@ -87,11 +86,11 @@ public class RenderHierarchyProperties extends HierarchyProperties {
                 context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
-                    log.error("render fail with target:" + m);
+                    ErrorLog.error("render fail with target:" + m);
                     break;
                 }
             } catch (Exception e) {
-                log.error("zdt render error", e);
+                ErrorLog.error("zdt render error", e);
                 break;
             }
             template = template.replace(m, sw.toString());
@@ -152,7 +151,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
 
     @Override
     public List<String> getHierarchyProperty(String key) {
-        List<String> result = properties.getHierarchyProperty(key).stream().map(s -> render(s)).collect(Collectors.toList());
+        List<String> result = properties.getHierarchyProperty(key).stream().map(RenderHierarchyProperties::render).collect(Collectors.toList());
         return result;
     }
 
@@ -163,10 +162,4 @@ public class RenderHierarchyProperties extends HierarchyProperties {
         return result;
     }
 
-    @Override
-    public Map<String, String> getAllProperties(String dateString) {
-        Map<String, String> map = properties.getAllProperties();
-        Map<String, String> result = map.keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s), dateString), (t, k) -> k));
-        return result;
-    }
 }
