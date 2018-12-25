@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -17,7 +17,6 @@ import java.util.Date;
  */
 
 @Builder
-@AllArgsConstructor
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
