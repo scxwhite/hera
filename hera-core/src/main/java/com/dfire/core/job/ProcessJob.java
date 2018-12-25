@@ -5,6 +5,7 @@ import com.dfire.common.constants.Constants;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.exception.HeraCaughtExceptionHandler;
+import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
 
 import java.io.*;
@@ -229,7 +230,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 }
             } catch (Exception e) {
                 exitCode = Constants.LOG_EXIT_CODE;
-                log(e);
+                HeraLog.error("接受日志异常:{}", e);
                 log(threadName + ": 接收日志出错，退出日志接收");
             } finally {
                 latch.countDown();
