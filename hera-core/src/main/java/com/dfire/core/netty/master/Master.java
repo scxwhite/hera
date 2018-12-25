@@ -643,11 +643,13 @@ public class Master {
                 }
             }
         }
+        int insertSize = insertActionList.size();
+
         batchInsertList(insertActionList, actionMap, nowAction);
 
-        if (notGenerate.size() > 0 && retryCount < maxRetryCount) {
+        if (notGenerate.size() > 0 && retryCount < maxRetryCount && insertSize > 0) {
             generateDependJobAction(jobList, actionMap, retryCount, nowAction, ids);
-        } else if (retryCount == maxRetryCount && notGenerate.size() > 0) {
+        } else if (notGenerate.size() > 0 && (insertSize == 0 || retryCount == maxRetryCount)) {
             ScheduleLog.warn("未找到版本的ID:{}, 未找到版本个数:{} , 重试次数:{}", JSONObject.toJSONString(notGenerate), notGenerate.size(), retryCount);
         }
     }
