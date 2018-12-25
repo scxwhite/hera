@@ -1,6 +1,7 @@
 package com.dfire.core.netty.master;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
 import com.dfire.common.constants.RunningJobKeyConstant;
@@ -537,7 +538,9 @@ public class Master {
      */
     public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount, Long nowAction, Set<Integer> ids) {
         retryCount++;
-        int noCompleteCount = 0, retryId = -1;
+        //最大递归次数
+        int maxRetryCount = 80;
+        List<Integer> notGenerate = new ArrayList<>();
         List<HeraAction> insertActionList = new ArrayList<>();
         for (HeraJob heraJob : jobList) {
             //依赖任务生成版本
@@ -597,8 +600,7 @@ public class Master {
                     }
                     //新加任务 可能无版本
                     if (!isComplete) {
-                        noCompleteCount++;
-                        retryId = heraJob.getId();
+                        notGenerate.add(heraJob.getId());
                     } else {
                         List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
 
@@ -636,19 +638,19 @@ public class Master {
                                 insertActionList.add(actionNew);
                                 ids.add(heraJob.getId());
                             }
-
                         }
                     }
-
                 }
             }
         }
+        int insertSize = insertActionList.size();
+
         batchInsertList(insertActionList, actionMap, nowAction);
 
-        if (noCompleteCount > 0 && retryCount < 40) {
+        if (notGenerate.size() > 0 && retryCount < maxRetryCount && insertSize > 0) {
             generateDependJobAction(jobList, actionMap, retryCount, nowAction, ids);
-        } else if (retryCount == 40 && noCompleteCount > 0) {
-            ScheduleLog.warn("重试ID:{}, 未找到版本个数:{} , 重试次数:{}", retryId, noCompleteCount, retryCount);
+        } else if (notGenerate.size() > 0 && (insertSize == 0 || retryCount == maxRetryCount)) {
+            ScheduleLog.warn("未找到版本的ID:{}, 未找到版本个数:{} , 重试次数:{}", JSONObject.toJSONString(notGenerate), notGenerate.size(), retryCount);
         }
     }
 
@@ -921,7 +923,7 @@ public class Master {
      * 开发中心脚本执行逻辑
      *
      * @param selectWork 所选机器
-     * @param debugId      debugId
+     * @param debugId    debugId
      */
     private void runDebugJob(MasterWorkHolder selectWork, String debugId) {
         final MasterWorkHolder workHolder = selectWork;

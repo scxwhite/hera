@@ -27,8 +27,7 @@ import java.util.concurrent.ExecutionException;
  * @desc 系统管理
  */
 @Controller
-public class SystemManageController {
-
+public class SystemManageController extends BaseHeraController {
 
     @Autowired
     private JobManageService jobManageService;
@@ -44,17 +43,26 @@ public class SystemManageController {
 
     @RequestMapping("/userManage")
     public String userManage() {
-        return "systemManage/userManage.index";
+        if (checkAdmin()) {
+            return "systemManage/userManage.index";
+        }
+        return "home";
     }
 
     @RequestMapping("/workManage")
     public String workManage() {
-        return "systemManage/workManage.index";
+        if (checkAdmin()) {
+            return "systemManage/workManage.index";
+        }
+        return "home";
     }
 
     @RequestMapping("/hostGroupManage")
     public String hostGroupManage() {
-        return "systemManage/hostGroupManage.index";
+        if (checkAdmin()) {
+            return "systemManage/hostGroupManage.index";
+        }
+        return "home";
     }
 
     @RequestMapping("/jobDetail")
@@ -103,6 +111,7 @@ public class SystemManageController {
         return new JsonResponse(false, "删除失败");
 
     }
+
     @RequestMapping(value = "/workManage/update", method = RequestMethod.POST)
     @ResponseBody
     public JsonResponse workManageUpdate(HeraHostRelation heraHostRelation) {
@@ -113,6 +122,7 @@ public class SystemManageController {
         return new JsonResponse(false, "更新失败");
 
     }
+
     /**
      * 任务管理页面今日任务详情
      *
@@ -215,5 +225,18 @@ public class SystemManageController {
         });
         return webAsyncTask;
     }
+
+
+    @RequestMapping(value = "/isAdmin", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse isAdmin() {
+        boolean isAdmin = checkAdmin();
+        return new JsonResponse(true, isAdmin ? "是" : "否", isAdmin);
+    }
+
+    private boolean checkAdmin() {
+        return getOwner().equals(HeraGlobalEnvironment.getAdmin());
+    }
+
 
 }
