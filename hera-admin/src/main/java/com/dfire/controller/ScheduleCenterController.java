@@ -275,6 +275,9 @@ public class ScheduleCenterController extends BaseHeraController {
         heraJobHistoryService.insert(actionHistory);
         heraAction.setScript(heraJob.getScript());
         heraAction.setHistoryId(actionHistory.getId());
+        heraAction.setConfigs(configs);
+        heraAction.setAuto(heraJob.getAuto());
+        heraAction.setHostGroupId(heraJob.getHostGroupId());
         heraJobActionService.update(heraAction);
 
         WebAsyncTask<RestfulResponse> webAsyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
