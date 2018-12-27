@@ -85,7 +85,13 @@ public class DagLoopUtil {
         hasLoop = true;
     }
 
+
+    /**
+     * 列出整个任务链路图
+     * @return
+     */
     public String getLoop() {
+        //TODO （最高根据topSort的结果 获得成环的那些节点(in[o] > 0的点)  直接返回即可）
         topSort();
         StringBuilder sb = new StringBuilder();
         boolean[] vis = new boolean[edgeSize];

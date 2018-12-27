@@ -46,10 +46,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
 
@@ -617,7 +614,6 @@ public class Master {
                                 actionNew.setJobDependencies(heraJob.getDependencies());
                                 actionNew.setJobId(heraJob.getId());
                                 actionNew.setAuto(heraJob.getAuto());
-                                actionNew.setGmtModified(new Date());
                                 actionNew.setHostGroupId(heraJob.getHostGroupId());
                                 insertActionList.add(actionNew);
                                 ids.add(heraJob.getId());
