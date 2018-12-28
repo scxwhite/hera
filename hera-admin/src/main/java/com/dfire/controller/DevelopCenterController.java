@@ -58,7 +58,13 @@ public class DevelopCenterController extends BaseHeraController {
     @RequestMapping(value = "/addFile", method = RequestMethod.GET)
     @ResponseBody
     public Integer addFileAndFolder(HeraFile heraFile) {
-        heraFile.setOwner(getOwner());
+        Integer parent = heraFile.getParent();
+        HeraFile parentFile = heraFileService.findById(parent);
+        if (Constants.FILE_ALL_NAME.equals(parentFile.getOwner())) {
+            heraFile.setOwner(Constants.FILE_ALL_NAME);
+        } else {
+            heraFile.setOwner(getOwner());
+        }
         heraFile.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
         return heraFileService.insert(heraFile);
     }
@@ -93,6 +99,8 @@ public class DevelopCenterController extends BaseHeraController {
     @ResponseBody
     public WebAsyncTask<JsonResponse> debug(@RequestBody HeraFile heraFile) {
 
+
+        String owner = getOwner();
         return new WebAsyncTask<>(10000, () -> {
             Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
@@ -103,12 +111,11 @@ public class DevelopCenterController extends BaseHeraController {
             String runType;
             file.setContent(heraFile.getContent());
             heraFileService.updateContent(heraFile);
-
             HeraDebugHistory history = HeraDebugHistory.builder()
                     .fileId(file.getId())
                     .script(heraFile.getContent())
                     .startTime(new Date())
-                    .owner(file.getOwner())
+                    .owner(Constants.FILE_ALL_NAME.equals(file.getOwner()) ? owner : file.getOwner())
                     .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnvironment.defaultWorkerGroup : file.getHostGroupId())
                     .build();
             int suffixIndex = name.lastIndexOf(Constants.POINT);
