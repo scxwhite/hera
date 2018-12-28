@@ -1,4 +1,4 @@
-$(function () {
+layui.use("layer", function () {
     $('#home').addClass('active menu-open');
     $('#home').removeClass('menu-closed');
     var option = {

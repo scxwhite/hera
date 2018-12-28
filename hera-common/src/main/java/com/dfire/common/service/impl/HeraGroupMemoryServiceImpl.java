@@ -25,6 +25,9 @@ public class HeraGroupMemoryServiceImpl extends HeraGroupServiceImpl {
 
     private Map<Integer, HeraGroup> getMemoryJob() {
         Judge newJudge = heraGroupMapper.selectTableInfo();
+        if (newJudge.getMaxId() == null || newJudge.getLastModified() == null || newJudge.getCount() == null) {
+            return new HashMap<>(0);
+        }
         if (judge == null || !newJudge.getCount().equals(judge.getCount()) || !newJudge.getLastModified().equals(judge.getLastModified()) || !newJudge.getMaxId().equals(judge.getMaxId())) {
             synchronized (lock) {
                 if (judge == null || !newJudge.getCount().equals(judge.getCount()) || !newJudge.getLastModified().equals(judge.getLastModified()) || !newJudge.getMaxId().equals(judge.getMaxId())) {

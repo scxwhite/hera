@@ -22,6 +22,9 @@ public class HeraFileMemoryServiceImpl extends HeraFileServiceImpl {
 
     private Map<Integer, HeraFile> getMemoryJob() {
         Judge newJudge = heraFileMapper.selectTableInfo();
+        if (newJudge.getMaxId() == null || newJudge.getLastModified() == null || newJudge.getCount() == null) {
+            return new HashMap<>(0);
+        }
         if (judge == null || !newJudge.getCount().equals(judge.getCount()) || !newJudge.getLastModified().equals(judge.getLastModified()) || !newJudge.getMaxId().equals(judge.getMaxId())) {
             synchronized (this) {
                 if (judge == null || !newJudge.getCount().equals(judge.getCount()) || !newJudge.getLastModified().equals(judge.getLastModified()) || !newJudge.getMaxId().equals(judge.getMaxId())) {
