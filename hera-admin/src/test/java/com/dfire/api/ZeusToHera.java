@@ -98,6 +98,66 @@ public class ZeusToHera {
 
 
     @Test
+    public void fix3() throws SQLException {
+        String sql = "select * from hera_file";
+        PreparedStatement statement = heraConnection.prepareStatement(sql);
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            Integer parent = resultSet.getInt("parent");
+            Integer id = resultSet.getInt("id");
+
+
+            PreparedStatement fileStatement = heraConnection.prepareStatement("select * from hera_file where id = ?");
+            fileStatement.setInt(1, parent);
+
+            ResultSet query = fileStatement.executeQuery();
+
+            if (!query.next()) {
+                PreparedStatement prepareStatement = heraConnection.prepareStatement("update hera_file set parent = 2 where id =?");
+                prepareStatement.setInt(1, id);
+                System.out.println(prepareStatement.executeUpdate());
+            }
+
+        }
+    }
+
+
+    /**
+     * 线上初始化专用
+     *
+     * @throws SQLException
+     */
+    @Test
+    public void initPubDoc() throws SQLException {
+
+        String sql = "select id from hera_file where name=?";
+        PreparedStatement statement = heraConnection.prepareStatement(sql);
+        statement.setString(1, "共享文档");
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            Integer id = resultSet.getInt("id");
+            cycleUpdate(id);
+            PreparedStatement prepareStatement = heraConnection.prepareStatement("update hera_file set parent = 2 where id =?");
+            prepareStatement.setInt(1, id);
+            prepareStatement.executeUpdate();
+        }
+    }
+
+    private void cycleUpdate(Integer id) throws SQLException {
+        PreparedStatement prepareStatement = heraConnection.prepareStatement("select id from hera_file where parent = ?");
+        prepareStatement.setInt(1, id);
+        ResultSet query = prepareStatement.executeQuery();
+        while (query.next()) {
+            Integer newId = query.getInt("id");
+            PreparedStatement updateStatement = heraConnection.prepareStatement("update hera_file set owner = \"all\" where id = ?");
+            updateStatement.setInt(1, newId);
+            System.out.println(updateStatement.executeUpdate());
+            cycleUpdate(newId);
+        }
+
+    }
+
+    @Test
     public void fix() throws SQLException {
         PreparedStatement statement = heraConnection.prepareStatement("select job_id,run_type from hera_action where id < 201812160000000000 and id >= 201812150000000000");
 

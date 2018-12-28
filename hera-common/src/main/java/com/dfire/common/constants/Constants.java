@@ -88,5 +88,7 @@ public class Constants {
 
     public final static String LOG_SPLIT = "<br><br>";
 
+    public final static String FILE_ALL_NAME = "all";
+
 
 }

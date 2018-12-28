@@ -7,7 +7,6 @@ import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
-import com.dfire.common.vo.RestfulResponse;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.protocol.JobExecuteKind;
@@ -59,7 +58,13 @@ public class DevelopCenterController extends BaseHeraController {
     @RequestMapping(value = "/addFile", method = RequestMethod.GET)
     @ResponseBody
     public Integer addFileAndFolder(HeraFile heraFile) {
-        heraFile.setOwner(getOwner());
+        Integer parent = heraFile.getParent();
+        HeraFile parentFile = heraFileService.findById(parent);
+        if (Constants.FILE_ALL_NAME.equals(parentFile.getOwner())) {
+            heraFile.setOwner(Constants.FILE_ALL_NAME);
+        } else {
+            heraFile.setOwner(getOwner());
+        }
         heraFile.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
         return heraFileService.insert(heraFile);
     }
@@ -94,6 +99,8 @@ public class DevelopCenterController extends BaseHeraController {
     @ResponseBody
     public WebAsyncTask<JsonResponse> debug(@RequestBody HeraFile heraFile) {
 
+
+        String owner = getOwner();
         return new WebAsyncTask<>(10000, () -> {
             Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
@@ -104,12 +111,11 @@ public class DevelopCenterController extends BaseHeraController {
             String runType;
             file.setContent(heraFile.getContent());
             heraFileService.updateContent(heraFile);
-
             HeraDebugHistory history = HeraDebugHistory.builder()
                     .fileId(file.getId())
                     .script(heraFile.getContent())
                     .startTime(new Date())
-                    .owner(file.getOwner())
+                    .owner(Constants.FILE_ALL_NAME.equals(file.getOwner()) ? owner : file.getOwner())
                     .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnvironment.defaultWorkerGroup : file.getHostGroupId())
                     .build();
             int suffixIndex = name.lastIndexOf(Constants.POINT);
@@ -211,8 +217,9 @@ public class DevelopCenterController extends BaseHeraController {
 
     @RequestMapping(value = "saveScript", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse saveScript(@RequestBody HeraFile heraFile) {
-        int result = heraFileService.updateContent(heraFile);
-        return RestfulResponse.builder().success(true).msg("保存成功").results(result).build();
+    public JsonResponse saveScript(@RequestBody HeraFile heraFile) {
+        boolean result = heraFileService.updateContent(heraFile) > 0;
+
+        return new JsonResponse(result, result ? "保存成功" : "保存失败");
     }
 }

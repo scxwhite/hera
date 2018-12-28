@@ -1,5 +1,6 @@
 package com.dfire.common.service.impl;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.mapper.HeraFileMapper;
@@ -71,16 +72,17 @@ public class HeraFileServiceImpl implements HeraFileService {
     @Override
     public List<HeraFileTreeNodeVo> buildFileTree(String user) {
         List<HeraFile> fileVoList = this.findByOwner(user);
-        return fileVoList.stream().map(file -> {
+        fileVoList.addAll(this.findByOwner(Constants.FILE_ALL_NAME));
+        return fileVoList.parallelStream().map(file -> {
             HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
             if (file.getParent() == null) {
                 vo.setParent(-1);
             } else {
                 vo.setParent(file.getParent());
             }
-            if (file.getType().equals("1")) {
+            if (file.getType() == 1) {
                 vo.setIsParent(true);
-            } else if (file.getType().equals("2")) {
+            } else if (file.getType() == 2) {
                 vo.setIsParent(false);
             }
             return vo;
@@ -95,6 +97,11 @@ public class HeraFileServiceImpl implements HeraFileService {
     @Override
     public int updateFileName(HeraFile heraFile) {
         return heraFileMapper.updateFileName(heraFile);
+    }
+
+    @Override
+    public HeraFile findDocByOwner(String owner) {
+        return heraFileMapper.findDocByOwner(owner);
     }
 
 }

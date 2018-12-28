@@ -34,7 +34,7 @@ public class HeraFile {
     /**
      * 1 文件夹 2 文件
      */
-    private String type;
+    private Integer type;
 
     private Date gmtCreate;
 

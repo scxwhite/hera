@@ -396,7 +396,7 @@ layui.use("layer", function () {
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
-                layer.msg(data.msg);
+                layer.msg(data.message);
             },
             error: function (err) {
                 layer.msg(err);
@@ -771,7 +771,7 @@ layui.use("layer", function () {
                     contentType: "application/json",
                     dataType: "json",
                     success: function (data) {
-                        console.log(data.msg)
+                        console.log(data.message)
                     },
                     error: function (err) {
                         layer.msg(err);

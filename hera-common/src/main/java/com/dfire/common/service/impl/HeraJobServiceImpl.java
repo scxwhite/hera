@@ -4,13 +4,13 @@ import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraGroup;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.mapper.HeraJobMapper;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.DagLoopUtil;
-import com.dfire.common.vo.RestfulResponse;
 import com.dfire.graph.DirectionGraph;
 import com.dfire.graph.Edge;
 import com.dfire.graph.GraphNode;
@@ -135,9 +135,10 @@ public class HeraJobServiceImpl implements HeraJobService {
 
     /**
      * 递归获得父目录
-     * @param myGroupSet    结果集
-     * @param group         当前group
-     * @param allGroupMap   所有组map
+     *
+     * @param myGroupSet  结果集
+     * @param group       当前group
+     * @param allGroupMap 所有组map
      */
     private void getPathGroup(Set<HeraJobTreeNodeVo> myGroupSet, String group, Map<String, HeraJobTreeNodeVo> allGroupMap) {
         HeraJobTreeNodeVo groupNode = allGroupMap.get(group);
@@ -155,7 +156,7 @@ public class HeraJobServiceImpl implements HeraJobService {
     }
 
     @Override
-    public RestfulResponse checkAndUpdate(HeraJob heraJob) {
+    public JsonResponse checkAndUpdate(HeraJob heraJob) {
 
         if (StringUtils.isNotBlank(heraJob.getDependencies())) {
             HeraJob job = this.findById(heraJob.getId());
@@ -180,16 +181,16 @@ public class HeraJobServiceImpl implements HeraJobService {
                 });
 
                 if (dagLoopUtil.isLoop()) {
-                    return new RestfulResponse(false, "出现环形依赖，请检测依赖关系:" + dagLoopUtil.getLoop());
+                    return new JsonResponse(false, "出现环形依赖，请检测依赖关系:" + dagLoopUtil.getLoop());
                 }
             }
         }
 
         Integer line = this.update(heraJob);
         if (line == null || line == 0) {
-            return new RestfulResponse(false, "更新失败，请联系管理员");
+            return new JsonResponse(false, "更新失败，请联系管理员");
         }
-        return new RestfulResponse(true, "更新成功");
+        return new JsonResponse(true, "更新成功");
 
 
     }

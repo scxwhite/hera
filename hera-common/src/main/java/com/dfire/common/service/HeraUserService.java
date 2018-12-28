@@ -14,19 +14,19 @@ public interface HeraUserService {
 
     int insert(HeraUser heraUser);
 
-    int delete(String id);
+    int delete(Integer id);
 
     int update(HeraUser heraUser);
 
     List<HeraUser> getAll();
 
-    HeraUser findById(HeraUser heraUser);
+    HeraUser findById(Integer id);
 
     HeraUser findByName(String name);
 
     List<HeraUser> findByIds(List<Integer> list);
 
-    int updateEffective(String id, String effective);
+    int updateEffective(Integer id, String effective);
 
     List<HeraUser> findAllName();
 }

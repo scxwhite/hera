@@ -72,6 +72,9 @@ public class ActionUtil {
     }
 
     public static String getDefaultFormatterDate(Date date) {
+        if (date == null) {
+            return "";
+        }
         SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_FORMAT);
         return sdf.format(date);
     }

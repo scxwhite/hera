@@ -1,15 +1,14 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraFile;
-
-import java.util.List;
-
 import com.dfire.common.entity.Judge;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraListInLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -61,4 +60,7 @@ public interface HeraFileMapper {
 
     @Select("select count(*) count, max(id) maxId, max(gmt_modified) lastModified from hera_file")
     Judge selectTableInfo();
+
+    @Select("select * from hera_file where owner = #{owner} and name='个人文档'")
+    HeraFile findDocByOwner(String owner);
 }

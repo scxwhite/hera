@@ -179,7 +179,7 @@ function uploadFile() {
         msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！"
     }).on("fileuploaded", function (event, data) {
         var response = data.response;
-        var message = response.msg;
+        var message = response.message;
         console.log(data)
         var msg = "<b>" +"hadoop文件使用路径: "+ message + "</b>"
         if (response.success == false) {

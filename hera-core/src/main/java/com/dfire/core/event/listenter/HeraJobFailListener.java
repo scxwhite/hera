@@ -77,7 +77,7 @@ public class HeraJobFailListener extends AbstractListener {
                             if (StringUtils.isBlank(anId)) {
                                 continue;
                             }
-                            HeraUser user = heraUserService.findById(HeraUser.builder().id(Integer.parseInt(anId)).build());
+                            HeraUser user = heraUserService.findById(Integer.parseInt(anId));
                             if (user != null && user.getEmail() != null) {
                                 emails.add(user.getEmail());
                             }

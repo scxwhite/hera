@@ -1,7 +1,7 @@
 package com.dfire.controller;
 
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.util.HierarchyProperties;
-import com.dfire.common.vo.RestfulResponse;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.job.UploadLocalFileJob;
 import com.dfire.logs.HeraLog;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -36,13 +35,13 @@ public class UploadResourceController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    public RestfulResponse uploadResource(MultipartHttpServletRequest request) {
+    public JsonResponse uploadResource(MultipartHttpServletRequest request) {
         Map<String, MultipartFile> fileMap = request.getFileMap();
         String fileName;
         String newFilePath;
         String newFileName = "";
         File file = null;
-        RestfulResponse restfulResponse = RestfulResponse.builder().build();
+        JsonResponse jsonResponse = new JsonResponse();
         try {
             try {
                 for (String key : fileMap.keySet()) {
@@ -65,18 +64,18 @@ public class UploadResourceController {
             HeraLog.info("controller upload file command {}", uploadJob.getCommandList().toString());
             int exitCode = uploadJob.run();
             if (exitCode == 0) {
-                restfulResponse.setSuccess(true);
-                restfulResponse.setMsg("/hera/hdfs-upload-dir/" + newFileName);
-                return restfulResponse;
+                jsonResponse.setSuccess(true);
+                jsonResponse.setMessage("/hera/hdfs-upload-dir/" + newFileName);
+                return jsonResponse;
             } else {
-                restfulResponse.setSuccess(false);
-                restfulResponse.setMsg("upload file error");
+                jsonResponse.setSuccess(false);
+                jsonResponse.setMessage("upload file error");
             }
         } catch (Exception e) {
             e.printStackTrace();
             HeraLog.info("upload file error", e);
 
         }
-        return restfulResponse;
+        return jsonResponse;
     }
 }

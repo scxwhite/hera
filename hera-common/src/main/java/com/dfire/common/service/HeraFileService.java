@@ -35,5 +35,7 @@ public interface HeraFileService {
 
     int updateFileName(HeraFile heraFile);
 
+    HeraFile findDocByOwner(String owner);
+
 
 }

@@ -60,14 +60,14 @@ layui.use("layer",function(){
                 if (data.success === true) {
                     layer.open({
                         title: '系统提示',
-                        content: data.msg,
+                        content: data.message,
                         icon: '1'
                     });
                     registerForm[0].reset();
                 } else {
                     layer.open({
                         title: '系统提示',
-                        content: (data.msg || "注册失败"),
+                        content: (data.message || "注册失败"),
                         icon: '2'
                     });
                 }
@@ -113,12 +113,9 @@ layui.use("layer",function(){
         },
         submitHandler: function () {
             $.post($("#baseURl").attr("href") + "/loginCheck", $("#loginForm").serialize(), function (data) {
-                if (data.code == "200") {
-                    layer.msg("登录成功");
+                layer.msg(data.message);
+                if (data.success === true) {
                     window.location.href =  base_url + "/home";;
-                } else {
-                    layer.msg("用户名或密码错误");
-
                 }
             });
         }

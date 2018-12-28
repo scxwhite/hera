@@ -1,8 +1,8 @@
 package com.dfire.controller;
 
 import com.dfire.common.entity.HeraHostGroup;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.service.HeraHostGroupService;
-import com.dfire.common.vo.RestfulResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,15 +31,15 @@ public class HostGroupController {
 
     @RequestMapping(value = "saveOrUpdate", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse saveOrUpdate(HeraHostGroup heraHostGroup) {
+    public JsonResponse saveOrUpdate(HeraHostGroup heraHostGroup) {
         heraHostGroupService.insert(heraHostGroup);
-        return RestfulResponse.builder().build();
+        return new JsonResponse();
     }
 
     @RequestMapping(value = "del", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse del(Integer id) {
+    public JsonResponse del(Integer id) {
         int res = heraHostGroupService.delete(id);
-        return new RestfulResponse(res > 0, res > 0 ? "删除成功" : "删除失败");
+        return new JsonResponse(res > 0, res > 0 ? "删除成功" : "删除失败");
     }
 }

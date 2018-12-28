@@ -23,13 +23,13 @@ public interface HeraUserMapper {
     int insert(HeraUser heraUser);
 
     @Delete("delete from hera_user where id = #{id}")
-    int delete(@Param("id") String id);
+    int delete(@Param("id") Integer id);
 
     @Update("update hera_user (#{heraUser}) where id = #{id}")
     @Lang(HeraUpdateLangDriver.class)
     int update(HeraUser heraUser);
 
-    @Select("select * from hera_user")
+    @Select("select id,email,name,phone,is_effective,description,gmt_create,gmt_modified from hera_user")
     @Lang(HeraSelectLangDriver.class)
     List<HeraUser> getAll();
 
@@ -39,7 +39,7 @@ public interface HeraUserMapper {
 
     @Select("select * from hera_user where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
-    HeraUser findById(HeraUser heraUser);
+    HeraUser findById(Integer id);
 
     @Select("SELECT * FROM hera_user WHERE NAME = #{name}")
     @Lang(HeraUpdateLangDriver.class)
@@ -50,7 +50,7 @@ public interface HeraUserMapper {
     List<HeraUser> findByIds(@Param("list") List<Integer> list);
 
     @Update("update hera_user set is_effective = #{isEffective} where id = #{id}")
-    int updateEffective(@Param("id") String id, @Param("isEffective") String effective);
+    int updateEffective(@Param("id") Integer id, @Param("isEffective") String effective);
 
 
 }
