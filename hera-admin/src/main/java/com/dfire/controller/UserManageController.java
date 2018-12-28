@@ -95,7 +95,7 @@ public class UserManageController {
                 if (user != null) {
                     HeraFile file = heraFileService.findDocByOwner(user.getName());
                     if (file == null) {
-                        Integer integer = heraFileService.insert(HeraFile.builder().name("个人文档").owner(user.getName()).type(1).build());
+                        Integer integer = heraFileService.insert(HeraFile.builder().name("个人文档").gmtModified(new Date()).gmtCreate(new Date()).owner(user.getName()).type(1).build());
                         if (integer <= 0) {
                             return new JsonResponse(false, "新增文档失败，请联系管理员");
                         }

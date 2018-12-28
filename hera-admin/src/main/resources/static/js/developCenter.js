@@ -1058,7 +1058,11 @@ function setScript(id) {
     setDefaultSelectNode(id);
     var parameter = "id=" + id;
     var url = base_url + "/developCenter/find.do";
-    var result = getDataByGet(url, parameter)
+    var result = getDataByGet(url, parameter);
+
+    if (result.name == null) {
+        return ;
+    }
 
     var name = result['name'];
     if (name.indexOf('hive') != -1) {

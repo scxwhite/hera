@@ -72,7 +72,6 @@ public class DevelopCenterController extends BaseHeraController {
     @RequestMapping(value = "/find", method = RequestMethod.GET)
     @ResponseBody
     public HeraFile getHeraFile(HeraFile heraFile) {
-        heraFile.setOwner(getOwner());
         return heraFileService.findById(heraFile.getId());
     }
 
