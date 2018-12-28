@@ -3,7 +3,6 @@ package com.dfire.common.service;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
-import com.dfire.common.vo.RestfulResponse;
 import com.dfire.graph.JobRelation;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public interface HeraJobService {
 
     boolean changeSwitch(Integer id);
 
-    RestfulResponse checkAndUpdate(HeraJob heraJob);
+    JsonResponse checkAndUpdate(HeraJob heraJob);
 
     Map<String, Object> findCurrentJobGraph(int jobId, Integer type);
 

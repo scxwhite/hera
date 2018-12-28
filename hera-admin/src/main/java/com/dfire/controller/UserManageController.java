@@ -1,19 +1,23 @@
 package com.dfire.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.HeraUser;
+import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.entity.model.TableResponse;
+import com.dfire.common.entity.vo.HeraUserVo;
+import com.dfire.common.service.HeraFileService;
 import com.dfire.common.service.HeraUserService;
-import com.dfire.common.vo.RestfulResponse;
+import com.dfire.common.util.ActionUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -27,66 +31,84 @@ public class UserManageController {
     @Autowired
     private HeraUserService heraUserService;
 
+    @Autowired
+    @Qualifier("heraFileMemoryService")
+    private HeraFileService heraFileService;
 
-    @RequestMapping(value = "/initUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/initUser", method = RequestMethod.GET)
     @ResponseBody
-    public List<HeraUser> initUser() {
-        return heraUserService.getAll();
+    public TableResponse<List<HeraUserVo>> initUser() {
+        List<HeraUser> users = heraUserService.getAll();
+        List<HeraUserVo> res;
+        if (users != null) {
+            res = new ArrayList<>(users.size());
+            for (HeraUser user : users) {
+                HeraUserVo userVo = new HeraUserVo();
+                BeanUtils.copyProperties(user, userVo);
+                userVo.setCreateTime(ActionUtil.getDefaultFormatterDate(user.getGmtCreate()));
+                userVo.setOpTime(ActionUtil.getDefaultFormatterDate(user.getGmtModified()));
+                res.add(userVo);
+            }
+        } else {
+            res = new ArrayList<>(0);
+        }
+        res.sort(Comparator.comparing(HeraUserVo::getCreateTime));
+        return new TableResponse<>(res.size(), 0, res);
     }
 
     @RequestMapping(value = "/editUser", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse editUser(@RequestBody HeraUser user) {
+    public JsonResponse editUser(@RequestBody HeraUser user) {
         int result = heraUserService.update(user);
-        RestfulResponse restfulResponse = RestfulResponse
-                .builder()
-                .build();
-        if (result > 0) {
-            restfulResponse.setMsg("更新成功");
-            restfulResponse.setCode(result);
-            restfulResponse.setSuccess(true);
+        JsonResponse jsonResponse = new JsonResponse(true, "更新成功");
+        if (result <= 0) {
+            jsonResponse.setMessage("更新失败");
+            jsonResponse.setSuccess(false);
         }
-        return restfulResponse;
+        return jsonResponse;
     }
 
     /**
      * operateType: 1,执行删除操作，2，执行审核通过操作，3，执行审核拒绝操作
      *
-     * @param param
      * @return
      */
 
     @RequestMapping(value = "/operateUser", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse operateUser(@RequestBody String param) {
-        JSONObject jsonObject = JSONObject.parseObject(param);
-        String id = (String) jsonObject.get("id");
-        String operateType = (String) jsonObject.get("operateType");
+    public JsonResponse operateUser(Integer id, String operateType) {
 
-        RestfulResponse response = RestfulResponse.builder().build();
+        JsonResponse response = new JsonResponse(false, "更新失败");
         int result;
 
         OperateTypeEnum operateTypeEnum = OperateTypeEnum.parse(operateType);
         if (operateTypeEnum == OperateTypeEnum.Delete) {
             result = heraUserService.delete(id);
             if (result > 0) {
-                response.setMsg("删除成功");
-                response.setCode(result);
+                response.setMessage("删除成功");
                 response.setSuccess(true);
             }
         } else if (operateTypeEnum == OperateTypeEnum.Approve) {
             result = heraUserService.updateEffective(id, "1");
             if (result > 0) {
-                response.setMsg("审核通过");
-                response.setCode(result);
+                HeraUser user = heraUserService.findById(id);
+                if (user != null) {
+                    HeraFile file = heraFileService.findDocByOwner(user.getName());
+                    if (file == null) {
+                        Integer integer = heraFileService.insert(HeraFile.builder().name("个人文档").owner(user.getName()).type(1).build());
+                        if (integer <= 0) {
+                            return new JsonResponse(false, "新增文档失败，请联系管理员");
+                        }
+                    }
+                }
+                response.setMessage("审核通过");
                 response.setSuccess(true);
             }
         } else if (operateTypeEnum == OperateTypeEnum.Refuse) {
             result = heraUserService.updateEffective(id, "0");
             if (result > 0) {
-                response.setMsg("审核拒绝");
-                response.setCode(result);
-                response.setSuccess(false);
+                response.setMessage("审核拒绝");
+                response.setSuccess(true);
             }
         }
         return response;

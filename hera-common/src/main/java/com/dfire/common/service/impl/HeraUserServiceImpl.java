@@ -26,7 +26,7 @@ public class HeraUserServiceImpl implements HeraUserService {
     }
 
     @Override
-    public int delete(String id) {
+    public int delete(Integer id) {
         return heraUserMapper.delete(id);
     }
 
@@ -42,8 +42,8 @@ public class HeraUserServiceImpl implements HeraUserService {
     }
 
     @Override
-    public HeraUser findById(HeraUser heraUser) {
-        return heraUserMapper.findById(heraUser);
+    public HeraUser findById(Integer id) {
+        return heraUserMapper.findById(id);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class HeraUserServiceImpl implements HeraUserService {
     }
 
     @Override
-    public int updateEffective(String id, String effective) {
+    public int updateEffective(Integer id, String effective) {
         return heraUserMapper.updateEffective(id, effective);
     }
 

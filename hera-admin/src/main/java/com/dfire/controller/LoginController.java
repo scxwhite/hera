@@ -2,10 +2,9 @@ package com.dfire.controller;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraUser;
-import com.dfire.common.enums.HttpCode;
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.StringUtil;
-import com.dfire.common.vo.RestfulResponse;
 import com.dfire.config.UnCheckLogin;
 import com.dfire.config.WebSecurityConfig;
 import com.dfire.core.util.JwtUtils;
@@ -50,39 +49,41 @@ public class LoginController {
 
     @RequestMapping(value = "/loginCheck", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse toLogin(String userName, String password, HttpServletResponse response) {
+    public JsonResponse toLogin(String userName, String password, HttpServletResponse response) {
         HeraUser user = heraUserService.findByName(userName);
 
         if (user == null) {
-            return RestfulResponse.builder().code(HttpCode.USER_NOT_LOGIN.getCode()).build();
+            return new JsonResponse(false, "用户不存在");
         }
+
         String pwd = user.getPassword();
-        RestfulResponse restfulResponse = new RestfulResponse();
         if (!StringUtils.isEmpty(password)) {
             password = StringUtil.EncoderByMd5(password);
             if (pwd.equals(password)) {
-                restfulResponse.setHttpCode(HttpCode.REQUEST_SUCCESS);
+                if (user.getIsEffective() == 0) {
+                    return new JsonResponse(false, "审核未通过,请联系管理员");
+                }
                 Cookie cookie = new Cookie(WebSecurityConfig.TOKEN_NAME, JwtUtils.createToken(userName, String.valueOf(user.getId())));
                 cookie.setMaxAge(Constants.LOGIN_TIME_OUT);
                 response.addCookie(cookie);
+                return new JsonResponse(true, "登录成功");
             } else {
-                restfulResponse.setHttpCode(HttpCode.USER_NOT_LOGIN);
+                return new JsonResponse(false, "密码错误，请重新输入");
             }
         }
-        return restfulResponse;
+        return new JsonResponse(false, "请输入密码");
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
     @UnCheckLogin
-    public RestfulResponse register(HeraUser user) {
+    public JsonResponse register(HeraUser user) {
         HeraUser check = heraUserService.findByName(user.getName());
-        check.setIsEffective(0);
         if (check != null) {
-            return new RestfulResponse(false, "用户名已存在");
+            return new JsonResponse(false, "用户名已存在，请更换用户名");
         }
         int res = heraUserService.insert(user);
-        return new RestfulResponse(res > 0, res > 0 ? "注册成功，等待管理员审核" : "注册失败,请联系管理员");
+        return new JsonResponse(res > 0, res > 0 ? "注册成功，等待管理员审核" : "注册失败,请联系管理员");
     }
 
 

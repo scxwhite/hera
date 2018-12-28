@@ -53,4 +53,5 @@ public class HeraFileMemoryServiceImpl extends HeraFileServiceImpl {
     public List<HeraFile> findByParent(Integer parent) {
         return getMemoryJob().values().stream().filter(heraFile -> heraFile.getParent().equals(parent)).collect(Collectors.toList());
     }
+
 }

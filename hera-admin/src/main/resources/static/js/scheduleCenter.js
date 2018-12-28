@@ -217,10 +217,10 @@ layui.use(['table'], function () {
                 success: function (data) {
                     $('#addGroupModal').modal('hide');
                     if (data.success == true) {
-                        setCurrentId(data.msg);
+                        setCurrentId(data.message);
                         location.reload(false);
                     } else {
-                        alert(data.msg);
+                        alert(data.message);
                     }
                 }
             })
@@ -258,9 +258,9 @@ layui.use(['table'], function () {
                 type: "post",
                 success: function (data) {
                     if (data.success === false) {
-                        layer.msg(data.msg);
+                        layer.msg(data.message);
                     } else {
-                        layer.msg(data.msg);
+                        layer.msg(data.message);
                         leftClick();
                     }
                 }
@@ -281,7 +281,7 @@ layui.use(['table'], function () {
                     success: function (data) {
                         leftClick();
                         if (data.success == false) {
-                            alert(data.msg);
+                            alert(data.message);
                         }
                     }
                 })
@@ -295,7 +295,7 @@ layui.use(['table'], function () {
                     success: function (data) {
                         leftClick();
                         if (data.success == false) {
-                            alert(data.msg);
+                            alert(data.message);
 
                         }
                     }
@@ -332,10 +332,10 @@ layui.use(['table'], function () {
                 },
                 success: function (data) {
                     if (data.success == true) {
-                        setCurrentId(data.msg)
+                        setCurrentId(data.message)
                         location.reload(false);
                     } else {
-                        alert(data.msg);
+                        alert(data.message);
                     }
 
                 }
@@ -527,7 +527,7 @@ layui.use(['table'], function () {
                     type: "post",
                     success: function (data) {
                         if (data.success == false) {
-                            layer.msg(data.msg)
+                            layer.msg(data.message)
                         } else {
                             leftClick();
                         }
@@ -541,7 +541,7 @@ layui.use(['table'], function () {
                     type: "post",
                     success: function (data) {
                         if (data.success == false) {
-                            layer.msg(data.msg);
+                            layer.msg(data.message);
                         } else {
                             leftClick();
                         }
@@ -575,7 +575,7 @@ layui.use(['table'], function () {
                     },
                     type: "post",
                     success: function (data) {
-                        layer.msg(data.msg);
+                        layer.msg(data.message);
                         if (data.success == true) {
                             let parent = selected.getParentNode();
                             focusTree.removeNode(selected);
@@ -809,7 +809,7 @@ layui.use(['table'], function () {
                     if (res.success === true) {
                         layer.msg('执行成功');
                     } else {
-                        layer.msg(res.msg)
+                        layer.msg(res.message)
                     }
                 },
                 error: function (err) {
@@ -1165,6 +1165,9 @@ layui.use(['table'], function () {
                     where: {
                         groupId: focusId,
                         type: groupTaskType
+                    },
+                    page: {
+                        curr: 1 //重新从第 1 页开始
                     }
                 });
             }

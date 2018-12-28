@@ -121,7 +121,7 @@
                     id: id
                 },
                 success: function (data) {
-                    alert(data.msg);
+                    alert(data.message);
                     $('#selectTable').bootstrapTable('refresh');
                 }
             })

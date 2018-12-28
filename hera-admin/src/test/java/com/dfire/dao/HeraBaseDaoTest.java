@@ -3,13 +3,11 @@ package com.dfire.dao;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
-import com.dfire.common.entity.vo.HeraJobTreeNodeVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.service.*;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
-import com.dfire.common.vo.RestfulResponse;
 import com.dfire.core.lock.DistributeLock;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
@@ -197,7 +195,7 @@ public class HeraBaseDaoTest {
         List<HeraFile> pList = heraFileService.findByOwner("biadmin");
         System.out.println(pList.size());
 
-        heraFile = HeraFile.builder().owner("test").name("test").type("2").build();
+        heraFile = HeraFile.builder().owner("test").name("test").type(2).build();
         heraFileService.insert(heraFile);
 
     }

@@ -165,7 +165,7 @@ function addMouseOver(div) {
                                 createItem(value);
                                 $this.val('');
                             } else {
-                                layer.msg(data.msg)
+                                layer.msg(data.message)
                             }
 
                         }

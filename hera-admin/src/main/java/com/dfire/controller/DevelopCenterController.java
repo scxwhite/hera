@@ -7,7 +7,6 @@ import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
-import com.dfire.common.vo.RestfulResponse;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.protocol.JobExecuteKind;
@@ -211,8 +210,9 @@ public class DevelopCenterController extends BaseHeraController {
 
     @RequestMapping(value = "saveScript", method = RequestMethod.POST)
     @ResponseBody
-    public RestfulResponse saveScript(@RequestBody HeraFile heraFile) {
-        int result = heraFileService.updateContent(heraFile);
-        return RestfulResponse.builder().success(true).msg("保存成功").results(result).build();
+    public JsonResponse saveScript(@RequestBody HeraFile heraFile) {
+        boolean result = heraFileService.updateContent(heraFile) > 0;
+
+        return new JsonResponse(result, result ? "保存成功" : "保存失败");
     }
 }
