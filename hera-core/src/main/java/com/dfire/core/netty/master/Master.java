@@ -46,10 +46,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
 
@@ -553,33 +550,17 @@ public class Master {
                     for (String dependentId : dependencies) {
                         Integer dpId = Integer.parseInt(dependentId);
                         List<HeraAction> dependActionList = new ArrayList<>();
-
                         for (Map.Entry<Long, HeraAction> entry : actionMap.entrySet()) {
                             if (entry.getValue().getJobId().equals(dpId)) {
                                 dependActionList.add(entry.getValue());
                             }
                         }
                         dependenciesMap.put(dependentId, dependActionList);
-                        if (retryCount > 20) {
-                            if (!heraJob.getConfigs().contains(RunningJobKeyConstant.DEPENDENCY_CYCLE_VALUE)) {
-                                if (dependenciesMap.get(dependentId).size() == 0) {
-                                    HeraAction lostJobAction = masterContext.getHeraJobActionService().findLatestByJobId(dependentId);
-                                    if (lostJobAction != null) {
-                                        actionMap.put(lostJobAction.getId(), lostJobAction);
-                                        dependActionList.add(lostJobAction);
-                                        dependenciesMap.put(dependentId, dependActionList);
-                                    }
-                                } else {
-                                    break;
-                                }
-                            }
-                        }
                     }
 
                     boolean isComplete = true;
 
                     String actionMostDeps = "";
-
 
                     for (String dependency : dependencies) {
                         if (dependenciesMap.get(dependency) == null || dependenciesMap.get(dependency).size() == 0) {
@@ -633,7 +614,6 @@ public class Master {
                                 actionNew.setJobDependencies(heraJob.getDependencies());
                                 actionNew.setJobId(heraJob.getId());
                                 actionNew.setAuto(heraJob.getAuto());
-                                actionNew.setGmtModified(new Date());
                                 actionNew.setHostGroupId(heraJob.getHostGroupId());
                                 insertActionList.add(actionNew);
                                 ids.add(heraJob.getId());
