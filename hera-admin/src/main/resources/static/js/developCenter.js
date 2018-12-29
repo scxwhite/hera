@@ -1,11 +1,11 @@
-var codeMirror, zTree;
+let codeMirror, zTree;
 layui.use("layer", function () {
     $('#developManage').addClass('active');
     /**
      * 开发中心zTree初始化配置
      *
      */
-    var setting = {
+    let setting = {
         view: {
             // addHoverDom:addHoverDom,
             // removeHoverDom: removeHoverDom,
@@ -35,17 +35,17 @@ layui.use("layer", function () {
     };
 
     function add(e) {
-        var isParent = e.data.isParent,
+        let isParent = e.data.isParent,
             nodes = zTree.getSelectedNodes(),
             treeNode = nodes[0];
         hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
+        let selected = zTree.getSelectedNodes()[0];
+        let id = selected['id'];
         addCount++;
         if (e.data.type === 1) {
             //new folder
-            var name = "文件夹" + addCount;
-            var parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
+            let name = "文件夹" + addCount;
+            let parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
             $.ajax({
                 url: base_url + "/developCenter/addFile.do",
                 type: "get",
@@ -71,8 +71,8 @@ layui.use("layer", function () {
             });
         } else if (e.data.type === 2) {
             //new .hive file
-            var name = addCount + ".hive";
-            var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+            let name = addCount + ".hive";
+            let parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
             $.ajax({
                 url: base_url + "/developCenter/addFile.do",
                 type: "get",
@@ -99,8 +99,8 @@ layui.use("layer", function () {
 
         } else if (e.data.type === 3) {
             //new .sh file
-            var name = addCount + ".sh";
-            var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+            let name = addCount + ".sh";
+            let parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
             $.ajax({
                 url: base_url + "/developCenter/addFile.do",
                 type: "get",
@@ -126,8 +126,8 @@ layui.use("layer", function () {
             });
         } else if (e.data.type === 4) {
             //new .spark file
-            var name = addCount + ".spark";
-            var parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+            let name = addCount + ".spark";
+            let parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
             $.ajax({
                 url: base_url + "/developCenter/addFile.do",
                 type: "get",
@@ -166,9 +166,9 @@ layui.use("layer", function () {
             success: function (res) {
                 layer.msg(res);
                 //同步修改codemirror上的tab名
-                var id = treeNode.id;
-                var name = treeNode.name;
-                var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
+                let id = treeNode.id;
+                let name = treeNode.name;
+                let tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
                 tabData = JSON.parse(localStorage.getItem('tabData'));
                 tabObj = $("#tabContainer").tabs({
                     data: tabDetail,
@@ -178,7 +178,7 @@ layui.use("layer", function () {
                 if (isInArray(tabData, tabDetail)) {
                     tabObj = $("#tabContainer").data("tabs").changeText(id, name);
                     //更改localStorage内的值
-                    for (var i = 0; i < tabData.length; i++) {
+                    for (let i = 0; i < tabData.length; i++) {
                         if (tabData[i].id === id) {
                             tabData.splice(i, 1);
                             break;
@@ -228,7 +228,7 @@ layui.use("layer", function () {
                     layer.msg(res);
                     //从localStorage中删除
                     tabData = JSON.parse(localStorage.getItem('tabData'));
-                    for (var i = 0; i < tabData.length; i++) {
+                    for (let i = 0; i < tabData.length; i++) {
                         if (tabData[i].id === treeNode.id) {
                             tabData.splice(i, 1);
                             break;
@@ -253,14 +253,14 @@ layui.use("layer", function () {
     /**
      * zTree 右键菜单初始化数据
      */
-    var rMenu;
+    let rMenu;
 
     /**
      * tab项数据
      *
      * @type {{}}
      */
-    var tabObj = {};
+    let tabObj = {};
 
     /**
      * 存储在localStorage中的数据
@@ -268,35 +268,35 @@ layui.use("layer", function () {
      * @type {Array}
      */
 
-    var tabData = new Array();
-    var logData = new Array();
+    let tabData = new Array();
+    let logData = new Array();
 
     /**
      * 添加的叶子节点个数统计，为重命名统计
      *
      */
-    var addCount = 1;
+    let addCount = 1;
 
-    var zNodes = getDataByPost(base_url + "/developCenter/init.do");
-    var editor = $("#fileScript");
+    let zNodes = getDataByPost(base_url + "/developCenter/init.do");
+    let editor = $("#fileScript");
 
 
     /**
      * 点击脚本的事件
      */
-    var tabContainer = $('#tabContainer');
-    var logTabContainer = $('#rightLogCon');
-    var rightNowLogCon = $('#rightNowLogCon');
-    var rightTimer = null;
-    var debugId;
+    let tabContainer = $('#tabContainer');
+    let logTabContainer = $('#rightLogCon');
+    let rightNowLogCon = $('#rightNowLogCon');
+    let rightTimer = null;
+    let debugId;
 
     function leftClick() {
-        var selected = zTree.getSelectedNodes()[0];
-        var id = selected['id'];
+        let selected = zTree.getSelectedNodes()[0];
+        let id = selected['id'];
         localStorage.setItem("id", id);
-        var parent = selected['parent'];
-        var name = selected['name'];
-        var isParent = selected['isParent'];//true false
+        let parent = selected['parent'];
+        let name = selected['name'];
+        let isParent = selected['isParent'];//true false
         if (isParent == true) {
             $('#devCenter').css('display','none');
             return;
@@ -305,7 +305,7 @@ layui.use("layer", function () {
 
         setScript(id);
 
-        var tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
+        let tabDetail = {id: id, text: name, closeable: true, url: 'hera', select: 0};
         tabData = JSON.parse(localStorage.getItem('tabData'));
         if (isInArray(tabData, tabDetail) === false) {
             tabData.push(tabDetail);
@@ -316,7 +316,7 @@ layui.use("layer", function () {
             });
 
             $("#tabContainer").data("tabs").addTab(tabDetail);
-            var lis = tabContainer.children('ul').children();
+            let lis = tabContainer.children('ul').children();
             tabContainer.tabsLength += lis[lis.length - 1].clientWidth;
             showPrevNext(tabContainer);
         } else {
@@ -341,9 +341,9 @@ layui.use("layer", function () {
      */
 
     $("#logButton").click(function () {
-        var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
+        let targetId = $("#tabContainer").data("tabs").getCurrentTabId();
         $('#debugLogDetailTable').bootstrapTable("destroy");
-        var tableObject = new TableInit(targetId);
+        let tableObject = new TableInit(targetId);
         tableObject.init();
         $("#debugLogDetail").modal('show');
     });
@@ -356,10 +356,10 @@ layui.use("layer", function () {
 
     //显示日志
     function showLogs() {
-        var targetId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var parameter = {fileId: targetId};
-        var actionRow = new Object();
-        var timerHandler = null;
+        let targetId = $("#tabContainer").data("tabs").getCurrentTabId();
+        let parameter = {fileId: targetId};
+        let actionRow = new Object();
+        let timerHandler = null;
         actionRow.id = targetId;
         $.ajax({
             url: base_url + "/developCenter/getLog.do",
@@ -370,7 +370,7 @@ layui.use("layer", function () {
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
-                var logArea = $('#outputContainer');
+                let logArea = $('#outputContainer');
                 logArea.innerHTML = data.log;
                 logArea.scrollTop(logArea.prop("scrollHeight"), 200);
                 actionRow.log = data.log;
@@ -383,13 +383,13 @@ layui.use("layer", function () {
      *
      */
     $("#saveScript").click(function () {
-        var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var fileScript = codeMirror.getValue();
-        var parameter = {
+        let fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+        let fileScript = codeMirror.getValue();
+        let parameter = {
             id: fileId,
             content: fileScript
         };
-        var url = base_url + "/developCenter/saveScript.do";
+        let url = base_url + "/developCenter/saveScript.do";
 
         $.ajax({
             url: url,
@@ -413,13 +413,13 @@ layui.use("layer", function () {
      * @param treeNode
      * @constructor
      */
-    var rightClickNode;
+    let rightClickNode;
 
     function OnRightClick(event, treeId, treeNode) {
         zTree.selectNode(treeNode);
         rightClickNode = treeNode;
-        var selected = zTree.getSelectedNodes()[0];
-        var isParent = selected['isParent'];//true false
+        let selected = zTree.getSelectedNodes()[0];
+        let isParent = selected['isParent'];//true false
         if (isParent == true) {
             showRMenu("root", event.clientX, event.clientY);
         } else if (isParent == false) {
@@ -483,8 +483,8 @@ layui.use("layer", function () {
     //重命名
     $("#rename").bind('click', {node: rightClickNode}, function () {
         hideRMenu();
-        var selected = zTree.getSelectedNodes()[0];
-        var treeObj = $.fn.zTree.getZTreeObj("documentTree");
+        let selected = zTree.getSelectedNodes()[0];
+        let treeObj = $.fn.zTree.getZTreeObj("documentTree");
         treeObj.editName(selected);
     });
 
@@ -494,12 +494,12 @@ layui.use("layer", function () {
      */
     function fixIcon() {
         $.fn.zTree.init($("#documentTree"), setting, zNodes);
-        var treeObj = $.fn.zTree.getZTreeObj("documentTree");
+        let treeObj = $.fn.zTree.getZTreeObj("documentTree");
         //过滤出属性为true的节点（也可用你自己定义的其他字段来区分，这里通过保存的true或false来区分）
-        var folderNode = treeObj.getNodesByFilter(function (node) {
+        let folderNode = treeObj.getNodesByFilter(function (node) {
             return node.isParent
         });
-        for (var j = 0; j < folderNode.length; j++) {//遍历目录节点，设置isParent属性为true;
+        for (let j = 0; j < folderNode.length; j++) {//遍历目录节点，设置isParent属性为true;
             folderNode[j].isParent = true;
             folderNode[j].directory = 0;
         }
@@ -509,13 +509,13 @@ layui.use("layer", function () {
 
     $("#execute").click(function () {
 
-        var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var fileScript = codeMirror.getValue();
-        var parameter = {
+        let fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+        let fileScript = codeMirror.getValue();
+        let parameter = {
             id: fileId,
             content: fileScript
         };
-        var url = base_url + "/developCenter/debug.do";
+        let url = base_url + "/developCenter/debug.do";
 
         $.ajax({
             url: url,
@@ -536,10 +536,10 @@ layui.use("layer", function () {
     //显示当前日志
     function showRightNowLog(id, debugId) {
         //tab
-        var ul = logTabContainer.children('ul');
+        let ul = logTabContainer.children('ul');
         ul.children().removeClass('active-log');
         ul.prepend("<li class=\"logs-id active-log\">DebugId : " + debugId + "<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
-        var lis = ul.children();
+        let lis = ul.children();
         logTabContainer.tabsLength += lis[lis.length - 1].clientWidth;
         showPrevNext(logTabContainer);
         ul.children('li:first').attr('his-id', debugId);
@@ -547,7 +547,7 @@ layui.use("layer", function () {
         //日志
         rightNowLogCon.children().removeClass('show-right-now-log');
         rightNowLogCon.prepend('<div class=\"right-now-log show-right-now-log \" id=\"log' + debugId + '\"></div>');
-        var timer = setInterval(function () {
+        let timer = setInterval(function () {
             $.ajax({
                 url: base_url + "/developCenter/getLog.do",
                 type: "get",
@@ -573,25 +573,25 @@ layui.use("layer", function () {
 
     //检查localStorage 有则显示日志
     function showStorageLog() {
-        var last;
-        for (var i = 0; i < localStorage.length; i++) {
+        let last;
+        for (let i = 0; i < localStorage.length; i++) {
             if (localStorage.key(i).indexOf('log') !== -1) {
                 last = localStorage.key(i);
-                var key = localStorage.key(i);
-                var ul = logTabContainer.children('ul');
+                let key = localStorage.key(i);
+                let ul = logTabContainer.children('ul');
                 ul.children().removeClass('active-log');
                 ul.prepend("<li class=\"logs-id active-log\">DebugId : " + key.slice(3) + "<span class=\"iconfont close-btn\">&#xe64d;</span></li>");
                 ul.children('li:first').attr('his-id', key.slice(3));
                 showPrevNext(logTabContainer);
                 rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"' + key + '\"></div>');
-                var logArea = $('#' + key);
+                let logArea = $('#' + key);
                 logArea.html(localStorage.getItem(key));
                 if (JSON.parse(localStorage.getItem(key)).success === false) {
                     $('li[his-id=' + key.slice(3) + ']').css('color', 'orangered');
                 }
             }
         }
-        var logArea = $('#' + last);
+        let logArea = $('#' + last);
         logArea.addClass('show-right-now-log');
     }
 
@@ -604,7 +604,7 @@ layui.use("layer", function () {
         debugId = $(this).attr('his-id');
         rightNowLogCon.children().removeClass('show-right-now-log');
         rightNowLogCon.children('#log' + debugId).addClass('show-right-now-log');
-        var storageLog = get('log' + debugId, 1000 * 60 * 60 * 24);
+        let storageLog = get('log' + debugId, 1000 * 60 * 60 * 24);
         if (storageLog) {
             rightNowLogCon.children('#log' + debugId).html(storageLog);
         }
@@ -612,10 +612,10 @@ layui.use("layer", function () {
     //关闭日志
     logTabContainer.on('click', 'span', function (e) {
         e.stopPropagation();
-        var _this = $(this);
-        var li = _this.parent();
-        var width = li.width();
-        var debugId = li.attr('his-id');
+        let _this = $(this);
+        let li = _this.parent();
+        let width = li.width();
+        let debugId = li.attr('his-id');
         $.ajax({
             url: base_url + "/developCenter/getLog.do",
             type: "get",
@@ -645,8 +645,8 @@ layui.use("layer", function () {
             $('.show-right-now-log').prev().addClass('show-right-now-log');
             $('.show-right-now-log:last').remove();
             clearInterval(rightTimer);
-            var url = base_url + "/developCenter/cancelJob.do";
-            var parameter = {id: debugId};
+            let url = base_url + "/developCenter/cancelJob.do";
+            let parameter = {id: debugId};
             $.get(url, parameter, function (data) {
                 layer.msg(data);
             });
@@ -658,14 +658,14 @@ layui.use("layer", function () {
      * 点击执行选中代码执行逻辑
      */
     $("#executeSelector").click(function () {
-        var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
-        var fileScript = codeMirror.getSelection();
-        var parameter = {
+        let fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+        let fileScript = codeMirror.getSelection();
+        let parameter = {
             id: fileId,
             content: fileScript
         };
-        var result = null;
-        var url = base_url + "/developCenter/debugSelectCode.do";
+        let result = null;
+        let url = base_url + "/developCenter/debugSelectCode.do";
 
         $.ajax({
             url: url,
@@ -684,18 +684,18 @@ layui.use("layer", function () {
 
     //封装过期控制代码
     function set(key, value, success) {
-        var curTime = new Date().getTime();
+        let curTime = new Date().getTime();
         localStorage.setItem(key, JSON.stringify({data: value, time: curTime, success: success}));
     }
 
     function get(key, exp) {
-        var data = localStorage.getItem(key);
-        var dataObj = JSON.parse(data);
+        let data = localStorage.getItem(key);
+        let dataObj = JSON.parse(data);
         if (dataObj) {
             if (new Date().getTime() - dataObj.time > exp) {
                 console.log('信息已过期');
             } else {
-                var dataObjDatatoJson = dataObj.data;
+                let dataObjDatatoJson = dataObj.data;
                 return dataObjDatatoJson;
             }
         }
@@ -751,20 +751,20 @@ layui.use("layer", function () {
             }
         });
 
-        var saveTimer;
+        let saveTimer;
         //监听codemirror change事件 实时保存
         codeMirror.on('change', function () {
             if (saveTimer) {
                 clearTimeout(saveTimer);
             }
             saveTimer = setTimeout(function () {
-                var fileId = $("#tabContainer").data("tabs").getCurrentTabId();
-                var fileScript = codeMirror.getValue();
-                var parameter = {
+                let fileId = $("#tabContainer").data("tabs").getCurrentTabId();
+                let fileScript = codeMirror.getValue();
+                let parameter = {
                     id: fileId,
                     content: fileScript
                 };
-                var url = base_url + "/developCenter/saveScript.do";
+                let url = base_url + "/developCenter/saveScript.do";
 
                 $.ajax({
                     url: url,
@@ -782,7 +782,8 @@ layui.use("layer", function () {
             }, 1000);
         });
 
-        var storeData = JSON.parse(localStorage.getItem('tabData'));
+        let storeData = JSON.parse(localStorage.getItem('tabData'));
+        let tabSize = 0;
         if (storeData != null) {
             for (let i = 0; i < storeData.length; i++) {
                 currentId = storeData[i]['id'];
@@ -790,6 +791,7 @@ layui.use("layer", function () {
                     continue;
                 }
 
+                tabSize++;
                 $("#tabContainer").tabs({
                     data: storeData[i],
                     showIndex: 0,
@@ -801,9 +803,14 @@ layui.use("layer", function () {
                     setScript(currentId);
                 }
             }
+
         } else {
-            var tmp = new Array();
+            let tmp = new Array();
             localStorage.setItem("tabData", JSON.stringify(tmp));
+        }
+        if (tabSize === 0) {
+            $('#devCenter').css('display','none');
+
         }
 
         $.each($(".height-self"), function (i, n) {
@@ -826,9 +833,9 @@ layui.use("layer", function () {
     function tabInitLength(tabContainer) {
         tabContainer.tabsLength = 0;
         if (tabContainer.children('ul').length > 0) {
-            var lis = tabContainer.children('ul').children();
+            let lis = tabContainer.children('ul').children();
             //初始tabs width
-            for (var i = 0; i < lis.length; i++) {
+            for (let i = 0; i < lis.length; i++) {
                 tabContainer.tabsLength += lis[i].clientWidth;
             }
         }
@@ -856,8 +863,8 @@ layui.use("layer", function () {
     //单击左右按钮
     $('#prevNextCon').on('click', '.prev-tab', tabContainer, function (e) {
         e.stopPropagation();
-        var ul = tabContainer.children('ul');
-        var positionLeft = ul.position().left;
+        let ul = tabContainer.children('ul');
+        let positionLeft = ul.position().left;
         if (positionLeft < 0) {
             if (-positionLeft + tabContainer.tabContainerWidth > tabContainer.tabsLength + 100) {
                 ul.stop();
@@ -874,8 +881,8 @@ layui.use("layer", function () {
     });
     $('#prevNextCon').on('click', '.next-tab', tabContainer, function (e) {
         e.stopPropagation();
-        var ul = tabContainer.children('ul');
-        var positionLeft = ul.position().left;
+        let ul = tabContainer.children('ul');
+        let positionLeft = ul.position().left;
         if (positionLeft <= 0) {
             ul.animate({
                 left: '+=50px'
@@ -886,9 +893,9 @@ layui.use("layer", function () {
     });
     $('#logContainer').on('click', '.prev-tab', logTabContainer, function (e) {
         e.stopPropagation();
-        var tabContainer = e.data;
-        var ul = tabContainer.children('ul');
-        var positionLeft = ul.position().left;
+        let tabContainer = e.data;
+        let ul = tabContainer.children('ul');
+        let positionLeft = ul.position().left;
         if (positionLeft < 0) {
             if (-positionLeft + tabContainer.tabContainerWidth > tabContainer.tabsLength + 100) {
                 ul.stop();
@@ -905,9 +912,9 @@ layui.use("layer", function () {
     });
     $('#logContainer').on('click', '.next-tab', logTabContainer, function (e) {
         e.stopPropagation();
-        var tabContainer = e.data;
-        var ul = tabContainer.children('ul');
-        var positionLeft = ul.position().left;
+        let tabContainer = e.data;
+        let ul = tabContainer.children('ul');
+        let positionLeft = ul.position().left;
         if (positionLeft <= 0) {
             ul.animate({
                 left: '+=50px'
@@ -916,7 +923,7 @@ layui.use("layer", function () {
             ul.stop();
         }
     });
-    var rightNowLogs = $('#outputContainer');
+    let rightNowLogs = $('#outputContainer');
     rightNowLogs.hide();
     //点击查看日志 显示日志
     $('#showLog').click(function (e) {
@@ -926,13 +933,13 @@ layui.use("layer", function () {
 });
 
 
-var TableInit = function (targetId) {
-    var parameter = {fileId: targetId};
-    var actionRow;
-    var onExpand = -1;
-    var table = $('#debugLogDetailTable');
-    var timerHandler = null;
-    var oTableInit = new Object();
+let TableInit = function (targetId) {
+    let parameter = {fileId: targetId};
+    let actionRow;
+    let onExpand = -1;
+    let table = $('#debugLogDetailTable');
+    let timerHandler = null;
+    let oTableInit = new Object();
 
 
     function debugLog() {
@@ -947,7 +954,7 @@ var TableInit = function (targetId) {
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
-                var logArea = $('#log_' + actionRow.id);
+                let logArea = $('#log_' + actionRow.id);
                 logArea[0].innerHTML = data.log;
                 logArea.scrollTop(logArea.prop("scrollHeight"), 200);
                 actionRow.log = data.log;
@@ -1009,7 +1016,7 @@ var TableInit = function (targetId) {
                     title: "操作",
                     width: "20%",
                     formatter: function (index, row) {
-                        var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
+                        let html = '<a href="javascript:cancelJob(\'' + row['id'] + '\')">取消任务</a>';
                         if (row['status'] == 'running') {
                             return html;
                         }
@@ -1018,8 +1025,8 @@ var TableInit = function (targetId) {
             ],
             detailView: true,
             detailFormatter: function (index, row) {
-                var log = row["log"];
-                var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll;  word-break: break-all; word-wrap:break-word;white-space: pre-line; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
+                let log = row["log"];
+                let html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll;  word-break: break-all; word-wrap:break-word;white-space: pre-line; height:600px;font-family:Microsoft YaHei" id="log_' + row.id + '">'
                     + log +
                     '</div>' + '<form role="form">' + '<div class="form-group">';
                 return html;
@@ -1047,8 +1054,8 @@ var TableInit = function (targetId) {
 
 
 function cancelJob(historyId) {
-    var url = base_url + "/developCenter/cancelJob.do";
-    var parameter = {id: historyId};
+    let url = base_url + "/developCenter/cancelJob.do";
+    let parameter = {id: historyId};
     $.get(url, parameter, function (data) {
         layer.msg(data);
         $('#debugLog [name="refreshLog"]').trigger('click');
@@ -1063,16 +1070,16 @@ function cancelJob(historyId) {
 
 function setScript(id) {
     setDefaultSelectNode(id);
-    var parameter = "id=" + id;
-    var url = base_url + "/developCenter/find.do";
-    var result = getDataByGet(url, parameter);
+    let parameter = "id=" + id;
+    let url = base_url + "/developCenter/find.do";
+    let result = getDataByGet(url, parameter);
 
     if (result.name == null) {
         return ;
     }
 
 
-    var name = result['name'];
+    let name = result['name'];
     if (name.indexOf('hive') != -1) {
         codeMirror.setOption("mode", "text/x-hive");
         console.log("hive")
@@ -1081,7 +1088,7 @@ function setScript(id) {
         console.log("shell")
 
     }
-    var script = result['content'];
+    let script = result['content'];
     if (script == null || script == '') {
         script = '';
     }
