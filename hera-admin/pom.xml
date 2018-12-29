@@ -28,6 +28,7 @@
         <hera.common.version>1.0</hera.common.version>
         <hera.protocol.version>1.0</hera.protocol.version>
         <hera.monitor.version>1.0</hera.monitor.version>
+        <hera.core.version>1.0</hera.core.version>
     </properties>
 
     <dependencies>
@@ -127,7 +128,7 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-core</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${hera.core.version}</version>
         </dependency>
 
         <dependency>

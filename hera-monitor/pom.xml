@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>hera-monitor</artifactId>
-
+    <version>1.0</version>
     <name>hera-monitor</name>
     <url>http://www.example.com</url>
 

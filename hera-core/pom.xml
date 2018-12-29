@@ -13,6 +13,7 @@
     <packaging>jar</packaging>
 
     <name>hera-core</name>
+    <version>1.0</version>
     <description>hera project for Spring Boot</description>
 
     <properties>
