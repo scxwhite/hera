@@ -225,7 +225,10 @@ layui.use("layer", function () {
                     id: treeNode.id
                 },
                 success: function (res) {
-                    layer.msg(res);
+                    layer.msg(res.message);
+                    if (res.success === false) {
+                        return ;
+                    }
                     //从localStorage中删除
                     tabData = JSON.parse(localStorage.getItem('tabData'));
                     for (let i = 0; i < tabData.length; i++) {
