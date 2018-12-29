@@ -785,6 +785,11 @@ layui.use("layer", function () {
         var storeData = JSON.parse(localStorage.getItem('tabData'));
         if (storeData != null) {
             for (let i = 0; i < storeData.length; i++) {
+                currentId = storeData[i]['id'];
+                if (zTree.getNodesByParam("id", currentId).length === 0) {
+                    continue;
+                }
+
                 $("#tabContainer").tabs({
                     data: storeData[i],
                     showIndex: 0,
@@ -792,7 +797,7 @@ layui.use("layer", function () {
                 });
                 $("#tabContainer").data("tabs").addTab(storeData[i]);
                 if (i === storeData.length - 1) {
-                    currentId = storeData[i]['id'];
+
                     setScript(currentId);
                 }
             }
