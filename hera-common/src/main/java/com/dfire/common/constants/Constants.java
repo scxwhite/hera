@@ -24,6 +24,7 @@ public class Constants {
     public final static String STATUS_RUNNING = "running";
 
     public final static String STATUS_SUCCESS = "success";
+
     public final static String STATUS_NONE = "none";
 
     public final static Integer HTML_FONT_SIZE = 1;
@@ -83,14 +84,17 @@ public class Constants {
     public final static String SPARK_SUFFIX = POINT + SPARK_FILE;
 
     public final static String NEW_LINE = "\n";
+
     public final static String HTML_NEW_LINE = "<br>";
 
 
     public final static String LOG_SPLIT = "<br><br>";
 
     public final static String FILE_ALL_NAME = "all";
+
     public final static String FILE_SELF = "个人文档";
-    public final static String FILE_ALL = "公共文档";
+
+    public final static String FILE_ALL = "共享文档";
 
 
 }
