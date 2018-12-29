@@ -5,10 +5,9 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
 
-    <groupId>com.dfire.hera</groupId>
     <artifactId>hera-common</artifactId>
     <packaging>jar</packaging>
     <version>1.0</version>

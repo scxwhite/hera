@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
 
     <artifactId>hera-admin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>hera-admin</name>
@@ -25,6 +25,9 @@
         <springfox.swagger.ui.version>2.7.0</springfox.swagger.ui.version>
         <main-class>com.dfire.AdminBootstrap</main-class>
         <assembly.include.base.directory>true</assembly.include.base.directory>
+        <hera.common.version>1.0</hera.common.version>
+        <hera.protocol.version>1.0</hera.protocol.version>
+        <hera.monitor.version>1.0</hera.monitor.version>
     </properties>
 
     <dependencies>
@@ -118,7 +121,7 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-common</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${hera.common.version}</version>
         </dependency>
 
         <dependency>
@@ -130,7 +133,7 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-monitor</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${hera.monitor.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
         <dependency>
