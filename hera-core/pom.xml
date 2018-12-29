@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
 
     <groupId>com.dfire.hera</groupId>
@@ -21,8 +21,8 @@
         <quartz.version>2.2.1</quartz.version>
         <jwt.version>3.3.0</jwt.version>
         <lang3.version>3.4</lang3.version>
-        <hera.common.version>1.0-SNAPSHOT</hera.common.version>
-        <hera.protocol.version>1.0-SNAPSHOT</hera.protocol.version>
+        <hera.common.version>1.0</hera.common.version>
+        <hera.protocol.version>1.0</hera.protocol.version>
     </properties>
 
     <dependencies>
