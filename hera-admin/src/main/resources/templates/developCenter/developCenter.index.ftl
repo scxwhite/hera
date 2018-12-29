@@ -95,7 +95,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-10 panel panel-primary left-panel">
+                <div class="col-md-10 panel panel-primary left-panel" id="devCenter">
                     <div id="config" class="devStyle">
                         <button id="execute" type="submit" class="btn btn-primary btn-sm">执行</button>
                         <button id="executeSelector" type="submit" class="btn btn-primary btn-sm">执行选中的代码</button>
@@ -110,7 +110,7 @@
                     </div>
                     <div id="tabContainer" class="devStyle"></div>
                     <div class="code-log-con">
-                        <div id="scriptEditor" class="devStyle">
+                        <div id="scriptEditor" class="devStyle" >
                             <textarea id="fileScript" name="editor"></textarea>
                         </div>
                         <div id="logContainer" class="log-container">
