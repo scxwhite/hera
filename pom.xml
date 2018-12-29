@@ -7,7 +7,7 @@
     <groupId>com.dfire.hera</groupId>
     <artifactId>hera</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>1.1</version>
 
     <name>${project.artifactId}</name>
     <description>A Distributed Job Schedule System</description>
