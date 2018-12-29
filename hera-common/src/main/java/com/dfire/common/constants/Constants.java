@@ -89,6 +89,8 @@ public class Constants {
     public final static String LOG_SPLIT = "<br><br>";
 
     public final static String FILE_ALL_NAME = "all";
+    public final static String FILE_SELF = "个人文档";
+    public final static String FILE_ALL = "公共文档";
 
 
 }

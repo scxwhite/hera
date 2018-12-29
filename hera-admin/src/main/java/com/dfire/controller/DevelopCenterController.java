@@ -77,8 +77,15 @@ public class DevelopCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     @ResponseBody
-    public String delete(HeraFile heraFile) {
-        return heraFileService.delete(heraFile.getId()) > 0 ? "删除成功" : "删除失败";
+    public JsonResponse delete(HeraFile heraFile) {
+        HeraFile file = heraFileService.findById(heraFile.getId());
+        if (Constants.FILE_SELF.equals(file.getName())) {
+            return new JsonResponse(false, "无法删除个人文档");
+        } else if (Constants.FILE_ALL.equals(file.getName())) {
+            return new JsonResponse(false, "无法删除共享文档");
+        }
+        boolean res = heraFileService.delete(heraFile.getId()) > 0;
+        return new JsonResponse(res, res ? "删除成功" : "删除失败");
     }
 
     @RequestMapping(value = "/rename", method = RequestMethod.GET)
