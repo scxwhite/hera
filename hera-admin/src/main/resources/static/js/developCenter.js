@@ -298,8 +298,10 @@ layui.use("layer", function () {
         var name = selected['name'];
         var isParent = selected['isParent'];//true false
         if (isParent == true) {
+            $('#devCenter').css('display','none');
             return;
         }
+        $('#devCenter').css('display','block');
 
         setScript(id);
 
@@ -1063,6 +1065,7 @@ function setScript(id) {
     if (result.name == null) {
         return ;
     }
+
 
     var name = result['name'];
     if (name.indexOf('hive') != -1) {
