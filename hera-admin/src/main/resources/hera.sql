@@ -1,18 +1,3 @@
-/*
- Navicat MySQL Data Transfer
-
- Source Server         : 业务线下数据库
- Source Server Type    : MySQL
- Source Server Version : 50723
- Source Host           : common101.my.2dfire-daily.com
- Source Database       : hera
-
- Target Server Type    : MySQL
- Target Server Version : 50723
- File Encoding         : utf-8
-
- Date: 12/21/2018 13:48:35 PM
-*/
 
 
 SET NAMES utf8mb4;
