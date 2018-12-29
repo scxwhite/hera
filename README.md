@@ -1,6 +1,7 @@
 
 
-# 为数据平台打造的任务调度系统
+# 数据平台打造的任务调度系统(HERA)
+[![Build Status](https://travis-ci.org/scxwhite/hera.svg?branch=open-source)](https://travis-ci.org/scxwhite/hera)
 # 介绍文章
 [赫拉(hera)分布式任务调度系统之架构，基本功能(一)](https://blog.csdn.net/su20145104009/article/details/85124746)
 
