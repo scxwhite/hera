@@ -62,6 +62,7 @@ public class HeraJob {
 
     private String resources;
 
+
     private String runType;
 
     private Integer scheduleType;
