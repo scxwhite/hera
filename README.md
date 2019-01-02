@@ -516,6 +516,10 @@ download[hdfs:///hera/hdfs-upload-dir/hera-20181229-110455.sql hera.sql]
 当在开发中心写脚本时，脚本会自动保存。当然也可以通过点击保存脚本进行手动保存。
 
 
+微信交流群
 
-![微信交流群](https://img-blog.csdnimg.cn/20190102152343133.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-![个人微信(失效加我拉你进去)](https://img-blog.csdnimg.cn/20190102172400461.png)
+![微信交流群](http://cloud1.gaitubao.net/FlqqTOjrYn6w2dSNOqGG4KKmtmvX?imageMogr2/quality/90/thumbnail/260x462!)
+
+个人微信(失效加我拉你进去)
+
+![个人微信(失效加我拉你进去)](http://cloud1.gaitubao.net/Fv5SdiIieAqs8Dg7qk4ccw_Ov8gv?imageMogr2/quality/90/thumbnail/288x512!)
