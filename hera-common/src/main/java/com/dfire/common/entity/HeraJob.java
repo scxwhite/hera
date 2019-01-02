@@ -12,7 +12,6 @@ import java.util.Date;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 13:59 2017/12/30
- * @desc
  */
 @Data
 @Builder
