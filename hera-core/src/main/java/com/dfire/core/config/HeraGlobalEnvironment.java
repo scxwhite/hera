@@ -71,6 +71,8 @@ public class HeraGlobalEnvironment {
     private static String sparkExecutorMemory;
     @Getter
     private static String sparkExecutorCores;
+    @Getter
+    private static String hdfsUploadPath;
 
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
@@ -100,6 +102,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.maxCpuLoadPerCore}")
     public void setCpuLoadPerCore(Float maxCpuLoadPerCore) {
         HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+    }
+
+    @Value("${hera.hdfsUploadPath}")
+    public void setHdfsUploadPath(String hdfsUploadPath) {
+        HeraGlobalEnvironment.hdfsUploadPath = hdfsUploadPath;
     }
 
     @Value("${hera.scanRate}")
