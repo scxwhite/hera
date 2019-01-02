@@ -2,6 +2,7 @@ package com.dfire.controller;
 
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.util.HierarchyProperties;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.job.UploadLocalFileJob;
 import com.dfire.logs.HeraLog;
@@ -60,12 +61,12 @@ public class UploadResourceController {
             JobContext jobContext = JobContext.builder().build();
             jobContext.setProperties(new HierarchyProperties(new HashMap<>(16)));
             jobContext.setWorkDir(PATH);
-            UploadLocalFileJob uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), "/hera/hdfs-upload-dir");
+            UploadLocalFileJob uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), HeraGlobalEnvironment.getHdfsUploadPath());
             HeraLog.info("controller upload file command {}", uploadJob.getCommandList().toString());
             int exitCode = uploadJob.run();
             if (exitCode == 0) {
                 jsonResponse.setSuccess(true);
-                jsonResponse.setMessage("/hera/hdfs-upload-dir/" + newFileName);
+                jsonResponse.setMessage(HeraGlobalEnvironment.getHdfsUploadPath() + newFileName);
                 return jsonResponse;
             } else {
                 jsonResponse.setSuccess(false);

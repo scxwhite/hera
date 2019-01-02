@@ -64,7 +64,7 @@ hera:
    perTaskUseMem : 500          # 每个任务使用内存300M
    heartBeat : 3           # 心跳传递时间频率
    downloadDir : /opt/logs/spring-boot
-   hdfsLibPath : /hera/hdfs-upload-dir #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上
+   hdfsUploadPath : /hera/hdfs-upload-dir/ #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上.注意:必须保证启动hera项目的用户是此文件夹的所有者，否则会导致上传错误
    schedule-group : online
    maxParallelNum: 2000
    connectPort : 9887 #netty通信的端口
