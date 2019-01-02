@@ -7,9 +7,7 @@
 
 
 # 交流群
-
-![微信交流群](https://img-blog.csdnimg.cn/20190102152343133.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-![个人微信(失效加我拉你进去)](https://img-blog.csdnimg.cn/20190102172400461.png)
+    见文章末尾
 # 介绍文章
 [赫拉(hera)分布式任务调度系统之架构，基本功能(一)](https://blog.csdn.net/su20145104009/article/details/85124746)
 
@@ -518,3 +516,6 @@ download[hdfs:///hera/hdfs-upload-dir/hera-20181229-110455.sql hera.sql]
 当在开发中心写脚本时，脚本会自动保存。当然也可以通过点击保存脚本进行手动保存。
 
 
+
+![微信交流群](https://img-blog.csdnimg.cn/20190102152343133.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
+![个人微信(失效加我拉你进去)](https://img-blog.csdnimg.cn/20190102172400461.png)
