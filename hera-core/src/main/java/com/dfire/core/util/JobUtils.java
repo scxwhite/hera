@@ -141,9 +141,9 @@ public class JobUtils {
     /**
      * 解析脚本中download开头的脚本，解析后存储在jobContext的resources中，在生成ProcessJobContainer时，根据属性生成preProcess,postProcess
      *
-     * @param resources
-     * @param script
-     * @param workContext
+     * @param resources   资源下载
+     * @param script        脚本内容
+     * @param workContext   工作路径
      * @return
      */
     public static String resolveScriptResource(List<Map<String, String>> resources, String script, WorkContext workContext) {
@@ -169,6 +169,7 @@ public class JobUtils {
                     break;
                 }
             }
+            //TODO 脚本中不存在 就不用下载了
             if (!exist) {
                 map.put("uri", uri);
                 map.put("name", name);
