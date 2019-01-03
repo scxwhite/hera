@@ -249,11 +249,24 @@ layui.use(['table'], function () {
          * 任务开启关闭按钮
          */
         $('#jobOperate [name="switch"]').on('click', function () {
+            changeSwitch(focusId, focusItem.auto === "开启" ? 0 : 1);
+        });
+
+
+        /**
+         * 任务失效按钮
+         */
+        $('#jobOperate [name="invalid"]').on('click', function () {
             //回显
+            changeSwitch(focusId, -1);
+        });
+
+        function changeSwitch(id, status) {
             $.ajax({
                 url: base_url + "/scheduleCenter/updateSwitch",
                 data: {
-                    id: focusId
+                    id: id,
+                    status: status
                 },
                 type: "post",
                 success: function (data) {
@@ -265,10 +278,10 @@ layui.use(['table'], function () {
                     }
                 }
             })
-        });
+        }
 
         /**
-         * 任务开启关闭按钮
+         * 任务监控按钮
          */
         $('#jobOperate [name="monitor"]').on('click', function () {
             if (focusItem.focus) {
@@ -710,7 +723,7 @@ layui.use(['table'], function () {
                             formDataLoad("jobMessage form", data);
                             $("#jobMessage [name='scheduleType']").val(isShow ? "定时调度" : "依赖调度");
                             selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
-                            $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : "label-default");
+                            $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-primary" : data.auto === "失效" ? "label-warn" : "label-default");
                             $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
 
                             let areas = '';

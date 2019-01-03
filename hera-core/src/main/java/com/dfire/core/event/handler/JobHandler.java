@@ -261,11 +261,6 @@ public class JobHandler extends AbstractHandler {
         masterContext.getHeraJobHistoryService().insert(history);
         HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
         master.run(historyVo);
-        if (historyVo.getStatusEnum() == StatusEnum.FAILED) {
-            HeraJobFailedEvent jobFailedEvent = new HeraJobFailedEvent(heraActionVo.getId(), triggerType, historyVo);
-            masterContext.getDispatcher().forwardEvent(jobFailedEvent);
-            ScheduleLog.info("job execute error, dispatch job failed event");
-        }
     }
 
 

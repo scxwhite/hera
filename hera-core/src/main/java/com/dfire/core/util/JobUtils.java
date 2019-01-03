@@ -98,7 +98,7 @@ public class JobUtils {
         }
         jobContext.setResources(resource);
         script = replace(jobContext.getProperties().getAllProperties(), script);
-        script = RenderHierarchyProperties.render(script);
+        script = RenderHierarchyProperties.render(script, history.getActionId().substring(0, 12));
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
 
         List<Job> pres = new ArrayList<>();

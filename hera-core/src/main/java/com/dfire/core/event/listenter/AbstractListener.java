@@ -1,7 +1,6 @@
 package com.dfire.core.event.listenter;
 
 import com.dfire.core.event.Dispatcher;
-import com.dfire.core.event.base.AbstractEvent;
 import com.dfire.core.event.base.EventType;
 import com.dfire.core.event.base.MvcEvent;
 

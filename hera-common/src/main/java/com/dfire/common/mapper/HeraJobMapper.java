@@ -51,8 +51,8 @@ public interface HeraJobMapper {
     List<HeraJob> findByPid(Integer groupId);
 
 
-    @Update("update hera_job set auto = !auto where id = #{id}")
-    Integer updateSwitch(Integer id);
+    @Update("update hera_job set auto = #{status} where id = #{id}")
+    Integer updateSwitch(@Param("id") Integer id, @Param("status") Integer status);
 
 
     @Select("select max(id) from hera_job")
