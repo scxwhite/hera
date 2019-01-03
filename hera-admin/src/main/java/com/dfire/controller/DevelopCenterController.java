@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 16:34 2018/1/13
- * @desc 开发中心页面控制器
+ * @desc 开发中心
  */
 @Controller
 @RequestMapping("/developCenter")
