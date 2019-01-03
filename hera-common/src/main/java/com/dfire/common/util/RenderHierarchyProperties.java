@@ -83,7 +83,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             StringWriter sw = new StringWriter();
             try {
                 VelocityContext context = new VelocityContext();
-                context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")));
+                context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmm")));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
                     ErrorLog.error("render fail with target:" + m);
