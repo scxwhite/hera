@@ -436,7 +436,7 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/updateSwitch", method = RequestMethod.POST)
     @ResponseBody
-    public JsonResponse updateSwitch(Integer id) {
+    public JsonResponse updateSwitch(Integer id, Integer status) {
         if (!hasPermission(id, JOB)) {
             return new JsonResponse(false, ERROR_MSG);
         }
@@ -453,10 +453,9 @@ public class ScheduleCenterController extends BaseHeraController {
             if ((errorMsg = getJobFromAuto(heraJobService.findUpStreamJob(id), 0)) != null) {
                 return new JsonResponse(false, "上游存在关闭状态任务:" + errorMsg);
             }
-
         }
-        boolean result = heraJobService.changeSwitch(id);
-        if (heraJob.getAuto() == 0) {
+        boolean result = heraJobService.changeSwitch(id, status);
+        if (heraJob.getAuto() != 1) {
             updateJobToMaster(result, id);
             return new JsonResponse(result, result ? "开启成功" : "开启失败");
         } else {

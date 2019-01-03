@@ -1,5 +1,6 @@
 package com.dfire.common.util;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.*;
 import com.dfire.common.enums.JobRunTypeEnum;
@@ -126,7 +127,7 @@ public class BeanConvertUtils {
         heraJobVo.setPostProcessors(StringUtil.convertProcessorToList(heraJob.getPostProcessors()));
         heraJobVo.setPreProcessors(StringUtil.convertProcessorToList(heraJob.getPreProcessors()));
         heraJobVo.setResources(StringUtil.convertResources(heraJob.getResources()));
-        heraJobVo.setAuto(heraJob.getAuto() == 1 ? "开启" : "关闭");
+        heraJobVo.setAuto(heraJob.getAuto() == 1 ? Constants.OPEN_STATUS : heraJob.getAuto() == 0 ? Constants.CLOSE_STATUS : Constants.INVALID_STATUS);
         heraJobVo.setDependencies(heraJob.getDependencies());
         heraJobVo.setRunType(JobRunTypeEnum.parser(heraJob.getRunType()));
         return heraJobVo;

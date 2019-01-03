@@ -590,6 +590,12 @@
                                 </li>
                                 <br>
                                 <li>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="invalid">
+                                        失效
+                                    </button>
+                                </li>
+                                <br>
+                                <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="delete">删除
                                     </button>
 

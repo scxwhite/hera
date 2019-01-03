@@ -36,7 +36,7 @@ public interface HeraJobService {
      */
     Map<String, List<HeraJobTreeNodeVo>> buildJobTree(String owner);
 
-    boolean changeSwitch(Integer id);
+    boolean changeSwitch(Integer id, Integer status);
 
     JsonResponse checkAndUpdate(HeraJob heraJob);
 
