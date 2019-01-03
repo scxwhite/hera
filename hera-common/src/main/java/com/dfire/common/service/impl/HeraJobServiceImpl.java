@@ -150,8 +150,8 @@ public class HeraJobServiceImpl implements HeraJobService {
     }
 
     @Override
-    public boolean changeSwitch(Integer id) {
-        Integer res = heraJobMapper.updateSwitch(id);
+    public boolean changeSwitch(Integer id, Integer status) {
+        Integer res = heraJobMapper.updateSwitch(id, status);
         return res != null && res > 0;
     }
 
