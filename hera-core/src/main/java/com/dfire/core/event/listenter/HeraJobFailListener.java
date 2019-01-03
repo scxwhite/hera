@@ -59,7 +59,7 @@ public class HeraJobFailListener extends AbstractListener {
             }
             HeraJob heraJob = heraJobService.findById(jobId);
             //非开启任务不处理  最好能把这些抽取出去 提供接口实现
-            if (heraJob.getAuto() == 0) {
+            if (heraJob.getAuto() != 1) {
                 return ;
             }
             executor.execute(() -> {
