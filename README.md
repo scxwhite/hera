@@ -515,6 +515,7 @@ download[hdfs:///hera/hdfs-upload-dir/hera-20181229-110455.sql hera.sql]
 ## 脚本自动保存
 当在开发中心写脚本时，脚本会自动保存。当然也可以通过点击保存脚本进行手动保存。
 
+<<<<<<< HEAD
 微信交流群
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2019010219083078.png)
@@ -522,3 +523,7 @@ download[hdfs:///hera/hdfs-upload-dir/hera-20181229-110455.sql hera.sql]
 个人微信(失效加我拉你进去)
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190102190821351.png)
+
+
+## Spark相关
+使用Spark需要自行选择Spark版本，并部署在worker上，具体部署方法和示例之后会整理给出。
