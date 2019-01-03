@@ -10,7 +10,15 @@
 
 
 # 交流群
-    见文章末尾
+
+微信交流群
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2019010219083078.png)
+
+个人微信(失效加我拉你进去)
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20190102190821351.png)
+
 
 # 介绍文章
 [赫拉(hera)分布式任务调度系统之架构，基本功能(一)](https://blog.csdn.net/su20145104009/article/details/85124746)
@@ -518,15 +526,6 @@ download[hdfs:///hera/hdfs-upload-dir/hera-20181229-110455.sql hera.sql]
 暂未开发
 ## 脚本自动保存
 当在开发中心写脚本时，脚本会自动保存。当然也可以通过点击保存脚本进行手动保存。
-
-<<<<<<< HEAD
-微信交流群
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2019010219083078.png)
-
-个人微信(失效加我拉你进去)
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20190102190821351.png)
 
 
 ## Spark相关
