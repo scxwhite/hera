@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
+ * @author: 凌霄
  * @time: Created in 16:34 2018/1/1
  * @desc 登陆控制器
  */

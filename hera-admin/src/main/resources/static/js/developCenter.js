@@ -677,9 +677,11 @@ layui.use("layer", function () {
             contentType: "application/json",
             dataType: "json",
             success: function (data) {
-                result = data;
-                debugId = data.debugId;
-                showRightNowLog(data.fileId, data.debugId);
+                if (data.success === true) {
+                    result = data.data;
+                    showRightNowLog(result.fileId, result.debugId);
+                }
+
             }
         });
 

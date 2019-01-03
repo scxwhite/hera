@@ -51,8 +51,7 @@ public class DevelopCenterController extends BaseHeraController {
     @ResponseBody
     public List<HeraFileTreeNodeVo> initFileTree() {
         String owner = getOwner();
-        List<HeraFileTreeNodeVo> list = heraFileService.buildFileTree(owner);
-        return list;
+        return heraFileService.buildFileTree(owner);
     }
 
     @RequestMapping(value = "/addFile", method = RequestMethod.GET)
@@ -155,15 +154,15 @@ public class DevelopCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/debugSelectCode", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<Map<String, Object>> debugSelectCode(@RequestBody HeraFile heraFile) {
+    public WebAsyncTask<JsonResponse> debugSelectCode(@RequestBody HeraFile heraFile) {
 
         String owner = getOwner();
-        return new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
+        return new WebAsyncTask<JsonResponse>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
             Map<String, Object> res = new HashMap<>(2);
             HeraFile file = heraFileService.findById(heraFile.getId());
             file.setContent(heraFile.getContent());
             String name = file.getName();
-            String runType = "1";
+            String runType;
             HeraDebugHistory history = HeraDebugHistory.builder()
                     .fileId(file.getId())
                     .script(heraFile.getContent())
@@ -171,20 +170,27 @@ public class DevelopCenterController extends BaseHeraController {
                     .owner(owner)
                     .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnvironment.defaultWorkerGroup : file.getHostGroupId())
                     .build();
-            String postfix = name.substring(name.lastIndexOf("."));
-            if (".hive".equalsIgnoreCase(postfix)) {
-                runType = "hive";
-            } else if (".sh".equalsIgnoreCase(postfix)) {
-                runType = "shell";
-            } else if (".spark".equalsIgnoreCase(postfix)) {
-                runType = "spark";
+
+            int suffixIndex = name.lastIndexOf(Constants.POINT);
+            if (suffixIndex == -1) {
+                return new JsonResponse(false, "无后缀名,请设置支持的后缀名[.sh .hive .spark]");
+            }
+            String suffix = name.substring(suffixIndex);
+            if ((Constants.HIVE_SUFFIX).equalsIgnoreCase(suffix)) {
+                runType = Constants.HIVE_FILE;
+            } else if ((Constants.SHELL_SUFFIX).equalsIgnoreCase(suffix)) {
+                runType = Constants.SHELL_FILE;
+            } else if ((Constants.SPARK_SUFFIX).equalsIgnoreCase(suffix)) {
+                runType = Constants.SPARK_FILE;
+            } else {
+                return new JsonResponse(false, "暂未支持的后缀名[" + suffix + "],请设置支持的后缀名[.sh .hive .spark]");
             }
             history.setRunType(runType);
             String newId = debugHistoryService.insert(history);
             workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
             res.put("fileId", file.getId());
             res.put("debugId", newId);
-            return res;
+            return new JsonResponse(true, "执行成功", res);
         });
     }
 
