@@ -83,7 +83,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             StringWriter sw = new StringWriter();
             try {
                 VelocityContext context = new VelocityContext();
-                context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmm")));
+                context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, ActionUtil.ACTION_MIN)));
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
                     ErrorLog.error("render fail with target:" + m);
@@ -96,7 +96,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             template = template.replace(m, sw.toString());
             matcher = pt.matcher(template);
         }
-        template = template.replace("${yesterday}", new HeraDateTool(HeraDateTool.StringToDate(dateStr, "yyyyMMddHHmmss")).addDay(-1).format("yyyyMMdd"));
+        template = template.replace("${yesterday}", new HeraDateTool(HeraDateTool.StringToDate(dateStr, ActionUtil.ACTION_MIN)).addDay(-1).format("yyyyMMdd"));
         return template;
     }
 
