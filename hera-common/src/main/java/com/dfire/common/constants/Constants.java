@@ -92,7 +92,7 @@ public class Constants {
 
     public final static String FILE_SELF = "个人文档";
 
-    public final static String FILE_ALL = "公共文档";
+    public final static String FILE_ALL = "共享文档";
 
     public final static String OPEN_STATUS = "开启";
 
