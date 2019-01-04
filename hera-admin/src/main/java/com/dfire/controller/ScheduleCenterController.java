@@ -334,7 +334,7 @@ public class ScheduleCenterController extends BaseHeraController {
                     if (heraJob == null) {
                         return new JsonResponse(false, "任务:" + job + "为空");
                     }
-                    if (heraJob.getAuto() == 0) {
+                    if (heraJob.getAuto() != 1) {
                         if (jobAuto) {
                             jobAuto = false;
                             sb = new StringBuilder();
