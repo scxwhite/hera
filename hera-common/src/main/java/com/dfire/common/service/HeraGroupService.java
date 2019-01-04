@@ -40,6 +40,8 @@ public interface HeraGroupService {
     HeraGroup findConfigById(Integer id);
 
 
+    boolean changeParent(Integer id, Integer parent);
+
     List<HeraGroup> findDownStreamGroup(Integer groupId);
 
 }

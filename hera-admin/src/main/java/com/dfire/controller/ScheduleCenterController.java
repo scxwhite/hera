@@ -19,6 +19,7 @@ import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.config.UnCheckLogin;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.logs.HeraLog;
 import com.dfire.protocol.JobExecuteKind;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
@@ -746,6 +747,48 @@ public class ScheduleCenterController extends BaseHeraController {
             return new JsonResponse(false, "查询异常");
         }
         return new JsonResponse(true, "成功", heraAreas);
+    }
+
+
+    @RequestMapping(value = "/check", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse check(String id) {
+        if (id == null) {
+            return new JsonResponse(true, "查询成功", false);
+        }
+        if (id.startsWith(Constants.GROUP_PREFIX)) {
+            return new JsonResponse(true, "查询成功", hasPermission(getGroupId(id), GROUP));
+        } else {
+            return new JsonResponse(true, "查询成功", hasPermission(Integer.parseInt(id), JOB));
+        }
+    }
+
+    @RequestMapping(value = "/moveNode", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse moveNode(String id, String parent) {
+        Integer parentId = getGroupId(parent);
+        Integer newId;
+        if (id.startsWith(GROUP)) {
+            newId = getGroupId(id);
+            if (!hasPermission(newId, GROUP)) {
+                return new JsonResponse(false, "无权限");
+            }
+            HeraGroup group = heraGroupService.findById(newId);
+            boolean result = heraGroupService.changeParent(newId, parentId);
+            HeraLog.info("组{}:发生移动{}->{}", newId, group.getParent(), parentId);
+            return new JsonResponse(result, result ? "处理成功" : "移动失败");
+
+        } else {
+            newId = Integer.parseInt(id);
+            if (!hasPermission(newId, JOB)) {
+                return new JsonResponse(false, "无权限");
+            }
+            HeraJob heraJob = heraJobService.findById(newId);
+            boolean result = heraJobService.changeParent(newId, parentId);
+            HeraLog.info("任务{}:发生移动{}->{}", newId, heraJob.getGroupId(), parentId);
+            return new JsonResponse(result, result ? "处理成功" : "移动失败");
+        }
+
     }
 
     private Integer getGroupId(String group) {

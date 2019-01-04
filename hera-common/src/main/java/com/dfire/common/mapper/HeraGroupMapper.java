@@ -55,4 +55,7 @@ public interface HeraGroupMapper {
 
     @Select("select count(*) count, max(id) maxId, max(gmt_modified) lastModified from hera_group")
     Judge selectTableInfo();
+
+    @Update("update hera_group set parent = #{parent} where id = #{id}")
+    Integer changeParent(@Param("id") Integer id, @Param("parent") Integer parent);
 }

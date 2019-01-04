@@ -65,4 +65,7 @@ public interface HeraJobMapper {
     Judge selectTableInfo();
 
 
+    @Update("update hera_job set group_id = #{parentId} where id = #{newId}")
+    Integer changeParent(@Param("newId") Integer newId, @Param("parentId") Integer parentId);
+
 }
