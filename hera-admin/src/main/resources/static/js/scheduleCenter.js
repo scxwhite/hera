@@ -728,7 +728,8 @@ layui.use(['table'], function () {
                 url: base_url + '/scheduleCenter/moveNode',
                 data: {
                     id: node.id,
-                    parent: parent
+                    parent: parent,
+                    lastParent: node.parent
                 },
                 async: false,
                 success: function (data) {

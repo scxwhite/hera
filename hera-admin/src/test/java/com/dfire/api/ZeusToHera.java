@@ -105,19 +105,14 @@ public class ZeusToHera {
         while (resultSet.next()) {
             Integer parent = resultSet.getInt("parent");
             Integer id = resultSet.getInt("id");
-
-
             PreparedStatement fileStatement = heraConnection.prepareStatement("select * from hera_file where id = ?");
             fileStatement.setInt(1, parent);
-
             ResultSet query = fileStatement.executeQuery();
-
             if (!query.next()) {
                 PreparedStatement prepareStatement = heraConnection.prepareStatement("update hera_file set parent = 2 where id =?");
                 prepareStatement.setInt(1, id);
                 System.out.println(prepareStatement.executeUpdate());
             }
-
         }
     }
 
