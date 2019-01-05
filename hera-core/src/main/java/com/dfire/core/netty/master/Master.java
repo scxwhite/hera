@@ -1,10 +1,8 @@
 package com.dfire.core.netty.master;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
-import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
@@ -46,7 +44,10 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
 
@@ -373,9 +374,17 @@ public class Master {
                     shouldRemove.forEach(actionMap::remove);
                 }
                 String cronDate = ActionUtil.getActionVersionByTime(now);
-                generateScheduleJobAction(jobList, cronDate, actionMap, nowAction);
-                generateDependJobAction(jobList, actionMap, 0, nowAction, new HashSet<>());
-
+                Map<Integer, List<HeraAction>> idMap = new HashMap<>(jobList.size());
+                generateScheduleJobAction(jobList, cronDate, actionMap, nowAction, idMap);
+                Map<Integer, HeraJob> jobMap = new HashMap<>(jobList.size());
+                for (HeraJob heraJob : jobList) {
+                    if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 1) {
+                        jobMap.put(heraJob.getId(), heraJob);
+                    }
+                }
+                for (Map.Entry<Integer, HeraJob> entry : jobMap.entrySet()) {
+                    generateDependJobAction(jobMap, entry.getValue(), actionMap, nowAction, idMap);
+                }
                 if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
                     heraActionMap = actionMap;
                 }
@@ -403,12 +412,15 @@ public class Master {
     }
 
     /**
-     * hera自动调度任务版本生成，版本id 18位当前时间 + actionId
+     * 自动任务的版本生成
      *
-     * @param jobList   jobList
-     * @param actionMap cronDate
+     * @param jobList   任务集合
+     * @param cronDate  日期
+     * @param actionMap actionMap集合
+     * @param nowAction 生成版本时间的action
+     * @param idMap     已经遍历过的idMap
      */
-    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap, Long nowAction) {
+    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap) {
         List<HeraAction> insertActionList = new ArrayList<>();
         for (HeraJob heraJob : jobList) {
             if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 0) {
@@ -420,7 +432,9 @@ public class Master {
                         ErrorLog.error("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
                         continue;
                     }
-                    insertActionList.addAll(createHeraAction(list, heraJob));
+                    List<HeraAction> heraAction = createHeraAction(list, heraJob);
+                    idMap.put(heraJob.getId(), heraAction);
+                    insertActionList.addAll(heraAction);
                 }
             }
         }
@@ -526,114 +540,97 @@ public class Master {
         ScheduleLog.warn("版本清理完成");
     }
 
+
     /**
-     * hera 依赖任务版本生成
+     * 递归生成任务依赖action
      *
-     * @param jobList    hera_job 表集合
-     * @param actionMap  内存本本状态
-     * @param retryCount 循环依赖
+     * @param jobMap    任务映射map
+     * @param heraJob   当前生成版本的任务
+     * @param actionMap 版本map
+     * @param nowAction 生成版本时间的action
+     * @param idMap     job的id集合  只要已经检测过的id都放入idSet中
      */
-    public void generateDependJobAction(List<HeraJob> jobList, Map<Long, HeraAction> actionMap, int retryCount, Long nowAction, Set<Integer> ids) {
-        retryCount++;
-        //最大递归次数
-        int maxRetryCount = 80;
-        List<Integer> notGenerate = new ArrayList<>();
-        List<HeraAction> insertActionList = new ArrayList<>();
-        for (HeraJob heraJob : jobList) {
-            //依赖任务生成版本
-            if (!ids.contains(heraJob.getId()) && heraJob.getScheduleType() != null && heraJob.getScheduleType() == 1) {
-                String jobDependencies = heraJob.getDependencies();
-                if (StringUtils.isNotBlank(jobDependencies)) {
+    private void generateDependJobAction(Map<Integer, HeraJob> jobMap, HeraJob heraJob, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap) {
+        if (idMap.containsKey(heraJob.getId())) {
+            return;
+        }
+        String jobDependencies = heraJob.getDependencies();
+        if (StringUtils.isNotBlank(jobDependencies)) {
+            Map<String, List<HeraAction>> dependenciesMap = new HashMap<>(1024);
+            String[] dependencies = jobDependencies.split(Constants.COMMA);
+            String actionMinDeps = "";
+            boolean noAction = false;
+            for (String dependentId : dependencies) {
+                Integer dpId = Integer.parseInt(dependentId);
+                //如果idSet不包含依赖任务dpId  则递归查找
+                if (!idMap.containsKey(dpId)) {
+                    generateDependJobAction(jobMap, jobMap.get(dpId), actionMap, nowAction, idMap);
+                }
+                List<HeraAction> dpActions = idMap.get(dpId);
+                dependenciesMap.put(dependentId, dpActions);
+                if (dpActions == null || dpActions.size() == 0) {
+                    ErrorLog.warn("{}今天找不到版本，无法为任务{}生成版本", dependentId, heraJob.getId());
+                    noAction = true;
+                    break;
+                }
+                if (StringUtils.isBlank(actionMinDeps)) {
+                    actionMinDeps = dependentId;
+                }
+                //找到所依赖的任务中版本最少的作为基准版本。
+                if (dependenciesMap.get(actionMinDeps).size() > dependenciesMap.get(dependentId).size()) {
+                    actionMinDeps = dependentId;
+                } else if (dependenciesMap.get(dependentId).size() > 0 && dependenciesMap.get(actionMinDeps).size() == dependenciesMap.get(dependentId).size() &&
+                        dependenciesMap.get(actionMinDeps).get(0).getId() < dependenciesMap.get(dependentId).get(0).getId()) {
+                    //如果两个版本的个数一样  那么应该找一个时间较大的
+                    actionMinDeps = dependentId;
+                }
+            }
+            if (noAction) {
+                idMap.put(heraJob.getId(), null);
+            } else {
+                List<HeraAction> actionMinList = dependenciesMap.get(actionMinDeps);
+                if (actionMinList != null && actionMinList.size() > 0) {
 
-                    Map<String, List<HeraAction>> dependenciesMap = new HashMap<>(1024);
-                    String[] dependencies = jobDependencies.split(Constants.COMMA);
-                    for (String dependentId : dependencies) {
-                        Integer dpId = Integer.parseInt(dependentId);
-                        List<HeraAction> dependActionList = new ArrayList<>();
-                        for (Map.Entry<Long, HeraAction> entry : actionMap.entrySet()) {
-                            if (entry.getValue().getJobId().equals(dpId)) {
-                                dependActionList.add(entry.getValue());
-                            }
-                        }
-                        dependenciesMap.put(dependentId, dependActionList);
-                    }
-
-                    boolean isComplete = true;
-
-                    String actionMinDeps = "";
-
-                    for (String dependency : dependencies) {
-                        if (dependenciesMap.get(dependency) == null || dependenciesMap.get(dependency).size() == 0) {
-                            isComplete = false;
-                            break;
-                        }
-
-                        if (StringUtils.isBlank(actionMinDeps)) {
-                            actionMinDeps = dependency;
-                        }
-                        //找到所依赖的任务中版本最少的作为基准版本。
-                        if (dependenciesMap.get(actionMinDeps).size() > dependenciesMap.get(dependency).size()) {
-                            actionMinDeps = dependency;
-                        } else if (dependenciesMap.get(dependency).size() > 0 && dependenciesMap.get(actionMinDeps).size() == dependenciesMap.get(dependency).size() &&
-                                dependenciesMap.get(actionMinDeps).get(0).getId() < dependenciesMap.get(dependency).get(0).getId()) {
-                            //如果两个版本的个数一样  那么应该找一个时间较大的
-                            actionMinDeps = dependency;
-                        }
-                    }
-                    //新加任务 可能无版本
-                    if (!isComplete) {
-                        notGenerate.add(heraJob.getId());
-                    } else {
-                        List<HeraAction> actionMinList = dependenciesMap.get(actionMinDeps);
-
-                        if (actionMinList != null && actionMinList.size() > 0) {
-                            for (HeraAction action : actionMinList) {
-                                StringBuilder actionDependencies = new StringBuilder(action.getId().toString());
-                                Long longActionId = Long.parseLong(actionDependencies.toString());
-                                for (String dependency : dependencies) {
-                                    if (!dependency.equals(actionMinDeps)) {
-                                        List<HeraAction> otherAction = dependenciesMap.get(dependency);
-                                        if (otherAction == null || otherAction.size() == 0) {
-                                            continue;
-                                        }
-                                        //找到一个离基准版本时间最近的action，添加为该任务的依赖
-                                        String otherActionId = otherAction.get(0).getId().toString();
-                                        for (HeraAction o : otherAction) {
-                                            if (Math.abs(o.getId() - longActionId) < Math.abs(Long.parseLong(otherActionId) - longActionId)) {
-                                                otherActionId = o.getId().toString();
-                                            }
-                                        }
-                                        actionDependencies.append(",");
-                                        actionDependencies.append(Long.parseLong(otherActionId) / 1000000 * 1000000 + Long.parseLong(dependency));
+                    List<HeraAction> insertList = new ArrayList<>();
+                    for (HeraAction action : actionMinList) {
+                        StringBuilder actionDependencies = new StringBuilder(action.getId().toString());
+                        Long longActionId = Long.parseLong(actionDependencies.toString());
+                        for (String dependency : dependencies) {
+                            if (!dependency.equals(actionMinDeps)) {
+                                List<HeraAction> otherAction = dependenciesMap.get(dependency);
+                                if (otherAction == null || otherAction.size() == 0) {
+                                    continue;
+                                }
+                                //找到一个离基准版本时间最近的action，添加为该任务的依赖
+                                String otherActionId = otherAction.get(0).getId().toString();
+                                for (HeraAction o : otherAction) {
+                                    if (Math.abs(o.getId() - longActionId) < Math.abs(Long.parseLong(otherActionId) - longActionId)) {
+                                        otherActionId = o.getId().toString();
                                     }
                                 }
-                                HeraAction actionNew = new HeraAction();
-                                BeanUtils.copyProperties(heraJob, actionNew);
-                                Long actionId = longActionId / 1000000 * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()));
-                                actionNew.setId(actionId);
-                                actionNew.setGmtCreate(new Date());
-                                actionNew.setDependencies(actionDependencies.toString());
-                                actionNew.setJobDependencies(heraJob.getDependencies());
-                                actionNew.setJobId(heraJob.getId());
-                                actionNew.setAuto(heraJob.getAuto());
-                                actionNew.setHostGroupId(heraJob.getHostGroupId());
-                                insertActionList.add(actionNew);
-                                ids.add(heraJob.getId());
+                                actionDependencies.append(",");
+                                actionDependencies.append(Long.parseLong(otherActionId) / 1000000 * 1000000 + Long.parseLong(dependency));
                             }
                         }
+                        HeraAction actionNew = new HeraAction();
+                        BeanUtils.copyProperties(heraJob, actionNew);
+                        Long actionId = longActionId / 1000000 * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()));
+                        actionNew.setId(actionId);
+                        actionNew.setGmtCreate(new Date());
+                        actionNew.setDependencies(actionDependencies.toString());
+                        actionNew.setJobDependencies(heraJob.getDependencies());
+                        actionNew.setJobId(heraJob.getId());
+                        actionNew.setAuto(heraJob.getAuto());
+                        actionNew.setHostGroupId(heraJob.getHostGroupId());
+                        masterContext.getHeraJobActionService().insert(actionNew, nowAction);
+                        actionMap.put(actionNew.getId(), actionNew);
+                        insertList.add(actionNew);
                     }
+                    idMap.put(heraJob.getId(), insertList);
                 }
             }
         }
-        int insertSize = insertActionList.size();
 
-        batchInsertList(insertActionList, actionMap, nowAction);
-
-        if (notGenerate.size() > 0 && retryCount < maxRetryCount && insertSize > 0) {
-            generateDependJobAction(jobList, actionMap, retryCount, nowAction, ids);
-        } else if (notGenerate.size() > 0 && (insertSize == 0 || retryCount == maxRetryCount)) {
-            ScheduleLog.warn("未找到版本的ID:{}, 未找到版本个数:{} , 重试次数:{}", JSONObject.toJSONString(notGenerate), notGenerate.size(), retryCount);
-        }
     }
 
 
