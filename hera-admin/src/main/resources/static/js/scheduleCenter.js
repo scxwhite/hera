@@ -805,9 +805,9 @@ layui.use(['table'], function () {
                             formDataLoad("jobMessage form", data);
                             $("#jobMessage [name='scheduleType']").val(isShow ? "定时调度" : "依赖调度");
                             selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
-                            $('#jobMessage [name="auto"]').removeClass("label-success")
-                                .removeClass("label-default").removeClass("label-warning")
-                                .addClass(data.auto === "开启" ? "label-success" : data.auto === "失效" ? "label-warning" : "label-default");
+                            $('#jobMessage [name="auto"]').removeClass("label-primary")
+                                .removeClass("label-default").removeClass("label-info")
+                                .addClass(data.auto === "开启" ? "label-primary" : data.auto === "失效" ? "label-info" : "label-default");
                             $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
 
                             let areas = '';
@@ -818,7 +818,6 @@ layui.use(['table'], function () {
                                     areas = areas + "," + allArea[id];
                                 }
                             });
-
 
                             $('#jobMessage [name="area"]').val(areas);
                             inheritConfigCM.setValue(parseJson(data.inheritConfig));

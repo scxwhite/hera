@@ -560,7 +560,7 @@ public class Master {
 
                     boolean isComplete = true;
 
-                    String actionMostDeps = "";
+                    String actionMinDeps = "";
 
                     for (String dependency : dependencies) {
                         if (dependenciesMap.get(dependency) == null || dependenciesMap.get(dependency).size() == 0) {
@@ -568,33 +568,35 @@ public class Master {
                             break;
                         }
 
-                        if (StringUtils.isBlank(actionMostDeps)) {
-                            actionMostDeps = dependency;
+                        if (StringUtils.isBlank(actionMinDeps)) {
+                            actionMinDeps = dependency;
                         }
-
-                        if (dependenciesMap.get(actionMostDeps).size() < dependenciesMap.get(dependency).size()) {
-                            actionMostDeps = dependency;
-                        } else if (dependenciesMap.get(dependency).size() > 0 && dependenciesMap.get(actionMostDeps).size() == dependenciesMap.get(dependency).size() &&
-                                dependenciesMap.get(actionMostDeps).get(0).getId() > dependenciesMap.get(dependency).get(0).getId()) {
-                            actionMostDeps = dependency;
+                        //找到所依赖的任务中版本最少的作为基准版本。
+                        if (dependenciesMap.get(actionMinDeps).size() > dependenciesMap.get(dependency).size()) {
+                            actionMinDeps = dependency;
+                        } else if (dependenciesMap.get(dependency).size() > 0 && dependenciesMap.get(actionMinDeps).size() == dependenciesMap.get(dependency).size() &&
+                                dependenciesMap.get(actionMinDeps).get(0).getId() < dependenciesMap.get(dependency).get(0).getId()) {
+                            //如果两个版本的个数一样  那么应该找一个时间较大的
+                            actionMinDeps = dependency;
                         }
                     }
                     //新加任务 可能无版本
                     if (!isComplete) {
                         notGenerate.add(heraJob.getId());
                     } else {
-                        List<HeraAction> actionMostList = dependenciesMap.get(actionMostDeps);
+                        List<HeraAction> actionMinList = dependenciesMap.get(actionMinDeps);
 
-                        if (actionMostList != null && actionMostList.size() > 0) {
-                            for (HeraAction action : actionMostList) {
+                        if (actionMinList != null && actionMinList.size() > 0) {
+                            for (HeraAction action : actionMinList) {
                                 StringBuilder actionDependencies = new StringBuilder(action.getId().toString());
                                 Long longActionId = Long.parseLong(actionDependencies.toString());
                                 for (String dependency : dependencies) {
-                                    if (!dependency.equals(actionMostDeps)) {
+                                    if (!dependency.equals(actionMinDeps)) {
                                         List<HeraAction> otherAction = dependenciesMap.get(dependency);
                                         if (otherAction == null || otherAction.size() == 0) {
                                             continue;
                                         }
+                                        //找到一个离基准版本时间最近的action，添加为该任务的依赖
                                         String otherActionId = otherAction.get(0).getId().toString();
                                         for (HeraAction o : otherAction) {
                                             if (Math.abs(o.getId() - longActionId) < Math.abs(Long.parseLong(otherActionId) - longActionId)) {

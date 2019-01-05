@@ -487,11 +487,13 @@ public class ScheduleCenterController extends BaseHeraController {
         if (result) {
             MonitorLog.info("{}【切换】任务{}状态{}成功", id, status == 1 ? Constants.OPEN_STATUS : status == 0 ? "关闭" : "失效");
         }
-        if (heraJob.getAuto() != 1) {
+        if (status == 1) {
             updateJobToMaster(result, id);
             return new JsonResponse(result, result ? "开启成功" : "开启失败");
-        } else {
+        } else if (status == 0) {
             return new JsonResponse(result, result ? "关闭成功" : "关闭失败");
+        } else {
+            return new JsonResponse(result, result ? "成功设置为失效状态" : "设置状态失败");
         }
 
     }
