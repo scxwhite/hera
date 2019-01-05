@@ -348,6 +348,8 @@ public class ScheduleCenterController extends BaseHeraController {
                 if (!jobAuto) {
                     return new JsonResponse(false, "不允许依赖关闭状态的任务:" + sb.toString());
                 }
+            } else {
+                return new JsonResponse(false, "请勾选你要依赖的任务");
             }
         } else if (heraJobVo.getScheduleType() == 0) {
             heraJobVo.setDependencies("");

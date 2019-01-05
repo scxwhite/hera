@@ -388,7 +388,6 @@ public class Master {
                 if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
                     heraActionMap = actionMap;
                 }
-
                 Dispatcher dispatcher = masterContext.getDispatcher();
                 if (dispatcher != null) {
                     if (actionMap.size() > 0) {
@@ -590,7 +589,6 @@ public class Master {
             } else {
                 List<HeraAction> actionMinList = dependenciesMap.get(actionMinDeps);
                 if (actionMinList != null && actionMinList.size() > 0) {
-
                     List<HeraAction> insertList = new ArrayList<>();
                     for (HeraAction action : actionMinList) {
                         StringBuilder actionDependencies = new StringBuilder(action.getId().toString());
