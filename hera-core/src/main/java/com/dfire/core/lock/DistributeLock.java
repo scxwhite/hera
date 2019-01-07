@@ -3,6 +3,7 @@ package com.dfire.core.lock;
 import com.dfire.common.entity.HeraLock;
 import com.dfire.common.service.HeraHostRelationService;
 import com.dfire.common.service.HeraLockService;
+import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.schedule.HeraSchedule;
@@ -103,8 +104,12 @@ public class DistributeLock {
         }
     }
 
+    /**
+     * 检测该ip是否具有抢占master的权限
+     * @return 是/否
+     */
     private boolean isPreemptionHost() {
-        List<String> preemptionHostList = hostGroupService.findPreemptionGroup(1);
+        List<String> preemptionHostList = hostGroupService.findPreemptionGroup(HeraGlobalEnvironment.preemptionMasterGroup);
         if (preemptionHostList.contains(WorkContext.host)) {
             return true;
         } else {

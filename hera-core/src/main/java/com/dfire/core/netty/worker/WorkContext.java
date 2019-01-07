@@ -7,6 +7,7 @@ import com.dfire.core.job.Job;
 import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.tool.RunShell;
 import com.dfire.core.util.NetUtils;
+import com.dfire.logs.HeraLog;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -68,6 +69,8 @@ public class WorkContext {
 
     static {
         host = NetUtils.getLocalAddress();
+
+        HeraLog.info("-----------------------------当前机器的IP为:{}-----------------------------", host);
         if (HeraGlobalEnvironment.isLinuxSystem()) {
             RunShell shell = new RunShell(loadStr);
             Integer exitCode = shell.run();

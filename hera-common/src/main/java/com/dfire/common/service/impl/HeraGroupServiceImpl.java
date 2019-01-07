@@ -108,6 +108,13 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     }
 
     @Override
+    public boolean changeParent(Integer id, Integer parent) {
+
+        Integer update = heraGroupMapper.changeParent(id, parent);
+        return update != null && update > 0;
+    }
+
+    @Override
     public List<HeraGroup> findDownStreamGroup(Integer groupId) {
         List<HeraGroup> res = new ArrayList<>();
         getDownStreamGroup(this.findById(groupId), res);

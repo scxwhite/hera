@@ -57,4 +57,5 @@ public interface HeraJobService {
     List<HeraJob> getAllJobDependencies();
 
 
+    boolean changeParent(Integer newId, Integer parentId);
 }

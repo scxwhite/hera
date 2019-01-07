@@ -23,5 +23,9 @@ public class ErrorLog {
         log.error(msg, e);
     }
 
+    public static void warn(String format, Object... arguments) {
+        log.warn(format, arguments);
+    }
+
 
 }
