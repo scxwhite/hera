@@ -20,7 +20,7 @@ public class HeraGlobalEnvironment {
 
     public static int defaultWorkerGroup;
 
-    public static String preemptionMasterGroup;
+    public static Integer preemptionMasterGroup;
 
     @Getter
     private static long requestTimeout = 60 * 1000L;
@@ -85,7 +85,7 @@ public class HeraGlobalEnvironment {
     }
 
     @Value("${hera.preemptionMasterGroup}")
-    public void setPreemptionMasterGroup(String preemptionMasterGroup) {
+    public void setPreemptionMasterGroup(Integer preemptionMasterGroup) {
         HeraGlobalEnvironment.preemptionMasterGroup = preemptionMasterGroup;
     }
 

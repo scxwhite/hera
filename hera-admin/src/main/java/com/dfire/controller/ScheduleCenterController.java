@@ -19,6 +19,7 @@ import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.config.UnCheckLogin;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.logs.MonitorLog;
 import com.dfire.protocol.JobExecuteKind;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronExpression;
@@ -347,6 +348,8 @@ public class ScheduleCenterController extends BaseHeraController {
                 if (!jobAuto) {
                     return new JsonResponse(false, "不允许依赖关闭状态的任务:" + sb.toString());
                 }
+            } else {
+                return new JsonResponse(false, "请勾选你要依赖的任务");
             }
         } else if (heraJobVo.getScheduleType() == 0) {
             heraJobVo.setDependencies("");
@@ -383,10 +386,12 @@ public class ScheduleCenterController extends BaseHeraController {
 
         if (isGroup) {
             res = heraGroupService.delete(xId) > 0;
+            MonitorLog.info("{}【删除】组{}成功", getOwner(), xId);
             return new JsonResponse(res, res ? "删除成功" : "系统异常,请联系管理员");
 
         }
         res = heraJobService.delete(xId) > 0;
+        MonitorLog.info("{}【删除】任务{}成功", getOwner(), xId);
         updateJobToMaster(res, xId);
         return new JsonResponse(res, res ? "删除成功" : "系统异常,请联系管理员");
     }
@@ -401,21 +406,38 @@ public class ScheduleCenterController extends BaseHeraController {
         heraJob.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
         heraJob.setOwner(getOwner());
         heraJob.setScheduleType(JobScheduleTypeEnum.Independent.getType());
-        return new JsonResponse(heraJobService.insert(heraJob) > 0, String.valueOf(heraJob.getId()));
+        int insert = heraJobService.insert(heraJob);
+        if (insert > 0) {
+            MonitorLog.info("{}【添加】任务{}成功", heraJob.getOwner(), heraJob.getId());
+            return new JsonResponse(true, String.valueOf(heraJob.getId()));
+        } else {
+            return new JsonResponse(false, "新增失败");
+        }
     }
 
     @RequestMapping(value = "/addMonitor", method = RequestMethod.POST)
     @ResponseBody
     public JsonResponse updateMonitor(Integer id) {
         boolean res = heraJobMonitorService.addMonitor(getOwnerId(), id);
-        return new JsonResponse(res, res ? "关注成功" : "系统异常，请联系管理员");
+        if (res) {
+            MonitorLog.info("{}【关注】任务{}成功", getOwner(), id);
+            return new JsonResponse(true, "关注成功");
+        } else {
+            return new JsonResponse(false, "系统异常，请联系管理员");
+        }
+
     }
 
     @RequestMapping(value = "/delMonitor", method = RequestMethod.POST)
     @ResponseBody
     public JsonResponse deleteMonitor(Integer id) {
         boolean res = heraJobMonitorService.removeMonitor(getOwnerId(), id);
-        return new JsonResponse(res, res ? "取关成功" : "系统异常，请联系管理员");
+        if (res) {
+            MonitorLog.info("{}【取关】任务{}成功", getOwner(), id);
+            return new JsonResponse(true, "取关成功");
+        } else {
+            return new JsonResponse(false, "系统异常，请联系管理员");
+        }
     }
 
     @RequestMapping(value = "/addGroup", method = RequestMethod.POST)
@@ -431,7 +453,15 @@ public class ScheduleCenterController extends BaseHeraController {
         heraGroup.setGmtCreate(date);
         heraGroup.setOwner(getOwner());
         heraGroup.setExisted(1);
-        return new JsonResponse(heraGroupService.insert(heraGroup) > 0, String.valueOf(heraGroup.getId() == null ? -1 : heraGroup.getId()));
+
+        int insert = heraGroupService.insert(heraGroup);
+        if (insert > 0) {
+            MonitorLog.info("{}【添加】组{}成功", getOwner(), heraGroup.getId());
+            return new JsonResponse(true, String.valueOf(heraGroup.getId()));
+        } else {
+            return new JsonResponse(false, String.valueOf(-1));
+
+        }
     }
 
     @RequestMapping(value = "/updateSwitch", method = RequestMethod.POST)
@@ -455,11 +485,17 @@ public class ScheduleCenterController extends BaseHeraController {
             }
         }
         boolean result = heraJobService.changeSwitch(id, status);
-        if (heraJob.getAuto() != 1) {
+
+        if (result) {
+            MonitorLog.info("{}【切换】任务{}状态{}成功", id, status == 1 ? Constants.OPEN_STATUS : status == 0 ? "关闭" : "失效");
+        }
+        if (status == 1) {
             updateJobToMaster(result, id);
             return new JsonResponse(result, result ? "开启成功" : "开启失败");
-        } else {
+        } else if (status == 0) {
             return new JsonResponse(result, result ? "关闭成功" : "关闭失败");
+        } else {
+            return new JsonResponse(result, result ? "成功设置为失效状态" : "设置状态失败");
         }
 
     }
@@ -746,6 +782,45 @@ public class ScheduleCenterController extends BaseHeraController {
             return new JsonResponse(false, "查询异常");
         }
         return new JsonResponse(true, "成功", heraAreas);
+    }
+
+
+    @RequestMapping(value = "/check", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse check(String id) {
+        if (id == null) {
+            return new JsonResponse(true, "查询成功", false);
+        }
+        if (id.startsWith(Constants.GROUP_PREFIX)) {
+            return new JsonResponse(true, "查询成功", hasPermission(getGroupId(id), GROUP));
+        } else {
+            return new JsonResponse(true, "查询成功", hasPermission(Integer.parseInt(id), JOB));
+        }
+    }
+
+    @RequestMapping(value = "/moveNode", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse moveNode(String id, String parent, String lastParent) {
+        Integer newParent = getGroupId(parent);
+        Integer newId;
+        if (id.startsWith(GROUP)) {
+            newId = getGroupId(id);
+            if (!hasPermission(newId, GROUP)) {
+                return new JsonResponse(false, "无权限");
+            }
+            boolean result = heraGroupService.changeParent(newId, newParent);
+            MonitorLog.info("组{}:发生移动 {}  --->  {}", newId, lastParent, newParent);
+            return new JsonResponse(result, result ? "处理成功" : "移动失败");
+        } else {
+            newId = Integer.parseInt(id);
+            if (!hasPermission(newId, JOB)) {
+                return new JsonResponse(false, "无权限");
+            }
+            boolean result = heraJobService.changeParent(newId, newParent);
+            MonitorLog.info("任务{}:发生移动{}  --->  {}", newId, lastParent, newParent);
+            return new JsonResponse(result, result ? "处理成功" : "移动失败");
+        }
+
     }
 
     private Integer getGroupId(String group) {

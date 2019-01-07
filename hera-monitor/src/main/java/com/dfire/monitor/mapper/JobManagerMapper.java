@@ -29,7 +29,7 @@ public interface JobManagerMapper {
             " (select job_id,start_time start_time,end_time,execute_host,status,operator from hera_action_history " +
             " where left(start_time,10) = CURRENT_DATE() and status = #{status,jdbcType=VARCHAR}) his " +
             " left join hera_job job on his.job_id = job.id" +
-            " group by job_id" +
+            " group by his.job_id,job.name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator" +
             " order by job_id")
     List<JobHistoryVo> findAllJobHistoryByStatus(String status);
 

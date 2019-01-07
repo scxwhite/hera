@@ -16,8 +16,8 @@ layui.use(['table', 'laytpl', 'form'], function () {
         type: 'get',
         async: false,
         success: function (data) {
-            hostGroups = data;
-            $.each(data, function (index, group) {
+            hostGroups = data.data;
+            $.each(hostGroups, function (index, group) {
                 hostGroupMap[group.id] = group.name;
             })
         }

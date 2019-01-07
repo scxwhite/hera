@@ -20,7 +20,7 @@ public interface HeraHostGroupMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insert(HeraHostGroup heraHostGroup);
 
-    @Update("update hera_host_group set effective = 0 where id = #{id}")
+    @Update("delete from  hera_host_group where id = #{id}")
     int delete(@Param("id") int id);
 
     @Update("update hera_host_group (#{heraHostGroup}) where id = #{id}")

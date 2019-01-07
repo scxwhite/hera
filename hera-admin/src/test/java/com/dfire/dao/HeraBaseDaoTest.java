@@ -299,8 +299,6 @@ public class HeraBaseDaoTest {
 
                     List<HeraJob> heraJobList = heraJobService.getAll();
                     String  cronDate = ActionUtil.getActionVersionByTime(now);
-                    master.generateScheduleJobAction(heraJobList, cronDate, actionMap, Long.parseLong(cronDate));
-                    master.generateDependJobAction(heraJobList, actionMap, 0, Long.parseLong(cronDate), new HashSet<>());
 
                 }
             }

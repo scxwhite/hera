@@ -18,11 +18,11 @@ import java.util.Date;
 @NoArgsConstructor
 public class HeraHostGroup {
 
-    private int id;
+    private Integer id;
 
     private String name;
 
-    private int effective;
+    private Integer effective;
 
     private String description;
 

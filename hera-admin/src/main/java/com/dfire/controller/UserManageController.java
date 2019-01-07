@@ -52,7 +52,7 @@ public class UserManageController {
         } else {
             res = new ArrayList<>(0);
         }
-        res.sort(Comparator.comparing(HeraUserVo::getCreateTime));
+        res.sort((o1, o2) -> -(o1.getCreateTime().compareTo(o2.getCreateTime())));
         return new TableResponse<>(res.size(), 0, res);
     }
 
