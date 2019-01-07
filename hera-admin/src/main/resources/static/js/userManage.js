@@ -33,7 +33,7 @@ layui.use(['table', 'laytpl', 'form'], function () {
                 }
             }
             , {field: 'createTime', title: '申请时间', align: 'center', width: 170}
-            , {field: 'opTime', title: '申请时间', align: 'center', width: 170}
+            , {field: 'opTime', title: '更新时间', align: 'center', width: 170}
             , {fixed: 'right', title: '操作', align: 'center', toolbar: '#barOption'}
         ]]
     });

@@ -55,7 +55,6 @@ public class LoginController {
         if (user == null) {
             return new JsonResponse(false, "用户不存在");
         }
-
         String pwd = user.getPassword();
         if (!StringUtils.isEmpty(password)) {
             password = StringUtil.EncoderByMd5(password);
@@ -82,6 +81,7 @@ public class LoginController {
         if (check != null) {
             return new JsonResponse(false, "用户名已存在，请更换用户名");
         }
+
         int res = heraUserService.insert(user);
         return new JsonResponse(res > 0, res > 0 ? "注册成功，等待管理员审核" : "注册失败,请联系管理员");
     }

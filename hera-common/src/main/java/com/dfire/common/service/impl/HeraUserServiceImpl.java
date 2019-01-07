@@ -6,6 +6,7 @@ import com.dfire.common.service.HeraUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,6 +23,9 @@ public class HeraUserServiceImpl implements HeraUserService {
 
     @Override
     public int insert(HeraUser heraUser) {
+        Date now = new Date();
+        heraUser.setGmtCreate(now);
+        heraUser.setGmtModified(now);
         return heraUserMapper.insert(heraUser);
     }
 

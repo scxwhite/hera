@@ -59,7 +59,6 @@ function dealCode(data) {
 }
 
 function formDataLoad(domId, obj) {
-
     $("#" + domId)[0].reset();
     for (var property in obj) {
         if (obj.hasOwnProperty(property) == true) {

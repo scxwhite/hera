@@ -26,8 +26,20 @@ layui.use(['table'], function () {
                     rootPId: 0
                 }
             },
+            edit: {
+                drag: {
+                    isCopy: false,
+                    isMove: true,
+                    prev: true,
+                    next: true
+                },
+                enable: true
+
+            },
             callback: {
-                onClick: leftClick
+                beforeDrag: beforeDrag,
+                onClick: leftClick,
+                beforeDrop: beforeDrop
             }
         };
 
@@ -685,6 +697,76 @@ layui.use(['table'], function () {
             }
         }
 
+        function beforeDrop(treeId, treeNodes, targetNode, moveType) {
+            let node = treeNodes[0];
+
+            //inner
+            if (moveType === 'inner') {
+                if (targetNode.directory === node.directory && node.directory === null) {
+                    layer.msg("任务无法放到任务节点内");
+                    return false;
+                }
+
+                if (targetNode.directory === null || (targetNode.directory === 1 && node.directory === 0)) {
+                    layer.msg("大节点无法放在小节点内");
+                    return false;
+                }
+
+                return moveNode(node, targetNode.id);
+            } else {
+                if (targetNode.directory !== node.directory) {
+                    layer.msg("两个节点的级别不同，无法移动");
+                    return false;
+                }
+                return moveNode(node, targetNode.parent);
+            }
+        }
+
+        function moveNode(node, parent) {
+            let res = false;
+            $.ajax({
+                url: base_url + '/scheduleCenter/moveNode',
+                data: {
+                    id: node.id,
+                    parent: parent,
+                    lastParent: node.parent
+                },
+                async: false,
+                success: function (data) {
+                    res = data.success;
+                }
+            });
+            if (res) {
+                layer.msg("移动节点[" + node.name + "]成功");
+            } else {
+                layer.msg("移动节点[" + id + "]失败");
+            }
+            return res;
+        }
+
+        function beforeDrag(treeId, treeNodes) {
+            if (treeNodes.length > 1) {
+                layer.msg("不允许同时拖动多个任务");
+                return false;
+            }
+            let check = false;
+            $.ajax({
+                url: base_url + '/scheduleCenter/check',
+                data: {
+                    id: treeNodes[0].id
+                },
+                async: false,
+                success: function (data) {
+                    check = data.data;
+                }
+            });
+            if (!check) {
+                layer.msg("抱歉，无权限移动该任务");
+            }
+
+            return check;
+        }
+
         function leftClick() {
             selected = focusTree.getSelectedNodes()[0];
             changeOverview(true);
@@ -723,7 +805,9 @@ layui.use(['table'], function () {
                             formDataLoad("jobMessage form", data);
                             $("#jobMessage [name='scheduleType']").val(isShow ? "定时调度" : "依赖调度");
                             selfConfigCM.setValue(initVal(data.configs, "jobMessage"));
-                            $('#jobMessage [name="auto"]').removeClass("label-primary").removeClass("label-default").addClass(data.auto === "开启" ? "label-success" : data.auto === "失效" ? "label-warning" : "label-default");
+                            $('#jobMessage [name="auto"]').removeClass("label-primary")
+                                .removeClass("label-default").removeClass("label-info")
+                                .addClass(data.auto === "开启" ? "label-primary" : data.auto === "失效" ? "label-info" : "label-default");
                             $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
 
                             let areas = '';
@@ -734,7 +818,6 @@ layui.use(['table'], function () {
                                     areas = areas + "," + allArea[id];
                                 }
                             });
-
 
                             $('#jobMessage [name="area"]').val(areas);
                             inheritConfigCM.setValue(parseJson(data.inheritConfig));

@@ -265,6 +265,12 @@ public class HeraJobServiceImpl implements HeraJobService {
         return heraJobMapper.getAllJobRelations();
     }
 
+    @Override
+    public boolean changeParent(Integer newId, Integer parentId) {
+        Integer update = heraJobMapper.changeParent(newId,parentId);
+        return update != null && update > 0;
+    }
+
 
     /**
      * 建立今日任务执行 Map映射 便于获取
