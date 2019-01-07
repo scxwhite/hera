@@ -241,7 +241,6 @@ public class Master {
                             });
                             startNewJob(actionHistory, "任务信号丢失重试");
                         }
-
                     }, 1, TimeUnit.MINUTES);
 
                 }
@@ -375,13 +374,8 @@ public class Master {
                 }
                 String cronDate = ActionUtil.getActionVersionByTime(now);
                 Map<Integer, List<HeraAction>> idMap = new HashMap<>(jobList.size());
-                generateScheduleJobAction(jobList, cronDate, actionMap, nowAction, idMap);
                 Map<Integer, HeraJob> jobMap = new HashMap<>(jobList.size());
-                for (HeraJob heraJob : jobList) {
-                    if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 1) {
-                        jobMap.put(heraJob.getId(), heraJob);
-                    }
-                }
+                generateScheduleJobAction(jobList, cronDate, actionMap, nowAction, idMap, jobMap);
                 for (Map.Entry<Integer, HeraJob> entry : jobMap.entrySet()) {
                     generateDependJobAction(jobMap, entry.getValue(), actionMap, nowAction, idMap);
                 }
@@ -418,23 +412,31 @@ public class Master {
      * @param actionMap actionMap集合
      * @param nowAction 生成版本时间的action
      * @param idMap     已经遍历过的idMap
+     * @param jobMap    依赖任务map映射
      */
-    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap) {
+    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap, Map<Integer, HeraJob> jobMap) {
         List<HeraAction> insertActionList = new ArrayList<>();
         for (HeraJob heraJob : jobList) {
-            if (heraJob.getScheduleType() != null && heraJob.getScheduleType() == 0) {
-                String cron = heraJob.getCronExpression();
-                List<String> list = new ArrayList<>();
-                if (StringUtils.isNotBlank(cron)) {
-                    boolean isCronExp = CronParse.Parser(cron, cronDate, list);
-                    if (!isCronExp) {
-                        ErrorLog.error("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
-                        continue;
+            if (heraJob.getScheduleType() != null) {
+                if (heraJob.getScheduleType() == 1) {
+                    jobMap.put(heraJob.getId(), heraJob);
+                } else if (heraJob.getScheduleType() == 0) {
+                    String cron = heraJob.getCronExpression();
+                    List<String> list = new ArrayList<>();
+                    if (StringUtils.isNotBlank(cron)) {
+                        boolean isCronExp = CronParse.Parser(cron, cronDate, list);
+                        if (!isCronExp) {
+                            ErrorLog.error("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
+                            continue;
+                        }
+                        List<HeraAction> heraAction = createHeraAction(list, heraJob);
+                        idMap.put(heraJob.getId(), heraAction);
+                        insertActionList.addAll(heraAction);
                     }
-                    List<HeraAction> heraAction = createHeraAction(list, heraJob);
-                    idMap.put(heraJob.getId(), heraAction);
-                    insertActionList.addAll(heraAction);
+                } else {
+                    ErrorLog.error("任务{}未知的调度类型{}", heraJob.getId(), heraJob.getScheduleType());
                 }
+
             }
         }
         batchInsertList(insertActionList, actionMap, nowAction);
@@ -550,7 +552,7 @@ public class Master {
      * @param idMap     job的id集合  只要已经检测过的id都放入idSet中
      */
     private void generateDependJobAction(Map<Integer, HeraJob> jobMap, HeraJob heraJob, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap) {
-        if (idMap.containsKey(heraJob.getId())) {
+        if (heraJob == null || idMap.containsKey(heraJob.getId())) {
             return;
         }
         String jobDependencies = heraJob.getDependencies();

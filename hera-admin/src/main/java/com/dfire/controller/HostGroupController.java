@@ -2,6 +2,7 @@ package com.dfire.controller;
 
 import com.dfire.common.entity.HeraHostGroup;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.entity.model.TableResponse;
 import com.dfire.common.service.HeraHostGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,16 +25,30 @@ public class HostGroupController {
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public List<HeraHostGroup> getAll() {
-        return heraHostGroupService.getAll();
+    public TableResponse<List<HeraHostGroup>> getAll() {
+
+        List<HeraHostGroup> groupList = heraHostGroupService.getAll();
+
+        if (groupList == null) {
+            return new TableResponse<>(-1, "查询失败");
+        }
+        return new TableResponse<>(groupList.size(), 0, groupList);
+
     }
 
 
-    @RequestMapping(value = "saveOrUpdate", method = RequestMethod.POST)
+    @RequestMapping(value = "add", method = RequestMethod.POST)
     @ResponseBody
-    public JsonResponse saveOrUpdate(HeraHostGroup heraHostGroup) {
-        heraHostGroupService.insert(heraHostGroup);
-        return new JsonResponse();
+    public JsonResponse add(HeraHostGroup heraHostGroup) {
+        boolean res = heraHostGroupService.insert(heraHostGroup) > 0;
+        return new JsonResponse(res, res ? "新增成功" : "新增失败");
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse update(HeraHostGroup heraHostGroup) {
+        boolean update = heraHostGroupService.update(heraHostGroup) > 0;
+        return new JsonResponse(update, update ? "更新成功" : "更新失败");
     }
 
     @RequestMapping(value = "del", method = RequestMethod.POST)

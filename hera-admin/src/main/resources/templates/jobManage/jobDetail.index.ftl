@@ -27,14 +27,7 @@
     <div class="content-wrapper">
         <section class="content">
                 <div class="box">
-                    <div class="box-header">
-                        <h3 class="box-title">机器组管理</h3>
-                    </div>
                     <div class="box-body">
-                        <div id="toolbar">
-                            <button class="btn btn-success" id="addHostGroup">添加</button>
-                        </div>
-
                         <div class="input-group form-inline col-lg-2 pull-right" style="margin-left: 4px" >
                             <label class="name input-group-addon">任务状态</label>
                             <select class="form-control" id="jobStatus" onchange="updateTable()">
