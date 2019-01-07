@@ -26,13 +26,87 @@ layui.use("layer", function () {
             onRightClick: OnRightClick,
             onClick: leftClick,
             onRename: renameFile,
-            beforeRemove: beforeRemove
+            beforeRemove: beforeRemove,
+            beforeDrag: beforeDrag,
+            beforeDrop: beforeDrop
+
         },
         edit: {
+            drag: {
+                isCopy: false,
+                isMove: true,
+                prev: true,
+                next: true
+            },
             enable: true,
             editNameSelectAll: true,
         }
     };
+
+    function moveNode(node, parent) {
+        let res = false;
+        $.ajax({
+            url: base_url + '/developCenter/moveNode',
+            data: {
+                id: node.id,
+                parent: parent,
+                lastParent: node.parent
+            },
+            async: false,
+            type: "post",
+            success: function (data) {
+                res = data.success;
+            }
+        });
+        if (res) {
+            layer.msg("移动节点[" + node.name + "]成功");
+        } else {
+            layer.msg("移动节点[" + node.id + "]失败");
+        }
+        return res;
+    }
+
+    function beforeDrop(treeId, treeNodes, targetNode, moveType) {
+        let node = treeNodes[0];
+        //inner
+        if (moveType === 'inner') {
+            if (targetNode.isParent === node.isParent && node.isParent === false) {
+                layer.msg("任务无法放到任务节点内");
+                return false;
+            }
+
+            if (targetNode.isParent === false) {
+                layer.msg("大节点无法放在小节点内");
+                return false;
+            }
+            return moveNode(node, targetNode.id);
+        } else {
+            return moveNode(node, targetNode.parent);
+        }
+    }
+
+    function beforeDrag(treeId, treeNodes) {
+        if (treeNodes.length > 1) {
+            layer.msg("不允许同时拖动多个任务");
+            return false;
+        }
+        let check = false;
+        $.ajax({
+            url: base_url + '/developCenter/check',
+            data: {
+                id: treeNodes[0].id
+            },
+            async: false,
+            success: function (data) {
+                check = data.data;
+            }
+        });
+        if (!check) {
+            layer.msg("抱歉，无权限移动该任务");
+        }
+
+        return check;
+    }
 
     function add(e) {
         let isParent = e.data.isParent,
@@ -201,7 +275,7 @@ layui.use("layer", function () {
 
 
     $("#removeFile").click(function () {
-            nodes = zTree.getSelectedNodes(),
+        nodes = zTree.getSelectedNodes(),
             treeNode = nodes[0];
         if (nodes.length === 0) {
             layer.msg("请先选择一个节点");
@@ -227,7 +301,7 @@ layui.use("layer", function () {
                 success: function (res) {
                     layer.msg(res.message);
                     if (res.success === false) {
-                        return ;
+                        return;
                     }
                     //从localStorage中删除
                     tabData = JSON.parse(localStorage.getItem('tabData'));
@@ -301,10 +375,10 @@ layui.use("layer", function () {
         let name = selected['name'];
         let isParent = selected['isParent'];//true false
         if (isParent == true) {
-            $('#devCenter').css('display','none');
+            $('#devCenter').css('display', 'none');
             return;
         }
-        $('#devCenter').css('display','block');
+        $('#devCenter').css('display', 'block');
 
         setScript(id);
 
@@ -722,7 +796,6 @@ layui.use("layer", function () {
     });
 
 
-
     /**
      * 初始化开发中心页面
      *
@@ -812,7 +885,7 @@ layui.use("layer", function () {
             localStorage.setItem("tabData", JSON.stringify(tmp));
         }
         if (tabSize === 0) {
-            $('#devCenter').css('display','none');
+            $('#devCenter').css('display', 'none');
 
         }
 
@@ -1078,7 +1151,7 @@ function setScript(id) {
     let result = getDataByGet(url, parameter);
 
     if (result.name == null) {
-        return ;
+        return;
     }
 
 
