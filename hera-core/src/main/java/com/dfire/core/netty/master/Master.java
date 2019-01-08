@@ -528,6 +528,7 @@ public class Master {
                     if (!actionMapNew.containsKey(aid)) {
                         masterContext.getQuartzSchedulerService().deleteJob(actionId);
                         masterContext.getHeraJobActionService().delete(actionId);
+                        shouldRemove.add(jobHandler);
                     }
                 }
                 //移除非今天版本的订阅者

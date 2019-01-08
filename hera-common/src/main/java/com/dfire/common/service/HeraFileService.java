@@ -38,4 +38,5 @@ public interface HeraFileService {
     HeraFile findDocByOwner(String owner);
 
 
+    boolean updateParentById(Integer id, Integer parent);
 }
