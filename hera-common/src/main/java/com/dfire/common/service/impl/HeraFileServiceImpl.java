@@ -104,4 +104,10 @@ public class HeraFileServiceImpl implements HeraFileService {
         return heraFileMapper.findDocByOwner(owner);
     }
 
+    @Override
+    public boolean updateParentById(Integer id, Integer parent) {
+        Integer update = heraFileMapper.updateParentById(id, parent);
+        return update != null && update > 0;
+    }
+
 }

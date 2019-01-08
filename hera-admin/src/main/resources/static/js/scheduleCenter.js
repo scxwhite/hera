@@ -739,7 +739,7 @@ layui.use(['table'], function () {
             if (res) {
                 layer.msg("移动节点[" + node.name + "]成功");
             } else {
-                layer.msg("移动节点[" + id + "]失败");
+                layer.msg("移动节点[" + node.id + "]失败");
             }
             return res;
         }
