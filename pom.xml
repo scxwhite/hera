@@ -247,6 +247,12 @@
             </properties>
         </profile>
         <profile>
+            <id>foreign</id>
+            <properties>
+                <env>foreign</env>
+            </properties>
+        </profile>
+        <profile>
             <id>pre</id>
             <properties>
                 <env>pre</env>
@@ -262,7 +268,7 @@
                 <version>2.20</version>
                 <configuration>
                     <skipTests>false</skipTests>
-                    <argLine>${argLine} -Xmx3072m -Xms1024m -XX:MetaspaceSize=256m</argLine>
+                    <argLine>-Xmx3072m -Xms1024m -XX:MetaspaceSize=256m</argLine>
                 </configuration>
             </plugin>
         </plugins>
