@@ -390,7 +390,8 @@ public class JobHandler extends AbstractHandler {
             JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(jobKey).build();
             jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
             jobDetail.getJobDataMap().put("dispatcher", dispatcher);
-            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression().trim());
+            //TODO  根据任务区域加时区
+            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression().trim())/*.inTimeZone()*/;
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, Constants.HERA_GROUP).withSchedule(scheduleBuilder).build();
             masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
             ScheduleLog.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
