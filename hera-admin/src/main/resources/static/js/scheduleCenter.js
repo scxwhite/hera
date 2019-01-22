@@ -197,7 +197,7 @@ layui.use(['table'], function () {
                     type: isGroup
                 },
                 success: function (data) {
-                    alert(data.message);
+                    layer.msg(data.message);
                     window.setTimeout(leftClick, 100);
                 }
             })
