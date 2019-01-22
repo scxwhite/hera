@@ -158,6 +158,8 @@ spark :
 
 
 ---
+
+## 此环境  不发邮件
 spring:
   profiles: foreign
 druid:
