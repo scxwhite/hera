@@ -152,24 +152,3 @@ spark :
   driver-cores : --driver-cores 1
   executor-memory : -- executor-memory 2g
   executor-cores : --executor-cores 1
-
-
-
----
-
-## 此环境  不发邮件
-spring:
-  profiles: foreign
-druid:
-  datasource:
-    url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
-    username: lineage
-    password: lineage@552208
-#spark 配置
-spark :
-  address : jdbc:hive2://spark-server001.2dfire-inc.com:10000
-  master : --master yarn
-  driver-memory : --driver-memory 2g
-  driver-cores : --driver-cores 1
-  executor-memory : -- executor-memory 2g
-  executor-cores : --executor-cores 1
