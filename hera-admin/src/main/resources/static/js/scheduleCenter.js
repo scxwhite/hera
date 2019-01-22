@@ -197,7 +197,7 @@ layui.use(['table'], function () {
                     type: isGroup
                 },
                 success: function (data) {
-                    alert(data.message);
+                    layer.msg(data.message);
                     window.setTimeout(leftClick, 100);
                 }
             })
@@ -1404,7 +1404,7 @@ let JobLogTable = function (jobId) {
             cache: false,
             pageNumber: 1,
             showRefresh: true,           //是否显示刷新按钮
-            showPaginationSwitch: true,  //是否显示选择分页数按钮
+            showPaginationSwitch: false,  //是否显示选择分页数按钮
             sidePagination: "server",
             queryParamsType: "limit",
             queryParams: function (params) {

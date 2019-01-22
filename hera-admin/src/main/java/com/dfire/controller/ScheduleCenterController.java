@@ -171,23 +171,22 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/updatePermission", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    public JsonResponse updatePermission(@RequestParam("id") Integer id,
+    public JsonResponse updatePermission(@RequestParam("id") String id,
                                          @RequestParam("type") boolean type,
                                          @RequestParam("uIdS") String names) {
-
-        if (!hasPermission(id, type ? GROUP : JOB)) {
+        Integer newId = getGroupId(id);
+        if (!hasPermission(newId, type ? GROUP : JOB)) {
             return new JsonResponse(false, ERROR_MSG);
         }
         JSONArray uIdS = JSONArray.parseArray(names);
-        Integer integer = heraPermissionService.deleteByTargetId(id);
-
+        Integer integer = heraPermissionService.deleteByTargetId(newId);
         if (integer == null) {
             return new JsonResponse(false, "修改失败");
         }
         if (uIdS != null && uIdS.size() > 0) {
             String typeStr = type ? "group" : "job";
             Date date = new Date();
-            Long targetId = Long.parseLong(String.valueOf(id));
+            Long targetId = Long.parseLong(String.valueOf(newId));
             List<HeraPermission> permissions = new ArrayList<>(uIdS.size());
             for (Object uId : uIdS) {
                 HeraPermission heraPermission = new HeraPermission();
@@ -198,7 +197,6 @@ public class ScheduleCenterController extends BaseHeraController {
                 heraPermission.setUid((String) uId);
                 permissions.add(heraPermission);
             }
-
             Integer res = heraPermissionService.insertList(permissions);
             if (res == null || res != uIdS.size()) {
                 return new JsonResponse(false, "修改失败");
@@ -472,16 +470,20 @@ public class ScheduleCenterController extends BaseHeraController {
         }
 
         HeraJob heraJob = heraJobService.findById(id);
+
+        if (status.equals(heraJob.getAuto())) {
+            return new JsonResponse(true, "操作成功");
+        }
         //关闭动作 上游关闭时需要判断下游是否有开启任务，如果有，则不允许关闭
-        if (heraJob.getAuto() == 1) {
+        if (status != 1) {
             String errorMsg;
             if ((errorMsg = getJobFromAuto(heraJobService.findDownStreamJob(id), 1)) != null) {
-                return new JsonResponse(false, "下游存在开启状态任务:" + errorMsg);
+                return new JsonResponse(false, id + "下游存在开启状态任务:" + errorMsg);
             }
         } else { //开启动作 如果有上游任务，上游任务不能为关闭状态
             String errorMsg;
             if ((errorMsg = getJobFromAuto(heraJobService.findUpStreamJob(id), 0)) != null) {
-                return new JsonResponse(false, "上游存在关闭状态任务:" + errorMsg);
+                return new JsonResponse(false, id + "上游存在关闭状态任务:" + errorMsg);
             }
         }
         boolean result = heraJobService.changeSwitch(id, status);
@@ -761,6 +763,45 @@ public class ScheduleCenterController extends BaseHeraController {
             }
             return null;
         }
+    }
+
+    /**
+     * 一键开启/关闭/失效 某job 的上游/下游的所有任务
+     *
+     * @param jobId jobId
+     * @param type  0:上游  1:下游
+     * @param auto  0:关闭  1:开启  2:失效
+     * @return
+     */
+    @RequestMapping(value = "/switchAll", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse getJobImpact(Integer jobId, Integer type, Integer auto) {
+        List<Integer> jobList = heraJobService.findJobImpact(jobId, type);
+        if (jobList == null) {
+            return new JsonResponse(false, "当前任务不存在");
+        }
+        int size = jobList.size();
+        JsonResponse response;
+        if ((type == 0 && auto == 1) || (type == 1 && auto != 1)) {
+            for (int i = size - 1; i >= 0; i--) {
+                response = this.updateSwitch(jobList.get(i), auto);
+                if (!response.isSuccess()) {
+                    return response;
+                }
+            }
+        } else if ((type == 1 && auto == 1) || (type == 0 && auto != 1)) {
+            for (int i = 0; i < size; i++) {
+                response = this.updateSwitch(jobList.get(i), auto);
+                if (!response.isSuccess()) {
+                    return response;
+                }
+
+            }
+        } else {
+            return new JsonResponse(false, "未知的type:" + type);
+        }
+
+        return new JsonResponse(true, "全部处理成功", jobList);
     }
 
 
