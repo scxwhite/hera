@@ -25,6 +25,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
     protected volatile Process process;
     protected final Map<String, String> envMap;
     private int exitCode;
+    private volatile int exceptionCode = -1;
 
 
     public ProcessJob(JobContext jobContext) {
@@ -77,16 +78,13 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                 exitCode = process.waitFor();
                 latch.await();
             } catch (InterruptedException e) {
-                exitCode = Constants.INTERRUPTED_EXIT_CODE;
+                exceptionCode = Constants.INTERRUPTED_EXIT_CODE;
                 log(e);
             } finally {
                 process = null;
             }
-            if (exitCode != 0) {
-                return exitCode;
-            }
         }
-        return exitCode;
+        return exceptionCode == -1 ? exitCode : exceptionCode;
     }
 
 
@@ -229,7 +227,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
                     logConsole(line);
                 }
             } catch (Exception e) {
-                exitCode = Constants.LOG_EXIT_CODE;
+                exceptionCode = Constants.LOG_EXIT_CODE;
                 HeraLog.error("接受日志异常:{}", e);
                 log(threadName + ": 接收日志出错，退出日志接收");
             } finally {

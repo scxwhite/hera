@@ -212,6 +212,49 @@ public class HeraJobServiceImpl implements HeraJobService {
     }
 
     @Override
+    public List<Integer> findJobImpact(int jobId, Integer type) {
+        Set<Integer> check = new HashSet<>();
+        List<Integer> res = new ArrayList<>();
+        check.add(jobId);
+        res.add(jobId);
+        DirectionGraph<Integer> graph = getDirectionGraph();
+
+        Queue<GraphNode<Integer>> nodeQueue = new LinkedList<>();
+        GraphNode<Integer> node = new GraphNode<>(jobId, "");
+        nodeQueue.add(node);
+        Integer index;
+        ArrayList<Integer> graphNodes;
+        Map<Integer, GraphNode<Integer>> indexMap = graph.getIndexMap();
+        GraphNode<Integer> graphNode;
+        while (!nodeQueue.isEmpty()) {
+            node = nodeQueue.remove();
+            index = graph.getNodeIndex(node);
+            if (index == null) {
+                break;
+            }
+            if (type == 0) {
+                graphNodes = graph.getSrcEdge()[index];
+            } else {
+                graphNodes = graph.getTarEdge()[index];
+            }
+            if (graphNodes == null) {
+                continue;
+            }
+            for (Integer integer : graphNodes) {
+                graphNode = indexMap.get(integer);
+                if (!check.contains(graphNode.getNodeName())) {
+                    check.add(graphNode.getNodeName());
+                    res.add(graphNode.getNodeName());
+                    nodeQueue.add(graphNode);
+                }
+
+            }
+        }
+        return res;
+    }
+
+
+    @Override
     public List<JobRelation> getJobRelations() {
         List<HeraJob> list = this.getAllJobDependencies();
         List<JobRelation> res = new ArrayList<>(list.size() * 3);
@@ -267,7 +310,7 @@ public class HeraJobServiceImpl implements HeraJobService {
 
     @Override
     public boolean changeParent(Integer newId, Integer parentId) {
-        Integer update = heraJobMapper.changeParent(newId,parentId);
+        Integer update = heraJobMapper.changeParent(newId, parentId);
         return update != null && update > 0;
     }
 
