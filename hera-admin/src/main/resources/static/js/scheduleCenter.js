@@ -197,7 +197,7 @@ layui.use(['table'], function () {
                     type: isGroup
                 },
                 success: function (data) {
-                    alert(data.message);
+                    layer.msg(data.message);
                     window.setTimeout(leftClick, 100);
                 }
             })
@@ -739,7 +739,7 @@ layui.use(['table'], function () {
             if (res) {
                 layer.msg("移动节点[" + node.name + "]成功");
             } else {
-                layer.msg("移动节点[" + id + "]失败");
+                layer.msg("移动节点[" + node.id + "]失败");
             }
             return res;
         }
@@ -1404,7 +1404,7 @@ let JobLogTable = function (jobId) {
             cache: false,
             pageNumber: 1,
             showRefresh: true,           //是否显示刷新按钮
-            showPaginationSwitch: true,  //是否显示选择分页数按钮
+            showPaginationSwitch: false,  //是否显示选择分页数按钮
             sidePagination: "server",
             queryParamsType: "limit",
             queryParams: function (params) {

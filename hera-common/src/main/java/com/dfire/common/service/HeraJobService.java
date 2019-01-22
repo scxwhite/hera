@@ -42,6 +42,9 @@ public interface HeraJobService {
 
     Map<String, Object> findCurrentJobGraph(int jobId, Integer type);
 
+
+    List<Integer> findJobImpact(int jobId, Integer type);
+
     /**
      * 构建依赖图边
      *

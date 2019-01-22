@@ -27,7 +27,7 @@ var TableInit = function () {
             toolTip: "",
             striped: false,
             showRefresh: true,           //是否显示刷新按钮
-            showPaginationSwitch: true,  //是否显示选择分页数按钮
+            showPaginationSwitch: false,  //是否显示选择分页数按钮
             pageNumber: 1,              //初始化加载第一页，默认第一页
             pageSize: 20,                //每页的记录行数（*）
             pageList: [40, 60, 80],
@@ -149,7 +149,7 @@ var JobLogTable = function (jobId) {
             cache: false,
             pageNumber: 1,
             showRefresh: true,           //是否显示刷新按钮
-            showPaginationSwitch: true,  //是否显示选择分页数按钮
+            showPaginationSwitch: false,  //是否显示选择分页数按钮
             sidePagination: "server",
             queryParamsType: "limit",
             queryParams: function (params) {

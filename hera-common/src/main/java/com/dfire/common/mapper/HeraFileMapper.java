@@ -63,4 +63,7 @@ public interface HeraFileMapper {
 
     @Select("select * from hera_file where owner = #{owner} and name='个人文档'")
     HeraFile findDocByOwner(String owner);
+
+    @Update("update hera_file set parent = #{parent} where id = #{id} ")
+    Integer updateParentById(@Param("id") Integer id, @Param("parent") Integer parent);
 }

@@ -5,8 +5,6 @@ import com.dfire.common.constants.LogConstant;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.HeraJobMonitor;
-import com.dfire.common.entity.HeraUser;
 import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.model.JobGroupCache;
 import com.dfire.common.entity.vo.HeraActionVo;
@@ -17,9 +15,7 @@ import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.service.*;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.JobStatus;
-import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -36,9 +32,11 @@ import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.*;
 
-import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -334,7 +332,7 @@ public class JobHandler extends AbstractHandler {
     }
 
     private void handleMaintenanceEvent(HeraJobMaintenanceEvent event) {
-        if (event.getType() == Events.UpdateJob && StringUtil.actionIdToJobId(actionId, event.getId())) {
+        if (event.getType() == Events.UpdateJob && Objects.equals(Integer.parseInt(event.getId()), ActionUtil.getJobId(actionId))) {
             autoRecovery();
         }
         if (event.getType() == Events.UpdateActions && Objects.equals(actionId, event.getId())) {
@@ -390,7 +388,8 @@ public class JobHandler extends AbstractHandler {
             JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(jobKey).build();
             jobDetail.getJobDataMap().put("actionId", heraActionVo.getId());
             jobDetail.getJobDataMap().put("dispatcher", dispatcher);
-            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression().trim());
+            //TODO  根据任务区域加时区
+            CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression().trim())/*.inTimeZone()*/;
             CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, Constants.HERA_GROUP).withSchedule(scheduleBuilder).build();
             masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
             ScheduleLog.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());

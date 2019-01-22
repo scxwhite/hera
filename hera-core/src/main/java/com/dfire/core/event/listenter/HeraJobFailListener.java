@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 任务失败的预处理
+ *
  * @author xiaosuda
  */
 public class HeraJobFailListener extends AbstractListener {
@@ -59,8 +60,8 @@ public class HeraJobFailListener extends AbstractListener {
             }
             HeraJob heraJob = heraJobService.findById(jobId);
             //非开启任务不处理  最好能把这些抽取出去 提供接口实现
-            if (heraJob.getAuto() != 1) {
-                return ;
+            if (heraJob.getAuto() != 1 && !Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
+                return;
             }
             executor.execute(() -> {
                 List<String> emails = new ArrayList<>(1);

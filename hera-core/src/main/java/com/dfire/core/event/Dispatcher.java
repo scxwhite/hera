@@ -42,9 +42,7 @@ public class Dispatcher extends AbstractObservable {
     }
 
     public void removeJobHandler(JobHandler jobHandler) {
-        if (jobHandlers.contains(jobHandler)) {
-            jobHandlers.remove(jobHandler);
-        }
+        jobHandlers.remove(jobHandler);
     }
 
     public void addDispatcherListener(AbstractListener listener) {

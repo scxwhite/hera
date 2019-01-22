@@ -9,6 +9,7 @@ import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.logs.MonitorLog;
 import com.dfire.protocol.JobExecuteKind;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -225,6 +226,40 @@ public class DevelopCenterController extends BaseHeraController {
     @ResponseBody
     public HeraDebugHistory getJobLog(Integer id) {
         return debugHistoryService.findLogById(id);
+    }
+
+
+    @RequestMapping(value = "/check", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse check(Integer id) {
+        if (checkPermission(id)) {
+            return new JsonResponse(true, "查询成功", true);
+        } else {
+            return new JsonResponse(true, "无权限", false);
+        }
+    }
+
+    @RequestMapping(value = "/moveNode", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResponse moveNode(Integer id, Integer parent, Integer lastParent) {
+        if (!checkPermission(id)) {
+            return new JsonResponse(false, "无权限，移动失败");
+        }
+        boolean res = heraFileService.updateParentById(id, parent);
+        if (res) {
+            MonitorLog.info("开发中心任务{}【移动】:{} ----> {}", id, lastParent, parent);
+            return new JsonResponse(true, "移动成功");
+        } else {
+            return new JsonResponse(false, "移动失败,请联系管理员");
+        }
+    }
+
+    private boolean checkPermission(Integer id) {
+        if (HeraGlobalEnvironment.getAdmin().equals(getOwner())) {
+            return true;
+        }
+        HeraFile heraFile = heraFileService.findById(id);
+        return heraFile != null && heraFile.getOwner().equals(getOwner());
     }
 
     @RequestMapping(value = "saveScript", method = RequestMethod.POST)
