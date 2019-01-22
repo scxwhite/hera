@@ -171,23 +171,22 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/updatePermission", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    public JsonResponse updatePermission(@RequestParam("id") Integer id,
+    public JsonResponse updatePermission(@RequestParam("id") String id,
                                          @RequestParam("type") boolean type,
                                          @RequestParam("uIdS") String names) {
-
-        if (!hasPermission(id, type ? GROUP : JOB)) {
+        Integer newId = getGroupId(id);
+        if (!hasPermission(newId, type ? GROUP : JOB)) {
             return new JsonResponse(false, ERROR_MSG);
         }
         JSONArray uIdS = JSONArray.parseArray(names);
-        Integer integer = heraPermissionService.deleteByTargetId(id);
-
+        Integer integer = heraPermissionService.deleteByTargetId(newId);
         if (integer == null) {
             return new JsonResponse(false, "修改失败");
         }
         if (uIdS != null && uIdS.size() > 0) {
             String typeStr = type ? "group" : "job";
             Date date = new Date();
-            Long targetId = Long.parseLong(String.valueOf(id));
+            Long targetId = Long.parseLong(String.valueOf(newId));
             List<HeraPermission> permissions = new ArrayList<>(uIdS.size());
             for (Object uId : uIdS) {
                 HeraPermission heraPermission = new HeraPermission();
@@ -198,7 +197,6 @@ public class ScheduleCenterController extends BaseHeraController {
                 heraPermission.setUid((String) uId);
                 permissions.add(heraPermission);
             }
-
             Integer res = heraPermissionService.insertList(permissions);
             if (res == null || res != uIdS.size()) {
                 return new JsonResponse(false, "修改失败");
