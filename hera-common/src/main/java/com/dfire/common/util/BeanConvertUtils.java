@@ -239,6 +239,7 @@ public class BeanConvertUtils {
             stringToMap(s, configs);
             heraJob.setConfigs(StringUtil.convertMapToString(configs));
         });
+        heraJob.setRunType(heraJobVo.getRunType().toString());
         return heraJob;
     }
 
