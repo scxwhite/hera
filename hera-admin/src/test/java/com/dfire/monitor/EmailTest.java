@@ -28,7 +28,7 @@ public class EmailTest {
     @Test
     public void sendEmail() {
         try {
-            emailService.sendEmail("test1", "content1", Arrays.asList("xiaosuda@2dfire.com"));
+            emailService.sendEmail("test1", "content1", "xiaosuda@2dfire.com");
         } catch (MessagingException e) {
             e.printStackTrace();
         }
