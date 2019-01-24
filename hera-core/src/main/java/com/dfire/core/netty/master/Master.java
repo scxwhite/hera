@@ -6,6 +6,7 @@ import com.dfire.common.constants.LogConstant;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.HeraUser;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
@@ -42,6 +43,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Future;
@@ -1088,6 +1090,15 @@ public class Master {
     public void workerDisconnectProcess(Channel channel) {
         String ip = getIpFromChannel(channel);
         ErrorLog.error("work:{}断线", ip);
+        HeraUser admin = masterContext.getHeraUserService().findByName(HeraGlobalEnvironment.getAdmin());
+
+        if (admin != null) {
+            try {
+                masterContext.getEmailService().sendEmail("警告:work断线了", ip, admin.getEmail());
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        }
         MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);
         masterContext.getWorkMap().remove(channel);
         if (workHolder != null) {

@@ -1,7 +1,6 @@
 package com.dfire.common.service;
 
 import javax.mail.MessagingException;
-import java.util.List;
 
 /**
  * @author xiaosuda
@@ -9,5 +8,11 @@ import java.util.List;
  */
 public interface EmailService {
 
-    void sendEmail(String title, String content, List<String> address) throws MessagingException;
+    /**
+     * @param title   邮件标题
+     * @param content 邮件内容
+     * @param address 收件人，多个用,隔开
+     * @throws MessagingException
+     */
+    void sendEmail(String title, String content, String address) throws MessagingException;
 }
