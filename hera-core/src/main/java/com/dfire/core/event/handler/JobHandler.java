@@ -125,22 +125,10 @@ public class JobHandler extends AbstractHandler {
                     }
                     HeraJobHistoryVo heraJobHistory = BeanConvertUtils.convert(jobHistory);
                     // 搜索上一次运行的日志，从日志中提取jobId 进行kill
-                    if (jobHistory.getStatus() == null || jobHistory.getStatus().equals(StatusEnum.RUNNING.toString())) {
+                    if (jobHistory.getStatus() == null || !jobHistory.getStatus().equals(Constants.STATUS_SUCCESS)) {
                         try {
                             JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
                             heraJobHistory.setIllustrate(LogConstant.SERVER_START_JOB_LOG);
-                            tmp.setHeraJobHistory(heraJobHistory);
-                            new CancelHadoopJob(tmp).run();
-                            master.run(heraJobHistory);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        //TODO  未测试
-                    } else if (heraJobHistory != null && StatusEnum.FAILED.equals(heraJobHistory.getStatusEnum()) &&
-                            LogConstant.WORK_DISCONNECT_LOG.equals(heraJobHistory.getIllustrate())) {
-                        try {
-                            JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
-                            heraJobHistory.setIllustrate(LogConstant.WORK_DISCONNECT_LOG);
                             tmp.setHeraJobHistory(heraJobHistory);
                             new CancelHadoopJob(tmp).run();
                             master.run(heraJobHistory);
