@@ -70,6 +70,7 @@ public class Master {
     private volatile boolean isGenerateActioning = false;
     private IStrategyWorker chooseWorkerStrategy;
 
+    private Channel lastWork;
 
     public void init(MasterContext masterContext) {
         this.masterContext = masterContext;
@@ -645,12 +646,12 @@ public class Master {
         if (!masterContext.getScheduleQueue().isEmpty()) {
             JobElement jobElement = masterContext.getScheduleQueue().poll();
             if (jobElement != null) {
-                MasterWorkHolder workHolder = getRunnableWork(jobElement);
-                if (workHolder == null) {
+                MasterWorkHolder selectWork = getRunnableWork(jobElement);
+                if (selectWork == null) {
                     masterContext.getScheduleQueue().offer(jobElement);
                     ScheduleLog.warn("can not get work to execute Schedule job in master,job is:{}", jobElement.toString());
                 } else {
-                    runScheduleJob(workHolder, jobElement.getJobId());
+                    runScheduleJob(selectWork, jobElement.getJobId());
                     hasTask = true;
                 }
             }
@@ -666,6 +667,7 @@ public class Master {
                 } else {
                     runManualJob(selectWork, jobElement.getJobId());
                     hasTask = true;
+
                 }
             }
         }
@@ -955,7 +957,21 @@ public class Master {
      * @return
      */
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
-        return chooseWorkerStrategy.chooseWorker(jobElement, masterContext);
+        MasterWorkHolder selectWork = chooseWorkerStrategy.chooseWorker(jobElement, masterContext);
+        Channel channel = selectWork.getChannel().getChannel();
+        HeartBeatInfo beatInfo = selectWork.getHeartBeatInfo();
+        // 如果最近两次选择的work一致  需要等待机器最新状态发来之后(睡眠10S)再进行任务分发
+        if (lastWork != null && channel == lastWork && beatInfo.getCpuLoadPerCore() > 0.6F && beatInfo.getMemRate() > 0.7F) {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            lastWork = null;
+            return null;
+        }
+        lastWork = channel;
+        return selectWork;
     }
 
     public void debug(HeraDebugHistoryVo debugHistory) {

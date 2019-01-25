@@ -62,7 +62,7 @@ hera:
    requestTimeout: 10000 # 异步请求超时时间
    channelTimeout: 1000 # netty请求超时时间
    perTaskUseMem : 500          # 每个任务使用内存500M
-   heartBeat : 3           # 心跳传递时间频率
+   heartBeat : 2           # 心跳传递时间频率
    downloadDir : /opt/logs/spring-boot
    hdfsUploadPath : /hera/hdfs-upload-dir/ #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上.注意:必须保证启动hera项目的用户是此文件夹的所有者，否则会导致上传错误
    schedule-group : online

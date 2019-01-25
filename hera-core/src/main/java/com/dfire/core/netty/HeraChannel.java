@@ -2,6 +2,7 @@ package com.dfire.core.netty;
 
 import com.dfire.core.exception.RemotingException;
 import com.dfire.protocol.RpcSocketMessage;
+import io.netty.channel.Channel;
 
 import java.net.SocketAddress;
 
@@ -17,6 +18,8 @@ public interface HeraChannel {
     SocketAddress getRemoteAddress();
 
     SocketAddress getLocalAddress();
+
+    Channel getChannel();
 
     void close();
 }
