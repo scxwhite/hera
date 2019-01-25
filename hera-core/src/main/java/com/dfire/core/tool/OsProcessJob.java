@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -33,7 +34,7 @@ public class OsProcessJob extends RunShell {
     {
         switch (HeraGlobalEnvironment.getSystemEnum()) {
             case LINUX:
-                command = "top -b -a -n 1";
+                command = "top -b -n 1";
                 break;
             case MAC:
                 command = "top -s 0 -n 30 -o cpu -O mem -l 2  -stats pid,user,cpu,time,mem,command,cpu_me";
@@ -228,8 +229,7 @@ public class OsProcessJob extends RunShell {
 
                     mem = 1.0f - ((memFree + memBuffers + swapCached) / memTotal);
                     swap = 1.0f - ((swapFree) / swapTotal);
-
-
+                    processMonitors.sort(Comparator.comparing(ProcessMonitor::getMem));
                     osInfo = OSInfo.newBuilder()
                             .setUser(user)
                             .setSystem(system)
