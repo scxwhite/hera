@@ -808,9 +808,9 @@ public class Master {
         runCount++;
         boolean isCancelJob = false;
         if (runCount > 1) {
-            DebugLog.info("任务重试，睡眠：{}秒", retryWaitTime);
+            DebugLog.info("任务重试，睡眠：{}分钟", retryWaitTime);
             try {
-                Thread.sleep(retryWaitTime * 60 * 1000);
+                TimeUnit.MINUTES.sleep(retryWaitTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -820,7 +820,6 @@ public class Master {
         TriggerTypeEnum triggerType;
         HeraAction heraAction;
         if (runCount == 1) {
-
             heraAction = masterContext.getHeraJobActionService().findById(actionId);
             heraJobHistory = masterContext.getHeraJobHistoryService().
                     findById(heraAction.getHistoryId());
