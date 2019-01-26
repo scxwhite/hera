@@ -9,7 +9,6 @@ import com.dfire.core.tool.RunShell;
 import com.dfire.core.util.NetUtils;
 import com.dfire.logs.HeraLog;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,6 +42,9 @@ public class WorkContext {
     private HeraFileService heraFileService;
     @Autowired
     private HeraProfileService heraProfileService;
+    @Autowired
+    @Qualifier("heraJobMemoryService")
+    private HeraJobService heraJobService;
     public static String host;
     public static Integer cpuCoreNum;
     public String serverHost;

@@ -88,12 +88,10 @@ public class JobUtils {
         }
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
         List<Map<String, String>> resource = jobBean.getHierarchyResources();
-
-        String jobId = jobBean.getHeraActionVo().getId();
-        String script = workContext.getHeraJobActionService().findHeraActionVo(jobId).getSource().getScript();
-        if (jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Shell)
-                || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Hive)
-                || jobBean.getHeraActionVo().getRunType().equals(JobRunTypeEnum.Spark)) {
+        String script = jobBean.getHeraJob().getScript();
+        if (jobBean.getHeraJob().getRunType().equals(JobRunTypeEnum.Shell.toString())
+                || jobBean.getHeraJob().getRunType().equals(JobRunTypeEnum.Hive.toString())
+                || jobBean.getHeraJob().getRunType().equals(JobRunTypeEnum.Spark.toString())) {
             script = resolveScriptResource(resource, script, workContext);
         }
         jobContext.setResources(resource);
@@ -104,15 +102,15 @@ public class JobUtils {
         List<Job> pres = new ArrayList<>();
         pres.add(new DownLoadJob(jobContext));
         List<Job> posts = new ArrayList<>();
-
         Job core = null;
-        if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Shell) {
+        JobRunTypeEnum runType = JobRunTypeEnum.parser(jobBean.getHeraJob().getRunType());
+        if (runType == JobRunTypeEnum.Shell) {
             core = new HadoopShellJob(jobContext);
-        } else if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Hive) {
+        } else if (runType == JobRunTypeEnum.Hive) {
             core = new HiveJob(jobContext);
-        } else if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Spark) {
+        } else if (runType == JobRunTypeEnum.Spark) {
             core = new SparkJob(jobContext);
-        } else if (jobBean.getHeraActionVo().getRunType() == JobRunTypeEnum.Spark2) {
+        } else if (runType == JobRunTypeEnum.Spark2) {
             core = new Spark2Job(jobContext);
         }
         return new ProcessJobContainer(jobContext, pres, posts, core);
