@@ -13,13 +13,14 @@ import java.util.List;
 public interface HeraGroupService {
 
     HeraGroup getRootGroup();
+
     /**
      * 获取上游任务以及组
      *
      * @param jobId
      * @return
      */
-    HeraJobBean getUpstreamJobBean(String jobId);
+    HeraJobBean getUpstreamJobBean(Integer jobId);
 
     int insert(HeraGroup heraGroup);
 

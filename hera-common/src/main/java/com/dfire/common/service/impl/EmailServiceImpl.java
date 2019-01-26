@@ -1,7 +1,9 @@
 package com.dfire.common.service.impl;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.service.EmailService;
 import com.dfire.logs.MonitorLog;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +13,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -34,14 +35,15 @@ public class EmailServiceImpl implements EmailService {
 
 
     @Override
-    public void sendEmail(String title, String content, List<String> address) throws MessagingException {
-        if (address == null || address.size() == 0) {
+    public void sendEmail(String title, String content, String address) throws MessagingException {
+        if (StringUtils.isEmpty(address)) {
             return;
         }
-        int len = address.size();
+        String[] userEmails = address.split(Constants.COMMA);
+        int len = userEmails.length;
         InternetAddress[] addresses = new InternetAddress[len];
         for (int i = 0; i < len; i++) {
-            addresses[i] = new InternetAddress(address.get(i));
+            addresses[i] = new InternetAddress(userEmails[i]);
         }
         Properties properties = new Properties();
         properties.setProperty("mail.smtp.host", mailHost);

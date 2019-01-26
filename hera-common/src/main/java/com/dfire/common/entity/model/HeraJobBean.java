@@ -1,8 +1,8 @@
 package com.dfire.common.entity.model;
 
-import com.dfire.common.entity.vo.HeraActionVo;
+import com.dfire.common.entity.HeraJob;
 import com.dfire.common.util.HierarchyProperties;
-import com.dfire.common.vo.JobStatus;
+import com.dfire.common.util.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,8 +24,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class HeraJobBean {
 
-    private HeraActionVo heraActionVo;
-    private JobStatus jobStatus;
+    private HeraJob heraJob;
     private HeraGroupBean groupBean;
 
     private Set<HeraJobBean> upStream;
@@ -34,14 +33,14 @@ public class HeraJobBean {
 
     public HierarchyProperties getHierarchyProperties() {
         if (groupBean != null) {
-            return new HierarchyProperties(groupBean.getHierarchyProperties(), heraActionVo.getConfigs());
+            return new HierarchyProperties(groupBean.getHierarchyProperties(), StringUtil.convertStringToMap(heraJob.getConfigs()));
         }
-        return new HierarchyProperties(heraActionVo.getConfigs());
+        return new HierarchyProperties(StringUtil.convertStringToMap(heraJob.getConfigs()));
     }
 
     public List<Map<String, String>> getHierarchyResources() {
         List<String> existList = new ArrayList<>();
-        List<Map<String, String>> local = new ArrayList<>(heraActionVo.getResources());
+        List<Map<String, String>> local = new ArrayList<>(StringUtil.convertResources(heraJob.getResources()));
 
 
         for (Map<String, String> map : local) {
@@ -61,15 +60,4 @@ public class HeraJobBean {
         return local;
     }
 
-    public void addUpStream(HeraJobBean jobBean) {
-        if (!upStream.contains(jobBean)) {
-            upStream.add(jobBean);
-        }
-    }
-
-    public void addDownStream(HeraJobBean heraJobBean) {
-        if (!downStream.contains(heraJobBean)) {
-            downStream.add(heraJobBean);
-        }
-    }
 }

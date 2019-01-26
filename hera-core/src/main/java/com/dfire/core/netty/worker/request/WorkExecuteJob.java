@@ -76,7 +76,7 @@ public class WorkExecuteJob {
             if (!directory.exists()) {
                 directory.mkdirs();
             }
-            HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getActionId());
+            HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
             final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN),
                     jobBean, history, directory.getAbsolutePath(), workContext);
             workContext.getManualRunning().put(actionId, job);
@@ -146,8 +146,7 @@ public class WorkExecuteJob {
             history.setExecuteHost(WorkContext.host);
             history.setStartTime(new Date());
             workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
-
-            HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(jobId);
+            HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(heraJobHistory.getJobId());
             String date = ActionUtil.getCurrDate();
             File directory = new File(HeraGlobalEnvironment.getDownloadDir()
                     + File.separator + date + File.separator + history.getId());

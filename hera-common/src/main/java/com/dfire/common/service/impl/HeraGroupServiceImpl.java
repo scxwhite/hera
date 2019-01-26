@@ -1,15 +1,13 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraGroup;
+import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.model.HeraGroupBean;
 import com.dfire.common.entity.model.HeraJobBean;
-import com.dfire.common.entity.vo.HeraActionVo;
-import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraGroupMapper;
 import com.dfire.common.service.HeraGroupService;
-import com.dfire.common.service.HeraJobActionService;
+import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.vo.JobStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +26,7 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     protected HeraGroupMapper heraGroupMapper;
 
     @Autowired
-    private HeraJobActionService heraJobActionService;
+    private HeraJobService heraJobService;
 
     @Override
     public HeraGroup getRootGroup() {
@@ -36,14 +34,13 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     }
 
     @Override
-    public HeraJobBean getUpstreamJobBean(String actionId) {
-        Tuple<HeraActionVo, JobStatus> tuple = heraJobActionService.findHeraActionVo(actionId);
-        if (tuple != null) {
+    public HeraJobBean getUpstreamJobBean(Integer jobId) {
+        HeraJob heraJob = heraJobService.findById(jobId);
+        if (heraJob != null) {
             HeraJobBean jobBean = HeraJobBean.builder()
-                    .heraActionVo(tuple.getSource())
-                    .jobStatus(tuple.getTarget())
+                    .heraJob(heraJob)
                     .build();
-            jobBean.setGroupBean(getUpstreamGroupBean(tuple.getSource().getGroupId()));
+            jobBean.setGroupBean(getUpstreamGroupBean(heraJob.getGroupId()));
             return jobBean;
         }
         return null;
@@ -109,7 +106,6 @@ public class HeraGroupServiceImpl implements HeraGroupService {
 
     @Override
     public boolean changeParent(Integer id, Integer parent) {
-
         Integer update = heraGroupMapper.changeParent(id, parent);
         return update != null && update > 0;
     }

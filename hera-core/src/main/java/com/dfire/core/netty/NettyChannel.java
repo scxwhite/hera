@@ -59,6 +59,11 @@ public class NettyChannel implements HeraChannel {
     }
 
     @Override
+    public Channel getChannel() {
+        return channel;
+    }
+
+    @Override
     public String toString() {
         return "NettyChannel{" +
                 "channel=" + channel +

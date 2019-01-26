@@ -7,13 +7,12 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>1.1</version>
+        <version>2.2</version>
     </parent>
 
     <artifactId>hera-admin</artifactId>
-    <version>1.0</version>
+    <version>2.2</version>
     <packaging>jar</packaging>
-
     <name>hera-admin</name>
     <description>hera任务调度系统</description>
 
@@ -25,10 +24,8 @@
         <springfox.swagger.ui.version>2.7.0</springfox.swagger.ui.version>
         <main-class>com.dfire.AdminBootstrap</main-class>
         <assembly.include.base.directory>true</assembly.include.base.directory>
-        <hera.common.version>1.0</hera.common.version>
-        <hera.protocol.version>1.0</hera.protocol.version>
-        <hera.monitor.version>1.0</hera.monitor.version>
-        <hera.core.version>1.0</hera.core.version>
+        <hera.core.version>2.2</hera.core.version>
+        <hera.monitor.version>2.2</hera.monitor.version>
     </properties>
 
     <dependencies>
@@ -52,10 +49,6 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -117,12 +110,6 @@
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger-ui</artifactId>
             <version>${springfox.swagger.ui.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dfire.hera</groupId>
-            <artifactId>hera-common</artifactId>
-            <version>${hera.common.version}</version>
         </dependency>
 
         <dependency>
