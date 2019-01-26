@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -172,18 +171,18 @@ public class OsProcessJob extends RunShell {
                                 continue;
                             }
                             if (first.contains("Cpu")) {
-                                try {
-                                    if ("Cpu(s):".equals(first)) {
-                                        user = Float.parseFloat(words[1].replace("%us,", ""));
-                                        system = Float.parseFloat(words[2].replace("%sy,", ""));
-                                        cpu = Float.parseFloat(words[4].replace("%id,", ""));
-                                    } else if ("%Cpu(s)".equals(first)) {
-                                        user = Float.parseFloat(words[1]);
-                                        system = Float.parseFloat(words[3]);
+                                if ("Cpu(s):".equals(first)) {
+                                    user = Float.parseFloat(words[1].replace("%us,", ""));
+                                    system = Float.parseFloat(words[2].replace("%sy,", ""));
+                                    cpu = Float.parseFloat(words[4].replace("%id,", ""));
+                                } else if ("%Cpu(s):".equals(first)) {
+                                    user = Float.parseFloat(words[1]);
+                                    system = Float.parseFloat(words[3]);
+                                    try {
+                                        cpu = Float.parseFloat(words[7]);
+                                    } catch (Exception e) {
                                         cpu = Float.parseFloat(words[6].replace("ni,", ""));
                                     }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
                                 }
                             } else if ("Mem:".equals(first)) {
                                 memTotal = parseKb(words[1]);
@@ -229,7 +228,13 @@ public class OsProcessJob extends RunShell {
 
                     mem = 1.0f - ((memFree + memBuffers + swapCached) / memTotal);
                     swap = 1.0f - ((swapFree) / swapTotal);
-                    processMonitors.sort(Comparator.comparing(ProcessMonitor::getMem));
+                    processMonitors.sort((o1, o2) -> {
+                        int comp;
+                        if ((comp = o1.getMem().compareTo(o2.getCommand())) == 0) {
+                            return -o1.getCpu().compareTo(o2.getCpu());
+                        }
+                        return -comp;
+                    });
                     osInfo = OSInfo.newBuilder()
                             .setUser(user)
                             .setSystem(system)
