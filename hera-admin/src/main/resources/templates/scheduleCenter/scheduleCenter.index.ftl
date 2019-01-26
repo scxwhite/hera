@@ -340,6 +340,16 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">任务类型:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select class="form-control" name="runType">
+                                                    <option value="Shell" selected="selected">Shell</option>
+                                                    <option value="Hive">Hive</option>
+                                                    <option value="Spark">Spark</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">任务优先级:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                 <select class="form-control" name="runPriorityLevel">

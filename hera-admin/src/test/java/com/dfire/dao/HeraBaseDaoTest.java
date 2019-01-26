@@ -234,7 +234,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void JobGraphTest() {
-        HeraJobBean jobBean = heraGroupService.getUpstreamJobBean("90");
+        HeraJobBean jobBean = heraGroupService.getUpstreamJobBean(90);
         System.out.println(jobBean.getUpStream().size());
     }
 

@@ -19,8 +19,6 @@ import com.dfire.logs.ScheduleLog;
 import org.apache.commons.lang.StringUtils;
 
 import javax.mail.MessagingException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -64,13 +62,13 @@ public class HeraJobFailListener extends AbstractListener {
                 return;
             }
             executor.execute(() -> {
-                List<String> emails = new ArrayList<>(1);
+                StringBuilder address = new StringBuilder("");
                 try {
                     HeraJobMonitor monitor = heraJobMonitorService.findByJobId(heraJob.getId());
                     if (monitor == null && Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
                         ScheduleLog.info("任务无监控人，发送给owner：{}", heraJob.getId());
                         HeraUser user = heraUserService.findByName(heraJob.getOwner());
-                        emails.add(user.getEmail().trim());
+                        address.append(user.getEmail().trim());
                     } else if (monitor != null) {
                         String ids = monitor.getUserIds();
                         String[] id = ids.split(Constants.COMMA);
@@ -80,13 +78,12 @@ public class HeraJobFailListener extends AbstractListener {
                             }
                             HeraUser user = heraUserService.findById(Integer.parseInt(anId));
                             if (user != null && user.getEmail() != null) {
-                                emails.add(user.getEmail());
+                                address.append(user.getEmail()).append(Constants.COMMA);
                             }
                         }
                     }
-                    if (emails.size() > 0) {
-                        emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, emails);
-                    }
+                    emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, address.toString());
+
                 } catch (MessagingException e) {
                     e.printStackTrace();
                     ErrorLog.error("发送邮件失败");

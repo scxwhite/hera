@@ -1446,17 +1446,11 @@ let JobLogTable = function (jobId) {
                 }, {
                     field: "startTime",
                     title: "开始时间",
-                    width: "12%",
-                    formatter: function (row) {
-                        return getLocalTime(row);
-                    }
+                    width: "12%"
                 }, {
                     field: "endTime",
                     title: "结束时间",
-                    width: "12%",
-                    formatter: function (row) {
-                        return getLocalTime(row);
-                    }
+                    width: "12%"
                 }, {
                     field: "illustrate",
                     title: "说明",

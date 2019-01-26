@@ -2,10 +2,8 @@ package com.dfire.core.event.handler;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
-import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.model.JobGroupCache;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
@@ -32,10 +30,6 @@ import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.*;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -125,22 +119,10 @@ public class JobHandler extends AbstractHandler {
                     }
                     HeraJobHistoryVo heraJobHistory = BeanConvertUtils.convert(jobHistory);
                     // 搜索上一次运行的日志，从日志中提取jobId 进行kill
-                    if (jobHistory.getStatus() == null || jobHistory.getStatus().equals(StatusEnum.RUNNING.toString())) {
+                    if (jobHistory.getStatus() == null || !jobHistory.getStatus().equals(Constants.STATUS_SUCCESS)) {
                         try {
                             JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
                             heraJobHistory.setIllustrate(LogConstant.SERVER_START_JOB_LOG);
-                            tmp.setHeraJobHistory(heraJobHistory);
-                            new CancelHadoopJob(tmp).run();
-                            master.run(heraJobHistory);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        //TODO  未测试
-                    } else if (heraJobHistory != null && StatusEnum.FAILED.equals(heraJobHistory.getStatusEnum()) &&
-                            LogConstant.WORK_DISCONNECT_LOG.equals(heraJobHistory.getIllustrate())) {
-                        try {
-                            JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
-                            heraJobHistory.setIllustrate(LogConstant.WORK_DISCONNECT_LOG);
                             tmp.setHeraJobHistory(heraJobHistory);
                             new CancelHadoopJob(tmp).run();
                             master.run(heraJobHistory);
@@ -210,28 +192,10 @@ public class JobHandler extends AbstractHandler {
             return;
         }
         JobStatus jobStatus;
-        synchronized (this) {
-            jobStatus = heraJobActionService.findJobStatus(actionId);
-            HeraJobBean heraJobBean = heraGroupService.getUpstreamJobBean(actionId);
-            String cycle = heraJobBean.getHierarchyProperties().getProperty(RunningJobKeyConstant.DEPENDENCY_CYCLE);
-            if (StringUtils.isNotBlank(cycle)) {
-                Map<String, String> dependencies = jobStatus.getReadyDependency();
-                if (cycle.equals(RunningJobKeyConstant.DEPENDENCY_CYCLE_VALUE)) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                    String now = simpleDateFormat.format(new Date());
-                    for (String key : new HashSet<>(dependencies.keySet())) {
-                        String date = simpleDateFormat.format(new Date(Long.valueOf(dependencies.get(key))));
-                        if (!now.equals(date)) {
-                            jobStatus.getReadyDependency().remove(key);
-                            ScheduleLog.info("remove overwrite dependency");
-                        }
-                    }
-                }
-            }
-            ScheduleLog.info("received a success dependency job with actionId = " + jobId);
-            jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
-            heraJobActionService.updateStatus(jobStatus);
-        }
+        jobStatus = heraJobActionService.findJobStatus(actionId);
+        ScheduleLog.info("received a success dependency job with actionId = " + jobId);
+        jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
+        heraJobActionService.updateStatus(jobStatus);
         boolean allComplete = true;
         for (String key : heraActionVo.getDependencies()) {
             if (jobStatus.getReadyDependency().get(key) == null) {
