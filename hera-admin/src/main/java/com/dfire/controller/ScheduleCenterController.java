@@ -795,7 +795,6 @@ public class ScheduleCenterController extends BaseHeraController {
                 if (!response.isSuccess()) {
                     return response;
                 }
-
             }
         } else {
             return new JsonResponse(false, "未知的type:" + type);
