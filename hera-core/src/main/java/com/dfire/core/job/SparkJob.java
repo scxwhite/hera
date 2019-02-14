@@ -117,27 +117,29 @@ public class SparkJob extends ProcessJob {
                     tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write("/opt/app/spark231/bin/spark-sql " + sb.toString());
+                    tmpWriter.write(HeraGlobalEnvironment.getSparkBaseDir() +
+                            "/bin/spark-sql " + sb.toString());
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
-                   if (tmpWriter != null) {
-                       try {
-                           tmpWriter.close();
-                       } catch (IOException e) {
-                           e.printStackTrace();
-                       }
-                   }
+                    if (tmpWriter != null) {
+                        try {
+                            tmpWriter.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
                 list.add(shellPrefix + " sh " + tmpFilePath);
             } else {
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + " /opt/app/spark231/bin/spark-sql " + sb.toString());
+                list.add(shellPrefix + " " + HeraGlobalEnvironment.getSparkBaseDir() +
+                        "/bin/spark-sql " + sb.toString());
             }
 
         } else {
-            list.add("/opt/app/spark231/bin/spark-sql " + sb.toString());
+            list.add(HeraGlobalEnvironment.getSparkBaseDir() + "/bin/spark-sql " + sb.toString());
         }
         return list;
     }

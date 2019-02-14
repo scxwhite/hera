@@ -99,6 +99,7 @@ mybatis:
     mapUnderscoreToCamelCase: true
 #spark 配置
 spark :
+  baseDir : /opt/app/spark231
   address : jdbc:hive2://10.1.21.141:10000
   driver : org.apache.hive.jdbc.HiveDriver
   username : heguozi
@@ -132,6 +133,7 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
+  baseDir : /opt/app/spark231
   address : jdbc:hive2://spark-server001.2dfire-inc.com:10000
   master : --master yarn
   driver-memory : --driver-memory 2g
@@ -148,6 +150,7 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
+  baseDir : /opt/app/spark231
   address : jdbc:hive2://spark-server001.2dfire-inc.com:10000
   master : --master yarn
   driver-memory : --driver-memory 2g
