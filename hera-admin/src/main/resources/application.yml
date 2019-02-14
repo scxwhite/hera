@@ -99,11 +99,11 @@ mybatis:
     mapUnderscoreToCamelCase: true
 #spark 配置
 spark :
-  baseDir : /opt/app/spark231
-  address : jdbc:hive2://10.1.21.141:10000
-  driver : org.apache.hive.jdbc.HiveDriver
-  username : heguozi
-  password : 123456
+  baseDir : /opt/app/spark231 #Spark基础路径
+  address : jdbc:hive2://10.1.21.141:10000 #ThriftServer地址
+  driver : org.apache.hive.jdbc.HiveDriver #jdbc driver
+  username : heguozi #ThriftServer用户名
+  password : 123456 #ThriftServer密码
   master : --master yarn
   driver-memory : --driver-memory 1g
   driver-cores : --driver-cores 1
@@ -133,8 +133,8 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
-  baseDir : /opt/app/spark231
-  address : jdbc:hive2://spark-server001.2dfire-inc.com:10000
+  baseDir : /opt/app/spark231 #Spark基础路径
+  address : jdbc:hive2://spark-server001.2dfire-inc.com:10000 #ThriftServer地址
   master : --master yarn
   driver-memory : --driver-memory 2g
   driver-cores : --driver-cores 1
@@ -150,8 +150,8 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
-  baseDir : /opt/app/spark231
-  address : jdbc:hive2://spark-server001.2dfire-inc.com:10000
+  baseDir : /opt/app/spark231 #Spark基础路径
+  address : jdbc:hive2://spark-server001.2dfire-inc.com:10000 #ThriftServer地址
   master : --master yarn
   driver-memory : --driver-memory 2g
   driver-cores : --driver-cores 1
