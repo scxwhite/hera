@@ -51,7 +51,7 @@ public class UploadResourceController {
                     String prefix = StringUtils.substringBefore(fileName, ".");
                     String suffix = StringUtils.substringAfter(fileName, ".");
                     newFileName = prefix + "-" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + "." + suffix;
-                    newFilePath = HeraGlobalEnvironment.getWorkDir() + newFileName;
+                    newFilePath = HeraGlobalEnvironment.getWorkDir() + File.separator + newFileName;
                     file = new File(newFilePath);
                     multipartFile.transferTo(file);
                 }
