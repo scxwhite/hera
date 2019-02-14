@@ -54,6 +54,8 @@ public class HeraGlobalEnvironment {
     @Getter
     private static Integer taskTimeout;
     @Getter
+    private static String sparkBaseDir;
+    @Getter
     private static String sparkAddress;
     @Getter
     private static String sparkDriver;
@@ -167,6 +169,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.channelTimeout}")
     public void setChannelTimeout(Long channelTimeout) {
         HeraGlobalEnvironment.channelTimeout = channelTimeout;
+    }
+
+    @Value("${spark.baseDir}")
+    public void setSparkBaseDir(String sparkBaseDir) {
+        HeraGlobalEnvironment.sparkBaseDir = sparkBaseDir;
     }
 
     @Value("${spark.address}")
