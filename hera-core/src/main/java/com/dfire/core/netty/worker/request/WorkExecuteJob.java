@@ -71,7 +71,7 @@ public class WorkExecuteJob {
             workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
 
             String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            File directory = new File(HeraGlobalEnvironment.getDownloadDir()
+            File directory = new File(HeraGlobalEnvironment.getWorkDir()
                     + File.separator + date + File.separator + "manual-" + history.getId());
             if (!directory.exists()) {
                 directory.mkdirs();
@@ -148,7 +148,7 @@ public class WorkExecuteJob {
             workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
             HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(heraJobHistory.getJobId());
             String date = ActionUtil.getCurrDate();
-            File directory = new File(HeraGlobalEnvironment.getDownloadDir()
+            File directory = new File(HeraGlobalEnvironment.getWorkDir()
                     + File.separator + date + File.separator + history.getId());
             if (!directory.exists()) {
                 directory.mkdirs();
@@ -223,7 +223,7 @@ public class WorkExecuteJob {
                 workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
 
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                File directory = new File(HeraGlobalEnvironment.getDownloadDir() + File.separator + date + File.separator + "debug-" + debugId);
+                File directory = new File(HeraGlobalEnvironment.getWorkDir() + File.separator + date + File.separator + "debug-" + debugId);
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
