@@ -641,14 +641,14 @@ public class Master {
     /**
      * 扫描任务等待队列，取出任务去执行
      */
-    public boolean scan() {
+    public boolean scan() throws InterruptedException {
         boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
-            JobElement jobElement = masterContext.getScheduleQueue().poll();
+            JobElement jobElement = masterContext.getScheduleQueue().take();
             if (jobElement != null) {
                 MasterWorkHolder selectWork = getRunnableWork(jobElement);
                 if (selectWork == null) {
-                    masterContext.getScheduleQueue().offer(jobElement);
+                    masterContext.getScheduleQueue().put(jobElement);
                     ScheduleLog.warn("can not get work to execute Schedule job in master,job is:{}", jobElement.toString());
                 } else {
                     runScheduleJob(selectWork, jobElement.getJobId());
@@ -658,11 +658,11 @@ public class Master {
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
-            JobElement jobElement = masterContext.getManualQueue().poll();
+            JobElement jobElement = masterContext.getManualQueue().take();
             if (jobElement != null) {
                 MasterWorkHolder selectWork = getRunnableWork(jobElement);
                 if (selectWork == null) {
-                    masterContext.getManualQueue().offer(jobElement);
+                    masterContext.getManualQueue().put(jobElement);
                     ScheduleLog.warn("can not get work to execute ManualQueue job in master,job is:{}", jobElement.toString());
                 } else {
                     runManualJob(selectWork, jobElement.getJobId());
@@ -673,11 +673,11 @@ public class Master {
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
-            JobElement jobElement = masterContext.getDebugQueue().poll();
+            JobElement jobElement = masterContext.getDebugQueue().take();
             if (jobElement != null) {
                 MasterWorkHolder selectWork = getRunnableWork(jobElement);
                 if (selectWork == null) {
-                    masterContext.getDebugQueue().offer(jobElement);
+                    masterContext.getDebugQueue().put(jobElement);
                     ScheduleLog.warn("can not get work to execute DebugQueue job in master,job is:{}", jobElement.toString());
                 } else {
                     runDebugJob(selectWork, jobElement.getJobId());
@@ -987,7 +987,11 @@ public class Master {
         debugHistory.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         debugHistory.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 进入任务队列");
         masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
-        masterContext.getDebugQueue().offer(element);
+        try {
+            masterContext.getDebugQueue().put(element);
+        } catch (InterruptedException e) {
+            ErrorLog.error("添加开发中心执行任务失败:" + element.getJobId(), e);
+        }
     }
 
     /**
@@ -1025,10 +1029,14 @@ public class Master {
         masterContext.getHeraJobActionService().update(heraAction);
         heraJobHistory.getLog().append(ActionUtil.getTodayString() + "进入任务队列");
         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
-        if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
-            masterContext.getManualQueue().offer(element);
-        } else {
-            masterContext.getScheduleQueue().offer(element);
+        try {
+            if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
+                masterContext.getManualQueue().put(element);
+            } else {
+                masterContext.getScheduleQueue().put(element);
+            }
+        } catch (InterruptedException e) {
+            ErrorLog.error("添加任务" + element.getJobId() + "失败", e);
         }
     }
 
