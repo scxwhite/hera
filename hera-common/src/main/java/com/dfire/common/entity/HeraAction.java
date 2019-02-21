@@ -85,4 +85,6 @@ public class HeraAction {
 
     private int hostGroupId;
 
+    private short repeatRun;
+
 }

@@ -1016,9 +1016,10 @@ public class Master {
                 .build();
         heraJobHistory.setStatusEnum(StatusEnum.RUNNING);
         //重复job检测
-        if (checkJobExists(heraJobHistory, false)) {
+        if (heraJobHistory.getRepeatRun() != 1 && checkJobExists(heraJobHistory, false)) {
             return;
         }
+
         //先在数据库中set一些执行任务所需的必须值 然后再加入任务队列
         heraAction.setLastResult(heraAction.getStatus());
         heraAction.setStatus(Constants.STATUS_RUNNING);

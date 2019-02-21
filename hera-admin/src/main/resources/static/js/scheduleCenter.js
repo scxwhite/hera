@@ -808,6 +808,11 @@ layui.use(['table'], function () {
                             $('#jobMessage [name="auto"]').removeClass("label-primary")
                                 .removeClass("label-default").removeClass("label-info")
                                 .addClass(data.auto === "开启" ? "label-primary" : data.auto === "失效" ? "label-info" : "label-default");
+
+
+                            $('#jobMessage [name="repeatRun"]').removeClass("label-primary")
+                                .removeClass("label-default").addClass(data.repeatRun === 1 ? "label-primary" : "label-default").val(data.repeatRun === 1 ? "是" : "否");
+
                             $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
 
                             let areas = '';
