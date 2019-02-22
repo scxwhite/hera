@@ -24,7 +24,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
     protected volatile Process process;
     protected final Map<String, String> envMap;
-    private int exitCode = -1;
+    private int exitCode;
 
 
     public ProcessJob(JobContext jobContext) {
@@ -145,8 +145,8 @@ public abstract class ProcessJob extends AbstractJob implements Job {
     public void cancel() {
         try {
             new CancelHadoopJob(jobContext).run();
-        } catch (Exception e1) {
-            log(e1);
+        } catch (Exception e) {
+            log(e);
         }
         //强制kill 进程
         if (process != null) {
