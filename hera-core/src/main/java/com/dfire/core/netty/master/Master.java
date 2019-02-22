@@ -1004,6 +1004,10 @@ public class Master {
         String actionId = heraJobHistory.getActionId();
         int priorityLevel = 3;
         HeraAction heraAction = masterContext.getHeraJobActionService().findById(actionId);
+
+
+
+
         Map<String, String> configs = StringUtil.convertStringToMap(heraAction.getConfigs());
         String priorityLevelValue = configs.get("run.priority.level");
         if (priorityLevelValue != null) {
@@ -1016,7 +1020,7 @@ public class Master {
                 .build();
         heraJobHistory.setStatusEnum(StatusEnum.RUNNING);
         //重复job检测
-        if (heraJobHistory.getRepeatRun() != 1 && checkJobExists(heraJobHistory, false)) {
+        if (checkJobExists(heraJobHistory, false)) {
             return;
         }
 
@@ -1043,7 +1047,10 @@ public class Master {
 
 
     private boolean checkJobExists(HeraJobHistoryVo heraJobHistory, boolean checkOnly) {
-        // TODO 任务检测，不要使用for循环，后面改成hash查找
+        // 允许重复的话 不检测
+        if (masterContext.getHeraJobService().isRepeat(heraJobHistory.getJobId())) {
+            return false;
+        }
         String actionId = heraJobHistory.getActionId();
         Integer jobId = heraJobHistory.getJobId();
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER || heraJobHistory.getTriggerType() == TriggerTypeEnum.SCHEDULE) {

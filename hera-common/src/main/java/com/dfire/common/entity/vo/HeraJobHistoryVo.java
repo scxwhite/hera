@@ -53,7 +53,6 @@ public class HeraJobHistoryVo {
 
     private StatusEnum status;
 
-    private short repeatRun;
 
 
 

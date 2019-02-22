@@ -50,6 +50,5 @@ public class HeraJobHistory {
 
     String properties ;
 
-    private short repeatRun;
 
 }
