@@ -374,6 +374,16 @@ public class Master {
                         }
                     }
                     shouldRemove.forEach(actionMap::remove);
+                    List<AbstractHandler> handlers = new ArrayList<>(masterContext.getDispatcher().getJobHandlers());
+                    if (handlers != null && handlers.size() > 0) {
+                        for (AbstractHandler handler : handlers) {
+                            JobHandler jobHandler = (JobHandler) handler;
+                            if (StringUtil.actionIdToJobId(jobHandler.getActionId(), String.valueOf(jobId))) {
+                                masterContext.getQuartzSchedulerService().deleteJob(jobHandler.getActionId());
+                                masterContext.getDispatcher().removeJobHandler(jobHandler);
+                            }
+                        }
+                    }
                 }
                 String cronDate = ActionUtil.getActionVersionByTime(now);
                 Map<Integer, List<HeraAction>> idMap = new HashMap<>(jobList.size());

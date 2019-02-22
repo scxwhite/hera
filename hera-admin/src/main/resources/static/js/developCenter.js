@@ -122,7 +122,6 @@ layui.use(['layer', 'laytpl', 'form'], function () {
         let id = selected['id'];
         addCount++;
         if (e.data.type !== 1) {
-
             let layHtml = "初始化";
             if (hostGroups == null) {
                 $.ajax({
@@ -222,7 +221,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                 }
             });
         }
-    };
+    }
 
     //修改文件名后回调
     function renameFile(event, treeId, treeNode, isCancel) {
