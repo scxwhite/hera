@@ -15,6 +15,7 @@ import com.dfire.core.job.Job;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.util.JobUtils;
+import com.dfire.logs.HeraLog;
 import com.dfire.logs.ScheduleLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
@@ -74,7 +75,9 @@ public class WorkExecuteJob {
             File directory = new File(HeraGlobalEnvironment.getWorkDir()
                     + File.separator + date + File.separator + "manual-" + history.getId());
             if (!directory.exists()) {
-                directory.mkdirs();
+                if (!directory.mkdirs()) {
+                    HeraLog.error("创建文件失败:" + directory.getAbsolutePath());
+                }
             }
             HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
             final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN),
@@ -89,13 +92,13 @@ public class WorkExecuteJob {
                 exception = e;
                 history.getLog().appendHeraException(e);
             } finally {
-                String res = exitCode == 0 ? Constants.STATUS_SUCCESS : Constants.STATUS_FAILED;
+                StatusEnum statusEnum = getStatusFromCode(exitCode);
                 //更新状态和日志
                 workContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(
                         HeraJobHistory.builder()
                                 .id(history.getId())
                                 .log(history.getLog().getContent())
-                                .status(res)
+                                .status(statusEnum.toString())
                                 .endTime(new Date())
                                 .build());
                 workContext.getManualRunning().remove(actionId);
@@ -151,12 +154,12 @@ public class WorkExecuteJob {
             File directory = new File(HeraGlobalEnvironment.getWorkDir()
                     + File.separator + date + File.separator + history.getId());
             if (!directory.exists()) {
-                directory.mkdirs();
+                if (!directory.mkdirs()) {
+                    HeraLog.error("创建文件失败:" + directory.getAbsolutePath());
+                }
             }
-
             final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext);
             workContext.getRunning().put(jobId, job);
-
             Integer exitCode = -1;
             Exception exception = null;
             try {
@@ -165,12 +168,12 @@ public class WorkExecuteJob {
                 exception = e;
                 history.getLog().appendHeraException(e);
             } finally {
-                String res = exitCode == 0 ? Constants.STATUS_SUCCESS : Constants.STATUS_FAILED;
+                StatusEnum statusEnum = getStatusFromCode(exitCode);
                 //更新状态和日志
                 workContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(
                         HeraJobHistory.builder().
                                 id(history.getId()).
-                                log(history.getLog().getContent()).status(res).
+                                log(history.getLog().getContent()).status(statusEnum.toString()).
                                 endTime(new Date())
                                 .build());
                 workContext.getRunning().remove(jobId);
@@ -225,7 +228,9 @@ public class WorkExecuteJob {
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 File directory = new File(HeraGlobalEnvironment.getWorkDir() + File.separator + date + File.separator + "debug-" + debugId);
                 if (!directory.exists()) {
-                    directory.mkdirs();
+                    if (directory.mkdirs()) {
+                        HeraLog.error("创建文件失败:" + directory.getAbsolutePath());
+                    }
                 }
                 Job job = JobUtils.createDebugJob(new JobContext(JobContext.DEBUG_RUN), BeanConvertUtils.convert(history),
                         directory.getAbsolutePath(), workContext);
@@ -237,12 +242,14 @@ public class WorkExecuteJob {
             } finally {
                 HeraDebugHistoryVo heraDebugHistoryVo = workContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
                 heraDebugHistoryVo.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+
+                StatusEnum statusEnum = getStatusFromCode(exitCode);
                 if (exitCode == 0) {
                     status = ResponseStatus.Status.OK;
-                    heraDebugHistoryVo.setStatus(StatusEnum.SUCCESS);
+                    heraDebugHistoryVo.setStatus(statusEnum);
                 } else {
                     status = ResponseStatus.Status.ERROR;
-                    heraDebugHistoryVo.setStatus(StatusEnum.FAILED);
+                    heraDebugHistoryVo.setStatus(statusEnum);
                 }
                 workContext.getHeraDebugHistoryService().updateStatus(BeanConvertUtils.convert(heraDebugHistoryVo));
                 HeraDebugHistoryVo debugHistory = workContext.getDebugRunning().get(debugId).getJobContext().getDebugHistory();
@@ -262,4 +269,16 @@ public class WorkExecuteJob {
         });
     }
 
+
+    private StatusEnum getStatusFromCode(int exitCode) {
+        if (exitCode == Constants.SUCCESS_EXIT_CODE) {
+            return StatusEnum.SUCCESS;
+        }
+
+        if (exitCode == Constants.WAIT_EXIT_CODE) {
+            return StatusEnum.WAIT;
+        }
+        return StatusEnum.FAILED;
+
+    }
 }

@@ -194,7 +194,7 @@ public class Master {
                     for (String jobDepend : jobDependList) {
                         heraAction = actionMapNew.get(Long.parseLong(jobDepend));
                         if (heraAction != null) {
-                            if (!(isAllComplete = Constants.STATUS_SUCCESS.equals(heraAction.getStatus()))) {
+                            if (!(isAllComplete = StatusEnum.SUCCESS.toString().equals(heraAction.getStatus()))) {
                                 break;
                             }
                         }
@@ -221,15 +221,15 @@ public class Master {
             if (checkJob == null) {
                 return;
             }
-            if (Constants.STATUS_RUNNING.equals(checkJob.getStatus())) {
+            if (StatusEnum.RUNNING.toString().equals(checkJob.getStatus())) {
                 HeraJobHistory actionHistory = masterContext.getHeraJobHistoryService().findById(checkJob.getHistoryId());
                 if (actionHistory == null) {
                     return;
                 }
-                if (actionHistory.getStatus() != null && !actionHistory.getStatus().equals(Constants.STATUS_RUNNING)) {
+                if (actionHistory.getStatus() != null && !actionHistory.getStatus().equals(StatusEnum.RUNNING.toString())) {
                     masterContext.getMasterSchedule().schedule(() -> {
                         HeraAction newAction = masterContext.getHeraJobActionService().findById(String.valueOf(actionId));
-                        if (Constants.STATUS_RUNNING.equals(newAction.getStatus())) {
+                        if (StatusEnum.RUNNING.toString().equals(newAction.getStatus())) {
                             ErrorLog.error("任务信号丢失actionId:{},historyId:{}", actionId, newAction.getHistoryId());
                             Integer jobId = ActionUtil.getJobId(String.valueOf(actionId));
                             boolean scheduleType = actionHistory.getTriggerType().equals(TriggerTypeEnum.SCHEDULE.getId())
@@ -714,11 +714,11 @@ public class Master {
             HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(heraAction.getHistoryId());
             HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
             historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
-            heraAction.setStatus(Constants.STATUS_RUNNING);
+            heraAction.setStatus(StatusEnum.RUNNING.toString());
             historyVo.setStatusEnum(StatusEnum.RUNNING);
             HeraAction cacheAction = heraActionMap.get(Long.parseLong(actionId));
             if (cacheAction != null) {
-                cacheAction.setStatus(Constants.STATUS_RUNNING);
+                cacheAction.setStatus(StatusEnum.RUNNING.toString());
                 cacheAction.setHistoryId(heraAction.getHistoryId());
             }
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(BeanConvertUtils.convert(historyVo));
@@ -748,7 +748,7 @@ public class Master {
                     ErrorLog.error("manual actionId = {} error, {}", history.getActionId(), heraException.getMessage());
                 }
                 ScheduleLog.info("actionId = {} manual execute failed", history.getActionId());
-                heraAction.setStatus(Constants.STATUS_FAILED);
+                heraAction.setStatus(StatusEnum.FAILED.toString());
                 HeraJobHistory jobHistory = masterContext.getHeraJobHistoryService().findById(history.getId());
                 if (LogConstant.CANCEL_JOB_LOG.equals(jobHistory.getIllustrate())) {
                     event = null;
@@ -757,7 +757,7 @@ public class Master {
                     event = new HeraJobFailedEvent(history.getActionId(), jobHistoryVo.getTriggerType(), jobHistoryVo);
                 }
             } else {
-                heraAction.setStatus(Constants.STATUS_SUCCESS);
+                heraAction.setStatus(StatusEnum.SUCCESS.toString());
                 event = new HeraJobSuccessEvent(history.getActionId(), historyVo.getTriggerType(), history.getId());
             }
             cacheAction = heraActionMap.get(Long.parseLong(actionId));
@@ -839,7 +839,7 @@ public class Master {
                     .build();
             masterContext.getHeraJobHistoryService().insert(heraJobHistory);
             heraAction.setHistoryId(heraJobHistory.getId());
-            heraAction.setStatus(Constants.STATUS_RUNNING);
+            heraAction.setStatus(StatusEnum.RUNNING.toString());
             masterContext.getHeraJobActionService().update(heraAction);
             heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
             heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行\n");
@@ -847,7 +847,7 @@ public class Master {
         }
         HeraAction cacheAction = heraActionMap.get(Long.parseLong(actionId));
         if (cacheAction != null) {
-            cacheAction.setStatus(Constants.STATUS_RUNNING);
+            cacheAction.setStatus(StatusEnum.RUNNING.toString());
             cacheAction.setHistoryId(heraJobHistory.getId());
         }
         heraJobHistoryVo.setStatusEnum(StatusEnum.RUNNING);
@@ -863,22 +863,22 @@ public class Master {
             if (future != null) {
                 future.cancel(true);
             }
-            heraAction.setStatus(Constants.STATUS_FAILED);
+            heraAction.setStatus(StatusEnum.FAILED.toString());
             heraJobHistoryVo.setStatusEnum(StatusEnum.FAILED);
             masterContext.getHeraJobHistoryService().updateHeraJobHistoryStatus(BeanConvertUtils.convert(heraJobHistoryVo));
         }
         boolean success = response != null && response.getStatusEnum() == ResponseStatus.Status.OK;
         ScheduleLog.info("job_id 执行结果" + actionId + "---->" + (response == null ? "空指针" : response.getStatusEnum().toString()));
         if (!success) {
-            heraAction.setStatus(Constants.STATUS_FAILED);
+            heraAction.setStatus(StatusEnum.FAILED.toString());
             HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(heraJobHistoryVo.getId());
             HeraJobHistoryVo jobHistory = BeanConvertUtils.convert(history);
             HeraJobFailedEvent event = new HeraJobFailedEvent(actionId, triggerType, jobHistory);
             event.setRollBackTime(retryWaitTime);
             event.setRunCount(runCount);
-            if (Constants.CANCEL_JOB_MESSAGE.equals(jobHistory.getIllustrate())) {
+            if (Constants.CANCEL_JOB_MESSAGE.equals(jobHistory.getIllustrate()) || StatusEnum.WAIT.toString().equals(history.getStatus())) {
                 isCancelJob = true;
-                ScheduleLog.info("任务取消，取消重试:{}", jobHistory.getActionId());
+                ScheduleLog.info("任务取消或者暂停，取消重试:{}", jobHistory.getActionId());
             } else {
                 masterContext.getDispatcher().forwardEvent(event);
             }
@@ -887,7 +887,7 @@ public class Master {
             if (JobScheduleTypeEnum.Dependent.getType().equals(heraAction.getScheduleType())) {
                 heraAction.setReadyDependency("{}");
             }
-            heraAction.setStatus(Constants.STATUS_SUCCESS);
+            heraAction.setStatus(StatusEnum.SUCCESS.toString());
             HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, triggerType, heraJobHistory.getId());
             masterContext.getDispatcher().forwardEvent(successEvent);
         }
@@ -1006,8 +1006,6 @@ public class Master {
         HeraAction heraAction = masterContext.getHeraJobActionService().findById(actionId);
 
 
-
-
         Map<String, String> configs = StringUtil.convertStringToMap(heraAction.getConfigs());
         String priorityLevelValue = configs.get("run.priority.level");
         if (priorityLevelValue != null) {
@@ -1026,7 +1024,7 @@ public class Master {
 
         //先在数据库中set一些执行任务所需的必须值 然后再加入任务队列
         heraAction.setLastResult(heraAction.getStatus());
-        heraAction.setStatus(Constants.STATUS_RUNNING);
+        heraAction.setStatus(StatusEnum.RUNNING.toString());
         heraAction.setHistoryId(heraJobHistory.getId());
         heraAction.setHost(heraJobHistory.getExecuteHost());
         heraAction.setStatisticStartTime(new Date());

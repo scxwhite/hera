@@ -4,6 +4,7 @@ import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.model.TablePageForm;
 import com.dfire.common.entity.vo.HeraActionVo;
+import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.mapper.HeraJobActionMapper;
 import com.dfire.common.service.HeraJobActionService;
@@ -70,7 +71,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         HeraAction action = heraJobActionMapper.findById(heraAction);
         if (action != null) {
             //如果该任务不是在运行中
-            if (!Constants.STATUS_RUNNING.equals(action.getStatus())) {
+            if (!StatusEnum.RUNNING.toString().equals(action.getStatus())) {
                 heraAction.setStatus(action.getStatus());
                 heraAction.setHistoryId(action.getHistoryId());
                 heraAction.setReadyDependency(action.getReadyDependency());
@@ -82,7 +83,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             return true;
         } else {
             if (heraAction.getId() < nowAction) {
-                heraAction.setStatus(Constants.STATUS_FAILED);
+                heraAction.setStatus(StatusEnum.FAILED.toString());
                 heraAction.setLastResult("生成action时，任务过时，直接设置为失败");
             }
         }
@@ -215,9 +216,9 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         if (type == 0) {
             params.put("status", null);
         } else if (type == 1) {
-            params.put("status", Constants.STATUS_RUNNING);
+            params.put("status", StatusEnum.RUNNING.toString());
         } else if (type == 2) {
-            params.put("status", Constants.STATUS_FAILED);
+            params.put("status", StatusEnum.FAILED.toString());
         } else {
             return null;
         }
@@ -233,7 +234,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             if (action.getStatus() != null) {
                 taskVo.setStatus(buildFont(action.getStatus(), action.getStatus()));
             } else {
-                taskVo.setStatus(buildFont("未执行", Constants.STATUS_FAILED));
+                taskVo.setStatus(buildFont("未执行", StatusEnum.FAILED.toString()));
             }
             taskVo.setLastResult(buildFont(action.getLastResult(), action.getLastResult()));
             if (action.getScheduleType() == 0) {
@@ -245,11 +246,11 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 for (String dependency : dependencies) {
                     heraAction = this.findById(dependency);
                     if (heraAction != null) {
-                        if (Constants.STATUS_SUCCESS.equals(heraAction.getStatus())) {
+                        if (StatusEnum.SUCCESS.toString().equals(heraAction.getStatus())) {
                             builder.append(Constants.HTML_FONT_GREEN_LEFT).append("依赖任务:").append(dependency).append(",结束时间:").append(ActionUtil.getFormatterDate(ActionUtil.MON_MIN, heraAction.getStatisticEndTime()));
-                        } else if (Constants.STATUS_RUNNING.equals(heraAction.getStatus())) {
+                        } else if (StatusEnum.RUNNING.toString().equals(heraAction.getStatus())) {
                             builder.append(Constants.HTML_FONT_BLUE_LEFT).append("依赖任务:").append(dependency).append(",执行中");
-                        } else if (Constants.STATUS_FAILED.equals(heraAction.getStatus())) {
+                        } else if (StatusEnum.FAILED.toString().equals(heraAction.getStatus()) || StatusEnum.WAIT.toString().equals(heraAction.getStatus())) {
                             builder.append(Constants.HTML_FONT_RED_LEFT).append("依赖任务:").append(dependency).append(",执行失败");
                         } else {
                             builder.append(Constants.HTML_FONT_RED_LEFT).append("依赖任务:").append(dependency).append(",未执行");
@@ -270,17 +271,20 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         if (type == null) {
             return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
         }
-        switch (type) {
-            case Constants.STATUS_RUNNING:
-                return Constants.HTML_FONT_BLUE_LEFT + str + Constants.HTML_FONT_RIGHT;
-            case Constants.STATUS_SUCCESS:
-                return Constants.HTML_FONT_GREEN_LEFT + str + Constants.HTML_FONT_RIGHT;
-            case Constants.STATUS_NONE:
-                return Constants.HTML_FONT_LEFT + str + Constants.HTML_FONT_RIGHT;
-            case Constants.STATUS_FAILED:
-                return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
-            default:
-                return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
+
+        if (StatusEnum.RUNNING.toString().equals(type)) {
+            return Constants.HTML_FONT_BLUE_LEFT + str + Constants.HTML_FONT_RIGHT;
         }
+        if (StatusEnum.SUCCESS.toString().equals(type)) {
+            return Constants.HTML_FONT_GREEN_LEFT + str + Constants.HTML_FONT_RIGHT;
+        }
+        if (StatusEnum.FAILED.toString().equals(type)) {
+            return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
+        }
+        if (Constants.STATUS_NONE.equals(type)) {
+            return Constants.HTML_FONT_LEFT + str + Constants.HTML_FONT_RIGHT;
+        }
+        return Constants.HTML_FONT_RED_LEFT + str + Constants.HTML_FONT_RIGHT;
+
     }
 }
