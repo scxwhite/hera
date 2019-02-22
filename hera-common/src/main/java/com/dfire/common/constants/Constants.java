@@ -57,13 +57,13 @@ public class Constants {
 
     public final static int SUCCESS_EXIT_CODE = 0;
 
-    public final static int WAIT_EXIT_CODE = 1024;
+    public final static int WAIT_EXIT_CODE = 64;
 
-    public final static int LOG_EXIT_CODE = 1025;
+    public final static int LOG_EXIT_CODE = WAIT_EXIT_CODE + 1;
 
-    public final static int INTERRUPTED_EXIT_CODE = 1026;
+    public final static int INTERRUPTED_EXIT_CODE = WAIT_EXIT_CODE + 2;
 
-    public final static int DEFAULT_EXIT_CODE = 1027;
+    public final static int DEFAULT_EXIT_CODE = WAIT_EXIT_CODE + 3;
 
 
 
@@ -87,6 +87,7 @@ public class Constants {
     public final static String SPARK_SUFFIX = POINT + SPARK_FILE;
 
     public final static String NEW_LINE = "\n";
+
     public final static String HTML_NEW_LINE = "<br>";
 
 
