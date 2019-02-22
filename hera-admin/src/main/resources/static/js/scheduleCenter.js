@@ -1443,6 +1443,18 @@ let JobLogTable = function (jobId) {
                     field: "status",
                     title: "执行状态",
                     width: "8%",
+                    formatter: function (val) {
+                        if (val === 'running') {
+                            return '<a class="layui-btn layui-btn-xs" style="width: 100%;">' + val + '</a>';
+                        }
+                        if (val === 'success') {
+                            return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#43ff41">' + val + '</a>';
+                        }
+                        if (val === 'wait') {
+                            return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                        }
+                        return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
+                    }
                 }, {
                     field: "operator",
                     title: "执行人",
@@ -1464,7 +1476,7 @@ let JobLogTable = function (jobId) {
                         if (val == null) {
                             return val;
                         }
-                        return "<span class='label label-info' data-toggle='tooltip' title='" + val + "' >" + val.slice(0, 6) + "</span>";
+                        return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 6) + '</label>';
                     }
                 },
                 {
