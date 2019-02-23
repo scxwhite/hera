@@ -1,6 +1,11 @@
 let codeMirror, zTree;
-layui.use("layer", function () {
+layui.use(['layer', 'laytpl', 'form'], function () {
     $('#developManage').addClass('active');
+
+
+    let laytpl = layui.laytpl, form = layui.form;
+
+    let hostGroups;
     /**
      * 开发中心zTree初始化配置
      *
@@ -116,7 +121,79 @@ layui.use("layer", function () {
         let selected = zTree.getSelectedNodes()[0];
         let id = selected['id'];
         addCount++;
-        if (e.data.type === 1) {
+        if (e.data.type !== 1) {
+            let layHtml = "初始化";
+            if (hostGroups == null) {
+                $.ajax({
+                    url: base_url + '/hostGroup/list',
+                    type: 'get',
+                    async: false,
+                    success: function (data) {
+                        hostGroups = data.data;
+                    }
+                });
+            }
+            laytpl($('#addHostGroup')[0].innerHTML).render(hostGroups, function (html) {
+                layHtml = html;
+            });
+
+            layer.open({
+                type: 1,
+                title: '请选择机器组',
+                skin: 'layui-layer-rim', //加上边框
+                area: ['350px', '200px'], //宽高
+                content: layHtml,  //调到新增页面
+                btn: ["确定", "取消"],
+                success: function () {
+                    form.render();
+                },
+                yes: function (index, layero) {
+                    let name, parameter;
+                    if (e.data.type === 2) {
+                        //new .hive file
+                        name = addCount + ".hive";
+                        parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+
+                    } else if (e.data.type === 3) {
+                        //new .sh file
+                        name = addCount + ".sh";
+                        parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+                    } else if (e.data.type === 4) {
+                        //new .spark file
+                        name = addCount + ".spark";
+                        parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+                    }
+                    $.ajax({
+                        url: base_url + "/developCenter/addFile.do",
+                        type: "get",
+                        async: false,
+                        data: parameter + "&hostGroupId=" + $('#hostGroupId').val(),
+                        success: function (data) {
+                            layer.close(index);
+                            if (treeNode) {
+                                treeNode = zTree.addNodes(treeNode, {
+                                    id: data,
+                                    pId: treeNode.id,
+                                    isParent: isParent,
+                                    name: name
+                                });
+                            } else {
+                                treeNode = zTree.addNodes(null, {id: data, pId: 0, isParent: isParent, name: name});
+                            }
+                            if (treeNode) {
+                                zTree.editName(treeNode[0]);
+                            } else {
+                                layer.msg("叶子节点被锁定，无法增加子节点");
+                            }
+                        }
+                    });
+
+                },
+                btn2: function (index, layero) {
+                    layer.close(index);
+                }
+            });
+        } else {
             //new folder
             let name = "文件夹" + addCount;
             let parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
@@ -143,90 +220,8 @@ layui.use("layer", function () {
                     }
                 }
             });
-        } else if (e.data.type === 2) {
-            //new .hive file
-            let name = addCount + ".hive";
-            let parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-            $.ajax({
-                url: base_url + "/developCenter/addFile.do",
-                type: "get",
-                async: false,
-                data: parameter,
-                success: function (data) {
-                    if (treeNode) {
-                        treeNode = zTree.addNodes(treeNode, {
-                            id: data,
-                            pId: treeNode.id,
-                            isParent: isParent,
-                            name: name
-                        });
-                    } else {
-                        treeNode = zTree.addNodes(null, {id: data, pId: 0, isParent: isParent, name: name});
-                    }
-                    if (treeNode) {
-                        zTree.editName(treeNode[0]);
-                    } else {
-                        layer.msg("叶子节点被锁定，无法增加子节点");
-                    }
-                }
-            });
-
-        } else if (e.data.type === 3) {
-            //new .sh file
-            let name = addCount + ".sh";
-            let parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-            $.ajax({
-                url: base_url + "/developCenter/addFile.do",
-                type: "get",
-                async: false,
-                data: parameter,
-                success: function (data) {
-                    if (treeNode) {
-                        treeNode = zTree.addNodes(treeNode, {
-                            id: data,
-                            pId: treeNode.id,
-                            isParent: isParent,
-                            name: name
-                        });
-                    } else {
-                        treeNode = zTree.addNodes(null, {id: data, pId: 0, isParent: isParent, name: name});
-                    }
-                    if (treeNode) {
-                        zTree.editName(treeNode[0]);
-                    } else {
-                        layer.msg("叶子节点被锁定，无法增加子节点");
-                    }
-                }
-            });
-        } else if (e.data.type === 4) {
-            //new .spark file
-            let name = addCount + ".spark";
-            let parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
-            $.ajax({
-                url: base_url + "/developCenter/addFile.do",
-                type: "get",
-                async: false,
-                data: parameter,
-                success: function (data) {
-                    if (treeNode) {
-                        treeNode = zTree.addNodes(treeNode, {
-                            id: data,
-                            pId: treeNode.id,
-                            isParent: isParent,
-                            name: name
-                        });
-                    } else {
-                        treeNode = zTree.addNodes(null, {id: data, pId: 0, isParent: isParent, name: name});
-                    }
-                    if (treeNode) {
-                        zTree.editName(treeNode[0]);
-                    } else {
-                        layer.msg("叶子节点被锁定，无法增加子节点");
-                    }
-                }
-            });
         }
-    };
+    }
 
     //修改文件名后回调
     function renameFile(event, treeId, treeNode, isCancel) {

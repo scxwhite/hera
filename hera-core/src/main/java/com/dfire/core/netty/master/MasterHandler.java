@@ -3,6 +3,7 @@ package com.dfire.core.netty.master;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.netty.NettyChannel;
+import com.dfire.core.netty.cluster.FailBackCluster;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.master.response.MasterHandleRequest;
 import com.dfire.core.netty.master.response.MasterHandlerWebResponse;
@@ -94,32 +95,32 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                 switch (webRequest.getOperate()) {
                     case ExecuteJob:
                         completionService.submit(() ->
-                                new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.handleWebExecute(masterContext, webRequest)));
+                                new ChannelResponse(FailBackCluster.wrap(channel), MasterHandlerWebResponse.handleWebExecute(masterContext, webRequest)));
                         break;
                     case CancelJob:
                         completionService.submit(() ->
-                                new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.handleWebCancel(masterContext, webRequest)));
+                                new ChannelResponse(FailBackCluster.wrap(channel), MasterHandlerWebResponse.handleWebCancel(masterContext, webRequest)));
                         break;
                     case UpdateJob:
                         completionService.submit(() ->
-                                new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.handleWebUpdate(masterContext, webRequest)));
+                                new ChannelResponse(FailBackCluster.wrap(channel), MasterHandlerWebResponse.handleWebUpdate(masterContext, webRequest)));
                         break;
                     case ExecuteDebug:
                         completionService.submit(() ->
-                                new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.handleWebDebug(masterContext, webRequest)));
+                                new ChannelResponse(FailBackCluster.wrap(channel), MasterHandlerWebResponse.handleWebDebug(masterContext, webRequest)));
                         break;
                     case GenerateAction:
                         completionService.submit(() ->
-                                new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.generateActionByJobId(masterContext, webRequest)));
+                                new ChannelResponse(FailBackCluster.wrap(channel), MasterHandlerWebResponse.generateActionByJobId(masterContext, webRequest)));
                         break;
 
                     case GetAllHeartBeatInfo:
                         completionService.submit(() ->
-                                new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.buildJobQueueInfo(masterContext, webRequest)));
+                                new ChannelResponse(FailBackCluster.wrap(channel), MasterHandlerWebResponse.buildJobQueueInfo(masterContext, webRequest)));
                         break;
                     case GetAllWorkInfo:
                         completionService.submit(() ->
-                                new ChannelResponse(new NettyChannel(channel), MasterHandlerWebResponse.buildAllWorkInfo(masterContext, webRequest)));
+                                new ChannelResponse(FailBackCluster.wrap(channel), MasterHandlerWebResponse.buildAllWorkInfo(masterContext, webRequest)));
                     default:
                         ErrorLog.error("unknown webRequest operate error:{}", webRequest.getOperate());
                         break;
@@ -165,7 +166,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
     public void channelRegistered(ChannelHandlerContext ctx) {
         masterContext.getThreadPool().execute(() -> {
             Channel channel = ctx.channel();
-            masterContext.getWorkMap().put(channel, new MasterWorkHolder(new NettyChannel(ctx.channel())));
+            masterContext.getWorkMap().put(channel, new MasterWorkHolder(FailBackCluster.wrap(channel)));
             SocketAddress remoteAddress = channel.remoteAddress();
             SocketLog.info("worker client channel registered connect success : {}", remoteAddress.toString());
         });

@@ -1,6 +1,7 @@
 package com.dfire.common.vo;
 
 import com.dfire.common.constants.Constants;
+import com.dfire.common.enums.StatusEnum;
 import lombok.Builder;
 import lombok.Data;
 
@@ -29,7 +30,7 @@ public class LogContent {
     public void appendConsole(String log) {
         if (lines < COUNT) {
             if (log.toLowerCase().contains(ERROR)
-                    || log.toLowerCase().contains(Constants.STATUS_FAILED)
+                    || log.toLowerCase().contains(StatusEnum.FAILED.toString())
                     || log.contains("Exception")
                     || log.contains("NullPointException")
                     || log.contains("No such file or directory")

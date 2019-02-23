@@ -1,10 +1,12 @@
 package com.dfire.core.config;
 
 import com.dfire.common.enums.OperatorSystemEnum;
+import com.dfire.logs.HeraLog;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +46,7 @@ public class HeraGlobalEnvironment {
     @Getter
     private static Integer connectPort;
     @Getter
-    private static String downloadDir;
+    private static String workDir;
     @Getter
     private static Integer maxParallelNum;
     @Getter
@@ -53,6 +55,8 @@ public class HeraGlobalEnvironment {
     private static String admin;
     @Getter
     private static Integer taskTimeout;
+    @Getter
+    private static String sparkBaseDir;
     @Getter
     private static String sparkAddress;
     @Getter
@@ -119,9 +123,15 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.connectPort = connectPort;
     }
 
-    @Value("${hera.downloadDir}")
-    public void setDownloadDir(String downloadDir) {
-        HeraGlobalEnvironment.downloadDir = downloadDir;
+    @Value("${hera.workDir}")
+    public void setWorkDir(String workDir) {
+        File file = new File(workDir);
+        if (!file.exists()) {
+            HeraGlobalEnvironment.workDir = System.getProperty("user.dir");
+            HeraLog.warn("配置的工作路径" + workDir + "不存在，将使用默认路径:" + HeraGlobalEnvironment.workDir);
+        } else {
+            HeraGlobalEnvironment.workDir = workDir;
+        }
     }
 
     @Value("${hera.maxParallelNum}")
@@ -167,6 +177,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.channelTimeout}")
     public void setChannelTimeout(Long channelTimeout) {
         HeraGlobalEnvironment.channelTimeout = channelTimeout;
+    }
+
+    @Value("${spark.baseDir}")
+    public void setSparkBaseDir(String sparkBaseDir) {
+        HeraGlobalEnvironment.sparkBaseDir = sparkBaseDir;
     }
 
     @Value("${spark.address}")

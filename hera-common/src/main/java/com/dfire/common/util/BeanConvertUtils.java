@@ -10,6 +10,7 @@ import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.common.vo.LogContent;
+import com.dfire.logs.ErrorLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 
@@ -198,7 +199,11 @@ public class BeanConvertUtils {
         heraActionVo.setPostProcessors(StringUtil.convertProcessorToList(action.getPostProcessors()));
         heraActionVo.setPreProcessors(StringUtil.convertProcessorToList(action.getPreProcessors()));
         heraActionVo.setResources(StringUtil.convertResources(action.getResources()));
-        heraActionVo.setConfigs(StringUtil.convertStringToMap(action.getConfigs()));
+        try {
+            heraActionVo.setConfigs(StringUtil.convertStringToMap(action.getConfigs()));
+        } catch (RuntimeException e) {
+            ErrorLog.error("json parse error on " + action.getId(), e);
+        }
         heraActionVo.setRunType(JobRunTypeEnum.parser(action.getRunType()));
         heraActionVo.setScheduleType(JobScheduleTypeEnum.parser(action.getScheduleType()));
         heraActionVo.setId(String.valueOf(action.getId()));

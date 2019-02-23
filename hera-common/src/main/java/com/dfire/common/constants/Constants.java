@@ -18,17 +18,9 @@ public class Constants {
 
     public final static String MASTER_PREFIX = "master-";
 
-
-    public final static String STATUS_FAILED = "failed";
-
-    public final static String STATUS_RUNNING = "running";
-
-    public final static String STATUS_SUCCESS = "success";
-
     public final static String STATUS_NONE = "none";
 
     public final static Integer HTML_FONT_SIZE = 1;
-
 
     public final static String HTML_FONT_RED_LEFT = "<font color=\"red\" size=\"" + HTML_FONT_SIZE + "\" >";
 
@@ -58,11 +50,23 @@ public class Constants {
      */
     public final static Integer LOGIN_TIME_OUT = JWT_TIME_OUT * 60 * 60 * 24;
 
-    public final static Integer DEFAULT_EXIT_CODE = 1024;
 
-    public final static Integer LOG_EXIT_CODE = 1025;
+    /**
+     * 退出码相关
+     */
 
-    public final static Integer INTERRUPTED_EXIT_CODE = 1026;
+    public final static int SUCCESS_EXIT_CODE = 0;
+
+    public final static int DEFAULT_EXIT_CODE = -1;
+
+    public final static int WAIT_EXIT_CODE = 64;
+
+    public final static int LOG_EXIT_CODE = WAIT_EXIT_CODE + 1;
+
+    public final static int INTERRUPTED_EXIT_CODE = WAIT_EXIT_CODE + 2;
+
+
+
 
 
     public final static String SPARK_FILE = "spark";

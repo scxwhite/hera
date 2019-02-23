@@ -133,9 +133,9 @@ public class MasterCancelJob {
         context.getHeraJobHistoryService().update(heraJobHistory);
         HeraAction heraAction = context.getMaster().getHeraActionMap().get(Long.parseLong(actionId));
         if (heraAction != null) {
-            heraAction.setStatus(Constants.STATUS_FAILED);
+            heraAction.setStatus(StatusEnum.FAILED.toString());
         }
-        context.getHeraJobActionService().updateStatus(HeraAction.builder().id(Long.parseLong(actionId)).status(Constants.STATUS_FAILED).build());
+        context.getHeraJobActionService().updateStatus(HeraAction.builder().id(Long.parseLong(actionId)).status(StatusEnum.FAILED.toString()).build());
         return webResponse;
     }
 
@@ -185,11 +185,11 @@ public class MasterCancelJob {
                     .build();
         }
         heraJobHistory.setEndTime(new Date());
-        heraJobHistory.setStatus(Constants.STATUS_FAILED);
+        heraJobHistory.setStatus(StatusEnum.FAILED.toString());
         heraJobHistory.setIllustrate(Constants.CANCEL_JOB_MESSAGE);
         HeraAction heraAction = context.getMaster().getHeraActionMap().get(Long.parseLong(actionId));
         if (heraAction != null) {
-            heraAction.setStatus(Constants.STATUS_FAILED);
+            heraAction.setStatus(StatusEnum.FAILED.toString());
         }
         context.getHeraJobHistoryService().update(heraJobHistory);
         context.getHeraJobActionService().updateStatus(HeraAction.builder().id(Long.parseLong(actionId)).status(StatusEnum.FAILED.toString()).build());
