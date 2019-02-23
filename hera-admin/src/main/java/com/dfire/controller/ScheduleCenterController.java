@@ -316,6 +316,11 @@ public class ScheduleCenterController extends BaseHeraController {
             return new JsonResponse(false, "定时表达式不准确，请核实后再保存");
         }
 
+        HeraHostGroup hostGroup = heraHostGroupService.findById(heraJobVo.getHostGroupId());
+        if (hostGroup == null) {
+            return new JsonResponse(false, "机器组不存在，请选择一个机器组");
+        }
+
         if (StringUtils.isBlank(heraJobVo.getAreaId())) {
             return new JsonResponse(false, "至少选择一个任务所在区域");
         }

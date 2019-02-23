@@ -109,7 +109,6 @@ public class Master {
         heartCheck();
         // 4.漏跑检测
         lostJobCheck();
-
     }
 
     /**
