@@ -907,8 +907,12 @@ public class Master {
         heraAction.setStatisticEndTime(new Date());
         masterContext.getHeraJobActionService().update(heraAction);
         if (runCount < (retryCount + 1) && !success && !isCancelJob) {
-            DebugLog.info("--------------------------失败任务，准备重试--------------------------");
-            runScheduleJobContext(workHolder, actionId, runCount, retryCount, retryWaitTime);
+            if (checkJobExists(heraJobHistoryVo, true)) {
+                DebugLog.info("--------------------------任务在队列中，取消重试--------------------------");
+            } else {
+                DebugLog.info("--------------------------失败任务，准备重试--------------------------");
+                runScheduleJobContext(workHolder, actionId, runCount, retryCount, retryWaitTime);
+            }
         }
     }
 
