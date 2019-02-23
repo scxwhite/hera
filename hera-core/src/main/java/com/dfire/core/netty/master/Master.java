@@ -972,11 +972,11 @@ public class Master {
         }
         Channel channel = selectWork.getChannel().getChannel();
         HeartBeatInfo beatInfo = selectWork.getHeartBeatInfo();
-        // 如果最近两次选择的work一致  需要等待机器最新状态发来之后(睡眠10S)再进行任务分发
-        if (lastWork != null && channel == lastWork && (beatInfo.getCpuLoadPerCore() > 0.6F || beatInfo.getMemRate() > 0.7F)) {
-            ScheduleLog.info("由于最近两次任务选发为同一台机器，睡眠10S");
+        // 如果最近两次选择的work一致  需要等待机器最新状态发来之后(睡眠)再进行任务分发
+        if (HeraGlobalEnvironment.getWarmUpCheck() > 0 && lastWork != null && channel == lastWork && (beatInfo.getCpuLoadPerCore() > 0.6F || beatInfo.getMemRate() > 0.7F)) {
+            ScheduleLog.info("达到预热条件，睡眠" + HeraGlobalEnvironment.getWarmUpCheck() + "秒");
             try {
-                TimeUnit.SECONDS.sleep(10);
+                TimeUnit.SECONDS.sleep(HeraGlobalEnvironment.getWarmUpCheck());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

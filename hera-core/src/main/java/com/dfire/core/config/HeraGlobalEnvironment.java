@@ -34,6 +34,9 @@ public class HeraGlobalEnvironment {
     private static String env;
 
     @Getter
+    private static int warmUpCheck;
+
+    @Getter
     private static Float maxMemRate;
     @Getter
     private static Float maxCpuLoadPerCore;
@@ -167,6 +170,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.maxCpuLoadPerCore}")
     public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
         HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+    }
+
+    @Value("${hera.warmUpCheck}")
+    public void setWarmUpCheck(int warmUpCheck) {
+        HeraGlobalEnvironment.warmUpCheck = warmUpCheck;
     }
 
     @Value("${hera.requestTimeout}")

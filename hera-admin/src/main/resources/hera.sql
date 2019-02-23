@@ -201,6 +201,7 @@ CREATE TABLE `hera_job` (
   `host_group_id` tinyint(2) DEFAULT NULL COMMENT '分发的执行机器组id',
   `must_end_minute` int(2) DEFAULT '0',
   `area_id` varchar(50) DEFAULT '1' COMMENT '区域ID,多个用,分割',
+  `repeat_run` tinyint(2) DEFAULT '0' COMMENT '是否允许任务重复执行',
   PRIMARY KEY (`id`),
   KEY `ind_zeusjobgroupid` (`group_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT='hera的job 记录表';
@@ -267,7 +268,7 @@ insert into hera_area (name) values('中国');
 INSERT INTO `hera_group` VALUES ('1', '{\"name\":\"赫拉分布式任务调度系统\"}', '', '0', '2018-12-21 15:11:39', '2018-12-28 10:46:47', 'hera分布式调度系统', 'hera', '0', '[]', '1'), ('2', '{\"qq\":\"1142819049\"}', '', '1', '2018-12-21 15:15:36', '2018-12-21 15:31:08', 'test', 'hera', '1', '[]', '1');
 insert into hera_host_group (id,name,effective,description)  values (1,'默认组',1,'机器默认组');
 insert into hera_host_group (id,name,effective,description)  values (2,'spark组',1,'执行spark任务');
-INSERT INTO `hera_job` VALUES ('1', '0', '{\"run.priority.level\":\"1\",\"roll.back.wait.time\":\"1\",\"roll.back.times\":\"0\",\"qqGroup\":\"965839395\"}', '0 0 3 * * ?', null, '', '输出测试', '2018-12-22 11:14:55', '2019-01-04 11:14:09', '2', null, null, null, null, 'echoTest', null, 'hera', null, null, null, null, 'shell', '0', 'echo ${name}\n\necho \"当前时间戳\":${zdt.getTime()}\necho \"     明天\":${zdt.addDay(1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"上个月的今天\": ${zdt.add(2,-1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"真实的今天\":${zdt.getToday()}\n\n\necho \"如果需要更多时间查看HeraDateTool类,可以自定义时间\"\n\n\necho ${qqGroup}', null, null, null, null, null, null, '1', null, '1');
+INSERT INTO `hera_job` VALUES ('1', '0', '{\"run.priority.level\":\"1\",\"roll.back.wait.time\":\"1\",\"roll.back.times\":\"0\",\"qqGroup\":\"965839395\"}', '0 0 3 * * ?', null, '', '输出测试', '2018-12-22 11:14:55', '2019-01-04 11:14:09', '2', null, null, null, null, 'echoTest', null, 'hera', null, null, null, null, 'shell', '0', 'echo ${name}\n\necho \"当前时间戳\":${zdt.getTime()}\necho \"     明天\":${zdt.addDay(1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"上个月的今天\": ${zdt.add(2,-1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"真实的今天\":${zdt.getToday()}\n\n\necho \"如果需要更多时间查看HeraDateTool类,可以自定义时间\"\n\n\necho ${qqGroup}', null, null, null, null, null, null, '1', null, '1',0);
 INSERT INTO `hera_file` VALUES ('1', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '个人文档', 'hera', null, '1', '0');
 INSERT INTO `hera_file` VALUES ('2', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '共享文档', 'all', null, '1', '0');
 
