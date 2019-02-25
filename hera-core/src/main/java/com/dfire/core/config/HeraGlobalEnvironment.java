@@ -31,6 +31,9 @@ public class HeraGlobalEnvironment {
     private static long channelTimeout = 1000L;
 
     @Getter
+    private static int jobCacheDay;
+
+    @Getter
     private static String env;
 
     @Getter
@@ -141,6 +144,12 @@ public class HeraGlobalEnvironment {
     public void setMaxParallelNum(Integer maxParallelNum) {
         HeraGlobalEnvironment.maxParallelNum = maxParallelNum;
     }
+
+    @Value("${hera.jobCacheDay}")
+    public void setAdmin(int jobCacheDay) {
+        HeraGlobalEnvironment.jobCacheDay = jobCacheDay;
+    }
+
 
     @Value("${hera.admin}")
     public void setAdmin(String admin) {
