@@ -34,6 +34,9 @@ public class HeraGlobalEnvironment {
     private static int jobCacheDay;
 
     @Getter
+    private static String loadBalance;
+
+    @Getter
     private static String env;
 
     @Getter
@@ -179,6 +182,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.maxCpuLoadPerCore}")
     public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
         HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+    }
+
+    @Value("${hera.loadBalance}")
+    public void setLoadBalance(String loadBalance) {
+        HeraGlobalEnvironment.loadBalance = loadBalance;
     }
 
     @Value("${hera.warmUpCheck}")

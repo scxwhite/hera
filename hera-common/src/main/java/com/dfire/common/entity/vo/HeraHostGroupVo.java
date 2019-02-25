@@ -26,23 +26,6 @@ public class HeraHostGroupVo {
 
     private List<String> hosts;
 
-    /**
-     * 当前主节点所在的位置
-     */
-    private volatile int currentPosition;
-
-    public String selectHost() {
-        if (hosts == null) {
-            return null;
-        }
-        int size = hosts.size();
-        if (size == 1) {
-            return hosts.get(0);
-        }
-        if (currentPosition >= size) {
-            currentPosition = 0;
-        }
-        return hosts.get(currentPosition++);
-    }
+    private int nextPos;
 
 }

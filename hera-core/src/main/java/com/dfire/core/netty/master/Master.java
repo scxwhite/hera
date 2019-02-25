@@ -27,9 +27,8 @@ import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.constant.MasterConstant;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
-import com.dfire.core.route.factory.StrategyWorkerEnum;
-import com.dfire.core.route.factory.StrategyWorkerFactory;
-import com.dfire.core.route.strategy.IStrategyWorker;
+import com.dfire.core.route.factory.LoadBalanceFactory;
+import com.dfire.core.route.strategy.LoadBalance;
 import com.dfire.core.util.CronParse;
 import com.dfire.logs.*;
 import com.dfire.protocol.JobExecuteKind;
@@ -68,13 +67,13 @@ public class Master {
     private ThreadPoolExecutor executeJobPool;
 
     private volatile boolean isGenerateActioning = false;
-    private IStrategyWorker chooseWorkerStrategy;
+    private LoadBalance loadBalance;
 
     private Channel lastWork;
 
     public void init(MasterContext masterContext) {
         this.masterContext = masterContext;
-        chooseWorkerStrategy = StrategyWorkerFactory.getStrategyWorker(StrategyWorkerEnum.FIRST);
+        loadBalance = LoadBalanceFactory.getLoadBalance();
         executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("master-execute-job-thread"), new ThreadPoolExecutor.AbortPolicy());
         executeJobPool.allowCoreThreadTimeOut(true);
@@ -977,7 +976,7 @@ public class Master {
      * @return
      */
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
-        MasterWorkHolder selectWork = chooseWorkerStrategy.chooseWorker(jobElement, masterContext);
+        MasterWorkHolder selectWork = loadBalance.select(jobElement, masterContext);
         if (selectWork == null) {
             return null;
         }

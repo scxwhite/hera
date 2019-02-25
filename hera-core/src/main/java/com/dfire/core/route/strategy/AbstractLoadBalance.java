@@ -1,9 +1,13 @@
 package com.dfire.core.route.strategy;
 
+import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.message.HeartBeatInfo;
+import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
+import com.dfire.core.queue.JobElement;
 import com.dfire.core.route.check.ResultReason;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.MasterLog;
 
 /**
@@ -11,17 +15,23 @@ import com.dfire.logs.MasterLog;
  * @time: Created in 上午11:09 2018/10/10
  * @desc 任务执行worker选择路由
  */
-public abstract class AbstractChooseWorkerStrategy implements IStrategyWorker {
+public abstract class AbstractLoadBalance implements LoadBalance {
 
 
-    /**
-     * check ip 的worker能否选择为执行机器
-     *
-     * @param host
-     * @param worker
-     * @return
-     */
-    public boolean checkResource(String host, MasterWorkHolder worker) {
+    @Override
+    public MasterWorkHolder select(JobElement jobElement, MasterContext masterContext) {
+        if (masterContext.getHostGroupCache() != null) {
+            HeraHostGroupVo hostGroup = masterContext.getHostGroupCache().get(jobElement.getHostGroupId());
+            if (hostGroup == null || hostGroup.getHosts() == null || hostGroup.getHosts().size() == 0) {
+                ErrorLog.error("机器组:{},无可执行任务的机器,任务Id:{}", jobElement.getHostGroupId(), jobElement.getJobId());
+                return null;
+            }
+            return doSelect(hostGroup, masterContext);
+        }
+        return null;
+    }
+
+    protected boolean check(MasterWorkHolder worker) {
         if (worker == null) {
             MasterLog.warn(ResultReason.NULL_WORKER.getMsg());
             return false;
@@ -31,10 +41,6 @@ public abstract class AbstractChooseWorkerStrategy implements IStrategyWorker {
             return false;
         }
         HeartBeatInfo heartBeatInfo = worker.getHeartBeatInfo();
-        if (!heartBeatInfo.getHost().equals(host.trim())) {
-            MasterLog.warn(ResultReason.HOSTS_ERROR.getMsg() + "{},{}", heartBeatInfo.getHost(), host.trim());
-            return false;
-        }
 
         if (heartBeatInfo.getMemRate() == null || heartBeatInfo.getMemRate() > HeraGlobalEnvironment.getMaxMemRate()) {
             MasterLog.warn(ResultReason.MEM_LIMIT.getMsg() + ":{}, host:{}", heartBeatInfo.getMemRate(), heartBeatInfo.getHost());
@@ -54,4 +60,7 @@ public abstract class AbstractChooseWorkerStrategy implements IStrategyWorker {
         }
         return true;
     }
+
+
+    protected abstract MasterWorkHolder doSelect(HeraHostGroupVo hostGroup, MasterContext masterContext);
 }
