@@ -5,14 +5,6 @@ layui.use(['table'], function () {
     $('#jobDetailMenu').parent().addClass('menu-open');
     $('#jobDetailMenu').parent().parent().addClass('menu-open');
     $('#jobManage').addClass('active');
-    var oTable = new TableInit();
-    oTable.init();
-    $('#historyJobTable').bootstrapTable('hideLoading');
-
-
-    function updateTable() {
-        $('#historyJobTable').bootstrapTable('refresh');
-    }
 
     var TableInit = function () {
         var oTableInit = new Object();
@@ -90,6 +82,14 @@ layui.use(['table'], function () {
         }
         return oTableInit;
     }
+
+    var oTable = new TableInit();
+    oTable.init();
+    $('#historyJobTable').bootstrapTable('hideLoading');
+
+
+
+
 
     function params(params) {
         var temp = {
