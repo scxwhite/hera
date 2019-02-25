@@ -1,4 +1,4 @@
-package com.dfire.core.route.strategy;
+package com.dfire.core.route.loadbalance;
 
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.config.HeraGlobalEnvironment;
