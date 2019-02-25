@@ -95,7 +95,7 @@ mybatis:
     mapUnderscoreToCamelCase: true
 #spark 配置
 spark :
-  baseDir : /opt/app/spark231 #Spark基础路径
+  baseDir : /opt/app/Spark-AE #Spark基础路径
   address : jdbc:hive2://10.1.21.141:10000 #ThriftServer地址
   driver : org.apache.hive.jdbc.HiveDriver #jdbc driver
   username : heguozi #ThriftServer用户名
@@ -103,7 +103,7 @@ spark :
   master : --master yarn
   driver-memory : --driver-memory 1g
   driver-cores : --driver-cores 1
-  executor-memory : -- executor-memory 1g
+  executor-memory : -- executor-memory 2g
   executor-cores : --executor-cores 1
 
 ---
@@ -129,13 +129,13 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
-  baseDir : /opt/app/spark231 #Spark基础路径
+  baseDir : /opt/app/Spark-AE #Spark基础路径
   address : jdbc:hive2://spark-server001.2dfire-inc.com:10000 #ThriftServer地址
   master : --master yarn
   driver-memory : --driver-memory 2g
   driver-cores : --driver-cores 1
-  executor-memory : -- executor-memory 2g
-  executor-cores : --executor-cores 1
+  executor-memory : -- executor-memory 8g
+  executor-cores : --executor-cores 4
 ---
 spring:
   profiles: publish
@@ -146,13 +146,13 @@ druid:
     password: lineage@552208
 #spark 配置
 spark :
-  baseDir : /opt/app/spark231 #Spark基础路径
+  baseDir : /opt/app/Spark-AE #Spark基础路径
   address : jdbc:hive2://spark-server001.2dfire-inc.com:10000 #ThriftServer地址
   master : --master yarn
   driver-memory : --driver-memory 2g
   driver-cores : --driver-cores 1
-  executor-memory : -- executor-memory 2g
-  executor-cores : --executor-cores 1
+  executor-memory : -- executor-memory 8g
+  executor-cores : --executor-cores 4
 
 
 
@@ -172,5 +172,5 @@ spark :
   master : --master yarn
   driver-memory : --driver-memory 2g
   driver-cores : --driver-cores 1
-  executor-memory : -- executor-memory 2g
-  executor-cores : --executor-cores 1
+  executor-memory : -- executor-memory 8g
+  executor-cores : --executor-cores 4
