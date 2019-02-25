@@ -314,6 +314,12 @@ public class HeraJobServiceImpl implements HeraJobService {
         return update != null && update > 0;
     }
 
+    @Override
+    public boolean isRepeat(Integer jobId) {
+        Integer repeat = heraJobMapper.findRepeat(jobId);
+        return repeat != null && repeat > 0;
+    }
+
 
     /**
      * 建立今日任务执行 Map映射 便于获取

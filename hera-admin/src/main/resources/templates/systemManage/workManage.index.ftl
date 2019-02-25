@@ -48,7 +48,7 @@
     <form class="layui-form layui-form-pane" action="" id="addHostGroupForm">
 
         <div class="layui-form-item"style="display: none">
-            <label class="layui-form-label">ip地址</label>
+            <label class="layui-form-label"></label>
             <div class="layui-input-block">
                 <input type="text" name="id"
                        autocomplete="off"

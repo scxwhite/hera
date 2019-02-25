@@ -58,7 +58,7 @@ public class StringUtil {
      * @param config
      * @return
      */
-    public static Map<String, String> convertStringToMap(String config) {
+    public static Map<String, String> convertStringToMap(String config) throws RuntimeException{
         if (config == null || "{}".equals(config)) {
             return new HashMap<>(0);
         }
@@ -66,7 +66,7 @@ public class StringUtil {
         try {
             jsonObject = JSONObject.parseObject(config);
         } catch (JSONPathException e) {
-            e.printStackTrace();
+            throw new RuntimeException("json parse error:", e);
         }
         Map<String, String> map = new TreeMap<>();
         for (Object key : jsonObject.keySet()) {

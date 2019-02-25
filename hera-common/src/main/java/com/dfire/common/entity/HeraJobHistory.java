@@ -49,4 +49,6 @@ public class HeraJobHistory {
     private int hostGroupId;
 
     String properties ;
+
+
 }

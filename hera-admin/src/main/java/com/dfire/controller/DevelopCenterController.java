@@ -65,7 +65,6 @@ public class DevelopCenterController extends BaseHeraController {
         } else {
             heraFile.setOwner(getOwner());
         }
-        heraFile.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
         return heraFileService.insert(heraFile);
     }
 
@@ -104,8 +103,6 @@ public class DevelopCenterController extends BaseHeraController {
     @RequestMapping(value = "/debug", method = RequestMethod.POST)
     @ResponseBody
     public WebAsyncTask<JsonResponse> debug(@RequestBody HeraFile heraFile) {
-
-
         String owner = getOwner();
         return new WebAsyncTask<>(10000, () -> {
             Map<String, Object> res = new HashMap<>(2);
