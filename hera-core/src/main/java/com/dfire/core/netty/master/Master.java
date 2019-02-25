@@ -15,8 +15,8 @@ import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.util.*;
-import com.dfire.core.HeraException;
 import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.core.HeraException;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -27,8 +27,8 @@ import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.constant.MasterConstant;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
-import com.dfire.core.route.loadbalance.LoadBalanceFactory;
 import com.dfire.core.route.loadbalance.LoadBalance;
+import com.dfire.core.route.loadbalance.LoadBalanceFactory;
 import com.dfire.core.util.CronParse;
 import com.dfire.logs.*;
 import com.dfire.protocol.JobExecuteKind;
@@ -83,7 +83,7 @@ public class Master {
         executeJobPool.execute(() -> {
             HeraLog.info("-----------------------------init action,time: {}-----------------------------", System.currentTimeMillis());
             masterContext.getDispatcher().addDispatcherListener(new HeraAddJobListener(this, masterContext));
-            masterContext.getDispatcher().addDispatcherListener(new HeraJobFailListener(masterContext));
+            masterContext.getDispatcher().addDispatcherListener(new HeraJobFailListener());
             masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
             List<HeraAction> allJobList = masterContext.getHeraJobActionService().getAfterAction(getBeforeDayAction());
