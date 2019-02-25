@@ -93,7 +93,12 @@ public class ActionUtil {
 
     }
 
-    public static String getActionVersionByTime(Date nowTime) {
+    public static String getActionVersionByDate(Date date) {
+        return new DateTime(date).toString(ACTION_VERSION_INIT);
+
+    }
+
+    public static String getActionVersionPrefix(Date nowTime) {
         return new DateTime(nowTime).toString(ACTION_VERSION_PREFIX);
     }
 

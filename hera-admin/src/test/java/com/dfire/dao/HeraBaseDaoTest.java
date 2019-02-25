@@ -298,7 +298,7 @@ public class HeraBaseDaoTest {
                     Map<Long, HeraAction> actionMap = new HashMap<>();
 
                     List<HeraJob> heraJobList = heraJobService.getAll();
-                    String  cronDate = ActionUtil.getActionVersionByTime(now);
+                    String  cronDate = ActionUtil.getActionVersionPrefix(now);
 
                 }
             }

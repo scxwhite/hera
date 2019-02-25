@@ -87,7 +87,7 @@ public class Master {
             masterContext.getDispatcher().addDispatcherListener(new HeraJobFailListener(masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
-            List<HeraAction> allJobList = masterContext.getHeraJobActionService().getTodayAction();
+            List<HeraAction> allJobList = masterContext.getHeraJobActionService().getAfterAction(getBeforeDayAction());
             HeraLog.info("-----------------------------action size:{}, time {}-----------------------------", allJobList.size(), System.currentTimeMillis());
             heraActionMap = new HashMap<>(allJobList.size());
             allJobList.forEach(heraAction -> {
@@ -109,6 +109,12 @@ public class Master {
         heartCheck();
         // 4.漏跑检测
         lostJobCheck();
+    }
+
+    private long getBeforeDayAction() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -HeraGlobalEnvironment.getJobCacheDay());
+        return Long.parseLong(ActionUtil.getActionVersionByDate(calendar.getTime()));
     }
 
     /**
@@ -384,7 +390,7 @@ public class Master {
                         }
                     }
                 }
-                String cronDate = ActionUtil.getActionVersionByTime(now);
+                String cronDate = ActionUtil.getActionVersionPrefix(now);
                 Map<Integer, List<HeraAction>> idMap = new HashMap<>(jobList.size());
                 Map<Integer, HeraJob> jobMap = new HashMap<>(jobList.size());
                 generateScheduleJobAction(jobList, cronDate, actionMap, nowAction, idMap, jobMap);
@@ -529,6 +535,7 @@ public class Master {
         //移除未生成的调度
         List<AbstractHandler> handlers = dispatcher.getJobHandlers();
         List<JobHandler> shouldRemove = new ArrayList<>();
+        String dayAction = String.valueOf(getBeforeDayAction());
         if (handlers != null && handlers.size() > 0) {
             handlers.forEach(handler -> {
                 JobHandler jobHandler = (JobHandler) handler;
@@ -543,8 +550,8 @@ public class Master {
                         shouldRemove.add(jobHandler);
                     }
                 }
-                //移除非今天版本的订阅者
-                if (!ActionUtil.isInitActionVersion(actionId)) {
+                //移除非缓存时间内的版本的订阅者
+                if (actionId.compareTo(dayAction) < 0) {
                     shouldRemove.add(jobHandler);
                 }
             });
