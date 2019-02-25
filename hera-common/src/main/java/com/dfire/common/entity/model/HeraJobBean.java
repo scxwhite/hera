@@ -25,6 +25,7 @@ import java.util.Set;
 public class HeraJobBean {
 
     private HeraJob heraJob;
+
     private HeraGroupBean groupBean;
 
     private Set<HeraJobBean> upStream;

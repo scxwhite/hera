@@ -180,8 +180,8 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public List<HeraAction> getTodayAction() {
-        return heraJobActionMapper.selectTodayAction(ActionUtil.getInitActionVersion());
+    public List<HeraAction> getAfterAction(Long action) {
+        return heraJobActionMapper.selectAfterAction(action);
     }
 
     @Override
