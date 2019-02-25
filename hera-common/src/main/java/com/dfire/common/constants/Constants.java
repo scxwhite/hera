@@ -59,7 +59,7 @@ public class Constants {
 
     public final static int DEFAULT_EXIT_CODE = -1;
 
-    public final static int WAIT_EXIT_CODE = 64;
+    public final static int WAIT_EXIT_CODE = 38;
 
     public final static int LOG_EXIT_CODE = WAIT_EXIT_CODE + 1;
 
