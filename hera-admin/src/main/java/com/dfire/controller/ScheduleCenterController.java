@@ -17,7 +17,7 @@ import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.config.UnCheckLogin;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.logs.MonitorLog;
 import com.dfire.protocol.JobExecuteKind;

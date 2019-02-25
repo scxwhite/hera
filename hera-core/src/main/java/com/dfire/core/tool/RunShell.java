@@ -1,6 +1,6 @@
 package com.dfire.core.tool;
 
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import lombok.Data;
 
 import java.io.*;

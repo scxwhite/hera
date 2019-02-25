@@ -7,7 +7,7 @@ import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.vo.HeraFileTreeNodeVo;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.logs.MonitorLog;
 import com.dfire.protocol.JobExecuteKind;

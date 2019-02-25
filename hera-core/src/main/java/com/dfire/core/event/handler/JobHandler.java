@@ -10,7 +10,10 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
-import com.dfire.common.service.*;
+import com.dfire.common.service.HeraGroupService;
+import com.dfire.common.service.HeraJobActionService;
+import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
@@ -48,11 +51,9 @@ public class JobHandler extends AbstractHandler {
     private HeraJobHistoryService jobHistoryService;
     private HeraGroupService heraGroupService;
     private HeraJobActionService heraJobActionService;
-    private EmailService emailService;
     private Master master;
     private MasterContext masterContext;
     private HeraUserService heraUserService;
-    private HeraJobMonitorService heraJobMonitorService;
 
     public JobHandler(String actionId, Master master, MasterContext masterContext) {
         this.actionId = actionId;
@@ -60,8 +61,6 @@ public class JobHandler extends AbstractHandler {
         this.heraGroupService = masterContext.getHeraGroupService();
         this.heraJobActionService = masterContext.getHeraJobActionService();
         this.heraUserService = masterContext.getHeraUserService();
-        this.emailService = masterContext.getEmailService();
-        this.heraJobMonitorService = masterContext.getHeraJobMonitorService();
         this.cache = JobGroupCache.builder().actionId(actionId).heraJobActionService(heraJobActionService).build();
         this.master = master;
         this.masterContext = masterContext;

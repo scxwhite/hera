@@ -1,7 +1,7 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.ArrayUtils;

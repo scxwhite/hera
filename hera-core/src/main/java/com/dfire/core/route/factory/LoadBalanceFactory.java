@@ -1,6 +1,6 @@
 package com.dfire.core.route.factory;
 
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.route.strategy.LoadBalance;
 import com.dfire.core.route.strategy.impl.RandomLoadBalance;
 import com.dfire.core.route.strategy.impl.RoundRobinLoadBalance;

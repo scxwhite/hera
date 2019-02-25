@@ -1,6 +1,6 @@
 package com.dfire.core.util;
 
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 
 /**
  *

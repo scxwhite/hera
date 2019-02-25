@@ -23,7 +23,6 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
         List<String> hosts = hostGroup.getHosts();
         int index = hostGroup.getNextPos();
         int size = hosts.size();
-
         for (int i = 0; i < size; i++) {
             String host = hosts.get(index);
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {

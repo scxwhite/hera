@@ -255,6 +255,8 @@ layui.use(['table'], function () {
         return oTableInit;
     };
 
+
+
     function cancelJob(historyId, jobId) {
         var url = base_url + "/scheduleCenter/cancelJob.do";
         var parameter = {historyId: historyId, jobId: jobId};
@@ -265,3 +267,6 @@ layui.use(['table'], function () {
     }
 
 });
+function updateTable() {
+    $('#historyJobTable').bootstrapTable('refresh');
+}

@@ -1,7 +1,7 @@
 package com.dfire.core.route.strategy;
 
 import com.dfire.common.entity.vo.HeraHostGroupVo;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;

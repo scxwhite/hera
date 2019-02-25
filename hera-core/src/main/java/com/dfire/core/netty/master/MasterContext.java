@@ -3,7 +3,7 @@ package com.dfire.core.netty.master;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.service.*;
 import com.dfire.common.util.NamedThreadFactory;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.*;
 
 /**
@@ -54,8 +53,6 @@ public class MasterContext {
     private HeraJobHistoryService heraJobHistoryService;
     @Autowired
     private HeraUserService heraUserService;
-    @Autowired
-    private HeraJobMonitorService heraJobMonitorService;
     @Autowired
     @Qualifier("heraJobMemoryService")
     private HeraJobService heraJobService;

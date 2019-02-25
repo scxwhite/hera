@@ -1,6 +1,6 @@
 package com.dfire.core.netty.master.response;
 
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.netty.listener.MasterResponseListener;
