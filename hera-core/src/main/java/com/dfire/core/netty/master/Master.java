@@ -191,7 +191,7 @@ public class Master {
         if (isCheck) {
             String dependencies = lostJob.getDependencies();
             if (StringUtils.isNotBlank(dependencies)) {
-                List<String> jobDependList = Arrays.asList(dependencies.split(","));
+                List<String> jobDependList = Arrays.asList(dependencies.split(Constants.COMMA));
                 boolean isAllComplete = false;
                 HeraAction heraAction;
                 if (jobDependList.size() > 0) {
@@ -354,13 +354,13 @@ public class Master {
             boolean execute = executeHour == 0 || (executeHour > ActionUtil.ACTION_CREATE_MIN_HOUR && executeHour <= ActionUtil.ACTION_CREATE_MAX_HOUR);
             if (execute || isSingle) {
                 String currString = ActionUtil.getCurrHourVersion();
-                Long nowAction = Long.parseLong(currString);
                 if (executeHour == ActionUtil.ACTION_CREATE_MAX_HOUR) {
                     Tuple<String, Date> nextDayString = ActionUtil.getNextDayString();
                     //例如：今天 2018.07.17 23:50  currString = 201807180000000000 now = 2018.07.18 23:50
                     currString = nextDayString.getSource();
                     now = nextDayString.getTarget();
                 }
+                Long nowAction = Long.parseLong(currString);
                 Map<Long, HeraAction> actionMap = new HashMap<>(heraActionMap.size());
                 List<HeraJob> jobList = new ArrayList<>();
                 //批量生成
@@ -636,7 +636,6 @@ public class Master {
                         Long actionId = longActionId / 1000000 * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()));
                         actionNew.setId(actionId);
                         actionNew.setGmtCreate(new Date());
-                        actionNew.setGmtModified(new Date());
                         actionNew.setDependencies(actionDependencies.toString());
                         actionNew.setJobDependencies(heraJob.getDependencies());
                         actionNew.setJobId(heraJob.getId());
@@ -1024,8 +1023,6 @@ public class Master {
         String actionId = heraJobHistory.getActionId();
         int priorityLevel = 3;
         HeraAction heraAction = masterContext.getHeraJobActionService().findById(actionId);
-
-
         Map<String, String> configs = StringUtil.convertStringToMap(heraAction.getConfigs());
         String priorityLevelValue = configs.get("run.priority.level");
         if (priorityLevelValue != null) {

@@ -314,7 +314,6 @@ public class JobHandler extends AbstractHandler {
             HeraActionVo heraActionVo = cache.getHeraActionVo();
             if (heraActionVo != null) {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
-
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
                     if (Long.parseLong(actionId) < Long.parseLong(ActionUtil.getCurrActionVersion())) {
                         HeraJobHistory history = HeraJobHistory.builder()

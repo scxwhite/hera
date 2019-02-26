@@ -80,6 +80,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             } else {
                 BeanUtils.copyProperties(action, heraAction);
             }
+            heraAction.setGmtModified(new Date());
             return true;
         } else {
             if (heraAction.getId() < nowAction) {
