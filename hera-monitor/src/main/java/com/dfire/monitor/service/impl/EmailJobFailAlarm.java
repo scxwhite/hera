@@ -16,6 +16,7 @@ import com.dfire.monitor.service.JobFailAlarm;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 
@@ -23,6 +24,7 @@ import javax.mail.MessagingException;
  * @author xiaosuda
  * @date 2019/2/25
  */
+@Service
 public class EmailJobFailAlarm implements JobFailAlarm {
 
 
