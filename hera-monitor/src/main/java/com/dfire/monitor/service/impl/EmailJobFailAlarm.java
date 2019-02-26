@@ -66,12 +66,11 @@ public class EmailJobFailAlarm implements JobFailAlarm {
                     }
                     HeraUser user = heraUserService.findById(Integer.parseInt(anId));
                     if (user != null && user.getEmail() != null) {
-                        address.append(user.getEmail()).append(Constants.COMMA);
+                        address.append(user.getEmail()).append(Constants.SEMICOLON);
                     }
                 }
             }
             emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, address.toString());
-
         } catch (MessagingException e) {
             e.printStackTrace();
             ErrorLog.error("发送邮件失败");
