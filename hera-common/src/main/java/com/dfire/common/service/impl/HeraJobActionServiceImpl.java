@@ -14,6 +14,7 @@ import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.common.vo.JobStatus;
+import com.dfire.logs.HeraLog;
 import com.dfire.logs.ScheduleLog;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,13 +79,13 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 heraAction.setGmtCreate(action.getGmtCreate());
             } else {
                 BeanUtils.copyProperties(action, heraAction);
-                heraAction.setGmtModified(new Date());
             }
             return true;
         } else {
             if (heraAction.getId() < nowAction) {
                 heraAction.setStatus(StatusEnum.FAILED.toString());
                 heraAction.setLastResult("生成action时，任务过时，直接设置为失败");
+                HeraLog.info("生成action时，任务过时，直接设置为失败:" + heraAction.getId());
             }
         }
         return false;

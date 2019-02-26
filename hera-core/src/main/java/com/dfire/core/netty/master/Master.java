@@ -353,7 +353,7 @@ public class Master {
             //凌晨生成版本，早上七点以后开始再次生成版本
             boolean execute = executeHour == 0 || (executeHour > ActionUtil.ACTION_CREATE_MIN_HOUR && executeHour <= ActionUtil.ACTION_CREATE_MAX_HOUR);
             if (execute || isSingle) {
-                String currString = ActionUtil.getCurrActionVersion();
+                String currString = ActionUtil.getCurrHourVersion();
                 Long nowAction = Long.parseLong(currString);
                 if (executeHour == ActionUtil.ACTION_CREATE_MAX_HOUR) {
                     Tuple<String, Date> nextDayString = ActionUtil.getNextDayString();
@@ -636,6 +636,7 @@ public class Master {
                         Long actionId = longActionId / 1000000 * 1000000 + Long.parseLong(String.valueOf(heraJob.getId()));
                         actionNew.setId(actionId);
                         actionNew.setGmtCreate(new Date());
+                        actionNew.setGmtModified(new Date());
                         actionNew.setDependencies(actionDependencies.toString());
                         actionNew.setJobDependencies(heraJob.getDependencies());
                         actionNew.setJobId(heraJob.getId());

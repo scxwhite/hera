@@ -192,7 +192,7 @@ public class JobHandler extends AbstractHandler {
         }
         JobStatus jobStatus;
         jobStatus = heraJobActionService.findJobStatus(actionId);
-        ScheduleLog.info("received a success dependency job with actionId = " + jobId);
+        ScheduleLog.info(actionId + "received a success dependency job with actionId = " + jobId);
         jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
         heraJobActionService.updateStatus(jobStatus);
         boolean allComplete = true;
@@ -206,7 +206,7 @@ public class JobHandler extends AbstractHandler {
             ScheduleLog.info("JobId:" + jobId + " all dependency jobs is ready,run!");
             startNewJob(event.getTriggerType(), heraActionVo);
         } else {
-            ScheduleLog.info("some of dependency is not ready, waiting");
+            ScheduleLog.info(actionId + "some of dependency is not ready, waiting");
         }
     }
 
