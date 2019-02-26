@@ -28,7 +28,7 @@ public class RoundRobinLoadBalance extends AbstractLoadBalance {
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
                 if (workHolder.getHeartBeatInfo().getHost().equals(host.trim())) {
                     if (check(workHolder)) {
-                        hostGroup.setNextPos(++index);
+                        hostGroup.setNextPos(++index >= size ? 0 : index);
                         ScheduleLog.warn("select work is :{}", workHolder.getChannel().getRemoteAddress());
                         return workHolder;
                     }
