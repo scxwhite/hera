@@ -192,6 +192,7 @@ public class JobHandler extends AbstractHandler {
             return;
         }
         JobStatus jobStatus;
+        //必须同步
         synchronized (this) {
             jobStatus = heraJobActionService.findJobStatus(actionId);
             ScheduleLog.info(actionId + "received a success dependency job with actionId = " + jobId);
@@ -209,7 +210,7 @@ public class JobHandler extends AbstractHandler {
             ScheduleLog.info("JobId:" + jobId + " all dependency jobs is ready,run!");
             startNewJob(event.getTriggerType(), heraActionVo);
         } else {
-            ScheduleLog.info(actionId + "some of dependency is not ready, waiting" + JSONObject.toJSONString(jobStatus.getReadyDependency()));
+            ScheduleLog.info(actionId + "some of dependency is not ready, waiting" + JSONObject.toJSONString(jobStatus.getReadyDependency().keySet()));
         }
     }
 
