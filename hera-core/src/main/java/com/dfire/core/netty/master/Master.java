@@ -15,8 +15,8 @@ import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.util.*;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.HeraException;
-import com.dfire.core.config.HeraGlobalEnvironment;
 import com.dfire.core.event.*;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
@@ -27,9 +27,8 @@ import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.constant.MasterConstant;
 import com.dfire.core.netty.master.response.MasterExecuteJob;
 import com.dfire.core.queue.JobElement;
-import com.dfire.core.route.factory.StrategyWorkerEnum;
-import com.dfire.core.route.factory.StrategyWorkerFactory;
-import com.dfire.core.route.strategy.IStrategyWorker;
+import com.dfire.core.route.loadbalance.LoadBalance;
+import com.dfire.core.route.loadbalance.LoadBalanceFactory;
 import com.dfire.core.util.CronParse;
 import com.dfire.logs.*;
 import com.dfire.protocol.JobExecuteKind;
@@ -68,13 +67,13 @@ public class Master {
     private ThreadPoolExecutor executeJobPool;
 
     private volatile boolean isGenerateActioning = false;
-    private IStrategyWorker chooseWorkerStrategy;
+    private LoadBalance loadBalance;
 
     private Channel lastWork;
 
     public void init(MasterContext masterContext) {
         this.masterContext = masterContext;
-        chooseWorkerStrategy = StrategyWorkerFactory.getStrategyWorker(StrategyWorkerEnum.FIRST);
+        loadBalance = LoadBalanceFactory.getLoadBalance();
         executeJobPool = new ThreadPoolExecutor(HeraGlobalEnvironment.getMaxParallelNum(), HeraGlobalEnvironment.getMaxParallelNum(), 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("master-execute-job-thread"), new ThreadPoolExecutor.AbortPolicy());
         executeJobPool.allowCoreThreadTimeOut(true);
@@ -84,7 +83,7 @@ public class Master {
         executeJobPool.execute(() -> {
             HeraLog.info("-----------------------------init action,time: {}-----------------------------", System.currentTimeMillis());
             masterContext.getDispatcher().addDispatcherListener(new HeraAddJobListener(this, masterContext));
-            masterContext.getDispatcher().addDispatcherListener(new HeraJobFailListener(masterContext));
+            masterContext.getDispatcher().addDispatcherListener(new HeraJobFailListener());
             masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
             List<HeraAction> allJobList = masterContext.getHeraJobActionService().getAfterAction(getBeforeDayAction());
@@ -192,7 +191,7 @@ public class Master {
         if (isCheck) {
             String dependencies = lostJob.getDependencies();
             if (StringUtils.isNotBlank(dependencies)) {
-                List<String> jobDependList = Arrays.asList(dependencies.split(","));
+                List<String> jobDependList = Arrays.asList(dependencies.split(Constants.COMMA));
                 boolean isAllComplete = false;
                 HeraAction heraAction;
                 if (jobDependList.size() > 0) {
@@ -354,14 +353,14 @@ public class Master {
             //凌晨生成版本，早上七点以后开始再次生成版本
             boolean execute = executeHour == 0 || (executeHour > ActionUtil.ACTION_CREATE_MIN_HOUR && executeHour <= ActionUtil.ACTION_CREATE_MAX_HOUR);
             if (execute || isSingle) {
-                String currString = ActionUtil.getCurrActionVersion();
-                Long nowAction = Long.parseLong(currString);
+                String currString = ActionUtil.getCurrHourVersion();
                 if (executeHour == ActionUtil.ACTION_CREATE_MAX_HOUR) {
                     Tuple<String, Date> nextDayString = ActionUtil.getNextDayString();
                     //例如：今天 2018.07.17 23:50  currString = 201807180000000000 now = 2018.07.18 23:50
                     currString = nextDayString.getSource();
                     now = nextDayString.getTarget();
                 }
+                Long nowAction = Long.parseLong(currString);
                 Map<Long, HeraAction> actionMap = new HashMap<>(heraActionMap.size());
                 List<HeraJob> jobList = new ArrayList<>();
                 //批量生成
@@ -977,7 +976,7 @@ public class Master {
      * @return
      */
     private MasterWorkHolder getRunnableWork(JobElement jobElement) {
-        MasterWorkHolder selectWork = chooseWorkerStrategy.chooseWorker(jobElement, masterContext);
+        MasterWorkHolder selectWork = loadBalance.select(jobElement, masterContext);
         if (selectWork == null) {
             return null;
         }
@@ -1024,8 +1023,6 @@ public class Master {
         String actionId = heraJobHistory.getActionId();
         int priorityLevel = 3;
         HeraAction heraAction = masterContext.getHeraJobActionService().findById(actionId);
-
-
         Map<String, String> configs = StringUtil.convertStringToMap(heraAction.getConfigs());
         String priorityLevelValue = configs.get("run.priority.level");
         if (priorityLevelValue != null) {

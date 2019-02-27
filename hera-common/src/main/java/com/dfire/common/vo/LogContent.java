@@ -4,6 +4,7 @@ import com.dfire.common.constants.Constants;
 import com.dfire.common.enums.StatusEnum;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,7 +29,12 @@ public class LogContent {
 
 
     public void appendConsole(String log) {
+
         if (lines < COUNT) {
+            //空日志不记录
+            if (StringUtils.isBlank(log)) {
+                return ;
+            }
             if (log.toLowerCase().contains(ERROR)
                     || log.toLowerCase().contains(StatusEnum.FAILED.toString())
                     || log.contains("Exception")

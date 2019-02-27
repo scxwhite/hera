@@ -11,7 +11,7 @@ import com.dfire.common.vo.MachineInfoVo;
 import com.dfire.common.vo.OSInfoVo;
 import com.dfire.common.vo.ProcessMonitorVo;
 import com.dfire.common.vo.WorkInfoVo;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.cluster.FailFastCluster;

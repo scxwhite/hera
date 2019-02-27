@@ -31,6 +31,10 @@ public class ActionUtil {
      * 当前时刻生成版本格式
      */
     public static final String ACTION_VERSION_CURR = "yyyyMMddHHmmss0000";
+    /**
+     * 当前小时版本格式
+     */
+    public static final String ACTION_VERSION_HOUR = "yyyyMMddHH00000000";
 
     /**
      * 初始化今天凌晨的版本
@@ -82,6 +86,10 @@ public class ActionUtil {
 
     public static String getCurrActionVersion() {
         return new DateTime().toString(ACTION_VERSION_CURR);
+    }
+
+    public static String getCurrHourVersion() {
+        return new DateTime().toString(ACTION_VERSION_HOUR);
     }
 
     public static Long getLongCurrActionVersion() {

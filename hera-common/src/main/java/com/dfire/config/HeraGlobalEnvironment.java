@@ -1,4 +1,4 @@
-package com.dfire.core.config;
+package com.dfire.config;
 
 import com.dfire.common.enums.OperatorSystemEnum;
 import com.dfire.logs.HeraLog;
@@ -32,6 +32,9 @@ public class HeraGlobalEnvironment {
 
     @Getter
     private static int jobCacheDay;
+
+    @Getter
+    private static String loadBalance;
 
     @Getter
     private static String env;
@@ -179,6 +182,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.maxCpuLoadPerCore}")
     public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
         HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+    }
+
+    @Value("${hera.loadBalance}")
+    public void setLoadBalance(String loadBalance) {
+        HeraGlobalEnvironment.loadBalance = loadBalance;
     }
 
     @Value("${hera.warmUpCheck}")

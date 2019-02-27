@@ -1448,7 +1448,7 @@ let JobLogTable = function (jobId) {
                             return '<a class="layui-btn layui-btn-xs" style="width: 100%;">' + val + '</a>';
                         }
                         if (val === 'success') {
-                            return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#43ff41">' + val + '</a>';
+                            return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
                         }
                         if (val === 'wait') {
                             return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';

@@ -34,6 +34,7 @@
                                 <option value="failed" selected>失败</option>
                                 <option value="success">成功</option>
                                 <option value="running">运行中</option>
+                                <option value="wait">等待</option>
                             </select>
                         </div>
                         <table id="historyJobTable" class="table-striped" ></table>
