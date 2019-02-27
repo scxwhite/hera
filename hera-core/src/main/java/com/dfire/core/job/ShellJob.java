@@ -2,7 +2,7 @@ package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.RunningJobKeyConstant;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.util.CommandUtils;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;

@@ -2,7 +2,7 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.common.service.*;
 import com.dfire.common.util.NamedThreadFactory;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.tool.RunShell;

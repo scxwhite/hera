@@ -59,7 +59,7 @@ public class Constants {
 
     public final static int DEFAULT_EXIT_CODE = -1;
 
-    public final static int WAIT_EXIT_CODE = 64;
+    public final static int WAIT_EXIT_CODE = 38;
 
     public final static int LOG_EXIT_CODE = WAIT_EXIT_CODE + 1;
 
@@ -79,6 +79,8 @@ public class Constants {
     public final static String POINT = ".";
 
     public final static String COMMA = ",";
+
+    public final static String SEMICOLON = ";";
 
 
     public final static String SHELL_SUFFIX = POINT + "sh";

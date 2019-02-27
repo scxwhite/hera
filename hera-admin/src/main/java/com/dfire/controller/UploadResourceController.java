@@ -2,7 +2,7 @@ package com.dfire.controller;
 
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.util.HierarchyProperties;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.job.UploadLocalFileJob;
 import com.dfire.logs.HeraLog;

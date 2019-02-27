@@ -23,7 +23,7 @@ public enum StatusEnum {
                 return s;
             }
         }
-        return StatusEnum.FAILED;
+        return null;
     }
 
     @Override
