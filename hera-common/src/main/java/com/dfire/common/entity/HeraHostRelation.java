@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HeraHostRelation {
 
-    private int id;
+    private Integer id;
 
     private String host;
 
-    private int hostGroupId;
+    private Integer hostGroupId;
 }
