@@ -1,5 +1,6 @@
 package com.dfire.core.event.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
 import com.dfire.common.entity.HeraAction;
@@ -191,10 +192,12 @@ public class JobHandler extends AbstractHandler {
             return;
         }
         JobStatus jobStatus;
-        jobStatus = heraJobActionService.findJobStatus(actionId);
-        ScheduleLog.info(actionId + "received a success dependency job with actionId = " + jobId);
-        jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
-        heraJobActionService.updateStatus(jobStatus);
+        synchronized (this) {
+            jobStatus = heraJobActionService.findJobStatus(actionId);
+            ScheduleLog.info(actionId + "received a success dependency job with actionId = " + jobId);
+            jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
+            heraJobActionService.updateStatus(jobStatus);
+        }
         boolean allComplete = true;
         for (String key : heraActionVo.getDependencies()) {
             if (jobStatus.getReadyDependency().get(key) == null) {
@@ -206,7 +209,7 @@ public class JobHandler extends AbstractHandler {
             ScheduleLog.info("JobId:" + jobId + " all dependency jobs is ready,run!");
             startNewJob(event.getTriggerType(), heraActionVo);
         } else {
-            ScheduleLog.info(actionId + "some of dependency is not ready, waiting");
+            ScheduleLog.info(actionId + "some of dependency is not ready, waiting" + JSONObject.toJSONString(jobStatus.getReadyDependency()));
         }
     }
 
