@@ -40,26 +40,25 @@ public interface JobManagerMapper {
      * @param map
      * @return
      */
-    @Select("select a.job_id,a.action_id,a.job_time,b.run_type from" +
-            "        (select job_id,action_id,timestampdiff(SECOND,start_time,end_time)/60 as job_time from hera_action_history where start_time>#{startDate}" +
-            "        " +
-            "        and end_time<#{endDate} ) a" +
-            "        " +
-            "        inner join (select id,run_type from hera_job ) b" +
-            "        on a.job_id = b.id order by a.job_time desc limit #{limitNum};")
+
+
+    @Select("select job_id,action_id, timestampdiff(SECOND,start_time,end_time)/60 as job_time " +
+            "from hera_action_history " +
+            "where action_id >= #{startDate} and action_id < #{endDate} " +
+            "order by job_time desc limit #{limitNum}")
     List<ActionTime> findJobRunTimeTop10(Map<String, Object> map);
 
     /**
      * 任务昨日运行时长
      *
      * @param jobId
-     * @param startDate
+     * @param id
      * @return
      */
     @Select(" select max(timestampdiff(SECOND,start_time,end_time)/60) from hera_action_history" +
             "        WHERE  job_id = #{jobId}" +
-            "        AND DATE_FORMAT(start_time, '%Y-%m-%d') =  DATE_FORMAT(#{startDate}, '%Y-%m-%d')")
-    Integer getYesterdayRunTime(@Param("jobId") Integer jobId, @Param("startDate") String startDate);
+            "        AND left(action_id,8) = #{id}")
+    Integer getYesterdayRunTime(@Param("jobId") Integer jobId, @Param("id") String id);
 
     /**
      * 按照运行状态汇总,初始化首页饼图
