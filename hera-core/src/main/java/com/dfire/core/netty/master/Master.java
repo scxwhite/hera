@@ -45,10 +45,7 @@ import org.springframework.stereotype.Component;
 import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
 
@@ -63,7 +60,7 @@ public class Master {
 
     private MasterContext masterContext;
     @Getter
-    private Map<Long, HeraAction> heraActionMap = new HashMap<>();
+    private ConcurrentHashMap<Long, HeraAction> heraActionMap;
     private ThreadPoolExecutor executeJobPool;
 
     private volatile boolean isGenerateActioning = false;
@@ -88,7 +85,7 @@ public class Master {
             masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
             List<HeraAction> allJobList = masterContext.getHeraJobActionService().getAfterAction(getBeforeDayAction());
             HeraLog.info("-----------------------------action size:{}, time {}-----------------------------", allJobList.size(), System.currentTimeMillis());
-            heraActionMap = new HashMap<>(allJobList.size());
+            heraActionMap = new ConcurrentHashMap<>(allJobList.size());
             allJobList.forEach(heraAction -> {
                 masterContext.getDispatcher().
                         addJobHandler(new JobHandler(heraAction.getId().toString(), this, masterContext));
@@ -361,7 +358,7 @@ public class Master {
                     now = nextDayString.getTarget();
                 }
                 Long nowAction = Long.parseLong(currString);
-                Map<Long, HeraAction> actionMap = new HashMap<>(heraActionMap.size());
+                ConcurrentHashMap<Long, HeraAction> actionMap = new ConcurrentHashMap<>(heraActionMap.size());
                 List<HeraJob> jobList = new ArrayList<>();
                 //批量生成
                 if (!isSingle) {
