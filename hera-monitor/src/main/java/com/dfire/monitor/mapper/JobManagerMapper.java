@@ -70,7 +70,7 @@ public interface JobManagerMapper {
             "        (" +
             "        select job_id,substring_index(group_concat(status order by start_time desc),\",\",1) as status" +
             "        from hera_action_history" +
-            "        where left(start_time,10)=CURRENT_DATE()" +
+            "        where action_id>=CURRENT_DATE () * 10000000000" +
             "        group by job_id" +
             "        ) t" +
             "        group by status")
