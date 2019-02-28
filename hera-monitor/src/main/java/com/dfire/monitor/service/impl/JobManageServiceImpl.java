@@ -97,19 +97,25 @@ public class JobManageServiceImpl implements JobManageService {
     @Override
     public JsonResponse findAllJobStatusDetail() {
         Map<String, Object> res = new HashMap<>(9);
-        res.put("runFailed", jobManagerMapper.findJobDetailByStatus("failed"));
-        res.put("runSuccess", jobManagerMapper.findJobDetailByStatus("success"));
-
-        String curDate;
         Integer day = 6;
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -day);
+        Long lastDate = Long.parseLong(ActionUtil.getActionVersionByDate(calendar.getTime()));
+        res.put("runFailed", jobManagerMapper.findJobDetailByStatus(lastDate, "failed"));
+        res.put("runSuccess", jobManagerMapper.findJobDetailByStatus(lastDate, "success"));
+        String curDate;
         List<String> xAxis = new ArrayList<>(day);
+        Date startDate;
         for (int i = 0; i <= day; i++) {
-            curDate = ActionUtil.getFormatterDate("yyyy-MM-dd", calendar.getTime());
-            res.put(curDate, jobManagerMapper.findJobDetailByDate(curDate));
+            startDate = calendar.getTime();
+            curDate = ActionUtil.getFormatterDate("yyyy-MM-dd", startDate);
             xAxis.add(curDate);
             calendar.add(Calendar.DAY_OF_YEAR, 1);
+            res.put(curDate,
+                    jobManagerMapper.findJobDetailByDate(
+                            Long.parseLong(ActionUtil.getActionVersionByDate(startDate)),
+                            Long.parseLong(ActionUtil.getActionVersionByDate(calendar.getTime()))));
+
         }
         res.put("xAxis", xAxis);
         return new JsonResponse("查询成功", true, res);

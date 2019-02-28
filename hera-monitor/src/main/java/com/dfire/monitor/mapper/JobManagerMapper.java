@@ -80,19 +80,14 @@ public interface JobManagerMapper {
     /**
      * 按照日期查询任务明细
      *
-     * @param curDate
      * @return
      */
-    @Select("select status,count(1) as num " +
-            "        from " +
-            "        ( " +
-            "        select job_id,substring_index(group_concat(status order by start_time desc),\",\",1) as status " +
-            "        from hera_action_history " +
-            "        where left(start_time,10)=#{selectDate,jdbcType=VARCHAR} " +
-            "        group by job_id " +
-            "        ) t " +
-            "        group by status")
-    List<JobStatusNum> findJobDetailByDate(String curDate);
+
+    @Select("select status, count(1) as num " +
+            "from (" +
+            "select job_id, status  from hera_action where id >= #{startDate} and id < #{endDate} and status is not null group by job_id " +
+            ") tmp group by status")
+    List<JobStatusNum> findJobDetailByDate(@Param("startDate") long startDate, @Param("endDate") long endDate);
 
     /**
      * 按照status查询任务明细
@@ -103,8 +98,8 @@ public interface JobManagerMapper {
     @Select(" select count(1) num ,status, LEFT(start_time,10) curDate " +
             "        from  hera_action_history " +
             "        where " +
-            "        DATE_SUB(CURDATE(), INTERVAL 5 DAY) <= start_time " +
+            "        action_id >= #{lastDate} " +
             "        and status = #{status,jdbcType=VARCHAR} " +
             "        GROUP BY LEFT(start_time,10)")
-    List<JobStatusNum> findJobDetailByStatus(String status);
+    List<JobStatusNum> findJobDetailByStatus(@Param("lastDate") long lastDate, @Param("status") String status);
 }
