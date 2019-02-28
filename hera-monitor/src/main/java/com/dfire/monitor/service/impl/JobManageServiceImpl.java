@@ -1,16 +1,15 @@
 package com.dfire.monitor.service.impl;
 
+import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.monitor.domain.ActionTime;
 import com.dfire.monitor.domain.JobHistoryVo;
 import com.dfire.monitor.domain.JobStatusNum;
-import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.monitor.mapper.JobManagerMapper;
 import com.dfire.monitor.service.JobManageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -58,25 +57,20 @@ public class JobManageServiceImpl implements JobManageService {
     @Override
     public JsonResponse findJobRunTimeTop10() {
         Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        Map<String, Object> map = new HashMap<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd 23:00:00");
-        String start = sdf.format(date);
-        String end = sdf2.format(date);
-        map.put("startDate", start);
-        map.put("endDate", end);
+        Map<String, Object> map = new HashMap<>(3);
+        map.put("startDate", ActionUtil.getActionVersionByDate(calendar.getTime()));
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        map.put("endDate", ActionUtil.getActionVersionByDate(calendar.getTime()));
         map.put("limitNum", 10);
         List<ActionTime> jobTime = jobManagerMapper.findJobRunTimeTop10(map);
         if (jobTime == null || jobTime.size() == 0) {
             return new JsonResponse(false, "查询不到任务");
         }
 
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-        Date time = calendar.getTime();
-        String yesterday = ActionUtil.getFormatterDate("yyyy-MM-dd", time);
+        calendar.add(Calendar.DAY_OF_MONTH, -2);
+        String id = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
         for (ActionTime actionTime : jobTime) {
-            actionTime.setYesterdayTime(jobManagerMapper.getYesterdayRunTime(actionTime.getJobId(), yesterday));
+            actionTime.setYesterdayTime(jobManagerMapper.getYesterdayRunTime(actionTime.getJobId(), id));
         }
         return new JsonResponse("查询成功", true, jobTime);
     }
@@ -103,19 +97,25 @@ public class JobManageServiceImpl implements JobManageService {
     @Override
     public JsonResponse findAllJobStatusDetail() {
         Map<String, Object> res = new HashMap<>(9);
-        res.put("runFailed", jobManagerMapper.findJobDetailByStatus("failed"));
-        res.put("runSuccess", jobManagerMapper.findJobDetailByStatus("success"));
-
-        String curDate;
         Integer day = 6;
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, -day);
+        Long lastDate = Long.parseLong(ActionUtil.getActionVersionByDate(calendar.getTime()));
+        res.put("runFailed", jobManagerMapper.findJobDetailByStatus(lastDate, "failed"));
+        res.put("runSuccess", jobManagerMapper.findJobDetailByStatus(lastDate, "success"));
+        String curDate;
         List<String> xAxis = new ArrayList<>(day);
+        Date startDate;
         for (int i = 0; i <= day; i++) {
-            curDate = ActionUtil.getFormatterDate("yyyy-MM-dd", calendar.getTime());
-            res.put(curDate, jobManagerMapper.findJobDetailByDate(curDate));
+            startDate = calendar.getTime();
+            curDate = ActionUtil.getFormatterDate("yyyy-MM-dd", startDate);
             xAxis.add(curDate);
             calendar.add(Calendar.DAY_OF_YEAR, 1);
+            res.put(curDate,
+                    jobManagerMapper.findJobDetailByDate(
+                            Long.parseLong(ActionUtil.getActionVersionByDate(startDate)),
+                            Long.parseLong(ActionUtil.getActionVersionByDate(calendar.getTime()))));
+
         }
         res.put("xAxis", xAxis);
         return new JsonResponse("查询成功", true, res);
