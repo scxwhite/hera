@@ -4,7 +4,6 @@
 
 [![Build Status](https://travis-ci.org/scxwhite/hera.svg?branch=open-source)](https://travis-ci.org/scxwhite/hera) [![](https://www.jitpack.io/v/scxwhite/hera.svg)](https://www.jitpack.io/#scxwhite/hera)
 
-[![Build Status](https://travis-ci.org/scxwhite/hera.svg?branch=open-source)](https://travis-ci.org/scxwhite/hera)
 
 
 
