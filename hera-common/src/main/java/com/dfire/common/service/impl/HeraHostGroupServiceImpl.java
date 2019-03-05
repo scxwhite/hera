@@ -58,16 +58,15 @@ public class HeraHostGroupServiceImpl implements HeraHostGroupService {
 
     @Override
     public Map<Integer, HeraHostGroupVo> getAllHostGroupInfo() {
-        List<HeraHostGroup> groupList = getAll();
+        List<HeraHostGroup> groupList = this.getAll();
         Map<Integer, HeraHostGroupVo> hostGroupInfoMap = new HashMap<>(groupList.size());
-
         List<HeraHostRelation> relationList = heraHostRelationService.getAll();
         groupList.forEach(heraHostGroup -> {
             if(heraHostGroup.getEffective() == 1) {
                 HeraHostGroupVo vo = HeraHostGroupVo.builder()
                         .id(String.valueOf(heraHostGroup.getId()))
-                        .currentPosition(0)
                         .name(heraHostGroup.getName())
+                        .nextPos(0)
                         .description(heraHostGroup.getDescription())
                         .build();
                 List<String> hosts = new ArrayList<>();

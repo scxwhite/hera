@@ -3,7 +3,7 @@ package com.dfire.core.netty.master;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.service.*;
 import com.dfire.common.util.NamedThreadFactory;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.core.queue.JobElement;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.*;
 
 /**
@@ -55,8 +54,6 @@ public class MasterContext {
     @Autowired
     private HeraUserService heraUserService;
     @Autowired
-    private HeraJobMonitorService heraJobMonitorService;
-    @Autowired
     @Qualifier("heraJobMemoryService")
     private HeraJobService heraJobService;
     @Autowired
@@ -68,9 +65,9 @@ public class MasterContext {
 
     private Dispatcher dispatcher;
     private Map<Integer, HeraHostGroupVo> hostGroupCache;
-    private Queue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, Comparator.comparing(JobElement::getPriorityLevel));
-    private Queue<JobElement> debugQueue = new LinkedBlockingQueue<>(1000);
-    private Queue<JobElement> manualQueue = new LinkedBlockingQueue<>(1000);
+    private BlockingQueue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, Comparator.comparing(JobElement::getPriorityLevel));
+    private BlockingQueue<JobElement> debugQueue = new LinkedBlockingQueue<>(1000);
+    private BlockingQueue<JobElement> manualQueue = new LinkedBlockingQueue<>(1000);
 
     private MasterHandler handler;
     private MasterServer masterServer;

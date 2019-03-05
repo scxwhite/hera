@@ -1,5 +1,6 @@
 package com.dfire.core.event.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
 import com.dfire.common.entity.HeraAction;
@@ -10,7 +11,10 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
-import com.dfire.common.service.*;
+import com.dfire.common.service.HeraGroupService;
+import com.dfire.common.service.HeraJobActionService;
+import com.dfire.common.service.HeraJobHistoryService;
+import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
@@ -48,11 +52,9 @@ public class JobHandler extends AbstractHandler {
     private HeraJobHistoryService jobHistoryService;
     private HeraGroupService heraGroupService;
     private HeraJobActionService heraJobActionService;
-    private EmailService emailService;
     private Master master;
     private MasterContext masterContext;
     private HeraUserService heraUserService;
-    private HeraJobMonitorService heraJobMonitorService;
 
     public JobHandler(String actionId, Master master, MasterContext masterContext) {
         this.actionId = actionId;
@@ -60,8 +62,6 @@ public class JobHandler extends AbstractHandler {
         this.heraGroupService = masterContext.getHeraGroupService();
         this.heraJobActionService = masterContext.getHeraJobActionService();
         this.heraUserService = masterContext.getHeraUserService();
-        this.emailService = masterContext.getEmailService();
-        this.heraJobMonitorService = masterContext.getHeraJobMonitorService();
         this.cache = JobGroupCache.builder().actionId(actionId).heraJobActionService(heraJobActionService).build();
         this.master = master;
         this.masterContext = masterContext;
@@ -119,7 +119,7 @@ public class JobHandler extends AbstractHandler {
                     }
                     HeraJobHistoryVo heraJobHistory = BeanConvertUtils.convert(jobHistory);
                     // 搜索上一次运行的日志，从日志中提取jobId 进行kill
-                    if (jobHistory.getStatus() == null || !jobHistory.getStatus().equals(Constants.STATUS_SUCCESS)) {
+                    if (jobHistory.getStatus() == null || !jobHistory.getStatus().equals(StatusEnum.SUCCESS.toString())) {
                         try {
                             JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
                             heraJobHistory.setIllustrate(LogConstant.SERVER_START_JOB_LOG);
@@ -192,10 +192,13 @@ public class JobHandler extends AbstractHandler {
             return;
         }
         JobStatus jobStatus;
-        jobStatus = heraJobActionService.findJobStatus(actionId);
-        ScheduleLog.info("received a success dependency job with actionId = " + jobId);
-        jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
-        heraJobActionService.updateStatus(jobStatus);
+        //必须同步
+        synchronized (this) {
+            jobStatus = heraJobActionService.findJobStatus(actionId);
+            ScheduleLog.info(actionId + "received a success dependency job with actionId = " + jobId);
+            jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
+            heraJobActionService.updateStatus(jobStatus);
+        }
         boolean allComplete = true;
         for (String key : heraActionVo.getDependencies()) {
             if (jobStatus.getReadyDependency().get(key) == null) {
@@ -207,7 +210,7 @@ public class JobHandler extends AbstractHandler {
             ScheduleLog.info("JobId:" + jobId + " all dependency jobs is ready,run!");
             startNewJob(event.getTriggerType(), heraActionVo);
         } else {
-            ScheduleLog.info("some of dependency is not ready, waiting");
+            ScheduleLog.info(actionId + "some of dependency is not ready, waiting" + JSONObject.toJSONString(jobStatus.getReadyDependency().keySet()));
         }
     }
 
@@ -315,7 +318,6 @@ public class JobHandler extends AbstractHandler {
             HeraActionVo heraActionVo = cache.getHeraActionVo();
             if (heraActionVo != null) {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
-
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
                     if (Long.parseLong(actionId) < Long.parseLong(ActionUtil.getCurrActionVersion())) {
                         HeraJobHistory history = HeraJobHistory.builder()

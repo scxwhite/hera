@@ -17,7 +17,7 @@ import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.config.UnCheckLogin;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.logs.MonitorLog;
 import com.dfire.protocol.JobExecuteKind;
@@ -314,6 +314,11 @@ public class ScheduleCenterController extends BaseHeraController {
             new CronExpression(heraJobVo.getCronExpression());
         } catch (ParseException e) {
             return new JsonResponse(false, "定时表达式不准确，请核实后再保存");
+        }
+
+        HeraHostGroup hostGroup = heraHostGroupService.findById(heraJobVo.getHostGroupId());
+        if (hostGroup == null) {
+            return new JsonResponse(false, "机器组不存在，请选择一个机器组");
         }
 
         if (StringUtils.isBlank(heraJobVo.getAreaId())) {

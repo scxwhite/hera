@@ -1,6 +1,6 @@
 package com.dfire.core.netty;
 
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.protocol.RpcSocketMessage;
 import io.netty.channel.Channel;

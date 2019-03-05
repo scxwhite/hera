@@ -11,10 +11,10 @@ import com.dfire.common.vo.MachineInfoVo;
 import com.dfire.common.vo.OSInfoVo;
 import com.dfire.common.vo.ProcessMonitorVo;
 import com.dfire.common.vo.WorkInfoVo;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.job.Job;
 import com.dfire.core.message.HeartBeatInfo;
-import com.dfire.core.netty.NettyChannel;
+import com.dfire.core.netty.cluster.FailFastCluster;
 import com.dfire.core.netty.worker.request.WorkerHandleWebRequest;
 import com.dfire.core.netty.worker.request.WorkerHandlerHeartBeat;
 import com.dfire.logs.ErrorLog;
@@ -155,7 +155,7 @@ public class WorkClient {
              * @param job
              * @param e
              */
-            private void  printScheduleLog(Job job, Exception e) {
+            private void printScheduleLog(Job job, Exception e) {
                 try {
                     HeraJobHistoryVo his = job.getJobContext().getHeraJobHistory();
                     String logContent = his.getLog().getContent();
@@ -251,7 +251,7 @@ public class WorkClient {
         ChannelFutureListener futureListener = (future) -> {
             try {
                 if (future.isSuccess()) {
-                    workContext.setServerChannel(new NettyChannel(future.channel()));
+                    workContext.setServerChannel(FailFastCluster.wrap(future.channel()));
                     SocketLog.info(workContext.getServerChannel().toString());
                 }
             } catch (Exception e) {

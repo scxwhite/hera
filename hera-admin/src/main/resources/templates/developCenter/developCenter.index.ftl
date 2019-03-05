@@ -202,6 +202,21 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<script type="text/html" id="addHostGroup">
+    <form class="layui-form layui-form-pane" action="" id="addHostGroupForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">机器组</label>
+            <div class="layui-input-block">
+                <select id="hostGroupId" lay-verify="required">
+                    {{# layui.each(d, function(index,item) { }}
+                    <option value="{{item.id}}">{{item.name}}</option>
+                    {{# }); }}
+                </select>
+            </div>
+        </div>
+    </form>
+</script>
 <@netCommon.commonScript />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/shell/shell.min.js"></script>

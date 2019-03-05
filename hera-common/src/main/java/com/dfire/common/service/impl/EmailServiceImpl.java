@@ -39,7 +39,7 @@ public class EmailServiceImpl implements EmailService {
         if (StringUtils.isEmpty(address)) {
             return;
         }
-        String[] userEmails = address.split(Constants.COMMA);
+        String[] userEmails = address.split(Constants.SEMICOLON);
         int len = userEmails.length;
         InternetAddress[] addresses = new InternetAddress[len];
         for (int i = 0; i < len; i++) {

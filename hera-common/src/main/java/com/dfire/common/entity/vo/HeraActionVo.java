@@ -89,4 +89,6 @@ public class HeraActionVo {
 
     private int hostGroupId;
 
+
+
 }

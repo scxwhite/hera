@@ -242,9 +242,9 @@ public class MasterHandlerWebResponse {
         if (!workReady) {
             HeraLog.info("workInfo未准备，准备请求work组装workInfo");
             //发送workInfo build 请求
-            context.getThreadPool().submit(() -> context.getWorkMap().keySet().parallelStream().forEach(channel -> {
+            context.getThreadPool().submit(() -> context.getWorkMap().values().parallelStream().forEach(workHolder -> {
                 try {
-                    new NettyChannel(channel).writeAndFlush(RpcSocketMessage.SocketMessage.newBuilder()
+                    workHolder.getChannel().writeAndFlush(RpcSocketMessage.SocketMessage.newBuilder()
                             .setKind(RpcSocketMessage.SocketMessage.Kind.REQUEST)
                             .setBody(RpcRequest.Request.newBuilder().setOperate(RpcOperate.Operate.GetWorkInfo).build().toByteString())
                             .build());

@@ -26,27 +26,16 @@
 
     <dependencies>
 
+
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-freemarker</artifactId>
-        </dependency>
+
+
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>spring-data-redis</artifactId>
-                    <groupId>org.springframework.data</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.auth0</groupId>
@@ -54,32 +43,7 @@
             <version>${jwt.version}</version>
         </dependency>
         <!-- redisson-->
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-common</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-codec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-buffer</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-transport</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-handler</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -103,11 +67,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <version>${quartz.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${lang3.version}</version>
@@ -122,8 +81,8 @@
 
         <dependency>
             <groupId>com.dfire.hera</groupId>
-            <artifactId>hera-common</artifactId>
-            <version>${hera.common.version}</version>
+            <artifactId>hera-monitor</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
@@ -133,19 +92,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-jdbc</artifactId>
-            <version>1.1.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.eclipse.jetty.aggregate</groupId>
-                    <artifactId>jetty-all</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.hive</groupId>
-                    <artifactId>hive-shims</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
         </dependency>
 
     </dependencies>

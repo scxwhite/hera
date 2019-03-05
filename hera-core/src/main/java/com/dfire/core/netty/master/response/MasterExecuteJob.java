@@ -2,7 +2,7 @@ package com.dfire.core.netty.master.response;
 
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.ActionUtil;
-import com.dfire.core.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
