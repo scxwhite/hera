@@ -7,12 +7,12 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
     </parent>
 
     <artifactId>hera-core</artifactId>
     <packaging>jar</packaging>
-    <version>2.2</version>
+    <version>2.3</version>
     <name>hera-core</name>
     <description>hera project for Spring Boot</description>
 
@@ -20,8 +20,8 @@
         <quartz.version>2.2.1</quartz.version>
         <jwt.version>3.3.0</jwt.version>
         <lang3.version>3.4</lang3.version>
-        <hera.common.version>2.2</hera.common.version>
-        <hera.protocol.version>2.2</hera.protocol.version>
+        <hera.common.version>2.3</hera.common.version>
+        <hera.protocol.version>2.3</hera.protocol.version>
     </properties>
 
     <dependencies>
