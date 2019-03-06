@@ -90,8 +90,7 @@ public class Dispatcher extends AbstractObservable {
                 fireEvent(afterDispatch, mvcEvent);
             }
         } catch (Exception e) {
-            ErrorLog.error("global dispatch job event error");
-            throw new RuntimeException(e);
+            ErrorLog.error("global dispatch job event error", e);
         }
 
     }

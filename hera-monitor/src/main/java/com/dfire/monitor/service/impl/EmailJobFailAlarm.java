@@ -1,5 +1,6 @@
 package com.dfire.monitor.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobMonitor;
@@ -12,11 +13,11 @@ import com.dfire.common.util.ActionUtil;
 import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.ScheduleLog;
+import com.dfire.monitor.config.Alarm;
 import com.dfire.monitor.service.JobFailAlarm;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 
@@ -24,9 +25,8 @@ import javax.mail.MessagingException;
  * @author xiaosuda
  * @date 2019/2/25
  */
-@Service
+@Alarm
 public class EmailJobFailAlarm implements JobFailAlarm {
-
 
     @Autowired
     @Qualifier("heraJobMemoryService")
@@ -48,6 +48,7 @@ public class EmailJobFailAlarm implements JobFailAlarm {
             return;
         }
         HeraJob heraJob = heraJobService.findById(jobId);
+        System.out.println(JSONObject.toJSONString(heraJob));
         //非开启任务不处理  最好能把这些抽取出去 提供接口实现
         if (heraJob.getAuto() != 1 && !Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
             return;
