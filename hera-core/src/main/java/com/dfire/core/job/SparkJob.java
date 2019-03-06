@@ -81,8 +81,6 @@ public class SparkJob extends ProcessJob {
                 HeraGlobalEnvironment.getSparkMaster() + " " +
                 HeraGlobalEnvironment.getSparkDriverCores() + " " +
                 HeraGlobalEnvironment.getSparkDriverMemory());
-//                HeraGlobalEnvironment.getSparkExecutorCores() + " " +
-//                HeraGlobalEnvironment.getSparkExecutorMemory());
 
         if (StringUtils.isNotBlank(shellPrefix)) {
 
