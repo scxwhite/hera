@@ -86,4 +86,6 @@ public class HeraJob {
 
     private Long mustEndMinute;
 
+    private short repeatRun;
+
 }

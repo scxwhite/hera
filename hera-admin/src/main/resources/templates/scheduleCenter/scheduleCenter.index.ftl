@@ -233,18 +233,13 @@
                                                 <input class="form-control" type="text" name="" readonly>
                                             </div>
                                         </div>
+
                                     </div>
                                     <div class="col-lg-4 col-md-4 col-sm-4">
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">所有人:</label>
                                             <div class="col-sm-8">
                                                 <input class="form-control" type="text" name="owner" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group ">
-                                            <label class="control-label input-sm col-sm-3">重要联系人:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -259,12 +254,19 @@
                                                 <input class="form-control" type="text" name="uidS" readonly>
                                             </div>
                                         </div>
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">重复执行:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="repeatRun" readonly>
+                                            </div>
+                                        </div>
                                         <div class="form-group ">
                                             <label class="control-label input-sm col-sm-3">机器组:</label>
                                             <div class="col-sm-8">
                                                 <input class="form-control" type="text" name="hostGroupName" readonly>
                                             </div>
                                         </div>
+
                                         <div class="form-group ">
                                             <label class="control-label input-sm col-sm-3">区域:</label>
                                             <div class="col-sm-8">
@@ -423,6 +425,16 @@
                                                 <select name="areaId" class="selectpicker form-control"
                                                         data-live-search="true" multiple data-done-button="true">
 
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">重复执行:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select name="repeatRun" class="form-control">
+                                                    <option value="1" selected>是</option>
+                                                    <option value="0">否</option>
                                                 </select>
                                             </div>
                                         </div>

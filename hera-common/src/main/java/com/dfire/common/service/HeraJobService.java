@@ -61,4 +61,6 @@ public interface HeraJobService {
 
 
     boolean changeParent(Integer newId, Integer parentId);
+
+    boolean isRepeat(Integer jobId);
 }

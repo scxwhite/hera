@@ -20,5 +20,5 @@ public class HeraHostRelation {
 
     private String host;
 
-    private int hostGroupId;
+    private Integer hostGroupId;
 }

@@ -60,7 +60,7 @@ public interface HeraJobActionService {
     Integer updateStatusAndReadDependency(HeraAction heraAction);
 
 
-    List<HeraAction> getTodayAction();
+    List<HeraAction> getAfterAction(Long action);
 
     /**
      * 根据jobId 获取所有的版本

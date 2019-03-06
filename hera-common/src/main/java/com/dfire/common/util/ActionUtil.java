@@ -31,6 +31,10 @@ public class ActionUtil {
      * 当前时刻生成版本格式
      */
     public static final String ACTION_VERSION_CURR = "yyyyMMddHHmmss0000";
+    /**
+     * 当前小时版本格式
+     */
+    public static final String ACTION_VERSION_HOUR = "yyyyMMddHH00000000";
 
     /**
      * 初始化今天凌晨的版本
@@ -84,6 +88,10 @@ public class ActionUtil {
         return new DateTime().toString(ACTION_VERSION_CURR);
     }
 
+    public static String getCurrHourVersion() {
+        return new DateTime().toString(ACTION_VERSION_HOUR);
+    }
+
     public static Long getLongCurrActionVersion() {
         return Long.parseLong(new DateTime().toString(ACTION_VERSION_CURR));
     }
@@ -93,7 +101,12 @@ public class ActionUtil {
 
     }
 
-    public static String getActionVersionByTime(Date nowTime) {
+    public static String getActionVersionByDate(Date date) {
+        return new DateTime(date).toString(ACTION_VERSION_INIT);
+
+    }
+
+    public static String getActionVersionPrefix(Date nowTime) {
         return new DateTime(nowTime).toString(ACTION_VERSION_PREFIX);
     }
 

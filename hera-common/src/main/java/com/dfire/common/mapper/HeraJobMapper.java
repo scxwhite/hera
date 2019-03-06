@@ -68,4 +68,6 @@ public interface HeraJobMapper {
     @Update("update hera_job set group_id = #{parentId} where id = #{newId}")
     Integer changeParent(@Param("newId") Integer newId, @Param("parentId") Integer parentId);
 
+    @Select("select repeat_run from hera_job where id = #{jobId}")
+    Integer findRepeat(Integer jobId);
 }

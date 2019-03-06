@@ -808,6 +808,11 @@ layui.use(['table'], function () {
                             $('#jobMessage [name="auto"]').removeClass("label-primary")
                                 .removeClass("label-default").removeClass("label-info")
                                 .addClass(data.auto === "开启" ? "label-primary" : data.auto === "失效" ? "label-info" : "label-default");
+
+
+                            $('#jobMessage [name="repeatRun"]').removeClass("label-primary")
+                                .removeClass("label-default").addClass(data.repeatRun === 1 ? "label-primary" : "label-default").val(data.repeatRun === 1 ? "是" : "否");
+
                             $('#jobOperate [name="monitor"]').text(data.focus ? "取消关注" : "关注该任务");
 
                             let areas = '';
@@ -1438,6 +1443,18 @@ let JobLogTable = function (jobId) {
                     field: "status",
                     title: "执行状态",
                     width: "8%",
+                    formatter: function (val) {
+                        if (val === 'running') {
+                            return '<a class="layui-btn layui-btn-xs" style="width: 100%;">' + val + '</a>';
+                        }
+                        if (val === 'success') {
+                            return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
+                        }
+                        if (val === 'wait') {
+                            return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                        }
+                        return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
+                    }
                 }, {
                     field: "operator",
                     title: "执行人",
@@ -1459,7 +1476,7 @@ let JobLogTable = function (jobId) {
                         if (val == null) {
                             return val;
                         }
-                        return "<span class='label label-info' data-toggle='tooltip' title='" + val + "' >" + val.slice(0, 6) + "</span>";
+                        return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 6) + '</label>';
                     }
                 },
                 {

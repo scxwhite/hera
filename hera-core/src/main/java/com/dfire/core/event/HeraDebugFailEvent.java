@@ -4,10 +4,8 @@ import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.core.event.base.ApplicationEvent;
 import com.dfire.core.event.base.Events;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
-import javax.annotation.security.DenyAll;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

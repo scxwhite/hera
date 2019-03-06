@@ -117,12 +117,6 @@
             <artifactId>hera-core</artifactId>
             <version>${hera.core.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.dfire.hera</groupId>
-            <artifactId>hera-monitor</artifactId>
-            <version>${hera.monitor.version}</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
         <dependency>
             <groupId>org.aspectj</groupId>

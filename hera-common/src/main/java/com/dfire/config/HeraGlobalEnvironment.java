@@ -1,10 +1,12 @@
-package com.dfire.core.config;
+package com.dfire.config;
 
 import com.dfire.common.enums.OperatorSystemEnum;
+import com.dfire.logs.HeraLog;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +31,16 @@ public class HeraGlobalEnvironment {
     private static long channelTimeout = 1000L;
 
     @Getter
+    private static int jobCacheDay;
+
+    @Getter
+    private static String loadBalance;
+
+    @Getter
     private static String env;
+
+    @Getter
+    private static int warmUpCheck;
 
     @Getter
     private static Float maxMemRate;
@@ -44,7 +55,7 @@ public class HeraGlobalEnvironment {
     @Getter
     private static Integer connectPort;
     @Getter
-    private static String downloadDir;
+    private static String workDir;
     @Getter
     private static Integer maxParallelNum;
     @Getter
@@ -53,6 +64,8 @@ public class HeraGlobalEnvironment {
     private static String admin;
     @Getter
     private static Integer taskTimeout;
+    @Getter
+    private static String sparkBaseDir;
     @Getter
     private static String sparkAddress;
     @Getter
@@ -119,15 +132,27 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.connectPort = connectPort;
     }
 
-    @Value("${hera.downloadDir}")
-    public void setDownloadDir(String downloadDir) {
-        HeraGlobalEnvironment.downloadDir = downloadDir;
+    @Value("${hera.workDir}")
+    public void setWorkDir(String workDir) {
+        File file = new File(workDir);
+        if (!file.exists()) {
+            HeraGlobalEnvironment.workDir = System.getProperty("user.dir");
+            HeraLog.warn("配置的工作路径" + workDir + "不存在，将使用默认路径:" + HeraGlobalEnvironment.workDir);
+        } else {
+            HeraGlobalEnvironment.workDir = workDir;
+        }
     }
 
     @Value("${hera.maxParallelNum}")
     public void setMaxParallelNum(Integer maxParallelNum) {
         HeraGlobalEnvironment.maxParallelNum = maxParallelNum;
     }
+
+    @Value("${hera.jobCacheDay}")
+    public void setAdmin(int jobCacheDay) {
+        HeraGlobalEnvironment.jobCacheDay = jobCacheDay;
+    }
+
 
     @Value("${hera.admin}")
     public void setAdmin(String admin) {
@@ -159,6 +184,16 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
     }
 
+    @Value("${hera.loadBalance}")
+    public void setLoadBalance(String loadBalance) {
+        HeraGlobalEnvironment.loadBalance = loadBalance;
+    }
+
+    @Value("${hera.warmUpCheck}")
+    public void setWarmUpCheck(int warmUpCheck) {
+        HeraGlobalEnvironment.warmUpCheck = warmUpCheck;
+    }
+
     @Value("${hera.requestTimeout}")
     public void setTimeout(Long requestTimeout) {
         HeraGlobalEnvironment.requestTimeout = requestTimeout;
@@ -167,6 +202,11 @@ public class HeraGlobalEnvironment {
     @Value("${hera.channelTimeout}")
     public void setChannelTimeout(Long channelTimeout) {
         HeraGlobalEnvironment.channelTimeout = channelTimeout;
+    }
+
+    @Value("${spark.baseDir}")
+    public void setSparkBaseDir(String sparkBaseDir) {
+        HeraGlobalEnvironment.sparkBaseDir = sparkBaseDir;
     }
 
     @Value("${spark.address}")

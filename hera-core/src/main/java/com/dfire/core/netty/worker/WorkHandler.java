@@ -2,6 +2,8 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.core.exception.RemotingException;
+import com.dfire.core.netty.HeraChannel;
+import com.dfire.core.netty.cluster.FailBackCluster;
 import com.dfire.core.netty.listener.ResponseListener;
 import com.dfire.core.netty.worker.request.WorkExecuteJob;
 import com.dfire.core.netty.worker.request.WorkHandleCancel;
@@ -14,6 +16,7 @@ import com.dfire.protocol.RpcResponse.Response;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
@@ -30,7 +33,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     private WorkHandlerRequest handlerRequest = new WorkHandlerRequest();
 
-    private CompletionService<Response> completionService = new ExecutorCompletionService<>(
+    private CompletionService<ChannelResponse> completionService = new ExecutorCompletionService<>(
             new ThreadPoolExecutor(0, Integer.MAX_VALUE, 60L,
                     TimeUnit.SECONDS,
                     new SynchronousQueue<>(),
@@ -39,23 +42,24 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     private WorkContext workContext;
 
+    private ConcurrentHashMap<Channel, HeraChannel> channelMap = new ConcurrentHashMap<>(2);
+
     public WorkHandler(final WorkContext workContext) {
         this.workContext = workContext;
         workContext.setHandler(this);
-        Executor executor = Executors.newSingleThreadExecutor();
-
+        Executor executor = Executors.newSingleThreadExecutor(new NamedThreadFactory("send-message-to-master-thread", true));
         executor.execute(() -> {
-            Response response = null;
-            Future<Response> future;
+            ChannelResponse response = null;
+            Future<ChannelResponse> future;
             while (true) {
                 try {
                     future = completionService.take();
                     response = future.get();
-                    workContext.getServerChannel().writeAndFlush(wrapper(response));
-                    TaskLog.info("1.WorkHandler: worker send response,rid={}", response.getRid());
+                    response.channel.writeAndFlush(wrapper(response.response));
+                    TaskLog.info("1.WorkHandler: worker send response,rid={}", response.response.getRid());
                 } catch (InterruptedException | ExecutionException | RemotingException e) {
                     e.printStackTrace();
-                    ErrorLog.error("1.WorkHandler: worker send response timeout,rid={}", response == null ? null : response.getRid());
+                    ErrorLog.error("1.WorkHandler: worker send response timeout,rid={}", response == null ? null : response.response.getRid());
                 }
             }
         });
@@ -82,6 +86,8 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, SocketMessage socketMessage) throws Exception {
+
+        Channel channel = ctx.channel();
         switch (socketMessage.getKind()) {
             case REQUEST:
                 final Request request = Request.newBuilder().mergeFrom(socketMessage.getBody()).build();
@@ -90,14 +96,14 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                     case Manual:
                     case Debug:
                         completionService.submit(() ->
-                                new WorkExecuteJob().execute(workContext, request).get());
+                                new ChannelResponse(getChannel(channel), new WorkExecuteJob().execute(workContext, request).get()));
                         break;
                     case Cancel:
                         completionService.submit(() ->
-                                new WorkHandleCancel().handleCancel(workContext, request).get());
+                                new ChannelResponse(getChannel(channel), new WorkHandleCancel().handleCancel(workContext, request).get()));
                         break;
                     case GetWorkInfo:
-                        workContext.getWorkExecuteThreadPool().execute(() -> handlerRequest.getWorkInfo(ctx.channel()));
+                        workContext.getWorkExecuteThreadPool().execute(() -> handlerRequest.getWorkInfo(getChannel(channel)));
                         break;
                     default:
                         ErrorLog.error("unknow operate value {}", request.getOperateValue());
@@ -140,10 +146,19 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
         }
     }
 
+
+    private HeraChannel getChannel(Channel channel) {
+        if (channelMap.get(channel) == null) {
+            channelMap.putIfAbsent(channel, FailBackCluster.wrap(channel));
+        }
+        return channelMap.get(channel);
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         SocketLog.info("客户端与服务端连接开启");
         ctx.fireChannelActive();
+        getChannel(ctx.channel());
     }
 
     @Override
@@ -151,16 +166,24 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
         SocketLog.warn("客户端与服务端连接关闭");
         workContext.setServerChannel(null);
         ctx.fireChannelInactive();
+        channelMap.remove(ctx.channel());
     }
 
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         cause.printStackTrace();
         ErrorLog.error("work exception: {}, {}", ctx.channel().remoteAddress(), cause.toString());
+    }
+
+    private class ChannelResponse {
+        HeraChannel channel;
+        Response response;
+
+        public ChannelResponse(HeraChannel channel, Response response) {
+            this.channel = channel;
+            this.response = response;
+        }
     }
 
 }

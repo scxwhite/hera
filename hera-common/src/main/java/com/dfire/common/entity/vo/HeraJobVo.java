@@ -106,4 +106,7 @@ public class HeraJobVo {
 
     private String focusUser;
 
+    private short repeatRun;
+
+
 }
