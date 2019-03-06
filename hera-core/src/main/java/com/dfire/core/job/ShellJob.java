@@ -2,10 +2,10 @@ package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.RunningJobKeyConstant;
-import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.util.CommandUtils;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -70,40 +70,16 @@ public class ShellJob extends ProcessJob {
         String shellFilePath = getProperty(RunningJobKeyConstant.RUN_SHELL_PATH, "");
         List<String> list = new ArrayList<>();
         //修改权限
-        String shellPrefix = "";
-        String user = "";
-        if (jobContext.getRunType() == JobContext.SCHEDULE_RUN || jobContext.getRunType() == JobContext.MANUAL_RUN) {
-            user = jobContext.getHeraJobHistory().getOperator();
-            shellPrefix = "sudo -u " + user;
-        } else if (jobContext.getRunType() == JobContext.DEBUG_RUN) {
-            user = jobContext.getDebugHistory().getOwner();
-            shellPrefix = "sudo -u " + user;
-        } else if (jobContext.getRunType() == JobContext.SYSTEM_RUN) {
-            shellPrefix = "";
-        } else {
-            log("没有RunType=" + jobContext.getRunType() + " 的执行类别");
-        }
+        String shellPrefix = getJobPrefix();
         //过滤不需要转化的后缀名
-        String[] excludes = HeraGlobalEnvironment.excludeFile.split(";");
-        boolean isDocToUnix = true;
-        if (excludes.length > 0) {
-            String lowCaseShellPath = shellFilePath.toLowerCase();
-            for (String exclude : excludes) {
-                if (lowCaseShellPath.endsWith("." + exclude)) {
-                    isDocToUnix = false;
-                    break;
-                }
-            }
-        }
-
+        boolean isDocToUnix = checkDosToUnix(shellFilePath);
         if (isDocToUnix) {
             list.add("dos2unix " + shellFilePath);
             log("dos2unix file:" + shellFilePath);
         }
 
-        if (shellPrefix.trim().length() > 0) {
+        if (StringUtils.isNotBlank(shellPrefix)) {
             String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
-
             File tmpFile = new File(tmpFilePath);
             OutputStreamWriter tmpWriter = null;
 

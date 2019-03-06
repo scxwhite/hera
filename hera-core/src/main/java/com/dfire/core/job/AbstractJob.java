@@ -1,6 +1,9 @@
 package com.dfire.core.job;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.util.HierarchyProperties;
+import com.dfire.config.HeraGlobalEnvironment;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -34,6 +37,33 @@ public abstract class AbstractJob implements Job {
 
     protected String getProperty(String key, String defaultValue) {
         return StringUtils.isBlank(jobContext.getProperties().getProperty(key)) ? defaultValue : jobContext.getProperties().getProperty(key);
+    }
+
+    protected String getJobPrefix() {
+        String shellPrefix = null;
+        if (jobContext.getRunType() == JobContext.SCHEDULE_RUN || jobContext.getRunType() == JobContext.MANUAL_RUN) {
+            shellPrefix = "sudo -u " + jobContext.getHeraJobHistory().getOperator();
+        } else if (jobContext.getRunType() == JobContext.DEBUG_RUN) {
+            shellPrefix = "sudo -u " + jobContext.getDebugHistory().getOwner();
+        } else if (jobContext.getRunType() == JobContext.SYSTEM_RUN) {
+            shellPrefix = "";
+        } else {
+            log("没有RunType=" + jobContext.getRunType() + " 的执行类别");
+        }
+        return shellPrefix;
+    }
+
+    protected boolean checkDosToUnix(String filePath) {
+        String[] excludeFile = HeraGlobalEnvironment.excludeFile.split(Constants.SEMICOLON);
+        if (!ArrayUtils.isEmpty(excludeFile)) {
+            String lowCaseShellPath = filePath.toLowerCase();
+            for (String exclude : excludeFile) {
+                if (lowCaseShellPath.endsWith(Constants.POINT + exclude)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     protected void logConsole(String log) {
