@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
     </parent>
 
     <artifactId>hera-admin</artifactId>
-    <version>2.2</version>
+    <version>2.3</version>
     <packaging>jar</packaging>
     <name>hera-admin</name>
     <description>hera任务调度系统</description>
@@ -24,8 +24,8 @@
         <springfox.swagger.ui.version>2.7.0</springfox.swagger.ui.version>
         <main-class>com.dfire.AdminBootstrap</main-class>
         <assembly.include.base.directory>true</assembly.include.base.directory>
-        <hera.core.version>2.2</hera.core.version>
-        <hera.monitor.version>2.2</hera.monitor.version>
+        <hera.core.version>2.3</hera.core.version>
+        <hera.monitor.version>2.3</hera.monitor.version>
     </properties>
 
     <dependencies>

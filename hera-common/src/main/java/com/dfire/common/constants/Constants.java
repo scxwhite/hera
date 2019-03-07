@@ -22,6 +22,8 @@ public class Constants {
 
     public final static Integer HTML_FONT_SIZE = 1;
 
+    public final static Integer AVAILABLE_CORES = Runtime.getRuntime().availableProcessors();
+
     public final static String HTML_FONT_RED_LEFT = "<font color=\"red\" size=\"" + HTML_FONT_SIZE + "\" >";
 
     public final static String HTML_FONT_GREEN_LEFT = "<font color=\"green\" size=\"" + HTML_FONT_SIZE + "\">";
@@ -64,9 +66,6 @@ public class Constants {
     public final static int LOG_EXIT_CODE = WAIT_EXIT_CODE + 1;
 
     public final static int INTERRUPTED_EXIT_CODE = WAIT_EXIT_CODE + 2;
-
-
-
 
 
     public final static String SPARK_FILE = "spark";
