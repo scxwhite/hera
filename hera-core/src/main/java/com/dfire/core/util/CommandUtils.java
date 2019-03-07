@@ -10,7 +10,8 @@ import com.dfire.config.HeraGlobalEnvironment;
 public class CommandUtils {
 
     public static final String CHANGE_AUTHORITY = "chmod -R 777 ";
-    public static final String RUN_SH_COMMAND = " sh ";
+    //public static final String RUN_SH_COMMAND = " sh ";
+    public static final String RUN_SH_COMMAND = " "+ HeraGlobalEnvironment.getJobShellBin()+" ";
 
     /**
      * 修改文件权限命令

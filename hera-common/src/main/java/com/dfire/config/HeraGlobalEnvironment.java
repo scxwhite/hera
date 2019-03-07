@@ -86,7 +86,13 @@ public class HeraGlobalEnvironment {
     private static String sparkExecutorCores;
     @Getter
     private static String hdfsUploadPath;
-
+    @Getter
+    private static String jobShellBin;
+    @Getter
+    private static String jobHiveBin;
+    @Getter
+    private static String jobSparkSqlBin;
+       
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
         HeraGlobalEnvironment.excludeFile = excludeFile;
@@ -259,8 +265,22 @@ public class HeraGlobalEnvironment {
      */
     private static boolean linuxSystem = false;
 
+    @Value("${job.shell.bin}")
+    public static void setJobShellBin(String jobShellBin) {
+		HeraGlobalEnvironment.jobShellBin = jobShellBin;
+	}
 
-    @Getter
+    @Value("${job.hive.bin}")
+	public static void setJobHiveBin(String jobHiveBin) {
+		HeraGlobalEnvironment.jobHiveBin = jobHiveBin;
+	}
+
+    @Value("${job.spark-sql.bin}")
+	public static void setJobSparkSqlBin(String jobSparkSqlBin) {
+		HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin;
+	}
+
+	@Getter
     private static OperatorSystemEnum systemEnum;
 
     /**

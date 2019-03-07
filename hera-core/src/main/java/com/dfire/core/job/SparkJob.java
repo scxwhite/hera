@@ -23,6 +23,7 @@ import java.util.List;
 public class SparkJob extends ProcessJob {
 
     public final String UDF_SQL_NAME = "hera_udf.sql";
+    private final static String SPARKSQL_BIN=HeraGlobalEnvironment.getJobSparkSqlBin() + " ";
 
 
     public SparkJob(JobContext jobContext) {
@@ -93,7 +94,7 @@ public class SparkJob extends ProcessJob {
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
                     tmpWriter.write(HeraGlobalEnvironment.getSparkBaseDir() +
-                            "/bin/spark-sql " + sb.toString());
+                    		SparkJob.SPARKSQL_BIN + sb.toString());
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
@@ -110,11 +111,11 @@ public class SparkJob extends ProcessJob {
             } else {
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
                 list.add(shellPrefix + " " + HeraGlobalEnvironment.getSparkBaseDir() +
-                        "/bin/spark-sql " + sb.toString());
+                		SparkJob.SPARKSQL_BIN + sb.toString());
             }
 
         } else {
-            list.add(HeraGlobalEnvironment.getSparkBaseDir() + "/bin/spark-sql " + sb.toString());
+            list.add(HeraGlobalEnvironment.getSparkBaseDir() + SparkJob.SPARKSQL_BIN + sb.toString());
         }
         return list;
     }

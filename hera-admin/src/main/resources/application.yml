@@ -107,6 +107,15 @@ spark :
   driver-cores : --driver-cores 1
   executor-memory : -- executor-memory 2g
   executor-cores : --executor-cores 1
+  
+  
+job :
+  shell :
+    bin: sh
+  hive :
+    bin : hive --hiveconf tez.queue.name=root.normal_queues.backstage.yfzx.dw
+  spark-sql :
+    bin : spark-sql
 
 ---
 ## 开发环境

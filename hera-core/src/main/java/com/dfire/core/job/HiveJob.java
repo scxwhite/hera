@@ -18,6 +18,8 @@ import java.util.List;
  * @desc
  */
 public class HiveJob extends ProcessJob {
+	
+	private final static String HIVE_BIN=HeraGlobalEnvironment.getJobHiveBin() + " ";
 
 
     public HiveJob(JobContext jobContext) {
@@ -86,7 +88,7 @@ public class HiveJob extends ProcessJob {
                     tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write("hive " + sb.toString());
+                    tmpWriter.write(HiveJob.HIVE_BIN + sb.toString());
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
@@ -102,11 +104,11 @@ public class HiveJob extends ProcessJob {
                 list.add(shellPrefix + " sh " + tmpFilePath);
             } else {
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + " hive " + sb.toString());
+                list.add(shellPrefix + HiveJob.HIVE_BIN + sb.toString());
             }
 
         } else {
-            list.add("hive" + sb.toString());
+            list.add(HiveJob.HIVE_BIN + sb.toString());
         }
         return list;
     }
