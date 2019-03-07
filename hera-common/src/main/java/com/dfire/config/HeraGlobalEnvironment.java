@@ -259,26 +259,27 @@ public class HeraGlobalEnvironment {
     public void setSparkExecutorCores(String sparkExecutorCores) {
         HeraGlobalEnvironment.sparkExecutorCores = sparkExecutorCores;
     }
+    
+    @Value("${hera.job.shell.bin}")
+    public void setJobShellBin(String jobShellBin) {
+		HeraGlobalEnvironment.jobShellBin = jobShellBin;
+	}
+
+    @Value("${hera.job.hive.bin}")
+	public void setJobHiveBin(String jobHiveBin) {
+		HeraGlobalEnvironment.jobHiveBin = jobHiveBin;
+	}
+
+    @Value("${hera.job.spark-sql.bin}")
+	public void setJobSparkSqlBin(String jobSparkSqlBin) {
+		HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin;
+	}
+    
 
     /**
      * 判断是否是linux 环境，有些命令不一样
      */
     private static boolean linuxSystem = false;
-
-    @Value("${hera.job.shell.bin}")
-    public static void setJobShellBin(String jobShellBin) {
-		HeraGlobalEnvironment.jobShellBin = jobShellBin;
-	}
-
-    @Value("${hera.job.hive.bin}")
-	public static void setJobHiveBin(String jobHiveBin) {
-		HeraGlobalEnvironment.jobHiveBin = jobHiveBin;
-	}
-
-    @Value("${hera.job.spark-sql.bin}")
-	public static void setJobSparkSqlBin(String jobSparkSqlBin) {
-		HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin;
-	}
 
 	@Getter
     private static OperatorSystemEnum systemEnum;
@@ -308,4 +309,7 @@ public class HeraGlobalEnvironment {
     public static boolean isLinuxSystem() {
         return linuxSystem;
     }
+    
+
+    
 }
