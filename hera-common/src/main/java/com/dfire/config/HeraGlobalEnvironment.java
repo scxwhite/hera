@@ -265,17 +265,17 @@ public class HeraGlobalEnvironment {
      */
     private static boolean linuxSystem = false;
 
-    @Value("${job.shell.bin}")
+    @Value("${hera.job.shell.bin}")
     public static void setJobShellBin(String jobShellBin) {
 		HeraGlobalEnvironment.jobShellBin = jobShellBin;
 	}
 
-    @Value("${job.hive.bin}")
+    @Value("${hera.job.hive.bin}")
 	public static void setJobHiveBin(String jobHiveBin) {
 		HeraGlobalEnvironment.jobHiveBin = jobHiveBin;
 	}
 
-    @Value("${job.spark-sql.bin}")
+    @Value("${hera.job.spark-sql.bin}")
 	public static void setJobSparkSqlBin(String jobSparkSqlBin) {
 		HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin;
 	}
