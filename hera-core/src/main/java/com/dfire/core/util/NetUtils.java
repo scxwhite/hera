@@ -2,11 +2,9 @@ package com.dfire.core.util;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 /**
- *
  * @author xiaosuda
  * @date 2018/6/13
  */
@@ -16,13 +14,14 @@ public class NetUtils {
 
     /**
      * 获得局域网IP
+     *
      * @return
      */
     public static String getLocalAddress() {
-        String secondAddress = null;
+        String secondAddress;
         try {
             secondAddress = InetAddress.getLocalHost().getHostAddress();
-            if(!LOCAL_HOST.equals(secondAddress)){
+            if (!LOCAL_HOST.equals(secondAddress)) {
                 return secondAddress;
             }
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
@@ -39,9 +38,7 @@ public class NetUtils {
                     }
                 }
             }
-            if (secondAddress != null) {
-                return secondAddress;
-            }
+            return secondAddress;
         } catch (Exception e) {
             e.printStackTrace();
         }
