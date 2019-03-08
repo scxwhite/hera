@@ -25,6 +25,7 @@ public class LogContent {
     private StringBuffer content;
 
     private static final int COUNT = 10000;
+    private static final int MAIL_PRINT_COUNT = 500;
     private static final String ERROR = "error";
 
 
@@ -89,6 +90,27 @@ public class LogContent {
 
     public String getContent() {
         return content.toString();
+    }
+    
+    /**
+     * 输出倒数500行信息
+     * @return
+     */
+	public String getMailContent() {
+    	String[] cs = content.toString().split(Constants.NEW_LINE);
+    	String re=null;
+    	if(cs.length<=MAIL_PRINT_COUNT){
+    		re=content.toString();
+    	}
+    	else{
+    		StringBuffer sb = null;
+    		for (int i = cs.length-MAIL_PRINT_COUNT; i < cs.length; i++) {
+				sb.append(cs[i]);
+			}
+    		re=sb.toString();
+    	}
+    	
+        return re;
     }
 
     public int getLines() {

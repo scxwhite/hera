@@ -43,6 +43,10 @@ public class EmailJobFailAlarm implements JobFailAlarm {
 
     @Override
     public void alarm(String actionId) {
+    	alarm(actionId,null);
+    }
+    @Override
+    public void alarm(String actionId,String errorMsg) {
         Integer jobId = ActionUtil.getJobId(actionId);
         if (jobId == null) {
             return;
@@ -73,7 +77,18 @@ public class EmailJobFailAlarm implements JobFailAlarm {
                     }
                 }
             }
-            emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, address.toString());
+            
+            String title="hera调度任务失败[任务="+heraJob.getName()+"("+heraJob.getId()+"),版本号="+actionId+"]";
+            String content="任务ID：" + heraJob.getId() + Constants.NEW_LINE 
+    		 		+ "任务名：" + heraJob.getName()+ Constants.NEW_LINE 
+    		 		+ "任务版本号：" + actionId+ Constants.NEW_LINE 
+    		 		+ "任务描述：" + heraJob.getDescription()+ Constants.NEW_LINE 
+    		 		+ "任务OWNER：" + heraJob.getOwner()  + Constants.NEW_LINE 
+    		 		;
+            if(errorMsg != null){
+            	content+="\n\n--------------------------------------------\n"+errorMsg;
+            }
+            emailService.sendEmail(title,content , address.toString());
         } catch (MessagingException e) {
             e.printStackTrace();
             ErrorLog.error("发送邮件失败");

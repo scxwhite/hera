@@ -14,4 +14,6 @@ public interface JobFailAlarm {
      * @param actionId  hera_action.id字段
      */
     void alarm(String actionId);
+    
+    void alarm(String actionId,String errorMsg);
 }
