@@ -97,15 +97,16 @@ public class LogContent {
      * @return
      */
 	public String getMailContent() {
-    	String[] cs = content.toString().split(Constants.NEW_LINE);
+		String c = content.toString().replace(Constants.HTML_NEW_LINE+Constants.HTML_NEW_LINE, Constants.HTML_NEW_LINE);
+    	String[] cs = c.split(Constants.HTML_NEW_LINE);
     	String re=null;
     	if(cs.length<=MAIL_PRINT_COUNT){
-    		re=content.toString();
+    		re=c;
     	}
     	else{
     		StringBuffer sb = null;
     		for (int i = cs.length-MAIL_PRINT_COUNT; i < cs.length; i++) {
-				sb.append(cs[i]);
+				sb.append(cs[i]).append(Constants.HTML_NEW_LINE);
 			}
     		re=sb.toString();
     	}

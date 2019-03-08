@@ -79,14 +79,14 @@ public class EmailJobFailAlarm implements JobFailAlarm {
             }
             
             String title="hera调度任务失败[任务="+heraJob.getName()+"("+heraJob.getId()+"),版本号="+actionId+"]";
-            String content="任务ID：" + heraJob.getId() + Constants.NEW_LINE 
-    		 		+ "任务名：" + heraJob.getName()+ Constants.NEW_LINE 
-    		 		+ "任务版本号：" + actionId+ Constants.NEW_LINE 
-    		 		+ "任务描述：" + heraJob.getDescription()+ Constants.NEW_LINE 
-    		 		+ "任务OWNER：" + heraJob.getOwner()  + Constants.NEW_LINE 
+            String content="任务ID：" + heraJob.getId() + Constants.HTML_NEW_LINE 
+    		 		+ "任务名：" + heraJob.getName()+ Constants.HTML_NEW_LINE 
+    		 		+ "任务版本号：" + actionId+ Constants.HTML_NEW_LINE 
+    		 		+ "任务描述：" + heraJob.getDescription()+ Constants.HTML_NEW_LINE 
+    		 		+ "任务OWNER：" + heraJob.getOwner()  + Constants.HTML_NEW_LINE 
     		 		;
             if(errorMsg != null){
-            	content+="\n\n--------------------------------------------\n"+errorMsg;
+            	content+=Constants.HTML_NEW_LINE +Constants.HTML_NEW_LINE + "--------------------------------------------"+Constants.HTML_NEW_LINE +errorMsg;
             }
             emailService.sendEmail(title,content , address.toString());
         } catch (MessagingException e) {
