@@ -1237,7 +1237,7 @@ public class Master {
     private void startNewJob(HeraJobHistory heraJobHistory, String illustrate) {
         HeraJob heraJob = masterContext.getHeraJobService().findById(heraJobHistory.getJobId());
         if (heraJob == null || heraJob.getAuto() == 0) {
-            ScheduleLog.warn("任务已关闭或者删除，取消重跑." + heraJob.getId());
+            ScheduleLog.warn("任务已关闭或者删除，取消重跑." + heraJobHistory.getJobId());
             return;
         }
         heraJobHistory.setStatus(StatusEnum.FAILED.toString());
