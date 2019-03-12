@@ -23,16 +23,24 @@ public interface JobManagerMapper {
      * @return
      */
 
-    @Select("select " +
-            " his.job_id,job.name as job_name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator,count(*) as times " +
-            " from" +
-            " (select job_id,start_time start_time,end_time,execute_host,status,operator from hera_action_history " +
-            " where action_id >= CURRENT_DATE () * 10000000000  and status = #{status,jdbcType=VARCHAR}) his " +
-            " left join hera_job job on his.job_id = job.id" +
-            " group by his.job_id,job.name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator" +
-            " order by job_id")
+//    @Select("select " +
+//            " his.job_id,job.name as job_name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator,count(*) as times " +
+//            " from" +
+//            " (select job_id,start_time start_time,end_time,execute_host,status,operator from hera_action_history " +
+//            " where action_id >= CURRENT_DATE () * 10000000000  and status = #{status,jdbcType=VARCHAR}) his " +
+//            " left join hera_job job on his.job_id = job.id" +
+//            " group by his.job_id,job.name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator" +
+//            " order by job_id")
+    
+    @Select("select his.job_id,job.name as job_name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator,j.times  FROM " 
+    		+"(SELECT job_id,MAX(`id`) as id_max,count(1) as times "
+    		+"FROM hera_action_history "
+    		+"WHERE start_time>=(CURRENT_DATE ()) and status = #{status,jdbcType=VARCHAR}   "
+    		+"GROUP BY job_id ) j"
+    		+"left join hera_action_history his on j.job_id=his.job_id and j.id_max=his.`id` "
+    		+"left join hera_job job on j.job_id = job.id"
+    		)
     List<JobHistoryVo> findAllJobHistoryByStatus(String status);
-
 
     /**
      * 任务运行时长top10
