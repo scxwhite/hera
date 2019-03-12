@@ -106,6 +106,17 @@ public class Constants {
     public final static String CLOSE_STATUS = "关闭";
 
     public final static String INVALID_STATUS = "失效";
+    
+    
+    public static void main(String[] args) {
+		String s=null;
+		System.out.println(s.length());
+		
+		for (int i = 0; i < s.length(); i++) {
+			System.out.println(i);
+		}
+		
+	}
 
 
 }
