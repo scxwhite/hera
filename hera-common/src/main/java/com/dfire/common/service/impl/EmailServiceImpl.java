@@ -64,7 +64,7 @@ public class EmailServiceImpl implements EmailService {
 
         Message message = createSimpleMessage(session, title, content, addresses);
         transport.sendMessage(message, message.getAllRecipients());
-        MonitorLog.info("发送邮件成功,内容:{}, 联系人:{}", content, address);
+        MonitorLog.info("发送邮件成功,Title:{}, 联系人:{}", title, address);
         transport.close();
     }
 

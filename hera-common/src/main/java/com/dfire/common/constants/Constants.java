@@ -1,5 +1,8 @@
 package com.dfire.common.constants;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * @author xiaosuda
  * @date 2018/7/2
@@ -108,15 +111,4 @@ public class Constants {
     public final static String INVALID_STATUS = "失效";
     
     
-    public static void main(String[] args) {
-		String s=null;
-		System.out.println(s.length());
-		
-		for (int i = 0; i < s.length(); i++) {
-			System.out.println(i);
-		}
-		
-	}
-
-
 }
