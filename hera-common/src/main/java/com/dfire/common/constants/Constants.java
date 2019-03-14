@@ -1,5 +1,8 @@
 package com.dfire.common.constants;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * @author xiaosuda
  * @date 2018/7/2
@@ -106,6 +109,6 @@ public class Constants {
     public final static String CLOSE_STATUS = "关闭";
 
     public final static String INVALID_STATUS = "失效";
-
-
+    
+    
 }

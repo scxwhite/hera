@@ -43,6 +43,7 @@ druid:
     filters: stat,wall,log4j
     connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
 
+
 server:
   port: 8080
   context-path: /hera
@@ -74,6 +75,13 @@ hera:
    admin: hera         # admin用户
    taskTimeout: 12  #单个任务执行的最大时间  单位：小时
    env: @env@
+   job :
+     shell :
+       bin: sh	
+     hive :
+       bin : hive --hiveconf tez.queue.name=root.normal.dw
+     spark-sql :
+	   bin : spark-sql
 
 # 发送配置邮件的发送者
 mail:
@@ -107,6 +115,9 @@ spark :
   driver-cores : --driver-cores 1
   executor-memory : -- executor-memory 2g
   executor-cores : --executor-cores 1
+  
+  
+
 
 ---
 ## 开发环境

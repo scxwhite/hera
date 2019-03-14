@@ -15,8 +15,9 @@ public class PhoneJobFailAlarm implements JobFailAlarm {
 
     @Override
     public void alarm(String actionId) {
-
-
-
+    }
+    
+    @Override
+    public void alarm(String actionId,String errorMsg) {
     }
 }

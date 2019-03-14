@@ -36,7 +36,8 @@ public class HeraJobFailListener extends AbstractListener {
             executor.execute(() -> {
                 HeraJobFailedEvent failedEvent = (HeraJobFailedEvent) mvcEvent.getApplicationEvent();
                 for (JobFailAlarm failAlarm : alarms) {
-                    failAlarm.alarm(failedEvent.getActionId());
+                    //failAlarm.alarm(failedEvent.getActionId());
+                    failAlarm.alarm(failedEvent.getActionId(),failedEvent.getHeraJobHistory().getLog().getMailContent()); 
                 }
             });
 
