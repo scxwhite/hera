@@ -92,7 +92,20 @@ public class HeraGlobalEnvironment {
     private static String jobHiveBin;
     @Getter
     private static String jobSparkSqlBin;
-       
+
+
+
+    @Getter
+    private static String mailPort;
+    @Getter
+    private static String mailProtocol;
+    @Getter
+    private static String mailHost;
+    @Getter
+    private static String mailUser;
+    @Getter
+    private static String mailPassword;
+
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
         HeraGlobalEnvironment.excludeFile = excludeFile;
@@ -259,29 +272,54 @@ public class HeraGlobalEnvironment {
     public void setSparkExecutorCores(String sparkExecutorCores) {
         HeraGlobalEnvironment.sparkExecutorCores = sparkExecutorCores;
     }
-    
+
     @Value("${hera.job.shell.bin}")
     public void setJobShellBin(String jobShellBin) {
-		HeraGlobalEnvironment.jobShellBin = jobShellBin;
-	}
+        HeraGlobalEnvironment.jobShellBin = jobShellBin;
+    }
 
     @Value("${hera.job.hive.bin}")
-	public void setJobHiveBin(String jobHiveBin) {
-		HeraGlobalEnvironment.jobHiveBin = jobHiveBin;
-	}
+    public void setJobHiveBin(String jobHiveBin) {
+        HeraGlobalEnvironment.jobHiveBin = jobHiveBin;
+    }
 
     @Value("${hera.job.spark-sql.bin}")
-	public void setJobSparkSqlBin(String jobSparkSqlBin) {
-		HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin;
-	}
-    
+    public void setJobSparkSqlBin(String jobSparkSqlBin) {
+        HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin;
+    }
+
+
+    @Value("${mail.port}")
+    public void setMailPort(String mailPort) {
+        HeraGlobalEnvironment.mailPort = mailPort;
+    }
+
+    @Value("${mail.protocol}")
+    public void setMailProtocol(String mailProtocol) {
+        HeraGlobalEnvironment.mailProtocol = mailProtocol;
+    }
+
+    @Value("${mail.host}")
+    public void setMailHost(String mailHost) {
+        HeraGlobalEnvironment.mailHost = mailHost;
+    }
+
+    @Value("${mail.user}")
+    public void setMailUser(String mailUser) {
+        HeraGlobalEnvironment.mailUser = mailUser;
+    }
+
+    @Value("${mail.password}")
+    public void setMailPassword(String mailPassword) {
+        HeraGlobalEnvironment.mailPassword = mailPassword;
+    }
 
     /**
      * 判断是否是linux 环境，有些命令不一样
      */
     private static boolean linuxSystem = false;
 
-	@Getter
+    @Getter
     private static OperatorSystemEnum systemEnum;
 
     /**
@@ -309,7 +347,6 @@ public class HeraGlobalEnvironment {
     public static boolean isLinuxSystem() {
         return linuxSystem;
     }
-    
 
-    
+
 }

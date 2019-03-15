@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -29,56 +28,54 @@ public class LogContent {
     private static final int COUNT = 8000;
     private static final int TAIL_PRINT_COUNT = 2000;
     private static final String ERROR = "error";
-    
-    private LinkedList<String> q ;
-    
-    
-    
+
+    private LinkedList<String> tailLog;
+
+
     /**
      * size大小的队列
+     *
      * @param log
-     * @param size
      */
-    public void queuePushlog(String log){
-    	if(q==null)
-    		q= new LinkedList<String>();
-    	q.add(log);
-    	if(q.size()>=TAIL_PRINT_COUNT){
-    		q.removeFirst();
-    	}
+    private void queuePushLog(String log) {
+        if (tailLog == null) {
+            tailLog = new LinkedList<>();
+        }
+        tailLog.add(log);
+        if (tailLog.size() >= TAIL_PRINT_COUNT) {
+            tailLog.removeFirst();
+        }
     }
-    
-    public String queueToString(){
-    	if(lines >= COUNT){
-        	StringBuffer sb=new StringBuffer();
-        	String[] a = q.toArray(new String[0]);
-        	for (int i = 0; i < a.length ; i++) {
-    			sb.append(a[i]);
-    		}
-        	return sb.toString();
-    	}
-    	else{
-    		return "";
-    	}
 
+    private String tailLog() {
+        if (lines >= COUNT) {
+            StringBuilder sb = new StringBuilder();
+            String[] tailLogs = tailLog.toArray(new String[0]);
+            for (String log : tailLogs) {
+                sb.append(log);
+            }
+            return sb.toString();
+        } else {
+            return "";
+        }
     }
 
 
     public void appendConsole(String log) {
-    	lines++;
+        //空日志不记录
+        if (StringUtils.isBlank(log)) {
+            return;
+        }
+        lines++;
         if (lines < COUNT) {
-            //空日志不记录
-            if (StringUtils.isBlank(log)) {
-                return ;
+            content.append(CONSOLE).append(redColorMsg(log)).append(Constants.LOG_SPLIT);
+            if (lines + 1 >= COUNT) {
+                content.append(HERA).append("控制台输出信息过多，停止记录，建议您优化自己的Job" + Constants.LOG_SPLIT);
+                content.append(HERA).append("..." + Constants.LOG_SPLIT);
+                content.append(HERA).append("..." + Constants.LOG_SPLIT);
             }
-            content.append(CONSOLE).append(redColorMsg(log)).append(Constants.HTML_NEW_LINE);
-            if (lines +1 >= COUNT) {
-                content.append(HERA).append("控制台输出信息过多，停止记录，建议您优化自己的Job"+Constants.HTML_NEW_LINE);
-                content.append(HERA).append("..."+Constants.HTML_NEW_LINE);
-                content.append(HERA).append("..."+Constants.HTML_NEW_LINE);
-            }
-        }else{
-        	queuePushlog(CONSOLE+redColorMsg(log)+Constants.HTML_NEW_LINE);
+        } else {
+            queuePushLog(CONSOLE + redColorMsg(log) + Constants.LOG_SPLIT);
         }
     }
 
@@ -88,10 +85,9 @@ public class LogContent {
             content = new StringBuffer();
         }
         if (lines < COUNT) {
-            content.append(HERA).append(log).append(Constants.HTML_NEW_LINE);
-        }
-        else{
-        	queuePushlog(CONSOLE+log+Constants.HTML_NEW_LINE);
+            content.append(HERA).append(log).append(Constants.LOG_SPLIT);
+        } else {
+            queuePushLog(HERA + log + Constants.LOG_SPLIT);
         }
     }
 
@@ -101,9 +97,9 @@ public class LogContent {
             content = new StringBuffer();
         }
         if (lines < COUNT) {
-            content.append(HERA).append(log).append(Constants.HTML_NEW_LINE);
-        }else{
-        	queuePushlog(CONSOLE+log+Constants.HTML_NEW_LINE);
+            content.append(log).append(Constants.LOG_SPLIT);
+        } else {
+            queuePushLog(log + Constants.LOG_SPLIT);
         }
     }
 
@@ -121,30 +117,30 @@ public class LogContent {
     }
 
     public String getContent() {
-        return content.toString()+Constants.HTML_NEW_LINE+queueToString();
-    }
-    
+        return content.toString() + tailLog();
 
-	public String getMailContent() {
-		String c = getContent().replace(Constants.LOG_SPLIT , Constants.HTML_NEW_LINE);
-        return c;
     }
 
-    public String redColorMsg(String log){
-    	if (log.toLowerCase().contains(ERROR)
+
+    public String getMailContent() {
+        return getContent();
+    }
+
+    private String redColorMsg(String log) {
+        if (log.toLowerCase().contains(ERROR)
                 || log.toLowerCase().contains(StatusEnum.FAILED.toString())
                 || log.contains("Exception")
                 || log.contains("NullPointException")
                 || log.contains("No such file or directory")
                 || log.contains("command not found")
                 || log.contains("Permission denied")) {
-            return "<font style=\"color:red\">"+log+"</font>";
+            return "<font style=\"color:red\">" + log + "</font>";
         } else {
-        	return log;
+            return log;
         }
     }
-	
-	
+
+
     public int getLines() {
         return lines;
     }

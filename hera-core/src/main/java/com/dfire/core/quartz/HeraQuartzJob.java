@@ -1,7 +1,7 @@
 package com.dfire.core.quartz;
 
 import com.dfire.core.event.Dispatcher;
-import com.dfire.core.event.HeraScheduleTriggerEvent;
+import com.dfire.event.HeraScheduleTriggerEvent;
 import com.dfire.logs.ScheduleLog;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;

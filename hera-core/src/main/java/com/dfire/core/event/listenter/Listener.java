@@ -1,6 +1,6 @@
 package com.dfire.core.event.listenter;
 
-import com.dfire.core.event.base.AbstractEvent;
+import com.dfire.event.AbstractEvent;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

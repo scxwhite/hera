@@ -18,8 +18,7 @@ import com.dfire.common.util.*;
 import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.HeraException;
 import com.dfire.core.event.*;
-import com.dfire.core.event.base.ApplicationEvent;
-import com.dfire.core.event.base.Events;
+import com.dfire.event.*;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
@@ -1037,7 +1036,7 @@ public class Master {
         heraAction.setStatisticStartTime(new Date());
         heraAction.setStatisticEndTime(null);
         masterContext.getHeraJobActionService().update(heraAction);
-        heraJobHistory.getLog().append(ActionUtil.getTodayString() + "进入任务队列");
+        heraJobHistory.getLog().append(ActionUtil.getTodayString() + " 进入任务队列");
         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
         try {
             if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {

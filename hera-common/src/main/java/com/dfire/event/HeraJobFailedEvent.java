@@ -1,9 +1,7 @@
-package com.dfire.core.event;
+package com.dfire.event;
 
-import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
-import com.dfire.core.event.base.ApplicationEvent;
-import com.dfire.core.event.base.Events;
+import com.dfire.common.enums.TriggerTypeEnum;
 import lombok.Data;
 
 import java.util.Objects;

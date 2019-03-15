@@ -1,4 +1,4 @@
-package com.dfire.core.event.base;
+package com.dfire.event;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

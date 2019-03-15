@@ -1,7 +1,7 @@
 package com.dfire.core.event.listenter;
 
 import com.dfire.common.util.NamedThreadFactory;
-import com.dfire.core.event.HeraJobFailedEvent;
+import com.dfire.event.HeraJobFailedEvent;
 import com.dfire.core.event.base.MvcEvent;
 import com.dfire.monitor.config.ServiceLoader;
 import com.dfire.monitor.service.JobFailAlarm;
@@ -36,8 +36,7 @@ public class HeraJobFailListener extends AbstractListener {
             executor.execute(() -> {
                 HeraJobFailedEvent failedEvent = (HeraJobFailedEvent) mvcEvent.getApplicationEvent();
                 for (JobFailAlarm failAlarm : alarms) {
-                    //failAlarm.alarm(failedEvent.getActionId());
-                    failAlarm.alarm(failedEvent.getActionId(),failedEvent.getHeraJobHistory().getLog().getMailContent()); 
+                    failAlarm.alarm(failedEvent);
                 }
             });
 
