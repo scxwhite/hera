@@ -68,13 +68,13 @@ layui.use(['table'], function () {
                         sortable: true
                     }, {
                         field: 'executeHost',
-                        title: '执行服务器'
+                        title: '机器|执行人'
                     }, {
                         field: 'status',
                         title: '执行状态'
                     }, {
                         field: 'operator',
-                        title: '执行人'
+                        title: '时长(分钟)'
                     }
                 ],
                 // data:info.data
