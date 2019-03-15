@@ -49,8 +49,7 @@ public class EmailJobFailAlarm implements JobFailAlarm {
             return;
         }
         HeraJob heraJob = heraJobService.findById(jobId);
-        //非开启任务不处理  最好能把这些抽取出去 提供接口实现
-        if (heraJob.getAuto() != 1 || !Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
+        if (heraJob.getAuto() != 1) {
             return;
         }
         StringBuilder address = new StringBuilder();

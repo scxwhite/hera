@@ -238,12 +238,6 @@
             </properties>
         </profile>
         <profile>
-            <id>foreign</id>
-            <properties>
-                <env>foreign</env>
-            </properties>
-        </profile>
-        <profile>
             <id>pre</id>
             <properties>
                 <env>pre</env>

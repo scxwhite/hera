@@ -74,6 +74,7 @@ hera:
     admin: hera         # admin用户
     taskTimeout: 12  #单个任务执行的最大时间  单位：小时
     env: @env@
+    alarmEnv: daily,dev,pre,publish # 设置允许哪些环境开启告警，多个用,分开，默认全部环境
     job:
         shell:
             bin: sh
@@ -168,15 +169,3 @@ spark :
     executor-memory : -- executor-memory 8g
     executor-cores : --executor-cores 4
 
-
-
----
-
-## 此环境  不发邮件
-spring:
-    profiles: foreign
-druid:
-    datasource:
-        url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
-        username: lineage
-        password: lineage@552208

@@ -1,14 +1,15 @@
 package com.dfire.config;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.enums.OperatorSystemEnum;
 import com.dfire.logs.HeraLog;
 import lombok.Getter;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author xiaosuda
@@ -94,7 +95,6 @@ public class HeraGlobalEnvironment {
     private static String jobSparkSqlBin;
 
 
-
     @Getter
     private static String mailPort;
     @Getter
@@ -105,6 +105,8 @@ public class HeraGlobalEnvironment {
     private static String mailUser;
     @Getter
     private static String mailPassword;
+    @Getter
+    private static Set<String> alarmEnvSet;
 
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
@@ -312,6 +314,15 @@ public class HeraGlobalEnvironment {
     @Value("${mail.password}")
     public void setMailPassword(String mailPassword) {
         HeraGlobalEnvironment.mailPassword = mailPassword;
+    }
+
+    @Value("${hera.alarmEnv}")
+    public void setAlarmEnvSet(String mailEnv) {
+        if (StringUtils.isBlank(mailEnv)) {
+            mailEnv = Constants.PUB_ENV;
+        }
+        HeraGlobalEnvironment.alarmEnvSet = new HashSet<>();
+        alarmEnvSet.addAll(Arrays.asList(mailEnv.split(Constants.COMMA)));
     }
 
     /**
