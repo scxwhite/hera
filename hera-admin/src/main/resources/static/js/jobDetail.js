@@ -56,6 +56,9 @@ layui.use(['table'], function () {
                         field: 'description',
                         title: '任务描述'
                     }, {
+                        field: 'status',
+                        title: '执行状态'
+                    }, {
                         field: 'startTime',
                         title: '开始时间',
                         formatter: function (val) {
@@ -63,18 +66,15 @@ layui.use(['table'], function () {
                         },
                         sortable: true
                     }, {
+                        field: 'operator',
+                        title: '时长(分钟)'
+                    }, {
                         field: 'times',
                         title: '执行次数',
                         sortable: true
                     }, {
                         field: 'executeHost',
                         title: '机器|执行人'
-                    }, {
-                        field: 'status',
-                        title: '执行状态'
-                    }, {
-                        field: 'operator',
-                        title: '时长(分钟)'
                     }
                 ],
                 // data:info.data
