@@ -31,7 +31,8 @@
                         <div class="input-group form-inline col-lg-2 pull-right" style="margin-left: 4px" >
                             <label class="name input-group-addon">任务状态</label>
                             <select class="form-control" id="jobStatus" onchange="updateTable()">
-                                <option value="failed" selected>失败</option>
+                                <option value="all" selected>全部</option>
+                                <option value="failed">失败</option>
                                 <option value="success">成功</option>
                                 <option value="running">运行中</option>
                                 <option value="wait">等待</option>
