@@ -1464,12 +1464,10 @@ let JobLogTable = function (jobId) {
                     width: "4%",
                     formatter: function (index, row) {
                         let st =new Date( row['startTime']);
-                        if (row['endTime'] == null){
-                        	let ed=new Date();
-                        }else{
+                        let ed=new Date();
+                        if (row['endTime'] != null){
                         	let ed=new Date( row['endTime']);
                         }
-                        	
                         return parseInt(ed - st) / 1000 / 60;
                     }
                 }
