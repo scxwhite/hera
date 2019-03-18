@@ -16,7 +16,7 @@ public interface JobManageService {
      * @param status
      * @return
      */
-    JsonResponse findJobHistoryByStatus(String status,int dt);
+    JsonResponse findJobHistoryByStatus(String status,String dt);
     
     //JsonResponse findJobHistoryByStatus(String status);
 

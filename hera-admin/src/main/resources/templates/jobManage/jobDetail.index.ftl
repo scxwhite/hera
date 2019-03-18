@@ -32,15 +32,8 @@
                 <div class="box">
                     <div class="box-body">
                         <div class="input-group form-inline col-lg-4 pull-right" style="margin-left: 100px" >
-                            <input class="form_datetime form-control" id="jobDt2"  type="text" value="2016-03-07" size="16">
-                        	<label class="name input-group-addon">作业范围</label>
-                            <select class="form-control" id="jobDt" onchange="updateTable()">
-                                <option value="1" selected>1天内</option>
-                                <option value="3">3天内</option>
-                                <option value="7">7天内</option>
-                                <option value="32">1个月内</option>
-                                <option value="93">3个月内</option>
-                            </select>
+                            <label class="name input-group-addon">作业范围</label>
+                            <input class="form_datetime form-control" id="jobDt"  type="text" size="16" onchange="updateTable()">
                             <label class="name input-group-addon">状态</label>
                             <select class="form-control" id="jobStatus" onchange="updateTable()">
                                 <option value="all" selected>全部</option>

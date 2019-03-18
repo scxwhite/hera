@@ -131,7 +131,7 @@ public class SystemManageController extends BaseHeraController {
      */
     @RequestMapping(value = "/jobManage/findJobHistoryByStatus", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse findJobHistoryByStatus(@RequestParam("status") String status,@RequestParam("dt") int dt) {
+    public JsonResponse findJobHistoryByStatus(@RequestParam("status") String status,@RequestParam("dt") String dt) {
         return jobManageService.findJobHistoryByStatus(status,dt);
     }
 
