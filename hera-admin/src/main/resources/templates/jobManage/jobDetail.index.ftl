@@ -6,6 +6,9 @@
     <#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+	<link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap.css"/>
+	<link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.css"/>
+ 
 
     <style>
         .table-hover > tbody > tr:hover {
@@ -29,6 +32,7 @@
                 <div class="box">
                     <div class="box-body">
                         <div class="input-group form-inline col-lg-4 pull-right" style="margin-left: 100px" >
+                            <input class="form_datetime form-control" id="jobDt2"  type="text" value="2016-03-07" size="16">
                         	<label class="name input-group-addon">作业范围</label>
                             <select class="form-control" id="jobDt" onchange="updateTable()">
                                 <option value="1" selected>1天内</option>
@@ -45,6 +49,7 @@
                                 <option value="running">运行中</option>
                                 <option value="wait">等待</option>
                             </select>
+                            
                         </div>
                         <table id="historyJobTable" class="table-striped" ></table>
                     </div>
@@ -75,8 +80,24 @@
 
 <@netCommon.commonScript />
 <script src="${request.contextPath}/js/jobDetail.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 
+<script type="text/javascript">
+ $(".form_datetime").datetimepicker({
+ format: "yyyy-mm-dd",
+ autoclose: true,
+ todayBtn: true,
+ todayHighlight: true,
+ showMeridian: true,
+ pickerPosition: "bottom-left",
+ language: 'zh-CN',//中文，需要引用zh-CN.js包
+ startView: 2,//月视图
+ minView: 2//日期时间选择器所能够提供的最精确的时间选择视图
+ }); 
+</script>
 
 </html>
