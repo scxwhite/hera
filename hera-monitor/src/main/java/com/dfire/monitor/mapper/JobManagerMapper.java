@@ -46,7 +46,7 @@ public interface JobManagerMapper {
     		"left join hera_action_history his on j.job_id=his.job_id and j.id_max=his.`id`   "+
     		"left join hera_job job on j.job_id = job.id "
     		)
-    List<JobHistoryVo> findAllJobHistoryByStatus(String status,int dt);
+    List<JobHistoryVo> findAllJobHistoryByStatus(@Param("status") String status,@Param("dt") int dt);
 
     /**
      * 任务运行时长top10

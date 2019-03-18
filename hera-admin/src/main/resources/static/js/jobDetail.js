@@ -106,7 +106,7 @@ layui.use(['table'], function () {
     function params(params) {
         var temp = {
             status: $('#jobStatus').val(),
-            dt:$('#jobDt').val(),
+            dt: $('#jobDt').val(),
         };
         return temp;
     }

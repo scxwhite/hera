@@ -28,7 +28,7 @@
         <section class="content">
                 <div class="box">
                     <div class="box-body">
-                        <div class="input-group form-inline col-lg-2 pull-right" style="margin-left: 8px" >
+                        <div class="input-group form-inline col-lg-2 pull-right" style="margin-left: 16px" >
                         	<label class="name input-group-addon">作业范围</label>
                             <select class="form-control" id="jobDt" onchange="updateTable()">
                                 <option value="1" selected>1天内</option>
