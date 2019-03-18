@@ -1460,8 +1460,8 @@ let JobLogTable = function (jobId) {
                     width: "12%"
                 }, {
                     field: "durations",
-                    title: "时长(分钟)",
-                    width: "4%",
+                    title: "时长(分)",
+                    width: "8%",
                     formatter: function (index, row) {
                         let st =new Date( row['startTime']);
                         if (row['endTime'] == null || row['endTime'] == '' ){
@@ -1515,7 +1515,7 @@ let JobLogTable = function (jobId) {
                 }, {
                     field: "executeHost",
                     title: "机器|执行人",
-                    width: "8%",
+                    width: "12%",
                     formatter: function (index, row) {
                         let val01 = row['executeHost'] + '|' + row['operator'];
                         return val01;

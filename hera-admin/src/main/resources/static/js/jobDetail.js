@@ -57,7 +57,19 @@ layui.use(['table'], function () {
                         title: '任务描述'
                     }, {
                         field: 'status',
-                        title: '执行状态'
+                        title: '执行状态',
+                        formatter: function (val) {
+                            if (val === 'running') {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                            }
+                            if (val === 'success') {
+                                return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
+                            }
+                            if (val === 'wait') {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + val + '</a>';
+                            }
+                            return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
+                        }
                     }, {
                         field: 'startTime',
                         title: '开始时间',
@@ -67,7 +79,7 @@ layui.use(['table'], function () {
                         sortable: true
                     }, {
                         field: 'operator',
-                        title: '时长(分钟)'
+                        title: '时长(分)'
                     }, {
                         field: 'times',
                         title: '执行次数',
@@ -172,14 +184,20 @@ layui.use(['table'], function () {
                         field: "jobId",
                         title: "任务ID"
                     }, {
-                        field: "executeHost",
-                        title: "执行机器ip"
-                    }, {
                         field: "status",
-                        title: "执行状态"
-                    }, {
-                        field: "operator",
-                        title: "执行人"
+                        title: "执行状态",
+                        formatter: function (val) {
+                            if (val === 'running') {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                            }
+                            if (val === 'success') {
+                                return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
+                            }
+                            if (val === 'wait') {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + val + '</a>';
+                            }
+                            return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
+                        }
                     }, {
                         field: "startTime",
                         title: "开始时间",
@@ -188,6 +206,20 @@ layui.use(['table'], function () {
                         field: "endTime",
                         title: "结束时间",
                         width: "20%"
+                    }, {
+                        field: "durations",
+                        title: "时长(分)",
+                        width: "8%",
+                        formatter: function (index, row) {
+                            let st =new Date( row['startTime']);
+                            if (row['endTime'] == null || row['endTime'] == '' ){
+                            	let ed=new Date();
+                            	return (parseInt(ed - st)/1000.0/60.0).toFixed(1);
+                            }else{
+                            	let ed=new Date( row['endTime']);
+                            	return (parseInt(ed - st)/1000.0/60.0).toFixed(1);
+                            }
+                        }
                     }, {
                         field: "illustrate",
                         title: "说明",
@@ -218,13 +250,21 @@ layui.use(['table'], function () {
                     {
                         field: "status",
                         title: "操作",
-                        width: "20%",
                         formatter: function (index, row) {
                             var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消任务</a>';
                             if (row['status'] == 'running') {
                                 return html;
                             }
                         }
+                    }, {
+                        field: "executeHost",
+                        title: "机器|执行人",
+                        width: "12%",
+                        formatter: function (index, row) {
+                            let val01 = row['executeHost'] + '|' + row['operator'];
+                            return val01;
+                        }
+
                     }
                 ],
                 detailView: true,
