@@ -40,7 +40,7 @@ public interface JobManagerMapper {
     		",j.times  FROM "+     
     		"(SELECT job_id,MAX(`id`) as id_max,count(1) as times   "+
     		"FROM hera_action_history   "+
-    		"WHERE (start_time>=CAST(#{status,jdbcType=VARCHAR} AS date) and  start_time< ADDDATE(CAST(#{status,jdbcType=VARCHAR} AS date) ,1) ) "+
+    		"WHERE (start_time>=CAST(#{dt,jdbcType=VARCHAR} AS date) and  start_time< ADDDATE(CAST(#{dt,jdbcType=VARCHAR} AS date) ,1) ) "+
     		"and ( status = #{status,jdbcType=VARCHAR}  or 'all' =  #{status,jdbcType=VARCHAR} ) "+
     		"GROUP BY job_id ) j   "+
     		"left join hera_action_history his on j.job_id=his.job_id and j.id_max=his.`id`   "+
