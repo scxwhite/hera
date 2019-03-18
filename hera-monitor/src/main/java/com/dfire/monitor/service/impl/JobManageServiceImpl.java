@@ -27,9 +27,9 @@ public class JobManageServiceImpl implements JobManageService {
     JobManagerMapper jobManagerMapper;
 
     @Override
-    public JsonResponse findJobHistoryByStatus(String status) {
+    public JsonResponse findJobHistoryByStatus(String status,int dt) {
 
-        List<JobHistoryVo> failedJobs = jobManagerMapper.findAllJobHistoryByStatus(status);
+        List<JobHistoryVo> failedJobs = jobManagerMapper.findAllJobHistoryByStatus(status,dt);
         if (failedJobs == null) {
             return new JsonResponse(false, "失败任务查询数据为空");
         }

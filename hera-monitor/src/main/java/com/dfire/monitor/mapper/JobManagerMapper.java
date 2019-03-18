@@ -40,13 +40,13 @@ public interface JobManagerMapper {
     		",j.times  FROM "+     
     		"(SELECT job_id,MAX(`id`) as id_max,count(1) as times   "+
     		"FROM hera_action_history   "+
-    		"WHERE start_time>=(CURRENT_DATE ())  "+
+    		"WHERE start_time>=(CURRENT_DATE () - #{dt} )  "+
     		"and ( status = #{status,jdbcType=VARCHAR}  or 'all' =  #{status,jdbcType=VARCHAR} ) "+
     		"GROUP BY job_id ) j   "+
     		"left join hera_action_history his on j.job_id=his.job_id and j.id_max=his.`id`   "+
     		"left join hera_job job on j.job_id = job.id "
     		)
-    List<JobHistoryVo> findAllJobHistoryByStatus(String status);
+    List<JobHistoryVo> findAllJobHistoryByStatus(String status,int dt);
 
     /**
      * 任务运行时长top10
