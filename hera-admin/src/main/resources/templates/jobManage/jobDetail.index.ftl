@@ -32,8 +32,6 @@
                 <div class="box">
                     <div class="box-body">
                         <div class="input-group form-inline col-lg-4 pull-right" style="margin-left: 100px" >
-                            <label class="name input-group-addon">作业范围</label>
-                            <input class="form_datetime form-control" id="jobDt"  type="text"  onchange="updateTable()">
                             <label class="name input-group-addon">状态</label>
                             <select class="form-control" id="jobStatus" onchange="updateTable()">
                                 <option value="all" selected>全部</option>
@@ -42,6 +40,8 @@
                                 <option value="running">运行中</option>
                                 <option value="wait">等待</option>
                             </select>
+                            <label class="name input-group-addon">日期</label>
+                            <input class="form_datetime form-control" id="jobDt"  onchange="updateTable()">
                             
                         </div>
                         <table id="historyJobTable" class="table-striped" ></table>
@@ -90,7 +90,7 @@
  language: 'zh-CN',//中文，需要引用zh-CN.js包
  startView: 2,//月视图
  minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
- initialDate: new Date()
+ initialDate: new Date(),
  }); 
 </script>
 
