@@ -1464,7 +1464,7 @@ let JobLogTable = function (jobId) {
                     width: "4%",
                     formatter: function (index, row) {
                         let st =new Date( row['startTime']);
-                        if (row['endTime'] == null){
+                        if (row['endTime'] == null || row['endTime'] == '' ){
                         	let ed=new Date();
                         	return (parseInt(ed - st)/1000.0/60.0).toFixed(1);
                         }else{
