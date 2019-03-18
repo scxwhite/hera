@@ -1440,13 +1440,13 @@ let JobLogTable = function (jobId) {
                     width: "8%",
                     formatter: function (val) {
                         if (val === 'running') {
-                            return '<a class="layui-btn layui-btn-xs" style="width: 100%;">' + val + '</a>';
+                            return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
                         }
                         if (val === 'success') {
                             return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
                         }
                         if (val === 'wait') {
-                            return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                            return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + val + '</a>';
                         }
                         return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
                     }
@@ -1459,6 +1459,22 @@ let JobLogTable = function (jobId) {
                     title: "结束时间",
                     width: "12%"
                 }, {
+                    field: "durations",
+                    title: "时长(分钟)",
+                    width: "4%",
+                    formatter: function (index, row) {
+                        let st =new Date( row['startTime']);
+                        if (row['endTime'] == null){
+                        	let ed=new Date();
+                        }else{
+                        	let ed=new Date( row['endTime']);
+                        }
+                        	
+                        return parseInt(ed - st) / 1000 / 60;
+                    }
+                }
+                
+                , {
                     field: "illustrate",
                     title: "说明",
                     width: "8%",
@@ -1499,7 +1515,7 @@ let JobLogTable = function (jobId) {
                 }, {
                     field: "executeHost",
                     title: "机器|执行人",
-                    width: "10%",
+                    width: "8%",
                     formatter: function (index, row) {
                         let val01 = row['executeHost'] + '|' + row['operator'];
                         return val01;
