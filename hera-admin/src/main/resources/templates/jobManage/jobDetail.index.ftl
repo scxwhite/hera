@@ -41,7 +41,7 @@
                                 <option value="wait">等待</option>
                             </select>
                             <label class="name input-group-addon">日期</label>
-                            <input class="form_datetime form-control" id="jobDt"  onchange="updateTable()">
+                            <input class="form_datetime form-control" id="jobDt" size="12" value="" onchange="updateTable()">
                             
                         </div>
                         <table id="historyJobTable" class="table-striped" ></table>
@@ -85,8 +85,6 @@
  autoclose: true,
  todayBtn: true,
  todayHighlight: true,
- showMeridian: true,
- pickerPosition: "bottom-left",
  language: 'zh-CN',//中文，需要引用zh-CN.js包
  startView: 2,//月视图
  minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
