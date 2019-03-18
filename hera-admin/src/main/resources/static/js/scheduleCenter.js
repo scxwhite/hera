@@ -1435,11 +1435,6 @@ let JobLogTable = function (jobId) {
                     title: "任务ID",
                     width: "5%",
                 }, {
-                    field: "executeHost",
-                    title: "执行机器ip",
-                    width: "8%",
-
-                }, {
                     field: "status",
                     title: "执行状态",
                     width: "8%",
@@ -1455,11 +1450,6 @@ let JobLogTable = function (jobId) {
                         }
                         return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
                     }
-                }, {
-                    field: "operator",
-                    title: "执行人",
-                    width: "8%",
-
                 }, {
                     field: "startTime",
                     title: "开始时间",
@@ -1506,6 +1496,15 @@ let JobLogTable = function (jobId) {
                             return html;
                         }
                     }
+                }, {
+                    field: "executeHost",
+                    title: "机器|执行人",
+                    width: "10%",
+                    formatter: function (index, row) {
+                        let val01 = row['executeHost'] + '|' + row['operator'];
+                        return val01;
+                    }
+
                 }
             ],
             detailView: true,
