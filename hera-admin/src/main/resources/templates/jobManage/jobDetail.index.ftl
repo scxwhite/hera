@@ -29,6 +29,14 @@
                 <div class="box">
                     <div class="box-body">
                         <div class="input-group form-inline col-lg-2 pull-right" style="margin-left: 4px" >
+                        	<label class="name input-group-addon">任务状态</label>
+                            <select class="form-control" id="jobDt" onchange="updateTable()">
+                                <option value="1" selected>当天</option>
+                                <option value="3">3天</option>
+                                <option value="7">7天</option>
+                                <option value="32">32天</option>
+                                <option value="93">93天</option>
+                            </select>
                             <label class="name input-group-addon">任务状态</label>
                             <select class="form-control" id="jobStatus" onchange="updateTable()">
                                 <option value="all" selected>全部</option>
