@@ -32,6 +32,7 @@
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
+    <link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
 
 </head>
 
@@ -671,6 +672,10 @@
                                 </li>
                                 <br>
                                 <li>
+                                	<input class="form_datetime form-control" id="jobDt" size="12" type="text" readonly placeholder="请选择日期">
+                                </li>
+                                <br>
+                                <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="showRunning">
                                         正在运行
                                     </button>
@@ -1003,6 +1008,28 @@
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
 
+<script type="text/javascript">
+ $(".form_datetime").datetimepicker({
+ format: "yyyy-mm-dd",
+ autoclose: true,
+ todayBtn: true,
+ todayHighlight: true,
+ language: 'zh-CN',//中文，需要引用zh-CN.js包
+ startView: 2,//月视图
+ minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
+
+ }); 
+</script> 
+
+<script>
+    $(document).ready(function () {
+        var time = new Date();
+        var day = ("0" + time.getDate()).slice(-2);
+        var month = ("0" + (time.getMonth() + 1)).slice(-2);
+        var today = time.getFullYear() + "-" + (month) + "-" + (day);
+        $(".form_datetime").val(today);
+    })
+</script>
 
 </body>
 
