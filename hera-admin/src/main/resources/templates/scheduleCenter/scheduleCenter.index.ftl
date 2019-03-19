@@ -665,14 +665,19 @@
 
                     <div id="overviewOperator" class="btn-con" style="display: none">
                         <div class="box-body">
-                        	<input class="form_datetime form-control" id="jobDt" size="12" type="text" readonly placeholder="请选择日期">
-                                
+                        	   
                             <ul class="list-unstyled">
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="back">返回
                                     </button>
                                 </li>
                                 <br>
+                                
+                                <li>
+                                    <input class="form_datetime form-control" id="jobDt" size="8" type="text" readonly placeholder="请选择日期">
+                                </li>
+                                <br>
+                                
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="showRunning">
                                         正在运行
@@ -684,6 +689,18 @@
                                         失败记录
                                     </button>
                                 </li>
+                                <br>
+                                <li>
+                                    <select class="form-control" id="jobStatus" onchange="updateTable()">
+                                <option value="all" selected>全部</option>
+                                <option value="failed">失败</option>
+                                <option value="success">成功</option>
+                                <option value="running">运行中</option>
+                                <option value="wait">等待</option>
+                            </select>
+                                </li>
+                                <br>
+                                
                             </ul>
                         </div>
                     </div>
@@ -1010,7 +1027,7 @@
 
 <script type="text/javascript">
  $("#jobDt").datetimepicker({
- format: "yyyy-mm-dd",
+ format: "yyyymmdd",
  autoclose: true,
  todayBtn: true,
  todayHighlight: true,
