@@ -665,14 +665,12 @@
 
                     <div id="overviewOperator" class="btn-con" style="display: none">
                         <div class="box-body">
+                        	<input class="form_datetime form-control" id="jobDt" size="12" type="text" readonly placeholder="请选择日期">
+                                
                             <ul class="list-unstyled">
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="back">返回
                                     </button>
-                                </li>
-                                <br>
-                                <li>
-                                	<input class="form_datetime form-control" id="jobDt" size="12" type="text" readonly placeholder="请选择日期">
                                 </li>
                                 <br>
                                 <li>
