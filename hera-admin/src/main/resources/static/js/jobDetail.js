@@ -52,7 +52,7 @@ layui.use(['table'], function () {
                         title: '任务名称',
                         sortable: true,
                         formatter: function (val, row, index) {
-                        	let val01 = val + '<a href = "#">' +'['+row['jobId']+']' + '</a>' ;
+                        	let val01 =   '<a href = "#">' + val +'['+row['jobId']+']' + '</a>' ;
                             return val01;
                         }
                     }, {
@@ -60,7 +60,7 @@ layui.use(['table'], function () {
                         title: '任务描述'
                     }, {
                         field: 'status',
-                        title: '执行状态',
+                        title: '状态',
                         formatter: function (val) {
                             if (val === 'running') {
                                 return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
@@ -86,7 +86,7 @@ layui.use(['table'], function () {
                         sortable: true
                     }, {
                         field: 'times',
-                        title: '执行次数'
+                        title: '次数'
                     }, {
                     	field: "executeHost",
                         title: "机器|执行人",
