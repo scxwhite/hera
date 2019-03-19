@@ -1007,7 +1007,7 @@
 <script src="${request.contextPath}/js/common.js"></script>
 
 <script type="text/javascript">
- $(".form_datetime").datetimepicker({
+ $("#jobDt").datetimepicker({
  format: "yyyy-mm-dd",
  autoclose: true,
  todayBtn: true,
@@ -1025,7 +1025,7 @@
         var day = ("0" + time.getDate()).slice(-2);
         var month = ("0" + (time.getMonth() + 1)).slice(-2);
         var today = time.getFullYear() + "-" + (month) + "-" + (day);
-        $(".form_datetime").val(today);
+        $("#jobDt").val(today);
     })
 </script>
 
