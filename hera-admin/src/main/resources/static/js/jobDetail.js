@@ -52,7 +52,8 @@ layui.use(['table'], function () {
                         title: '任务名称',
                         sortable: true,
                         formatter: function (row, index) {
-                            return '<a href = "#">' + row['jobName']+'['+row['jobId']+']' + '</a>';
+                        	let val01 = '<a href = "#">' + row['jobName']+'['+row['jobId']+']' + '</a>' ;
+                            return val01;
                         }
                     }, {
                         field: 'description',
