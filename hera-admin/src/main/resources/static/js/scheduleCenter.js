@@ -1424,23 +1424,27 @@ let JobLogTable = function (jobId) {
             columns: [
                 {
                     field: "id",
-                    title: "ID"
+                    title: "ID",
+                    width: "5%",
                 }, {
                     field: "actionId",
                     title: "版本号",
+                    width: "15%",
                     formatter: function (val) {
                         let val01 = val.substring(0,8);
                         let val02 = val.substring(8,14);
                         let val03 = val.substring(14);
-                        let re = '<a class="text-primary" >'+val01+'</a>' + '<a class="text-warning" >'+val02+'</a>' + '<a class="text-danger" >'+val03+'</a>' ;
+                        let re = '<a class="text-primary" >'+val01+'</a>' + '<a class="text-warning" >'+val02+'</a>' + '<a class="text-success" >'+val03+'</a>' ;
                         return re;
                     }
                 }, {
                     field: "jobId",
-                    title: "任务ID"
+                    title: "任务ID",
+                    width: "5%",
                 }, {
                     field: "status",
-                    title: "状态",
+                    title: "执行状态",
+                    width: "8%",
                     formatter: function (val) {
                         if (val === 'running') {
                             return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
@@ -1455,13 +1459,16 @@ let JobLogTable = function (jobId) {
                     }
                 }, {
                     field: "startTime",
-                    title: "开始时间"
+                    title: "开始时间",
+                    width: "12%"
                 }, {
                     field: "endTime",
-                    title: "结束时间"
+                    title: "结束时间",
+                    width: "12%"
                 }, {
                     field: "durations",
                     title: "时长(分)",
+                    width: "8%",
                     formatter: function (index, row) {
                         let st =new Date( row['startTime']);
                         if (row['endTime'] == null || row['endTime'] == '' ){
@@ -1477,6 +1484,7 @@ let JobLogTable = function (jobId) {
                 , {
                     field: "illustrate",
                     title: "说明",
+                    width: "8%",
                     formatter: function (val) {
                         if (val == null) {
                             return val;
@@ -1487,6 +1495,7 @@ let JobLogTable = function (jobId) {
                 {
                     field: "triggerType",
                     title: "触发类型",
+                    width: "8%",
                     formatter: function (value, row) {
                         if (row['triggerType'] == 1) {
                             return "自动调度";
@@ -1503,6 +1512,7 @@ let JobLogTable = function (jobId) {
                 {
                     field: "status",
                     title: "操作",
+                    width: "10%",
                     formatter: function (index, row) {
                         let html = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消任务</a>';
                         if (row['status'] == 'running') {
@@ -1512,6 +1522,7 @@ let JobLogTable = function (jobId) {
                 }, {
                     field: "executeHost",
                     title: "机器|执行人",
+                    width: "12%",
                     formatter: function (index, row) {
                         let val01 = row['executeHost'] + '|' + row['operator'];
                         return val01;
