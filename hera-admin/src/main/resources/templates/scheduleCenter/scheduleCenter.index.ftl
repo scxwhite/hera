@@ -674,7 +674,8 @@
                                 <br>
                                 
                                 <li>
-                                    <input class="form_datetime form-control" id="jobDt" size="8" type="text" readonly placeholder="请选择日期">
+                                <input class="form_datetime form-control" id="jobDt" size="12" type="text" readonly placeholder="请选择日期"  ">
+                                
                                 </li>
                                 <br>
                                 
@@ -1026,8 +1027,8 @@
 <script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
- $("#jobDt").datetimepicker({
- format: "yyyymmdd",
+ $(".form_datetime").datetimepicker({
+ format: "mmdd",
  autoclose: true,
  todayBtn: true,
  todayHighlight: true,
@@ -1043,8 +1044,8 @@
         var time = new Date();
         var day = ("0" + time.getDate()).slice(-2);
         var month = ("0" + (time.getMonth() + 1)).slice(-2);
-        var today = time.getFullYear() + "-" + (month) + "-" + (day);
-        $("#jobDt").val(today);
+        var today =  (month)+''  + (day);
+        $(".form_datetime").val(today);
     })
 </script>
 
