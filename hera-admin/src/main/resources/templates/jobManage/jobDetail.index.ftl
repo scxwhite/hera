@@ -6,8 +6,8 @@
     <#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
-	<link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap.css"/>
-	<link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.css"/>
+	<link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap.css" rel="stylesheet" />
+	<link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.css" rel="stylesheet" />
  
 
     <style>
@@ -41,7 +41,7 @@
                                 <option value="wait">等待</option>
                             </select>
                             <label class="name input-group-addon">日期</label>
-                            <input class="form_datetime form-control" id="jobDt" size="12"  onchange="updateTable()">
+                            <input class="form_datetime form-control" id="jobDt" size="12" type="text"  onchange="updateTable()">
                             
                         </div>
                         <table id="historyJobTable" class="table-striped" ></table>
@@ -88,7 +88,7 @@
  language: 'zh-CN',//中文，需要引用zh-CN.js包
  startView: 2,//月视图
  minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
- value: new Date(),
+initialDate: true,
  }); 
 </script>
 
