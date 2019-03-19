@@ -80,7 +80,6 @@
 <script type="text/javascript">
  $(".form_datetime").datetimepicker({
  format: "yyyy-mm-dd",
- initialDate: true,
  autoclose: true,
  todayBtn: true,
  todayHighlight: true,
