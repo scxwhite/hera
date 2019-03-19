@@ -192,7 +192,7 @@ layui.use(['table'], function () {
                             let val01 = val.substring(0,8);
                             let val02 = val.substring(8,14);
                             let val03 = val.substring(14);
-                            let re = '<a class="text-primary" >'+val01+'</a>' + '<a class="text-info" >'+val02+'</a>' + '<a class="text-muted" >'+val03+'</a>' ;
+                            let re = '<a class="text-primary" >'+val01+'</a>' + '<a class="text-warning" >'+val02+'</a>' + '<a class="text-danger" >'+val03+'</a>' ;
                             return re;
                         }
                     }, {
