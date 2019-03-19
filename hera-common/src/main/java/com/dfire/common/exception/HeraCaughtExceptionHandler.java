@@ -1,4 +1,4 @@
-package com.dfire.core.exception;
+package com.dfire.common.exception;
 
 import com.dfire.logs.ErrorLog;
 

@@ -16,7 +16,7 @@ import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.util.*;
 import com.dfire.config.HeraGlobalEnvironment;
-import com.dfire.core.HeraException;
+import com.dfire.common.exception.HeraException;
 import com.dfire.core.event.*;
 import com.dfire.event.*;
 import com.dfire.core.event.handler.AbstractHandler;

@@ -1,8 +1,8 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
+import com.dfire.common.exception.HeraException;
 import com.dfire.config.HeraGlobalEnvironment;
-import com.dfire.logs.ErrorLog;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -19,8 +19,8 @@ import java.util.List;
  * @desc
  */
 public class HiveJob extends ProcessJob {
-	
-	private final static String HIVE_BIN=HeraGlobalEnvironment.getJobHiveBin() + " ";
+
+    private final static String HIVE_BIN = HeraGlobalEnvironment.getJobHiveBin() + " ";
 
 
     public HiveJob(JobContext jobContext) {
@@ -40,14 +40,12 @@ public class HiveJob extends ProcessJob {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                ErrorLog.error("创建.hive失败");
+                throw new HeraException("创建.hive失败");
             }
         }
 
-        OutputStreamWriter writer = null;
-        try {
-            writer = new OutputStreamWriter(new FileOutputStream(file),
-                    Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file),
+                Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")))) {
             writer.write(script.replaceAll("^--.*", "--"));
         } catch (Exception e) {
             if (jobContext.getHeraJobHistory() != null) {
@@ -55,10 +53,7 @@ public class HiveJob extends ProcessJob {
             } else {
                 jobContext.getDebugHistory().getLog().appendHeraException(e);
             }
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
+            throw new HeraException("脚本写入文件失败:" + script);
         }
 
         getProperties().setProperty(RunningJobKeyConstant.RUN_HIVE_PATH, file.getAbsolutePath());
