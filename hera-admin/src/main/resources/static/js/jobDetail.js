@@ -51,8 +51,8 @@ layui.use(['table'], function () {
                         field: 'jobName',
                         title: '任务名称',
                         sortable: true,
-                        formatter: function (row, index) {
-                        	let val01 = '<a href = "#">' + row['jobName']+'['+row['jobId']+']' + '</a>' ;
+                        formatter: function (val, row, index) {
+                        	let val01 = val + '<a href = "#">' +'['+row['jobId']+']' + '</a>' ;
                             return val01;
                         }
                     }, {
