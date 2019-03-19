@@ -87,10 +87,11 @@ layui.use(['table'], function () {
                         field: 'times',
                         title: '执行次数'
                     }, {
-                        field: 'executeHost_Operator',
-                        title: '机器|执行人',
-                        formatter: function (row, index) {
-                            return row['executeHost'] +'|'+ row['operator'] ;
+                    	field: "executeHost",
+                        title: "机器|执行人",
+                        formatter: function (index, row) {
+                            let val01 = row['executeHost'] + '|' + row['operator'];
+                            return val01;
                         }
                     }
                 ],
