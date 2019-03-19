@@ -37,7 +37,7 @@ public interface JobManagerMapper {
     		+ " his.execute_host, his.status ,his.operator "
     		+ " ,j.times  "
     		+ " ,CAST(timestampdiff(SECOND, his.start_time,CASE WHEN his.end_time IS NOT NULL THEN his.end_time WHEN his.status='running' THEN NOW() END)/60.0 AS decimal(10,1))  AS durations  "
-    		+ " j.group_id as groupId,grp.name as groupName"
+    		+ " ,j.group_id as groupId,grp.name as groupName"
     		+ " FROM "  
     		+ " (SELECT job_id,MAX(`id`) as id_max,count(1) as times   "
     		+ " FROM hera_action_history   "
