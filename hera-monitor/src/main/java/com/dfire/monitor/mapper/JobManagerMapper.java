@@ -47,6 +47,7 @@ public interface JobManagerMapper {
     		+ " left join hera_action_history his on j.job_id=his.job_id and j.id_max=his.`id`   "
     		+ " left join hera_job job on j.job_id = job.`id` "
     		+ " left join hera_group grp on job.group_id=grp.`id` "
+    		+ " ORDER BY his.start_time DESC, grp.name,job.name"
     		)
     List<JobHistoryVo> findAllJobHistoryByStatus(@Param("status") String status,@Param("dt") String dt);
 
