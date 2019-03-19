@@ -90,7 +90,7 @@ layui.use(['table'], function () {
                         field: 'executeHost_Operator',
                         title: '机器|执行人',
                         formatter: function (row, index) {
-                            return executeHost+'|'+operator;
+                            return row['executeHost'] +'|'+ row['operator'] ;
                         }
                     }
                 ],
