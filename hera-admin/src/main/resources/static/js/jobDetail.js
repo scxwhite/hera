@@ -187,13 +187,20 @@ layui.use(['table'], function () {
                         title: "id"
                     }, {
                         field: "actionId",
-                        title: "版本号"
+                        title: "版本号",
+                        formatter: function (val) {
+                            let val01 = val.substring(0,7);
+                            let val02 = val.substring(8,13);
+                            let val03 = val.substring(14,17);
+                            let re = '<a class="text-primary" >'+val01+'</a>' + '<a class="text-success" >'+val02+'</a>' + '<a class="text-muted" >'+val03+'</a>' ;
+                            return re;
+                        }
                     }, {
                         field: "jobId",
                         title: "任务ID"
                     }, {
                         field: "status",
-                        title: "执行状态",
+                        title: "状态",
                         formatter: function (val) {
                             if (val === 'running') {
                                 return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
@@ -208,16 +215,13 @@ layui.use(['table'], function () {
                         }
                     }, {
                         field: "startTime",
-                        title: "开始时间",
-                        width: "20%"
+                        title: "开始时间"
                     }, {
                         field: "endTime",
-                        title: "结束时间",
-                        width: "20%"
+                        title: "结束时间"
                     }, {
                         field: "durations",
                         title: "时长(分)",
-                        width: "8%",
                         formatter: function (index, row) {
                             let st =new Date( row['startTime']);
                             if (row['endTime'] == null || row['endTime'] == '' ){
@@ -240,8 +244,7 @@ layui.use(['table'], function () {
                     },
                     {
                         field: "triggerType",
-                        title: "触发类型",
-                        width: "20%",
+                        title: "触发类型" ,
                         formatter: function (value, row) {
                             if (row['triggerType'] == 1) {
                                 return "自动调度";
@@ -267,7 +270,6 @@ layui.use(['table'], function () {
                     }, {
                         field: "executeHost",
                         title: "机器|执行人",
-                        width: "12%",
                         formatter: function (index, row) {
                             let val01 = row['executeHost'] + '|' + row['operator'];
                             return val01;
