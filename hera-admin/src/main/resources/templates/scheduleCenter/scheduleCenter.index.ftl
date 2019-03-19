@@ -1005,6 +1005,8 @@
 <script src="${request.contextPath}/js/taskGraph.js?v=2"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
  $("#jobDt").datetimepicker({
