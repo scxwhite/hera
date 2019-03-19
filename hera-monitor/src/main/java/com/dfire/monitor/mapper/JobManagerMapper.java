@@ -34,10 +34,10 @@ public interface JobManagerMapper {
     
     @Select(
     		"select his.job_id,job.name as job_name,job.description,his.start_time,his.end_time "
-    		+ " his.execute_host, his.status ,his.operator "
+    		+ " ,his.execute_host, his.status ,his.operator "
     		+ " ,j.times  "
     		+ " ,CAST(timestampdiff(SECOND, his.start_time,CASE WHEN his.end_time IS NOT NULL THEN his.end_time WHEN his.status='running' THEN NOW() END)/60.0 AS decimal(10,1))  AS durations  "
-    		+ " ,j.group_id as groupId,grp.name as groupName"
+    		+ " ,job.group_id as groupId,grp.name as groupName"
     		+ " FROM "  
     		+ " (SELECT job_id,MAX(`id`) as id_max,count(1) as times   "
     		+ " FROM hera_action_history   "
@@ -45,8 +45,8 @@ public interface JobManagerMapper {
     		+ " and ( status = #{status,jdbcType=VARCHAR}  or 'all' =  #{status,jdbcType=VARCHAR} ) "
     		+ " GROUP BY job_id ) j   "
     		+ " left join hera_action_history his on j.job_id=his.job_id and j.id_max=his.`id`   "
-    		+ " left join hera_job job on j.job_id = job.id "
-    		+ " left join hera_group grp on j.group_id=grp.id"
+    		+ " left join hera_job job on j.job_id = job.`id` "
+    		+ " left join hera_group grp on job.group_id=grp.`id` "
     		)
     List<JobHistoryVo> findAllJobHistoryByStatus(@Param("status") String status,@Param("dt") String dt);
 
