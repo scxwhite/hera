@@ -1028,14 +1028,14 @@
 
 <script type="text/javascript">
  $(".form_datetime").datetimepicker({
- format: "mmdd",
+ format: "yymmdd",
  autoclose: true,
  todayBtn: true,
  todayHighlight: true,
  language: 'zh-CN',//中文，需要引用zh-CN.js包
  startView: 2,//月视图
  minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
-
+ initialDate:new Date(),
  }); 
 </script> 
 
@@ -1044,7 +1044,7 @@
         var time = new Date();
         var day = ("0" + time.getDate()).slice(-2);
         var month = ("0" + (time.getMonth() + 1)).slice(-2);
-        var today =  (month)+''  + (day);
+        var today = time.getFullYear().substring(2)   + (month)   + (day);
         $(".form_datetime").val(today);
     })
 </script>
