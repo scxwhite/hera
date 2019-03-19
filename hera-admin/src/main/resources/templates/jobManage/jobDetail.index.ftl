@@ -7,22 +7,7 @@
 	<@netCommon.commonStyle />
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
 	<link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
-	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
-	<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
 
-<script type="text/javascript">
- $(".form_datetime").datetimepicker({
- format: "yyyy-mm-dd",
- initialDate: true,
- autoclose: true,
- todayBtn: true,
- todayHighlight: true,
- language: 'zh-CN',//中文，需要引用zh-CN.js包
- startView: 2,//月视图
- minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
-
- }); 
-</script> 
 
     <style>
         .table-hover > tbody > tr:hover {
@@ -55,7 +40,7 @@
                                 <option value="wait">等待</option>
                             </select>
                             <label class="name input-group-addon">日期</label>
-                            <input class="form_datetime form-control" id="jobDt" size="12" type="text"  onchange="updateTable()">
+                            <input class="form_datetime form-control" id="jobDt" size="12" type="text" readonly placeholder="请选择日期"  onchange="updateTable()">
                             
                         </div>
                         <table id="historyJobTable" class="table-striped" ></table>
@@ -89,7 +74,22 @@
 <script src="${request.contextPath}/js/jobDetail.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
 
+<script type="text/javascript">
+ $(".form_datetime").datetimepicker({
+ format: "yyyy-mm-dd",
+ initialDate: true,
+ autoclose: true,
+ todayBtn: true,
+ todayHighlight: true,
+ language: 'zh-CN',//中文，需要引用zh-CN.js包
+ startView: 2,//月视图
+ minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
+
+ }); 
+</script> 
 
 
 </html>
