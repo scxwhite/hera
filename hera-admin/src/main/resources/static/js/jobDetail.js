@@ -44,14 +44,16 @@ layui.use(['table'], function () {
                             return index + 1;
                         }
                     }, {
-                        field: 'jobId',
-                        title: '任务ID',
-                        formatter: function (val) {
-                            return '<a href = "#">' + val + '</a>';
-                        }
+                        field: 'groupName',
+                        title: '任务组',
+                        sortable: true
                     }, {
                         field: 'jobName',
-                        title: '任务名称'
+                        title: '任务名称',
+                        sortable: true,
+                        formatter: function (row, index) {
+                            return '<a href = "#">' + row['jobName']+'['+row['jobId']+']' + '</a>';
+                        }
                     }, {
                         field: 'description',
                         title: '任务描述'
@@ -78,15 +80,18 @@ layui.use(['table'], function () {
                         },
                         sortable: true
                     }, {
-                        field: 'operator',
-                        title: '时长(分)'
-                    }, {
-                        field: 'times',
-                        title: '执行次数',
+                        field: 'durations',
+                        title: '时长(分)',
                         sortable: true
                     }, {
-                        field: 'executeHost',
-                        title: '机器|执行人'
+                        field: 'times',
+                        title: '执行次数'
+                    }, {
+                        field: 'executeHost_Operator',
+                        title: '机器|执行人',
+                        formatter: function (row, index) {
+                            return executeHost+'|'+operator;
+                        }
                     }
                 ],
                 // data:info.data
