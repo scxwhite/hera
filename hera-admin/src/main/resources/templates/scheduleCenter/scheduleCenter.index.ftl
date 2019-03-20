@@ -674,7 +674,7 @@
                                 <br>
                                 
                                 <li>
-                                <input class="form_datetime form-control" id="jobDt" size="12" type="text" data-date-format="yymmdd" readonly placeholder="请选择日期"  ">
+                                <input class="form_datetime form-control" id="jobDt"  type="text" data-date-format="yymmdd" readonly placeholder="请选择日期"  ">
                                 
                                 </li>
                                 <br>
@@ -1035,7 +1035,7 @@
  language: 'zh-CN',//中文，需要引用zh-CN.js包
  startView: 2,//月视图
  minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
- initialDate:new Date(),
+ forceParse:false,
  }); 
 </script> 
 
