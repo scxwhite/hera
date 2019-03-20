@@ -1214,12 +1214,12 @@ layui.use(['table'], function () {
 
         });
 
-
-        $('#groupOperate [name="showRunning"]').on('click', function () {
-            groupTaskType = 'running';
+        $('#overviewOperator [name="showAll"]').on('click', function () {
+            groupTaskType = 'all';
             jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
+
 
         $('#overviewOperator [name="showRunning"]').on('click', function () {
             groupTaskType = 'running';
@@ -1233,6 +1233,11 @@ layui.use(['table'], function () {
             reloadGroupTaskTable();
         });
         
+        $('#overviewOperator [name="showSucc"]').on('click', function () {
+            groupTaskType = 'success';
+            jobDt=$('#jobDt').val();
+            reloadGroupTaskTable();
+        });
        
 
         $('#groupOperate [name="showFaild"]').on('click', function () {
@@ -1241,10 +1246,21 @@ layui.use(['table'], function () {
             reloadGroupTaskTable();
         });
         
-        $('#groupOperate [name="showOK"]').on('click', function () {
-        	jobDt=$('#jobDt').val();
-        	jobStatus=$('#jobStatus').val();
-            groupTaskType = 'failed' ;
+        $('#groupOperate [name="showRunning"]').on('click', function () {
+            groupTaskType = 'running';
+            jobDt=$('#jobDt').val();
+            reloadGroupTaskTable();
+        });
+        
+        $('#groupOperate [name="showAll"]').on('click', function () {
+            groupTaskType = 'all';
+            jobDt=$('#jobDt').val();
+            reloadGroupTaskTable();
+        });
+        
+        $('#groupOperate [name="showSucc"]').on('click', function () {
+            groupTaskType = 'success';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
         

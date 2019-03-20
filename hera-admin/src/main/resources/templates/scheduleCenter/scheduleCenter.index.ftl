@@ -516,6 +516,7 @@
                                         </button>
                                     </li>
                                     <br>
+                                 <!--  
                                     <li>
                                         <button class="btn btn-xs  btn-primary btn-block" type="button"
                                                 name="showRunning">正在运行
@@ -528,6 +529,7 @@
                                         </button>
                                     </li>
                                     <br>
+                                     -->
                                     <li>
                                         <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup">
                                             添加组
@@ -680,6 +682,13 @@
                                 <br>
                                 
                                 <li>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showAll">
+                                        全部记录
+                                    </button>
+                                </li>
+                                <br>
+                                
+                                <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="showRunning">
                                         正在运行
                                     </button>
@@ -691,22 +700,13 @@
                                     </button>
                                 </li>
                                 <br>
-                                <li>
-                                    <select class="form-control" id="jobStatus"">
-                                <option value="all" selected>全部</option>
-                                <option value="failed">失败</option>
-                                <option value="success">成功</option>
-                                <option value="running">运行中</option>
-                                <option value="wait">等待</option>
-                            </select>
-                                </li>
-                                <br>
-                                <li>
-                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showOk" id="showOK">
-                                        确定
+                            	<li>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showSucc">
+                                        失败记录
                                     </button>
                                 </li>
                                 <br>
+                                
                             </ul>
                         </div>
                     </div>

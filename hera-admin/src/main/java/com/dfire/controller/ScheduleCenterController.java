@@ -167,9 +167,6 @@ public class ScheduleCenterController extends BaseHeraController {
     	startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
         calendar.add(Calendar.DAY_OF_YEAR, +1);
         String endDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
-        System.out.println("#########################0:"+status);
-        System.out.println("#########################1:"+startDate);
-        System.out.println("#########################2:"+endDate);
         List<GroupTaskVo> taskVos = heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate, pageForm, status);
         return new TableResponse<>(pageForm.getCount(), 0, taskVos);
 
