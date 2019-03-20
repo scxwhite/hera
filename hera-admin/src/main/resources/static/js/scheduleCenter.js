@@ -11,7 +11,7 @@ layui.use(['table'], function () {
         let selected;
         let triggerType;
         let allArea = [];
-        let groupTaskTable, groupTaskType,jobDt, focusId = -1;
+        let groupTaskTable, groupTaskType,jobDt='', focusId = -1;
         let inheritConfigCM, selfConfigCM;
         let editor = $('#editor');
         let setting = {
@@ -1283,7 +1283,7 @@ layui.use(['table'], function () {
                     where: {
                         groupId: focusId,
                         type: groupTaskType,
-                        dt:''
+                        dt:jobDt
                     },
                     page: {
                         curr: 1 //重新从第 1 页开始

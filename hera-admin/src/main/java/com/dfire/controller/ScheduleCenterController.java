@@ -147,7 +147,7 @@ public class ScheduleCenterController extends BaseHeraController {
         List<HeraJob> jobList = heraJobService.getAll();
         Set<Integer> jobIdSet = jobList.stream().filter(job -> groupSet.contains(job.getGroupId())).map(HeraJob::getId).collect(Collectors.toSet());
         
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat format = new SimpleDateFormat("yyMMdd");
         Calendar calendar = Calendar.getInstance();
         String startDate;
         Date start = null;
