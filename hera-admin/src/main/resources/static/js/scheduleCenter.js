@@ -1263,7 +1263,7 @@ layui.use(['table'], function () {
                     , where: {
                         groupId: focusId,
                         type: groupTaskType,
-                        dt:jobDt
+                        dt:''
                     }
                     , method: 'get'
                     , page: true
@@ -1274,7 +1274,7 @@ layui.use(['table'], function () {
                     where: {
                         groupId: focusId,
                         type: groupTaskType,
-                        dt:jobDt
+                        dt:''
                     },
                     page: {
                         curr: 1 //重新从第 1 页开始
