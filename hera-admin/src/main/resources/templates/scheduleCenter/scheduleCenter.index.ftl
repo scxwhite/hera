@@ -674,7 +674,7 @@
                                 <br>
                                 
                                 <li>
-                                <input class="form_datetime form-control" id="jobDt" size="12" type="text" readonly placeholder="请选择日期"  ">
+                                <input class="form_datetime form-control" id="jobDt" size="12" type="text" data-date-format="yymmdd" readonly placeholder="请选择日期"  ">
                                 
                                 </li>
                                 <br>
