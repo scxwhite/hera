@@ -11,7 +11,7 @@ layui.use(['table'], function () {
         let selected;
         let triggerType;
         let allArea = [];
-        let groupTaskTable, groupTaskType, focusId = -1;
+        let groupTaskTable, groupTaskType,jobDt, focusId = -1;
         let inheritConfigCM, selfConfigCM;
         let editor = $('#editor');
         let setting = {
@@ -1208,38 +1208,47 @@ layui.use(['table'], function () {
         });
         $('#showAllBtn').click(function () {
             // 表格渲染
-            groupTaskType = 0;
+            groupTaskType = 'all';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
 
         });
 
 
         $('#groupOperate [name="showRunning"]').on('click', function () {
-            groupTaskType = 1;
+            groupTaskType = 'running';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
 
         $('#overviewOperator [name="showRunning"]').on('click', function () {
-            groupTaskType = 1;
+            groupTaskType = 'running';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
 
         $('#overviewOperator [name="showFaild"]').on('click', function () {
-            groupTaskType = 2;
+            groupTaskType = 'failed';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
         
-        $('#overviewOperator [name="showOK"]').on('click', function () {
-        	jobDt=$('#jobDt').val();
-        	jobStatus=$('#jobStatus').val();
-            groupTaskType = 2;
-            reloadGroupTaskTable();
-        });
+       
 
         $('#groupOperate [name="showFaild"]').on('click', function () {
-            groupTaskType = 2;
+            groupTaskType = 'failed';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
+        
+        $('#groupOperate [name="showOK"]').on('click', function () {
+        	jobDt=$('#jobDt').val();
+        	jobStatus=$('#jobStatus').val();
+            groupTaskType = 'failed' ;
+            reloadGroupTaskTable();
+        });
+        
+        
         $('#closeAll').click(function (e) {
             $("#showAllModal").modal('hide');
         });
@@ -1263,7 +1272,7 @@ layui.use(['table'], function () {
                     , where: {
                         groupId: focusId,
                         type: groupTaskType,
-                        dt:''
+                        dt:jobDt
                     }
                     , method: 'get'
                     , page: true

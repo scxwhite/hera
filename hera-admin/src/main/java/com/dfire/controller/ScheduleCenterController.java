@@ -132,13 +132,13 @@ public class ScheduleCenterController extends BaseHeraController {
      * 组下搜索任务
      *
      * @param groupId  groupId
-     * @param type     0：all 所有任务 1:running 运行中的任务
+     * @param status   all:全部;
      * @param pageForm layui table分页参数
      * @return 结果
      */
     @RequestMapping(value = "/getGroupTask", method = RequestMethod.GET)
     @ResponseBody
-    public TableResponse<List<GroupTaskVo>> getGroupTask(String groupId, Integer type,String dt, TablePageForm pageForm) {
+    public TableResponse<List<GroupTaskVo>> getGroupTask(String groupId, String status,String dt, TablePageForm pageForm) {
 
 
         List<HeraGroup> group = heraGroupService.findDownStreamGroup(getGroupId(groupId));
@@ -165,7 +165,7 @@ public class ScheduleCenterController extends BaseHeraController {
         calendar.setTime(start);
         calendar.add(Calendar.DAY_OF_YEAR, +1);
         String endDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
-        List<GroupTaskVo> taskVos = heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate, pageForm, type);
+        List<GroupTaskVo> taskVos = heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate, pageForm, status);
         return new TableResponse<>(pageForm.getCount(), 0, taskVos);
 
     }
