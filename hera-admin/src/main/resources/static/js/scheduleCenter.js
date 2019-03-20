@@ -1228,6 +1228,13 @@ layui.use(['table'], function () {
             groupTaskType = 2;
             reloadGroupTaskTable();
         });
+        
+        $('#overviewOperator [name="showOK"]').on('click', function () {
+        	jobDt=$('#jobDt').val();
+        	jobStatus=$('#jobStatus').val();
+            groupTaskType = 2;
+            reloadGroupTaskTable();
+        });
 
         $('#groupOperate [name="showFaild"]').on('click', function () {
             groupTaskType = 2;
@@ -1255,7 +1262,8 @@ layui.use(['table'], function () {
                     , url: base_url + '/scheduleCenter/getGroupTask'
                     , where: {
                         groupId: focusId,
-                        type: groupTaskType
+                        type: groupTaskType,
+                        dt:jobDt
                     }
                     , method: 'get'
                     , page: true
@@ -1265,7 +1273,8 @@ layui.use(['table'], function () {
                 groupTaskTable.reload({
                     where: {
                         groupId: focusId,
-                        type: groupTaskType
+                        type: groupTaskType,
+                        dt:jobDt
                     },
                     page: {
                         curr: 1 //重新从第 1 页开始

@@ -692,7 +692,7 @@
                                 </li>
                                 <br>
                                 <li>
-                                    <select class="form-control" id="jobStatus" onchange="updateTable()">
+                                    <select class="form-control" id="jobStatus"">
                                 <option value="all" selected>全部</option>
                                 <option value="failed">失败</option>
                                 <option value="success">成功</option>
@@ -701,7 +701,12 @@
                             </select>
                                 </li>
                                 <br>
-                                
+                                <li>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showOk" id="showOK">
+                                        确定
+                                    </button>
+                                </li>
+                                <br>
                             </ul>
                         </div>
                     </div>
