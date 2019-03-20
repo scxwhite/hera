@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -137,7 +138,7 @@ public class ScheduleCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/getGroupTask", method = RequestMethod.GET)
     @ResponseBody
-    public TableResponse<List<GroupTaskVo>> getGroupTask(String groupId, Integer type, TablePageForm pageForm) {
+    public TableResponse<List<GroupTaskVo>> getGroupTask(String groupId, Integer type,String dt, TablePageForm pageForm) {
 
 
         List<HeraGroup> group = heraGroupService.findDownStreamGroup(getGroupId(groupId));
@@ -145,11 +146,24 @@ public class ScheduleCenterController extends BaseHeraController {
         Set<Integer> groupSet = group.stream().map(HeraGroup::getId).collect(Collectors.toSet());
         List<HeraJob> jobList = heraJobService.getAll();
         Set<Integer> jobIdSet = jobList.stream().filter(job -> groupSet.contains(job.getGroupId())).map(HeraJob::getId).collect(Collectors.toSet());
-
-        //TODO  先写死 只看今天
+        
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
         Calendar calendar = Calendar.getInstance();
-        String startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
-        calendar.add(Calendar.DAY_OF_MONTH, +1);
+        String startDate;
+        Date start = null;
+        if(StringUtils.isBlank(dt)){
+        	startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
+        }
+        else{
+        	startDate=dt;
+        }
+        try {
+			start = format.parse(startDate);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+        calendar.setTime(start);
+        calendar.add(Calendar.DAY_OF_YEAR, +1);
         String endDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
         List<GroupTaskVo> taskVos = heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate, pageForm, type);
         return new TableResponse<>(pageForm.getCount(), 0, taskVos);
