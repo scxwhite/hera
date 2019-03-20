@@ -702,7 +702,7 @@
                                 <br>
                             	<li>
                                     <button class="btn btn-xs  btn-primary btn-block" type="button" name="showSucc">
-                                        失败记录
+                                        成功记录
                                     </button>
                                 </li>
                                 <br>
