@@ -1271,7 +1271,7 @@ layui.use(['table'], function () {
                     , url: base_url + '/scheduleCenter/getGroupTask'
                     , where: {
                         groupId: focusId,
-                        type: groupTaskType,
+                        status: groupTaskType,
                         dt:jobDt
                     }
                     , method: 'get'
@@ -1282,7 +1282,7 @@ layui.use(['table'], function () {
                 groupTaskTable.reload({
                     where: {
                         groupId: focusId,
-                        type: groupTaskType,
+                        status: groupTaskType,
                         dt:jobDt
                     },
                     page: {

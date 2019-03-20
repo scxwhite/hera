@@ -152,17 +152,19 @@ public class ScheduleCenterController extends BaseHeraController {
         String startDate;
         Date start = null;
         if(StringUtils.isBlank(dt)){
-        	startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
+        	start=new Date();
         }
         else{
-        	startDate=dt;
+        	
+        	try {
+    			start = format.parse(dt);
+    		} catch (ParseException e) {
+    			start=new Date();
+    		}
         }
-        try {
-			start = format.parse(startDate);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+        
         calendar.setTime(start);
+    	startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
         calendar.add(Calendar.DAY_OF_YEAR, +1);
         String endDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
         System.out.println("#########################0:"+status);
