@@ -87,7 +87,7 @@ public class EmailJobFailAlarm implements JobFailAlarm {
             emailService.sendEmail(title, content, address.toString());
         } catch (MessagingException e) {
             e.printStackTrace();
-            ErrorLog.error("发送邮件失败");
+            ErrorLog.error("发送邮件失败", e);
         }
     }
 }

@@ -105,8 +105,7 @@ public class MasterContext {
                 quartzSchedulerService.shutdown();
                 HeraLog.info("quartz schedule shutdown success");
             } catch (Exception e) {
-                e.printStackTrace();
-                ErrorLog.error("quartz schedule shutdown error");
+                ErrorLog.error("quartz schedule shutdown error", e);
             }
         }
         HeraLog.info("destroy master context success");

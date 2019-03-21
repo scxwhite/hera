@@ -41,7 +41,7 @@ public class SparkJob extends ProcessJob {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                ErrorLog.error("创建.spark失败");
+                ErrorLog.error("创建.spark失败", e);
             }
         }
 

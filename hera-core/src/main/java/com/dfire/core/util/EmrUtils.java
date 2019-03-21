@@ -86,7 +86,7 @@ public class EmrUtils {
     }
 
     public static void main(String[] args) {
-        closeCluster("j-KQBTSFQHUKQL");
+        closeCluster("j-8TCBCH0V3Z7D");
     }
 
     public static void addJob() {
@@ -205,7 +205,6 @@ public class EmrUtils {
         long start = System.currentTimeMillis();
         long sleepTime = 15 * 1000 * 1000000L;
         while(!checkCompletion(clusterId)) {
-            MonitorLog.info("检测集群是否创建完成:" + clusterId);
             LockSupport.parkNanos(sleepTime);
         }
         MonitorLog.info("创建集群:" + clusterId + "耗时:" + (System.currentTimeMillis() - start) + "ms");
@@ -219,6 +218,7 @@ public class EmrUtils {
      */
     private static boolean checkCompletion(String clusterId) {
         try {
+            MonitorLog.info("检测集群是否创建完成:" + clusterId);
             ListClustersResult waiting = emr.listClusters(new ListClustersRequest().withClusterStates("WAITING"));
             if (waiting.getSdkHttpMetadata().getHttpStatusCode() != SUCCESS_HTTP_CODE) {
                 MonitorLog.info("检测集群创建完成的请求失败,http退出码为:" + waiting.getSdkHttpMetadata().getHttpStatusCode());

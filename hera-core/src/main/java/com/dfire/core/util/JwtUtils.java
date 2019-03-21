@@ -64,7 +64,7 @@ public class JwtUtils {
         try {
             jwt = verifier.verify(token);
         } catch (Exception e) {
-            ErrorLog.error("token 过期");
+            HeraLog.info("token 过期");
             return null;
         }
         return jwt.getClaims();

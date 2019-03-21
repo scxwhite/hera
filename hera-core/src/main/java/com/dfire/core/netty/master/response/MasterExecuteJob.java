@@ -147,7 +147,7 @@ public class MasterExecuteJob {
                         holder.getDebugRunning().remove(jobId);
                         break;
                     default:
-                        ErrorLog.error("未识别的任务执行类型{}", typeEnum);
+                        ErrorLog.warn("未识别的任务执行类型{}", typeEnum);
                 }
             }
             return responseListener.getResponse();

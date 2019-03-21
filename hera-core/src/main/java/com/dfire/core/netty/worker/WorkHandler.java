@@ -106,7 +106,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                         workContext.getWorkExecuteThreadPool().execute(() -> handlerRequest.getWorkInfo(getChannel(channel)));
                         break;
                     default:
-                        ErrorLog.error("unknow operate value {}", request.getOperateValue());
+                        ErrorLog.warn("unknow operate value {}", request.getOperateValue());
                         break;
                 }
             case RESPONSE:

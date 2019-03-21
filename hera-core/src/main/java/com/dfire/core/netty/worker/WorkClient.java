@@ -168,7 +168,7 @@ public class WorkClient {
                             ", logLength:" +
                             logContent.length() + "]", e);
                 } catch (Exception ex) {
-                    ErrorLog.error("log exception error!");
+                    ErrorLog.error("log exception error!", ex);
                 }
             }
 
@@ -190,7 +190,7 @@ public class WorkClient {
                             ", logLength:" +
                             logContent.length() + "]", e);
                 } catch (Exception ex) {
-                    ErrorLog.error("log exception error!");
+                    ErrorLog.error("log exception error!", ex);
                 }
             }
 

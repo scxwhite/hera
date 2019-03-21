@@ -220,7 +220,7 @@ public class SystemManageController extends BaseHeraController {
         WebAsyncTask webAsyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> workClient.getAllWorkInfo());
 
         webAsyncTask.onTimeout(() -> {
-            ErrorLog.error("获取work信息超时");
+            ErrorLog.warn("获取work信息超时");
             return null;
         });
         return webAsyncTask;

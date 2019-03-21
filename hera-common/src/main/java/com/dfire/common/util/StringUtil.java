@@ -35,7 +35,7 @@ public class StringUtil {
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            ErrorLog.error("MD5 错误");
+            ErrorLog.error("MD5 错误", e);
         }
         md.update(sourceStr.getBytes());
         byte b[] = md.digest();

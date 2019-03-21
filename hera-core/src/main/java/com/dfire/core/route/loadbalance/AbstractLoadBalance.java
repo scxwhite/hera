@@ -8,6 +8,7 @@ import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.queue.JobElement;
 import com.dfire.core.route.check.ResultReason;
 import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
 import com.dfire.logs.MasterLog;
 
 /**
@@ -23,7 +24,7 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         if (masterContext.getHostGroupCache() != null) {
             HeraHostGroupVo hostGroup = masterContext.getHostGroupCache().get(jobElement.getHostGroupId());
             if (hostGroup == null || hostGroup.getHosts() == null || hostGroup.getHosts().size() == 0) {
-                ErrorLog.error("机器组:{},无可执行任务的机器,任务Id:{}", jobElement.getHostGroupId(), jobElement.getJobId());
+                HeraLog.warn("机器组:{},无可执行任务的机器,任务Id:{}", jobElement.getHostGroupId(), jobElement.getJobId());
                 return null;
             }
             return doSelect(hostGroup, masterContext);

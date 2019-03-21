@@ -110,7 +110,7 @@ public class JobHandler extends AbstractHandler {
         if (heraAction != null) {
             //对版本表中处于running状态的任务进行重试
             if (StatusEnum.RUNNING.toString().equals(heraAction.getStatus())) {
-                ErrorLog.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
+                ScheduleLog.warn("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
                 //有历史版本
                 if (heraAction.getHistoryId() != null) {
                     HeraJobHistory jobHistory = jobHistoryService.findById(heraAction.getHistoryId());
@@ -146,7 +146,7 @@ public class JobHandler extends AbstractHandler {
             } catch (Exception e) {
                 if (e instanceof SchedulerException) {
                     heraActionVo.setAuto(false);
-                    ErrorLog.error("create job quartz schedule error");
+                    ErrorLog.error("create job quartz schedule error", e);
                 }
                 throw new RuntimeException(e);
             }
