@@ -93,6 +93,8 @@ public class Constants {
 
     public final static String NEW_LINE = "\n";
 
+    public final static String BLANK_SPACE = " ";
+
     public final static String HTML_NEW_LINE = "<br>";
 
 

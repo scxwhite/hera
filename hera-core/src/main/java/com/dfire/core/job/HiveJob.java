@@ -1,6 +1,7 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
+import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.exception.HeraException;
 import com.dfire.config.HeraGlobalEnvironment;
 import org.apache.commons.lang.StringUtils;
@@ -20,7 +21,6 @@ import java.util.List;
  */
 public class HiveJob extends ProcessJob {
 
-    private final static String HIVE_BIN = HeraGlobalEnvironment.getJobHiveBin() + " ";
 
 
     public HiveJob(JobContext jobContext) {
@@ -64,7 +64,6 @@ public class HiveJob extends ProcessJob {
     public List<String> getCommandList() {
         String hiveFilePath = getProperty(RunningJobKeyConstant.RUN_HIVE_PATH, "");
         List<String> list = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
         String shellPrefix = getJobPrefix();
         boolean isDocToUnix = checkDosToUnix(hiveFilePath);
 
@@ -72,8 +71,7 @@ public class HiveJob extends ProcessJob {
             list.add("dos2unix " + hiveFilePath);
             log("dos2unix file" + hiveFilePath);
         }
-
-        sb.append(" -f ").append(hiveFilePath);
+        String hiveCommand = " -f " + hiveFilePath;
 
         if (StringUtils.isNotBlank(shellPrefix)) {
             String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
@@ -84,7 +82,7 @@ public class HiveJob extends ProcessJob {
                     tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write(HiveJob.HIVE_BIN + sb.toString());
+                    tmpWriter.write(generateRunCommand(JobRunTypeEnum.Hive, "hive -e", hiveFilePath));
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
@@ -100,11 +98,11 @@ public class HiveJob extends ProcessJob {
                 list.add(shellPrefix + " sh " + tmpFilePath);
             } else {
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + HiveJob.HIVE_BIN + sb.toString());
+                list.add(shellPrefix + HeraGlobalEnvironment.getJobHiveBin() + hiveCommand);
             }
 
         } else {
-            list.add(HiveJob.HIVE_BIN + sb.toString());
+            list.add(HeraGlobalEnvironment.getJobHiveBin() + hiveCommand);
         }
         return list;
     }

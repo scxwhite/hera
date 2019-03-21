@@ -2,7 +2,10 @@ package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.RunningJobKeyConstant;
+import com.dfire.common.enums.JobRunTypeEnum;
+import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.core.util.CommandUtils;
+import com.dfire.core.util.EmrUtils;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
 import org.apache.commons.lang.StringUtils;
@@ -91,8 +94,7 @@ public class ShellJob extends ProcessJob {
                     }
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-
-                    tmpWriter.write("source " + shellFilePath);
+                    tmpWriter.write(generateRunCommand(JobRunTypeEnum.Shell, "", shellFilePath));
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {

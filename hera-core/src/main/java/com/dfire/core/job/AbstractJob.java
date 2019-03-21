@@ -1,8 +1,10 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.Constants;
+import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.core.util.EmrUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -51,6 +53,30 @@ public abstract class AbstractJob implements Job {
             log("没有RunType=" + jobContext.getRunType() + " 的执行类别");
         }
         return shellPrefix;
+    }
+
+    protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String prefix, String jobPath) {
+        StringBuilder command = new StringBuilder();
+        if (HeraGlobalEnvironment.isEmrJob()) {
+            command.append("sudo -u docker").append(Constants.BLANK_SPACE);
+            command.append("ssh -o StrictHostKeyChecking=no").append(Constants.BLANK_SPACE);
+            command.append("-i /home/docker/.ssh/bigdata.pem").append(Constants.BLANK_SPACE);
+            command.append("hadoop@").append(EmrUtils.getIp()).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
+            command.append("<< eeooff").append(Constants.NEW_LINE);
+            command.append(prefix).append("\"`cat").append(Constants.BLANK_SPACE).append(jobPath).append("`\"").append(Constants.NEW_LINE);
+            command.append("eeooff");
+        } else {
+            switch (runTypeEnum) {
+                case Shell:
+                    command.append("source").append(Constants.BLANK_SPACE).append(jobPath);
+                    break;
+                case Hive:
+                    command.append(HeraGlobalEnvironment.getJobHiveBin()).append(" -f ").append(jobPath);
+                default:
+                    break;
+            }
+        }
+        return command.toString();
     }
 
     protected boolean checkDosToUnix(String filePath) {

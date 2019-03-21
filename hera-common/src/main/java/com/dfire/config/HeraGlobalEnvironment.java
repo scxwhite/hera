@@ -93,7 +93,8 @@ public class HeraGlobalEnvironment {
     private static String jobHiveBin;
     @Getter
     private static String jobSparkSqlBin;
-
+    @Getter
+    private static boolean emrJob;
 
     @Getter
     private static String mailPort;
@@ -282,7 +283,7 @@ public class HeraGlobalEnvironment {
 
     @Value("${hera.job.hive.bin}")
     public void setJobHiveBin(String jobHiveBin) {
-        HeraGlobalEnvironment.jobHiveBin = jobHiveBin;
+        HeraGlobalEnvironment.jobHiveBin = jobHiveBin + " ";
     }
 
     @Value("${hera.job.spark-sql.bin}")
@@ -323,6 +324,10 @@ public class HeraGlobalEnvironment {
         }
         HeraGlobalEnvironment.alarmEnvSet = new HashSet<>();
         alarmEnvSet.addAll(Arrays.asList(mailEnv.split(Constants.COMMA)));
+    }
+    @Value("${hera.emrJob}")
+    public void setEmrJob(boolean emrJob) {
+        HeraGlobalEnvironment.emrJob = emrJob;
     }
 
     /**

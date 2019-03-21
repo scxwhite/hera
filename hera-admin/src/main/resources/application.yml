@@ -82,6 +82,7 @@ hera:
             bin: hive --hiveconf tez.queue.name=root.normal.dw
         spark-sql:
             bin: spark-sql
+    emrJob: true
 
 
 logging:
