@@ -66,8 +66,6 @@ public class HeraGlobalEnvironment {
     @Getter
     private static Integer taskTimeout;
     @Getter
-    private static String sparkBaseDir;
-    @Getter
     private static String sparkAddress;
     @Getter
     private static String sparkDriver;
@@ -226,11 +224,6 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.channelTimeout = channelTimeout;
     }
 
-    @Value("${spark.baseDir}")
-    public void setSparkBaseDir(String sparkBaseDir) {
-        HeraGlobalEnvironment.sparkBaseDir = sparkBaseDir;
-    }
-
     @Value("${spark.address}")
     public void setSparkAddress(String sparkAddress) {
         HeraGlobalEnvironment.sparkAddress = sparkAddress;
@@ -278,17 +271,17 @@ public class HeraGlobalEnvironment {
 
     @Value("${hera.job.shell.bin}")
     public void setJobShellBin(String jobShellBin) {
-        HeraGlobalEnvironment.jobShellBin = jobShellBin;
+        HeraGlobalEnvironment.jobShellBin = jobShellBin + Constants.BLANK_SPACE;
     }
 
     @Value("${hera.job.hive.bin}")
     public void setJobHiveBin(String jobHiveBin) {
-        HeraGlobalEnvironment.jobHiveBin = jobHiveBin + " ";
+        HeraGlobalEnvironment.jobHiveBin = jobHiveBin + Constants.BLANK_SPACE;
     }
 
     @Value("${hera.job.spark-sql.bin}")
     public void setJobSparkSqlBin(String jobSparkSqlBin) {
-        HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin;
+        HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin + Constants.BLANK_SPACE;
     }
 
 
@@ -325,6 +318,7 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.alarmEnvSet = new HashSet<>();
         alarmEnvSet.addAll(Arrays.asList(mailEnv.split(Constants.COMMA)));
     }
+
     @Value("${hera.emrJob}")
     public void setEmrJob(boolean emrJob) {
         HeraGlobalEnvironment.emrJob = emrJob;

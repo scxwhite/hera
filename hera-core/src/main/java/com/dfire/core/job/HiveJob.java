@@ -82,7 +82,7 @@ public class HiveJob extends ProcessJob {
                     tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write(generateRunCommand(JobRunTypeEnum.Hive, "hive -e", hiveFilePath));
+                    tmpWriter.write(generateRunCommand(JobRunTypeEnum.Hive, "", hiveFilePath));
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {

@@ -58,17 +58,34 @@ public abstract class AbstractJob implements Job {
     protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String prefix, String jobPath) {
         StringBuilder command = new StringBuilder();
         if (HeraGlobalEnvironment.isEmrJob()) {
+            //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
             command.append("sudo -u docker").append(Constants.BLANK_SPACE);
             command.append("ssh -o StrictHostKeyChecking=no").append(Constants.BLANK_SPACE);
             command.append("-i /home/docker/.ssh/bigdata.pem").append(Constants.BLANK_SPACE);
             command.append("hadoop@").append(EmrUtils.getIp()).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
             command.append("<< eeooff").append(Constants.NEW_LINE);
-            command.append(prefix).append("\"`cat").append(Constants.BLANK_SPACE).append(jobPath).append("`\"").append(Constants.NEW_LINE);
+            switch (runTypeEnum) {
+                case Spark:
+                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(" -e ").append("\"").append(prefix).append(" `cat ").append(jobPath).append("`\"");
+                    break;
+                case Hive:
+                    command.append(HeraGlobalEnvironment.getJobHiveBin()).append(" -e \"`cat ").append(jobPath).append("`\"");
+                    break;
+                case Shell:
+                    command.append("`cat ").append(jobPath).append("`");
+                    break;
+                default:
+                    break;
+            }
+            command.append(Constants.NEW_LINE);
             command.append("eeooff");
         } else {
             switch (runTypeEnum) {
                 case Shell:
-                    command.append("source").append(Constants.BLANK_SPACE).append(jobPath);
+                    command.append("source ").append(jobPath);
+                    break;
+                case Spark:
+                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(prefix).append(" -f ").append(jobPath);
                     break;
                 case Hive:
                     command.append(HeraGlobalEnvironment.getJobHiveBin()).append(" -f ").append(jobPath);

@@ -160,7 +160,7 @@ public class WorkExecuteJob {
             }
             final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath(), workContext);
             workContext.getRunning().put(jobId, job);
-            Integer exitCode = -1;
+            int exitCode = -1;
             Exception exception = null;
             try {
                 exitCode = job.run();

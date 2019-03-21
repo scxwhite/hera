@@ -31,12 +31,13 @@ import java.util.Map;
 public class UploadResourceController {
 
 
-
-
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
     public JsonResponse uploadResource(MultipartHttpServletRequest request) {
+        if (HeraGlobalEnvironment.isEmrJob()) {
+            return new JsonResponse(false, "EMR 环境下无法上传资源。");
+        }
         Map<String, MultipartFile> fileMap = request.getFileMap();
         String fileName;
         String newFilePath;

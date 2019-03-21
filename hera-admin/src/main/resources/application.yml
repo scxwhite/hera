@@ -79,7 +79,7 @@ hera:
         shell:
             bin: sh
         hive:
-            bin: hive --hiveconf tez.queue.name=root.normal.dw
+            bin: hive
         spark-sql:
             bin: spark-sql
     emrJob: true
@@ -108,8 +108,7 @@ mybatis:
     configuration:
         mapUnderscoreToCamelCase: true
 #spark 配置
-spark :
-    baseDir : /opt/app/Spark-AE #Spark基础路径
+spark:
     address : jdbc:hive2://10.1.21.141:10000 #ThriftServer地址
     driver : org.apache.hive.jdbc.HiveDriver #jdbc driver
     username : heguozi #ThriftServer用户名
@@ -144,7 +143,6 @@ druid:
         password: root
 #spark 配置
 spark :
-    baseDir : /opt/app/Spark-AE #Spark基础路径
     address : jdbc:hive2://spark-server001.2dfire-inc.com:10000 #ThriftServer地址
     master : --master yarn
     driver-memory : --driver-memory 2g
@@ -162,7 +160,6 @@ druid:
         password: lineage@552208
 #spark 配置
 spark :
-    baseDir : /opt/app/Spark-AE #Spark基础路径
     address : jdbc:hive2://spark-server001.2dfire-inc.com:10000 #ThriftServer地址
     master : --master yarn
     driver-memory : --driver-memory 2g

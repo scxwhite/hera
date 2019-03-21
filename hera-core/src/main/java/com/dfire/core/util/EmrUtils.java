@@ -8,6 +8,7 @@ import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClientBuild
 import com.amazonaws.services.elasticmapreduce.model.*;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.EmrConf;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.logs.MonitorLog;
 import org.apache.commons.lang.StringUtils;
@@ -17,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 
@@ -64,12 +66,13 @@ public class EmrUtils {
     /**
      * 任务数
      */
-    private static AtomicLong jobNum;
+    private static AtomicInteger taskRunning;
 
     /**
-     * 5分钟前的任务数
+     * 任务计数器
      */
-    private static long checkJobNum;
+    private static AtomicLong taskNum;
+
 
     /**
      * check 集群是否需要关闭返回的future
@@ -82,9 +85,18 @@ public class EmrUtils {
         terminateJob();
     }
 
-    private static void addJob() {
+    public static void main(String[] args) {
+        closeCluster("j-KQBTSFQHUKQL");
+    }
+
+    public static void addJob() {
         createCluster();
-        jobNum.incrementAndGet();
+        taskRunning.incrementAndGet();
+        taskNum.incrementAndGet();
+    }
+
+    public static synchronized void removeJob() {
+        taskRunning.decrementAndGet();
     }
 
     /**
@@ -109,53 +121,77 @@ public class EmrUtils {
         return cacheIp;
     }
 
+
+    private static boolean isAlive(String clusterName) {
+        ListClustersResult clusters = emr.listClusters(new ListClustersRequest()
+                .withClusterStates(ClusterState.STARTING, ClusterState.BOOTSTRAPPING, ClusterState.RUNNING, ClusterState.WAITING));
+        List<ClusterSummary> summaries = clusters.getClusters();
+        if (summaries != null && summaries.size() > 0) {
+            for (ClusterSummary summary : summaries) {
+                if (summary.getName().startsWith(clusterName)) {
+                    cacheClusterId = summary.getId();
+                    MonitorLog.info("emr集群已经启动过，无需再次启动");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private static void createCluster() {
         init();
+        String clusterName = "hera-schedule-";
         if (clusterTerminate) {
             synchronized (EmrUtils.class) {
                 if (clusterTerminate) {
-                    RunJobFlowResult result = createClient(EmrConf.builder()
-                            .loginURl("s3://aws-logs-636856355690-ap-south-1/elasticmapreduce/")
-                            .clusterName("bigdata-moye-auto-scale")
-                            .masterInstanceType("m5.2xlarge")
-                            .numCoresNodes(1)
-                            .coreInstanceType("m5.2xlarge")
-                            .emrManagedMasterSecurityGroup("sg-0d9414a5e40b236c2")
-                            .emrManagedSlaveSecurityGroup("sg-04c3e127cbaf17ed1")
-                            .additionalMasterSecurityGroups("sg-0fc3efb3cc2f75dd0")
-                            .additionalSlaveSecurityGroups("sg-0fc3efb3cc2f75dd0")
-                            .serviceAccessSecurityGroup("sg-088fe656e6c50a6fc")
-                            .ec2SubnetId("subnet-0032203fab5879af0")
-                            .build());
-                    int statusCode = result.getSdkHttpMetadata().getHttpStatusCode();
-                    if (statusCode == SUCCESS_HTTP_CODE) {
-                        cacheClusterId = result.getJobFlowId();
-                        waitClusterCompletion(cacheClusterId);
-                        clusterTerminate = false;
-                        showCluster();
-                        jobNum = new AtomicLong(0);
-                        submitClusterWatch();
-                        MonitorLog.info("集群创建完成,可以执行任务了.集群ID为：" + cacheClusterId + "集群IP为:" + getIp());
-                    } else {
-                        MonitorLog.error("创建集群失败,退出码:" + statusCode);
+                    if (!isAlive(clusterName)) {
+                        clusterName += ActionUtil.getCurrDate();
+                        RunJobFlowResult result = createClient(EmrConf.builder()
+                                .loginURl("s3://aws-logs-636856355690-ap-south-1/elasticmapreduce/")
+                                .clusterName(clusterName)
+                                .masterInstanceType("m5.2xlarge")
+                                .numCoresNodes(1)
+                                .coreInstanceType("m5.2xlarge")
+                                .emrManagedMasterSecurityGroup("sg-0d9414a5e40b236c2")
+                                .emrManagedSlaveSecurityGroup("sg-04c3e127cbaf17ed1")
+                                .additionalMasterSecurityGroups("sg-0fc3efb3cc2f75dd0")
+                                .additionalSlaveSecurityGroups("sg-0fc3efb3cc2f75dd0")
+                                .serviceAccessSecurityGroup("sg-088fe656e6c50a6fc")
+                                .ec2SubnetId("subnet-0032203fab5879af0")
+                                .build());
+                        int statusCode = result.getSdkHttpMetadata().getHttpStatusCode();
+                        if (statusCode == SUCCESS_HTTP_CODE) {
+                            cacheClusterId = result.getJobFlowId();
+                        } else {
+                            MonitorLog.error("创建集群失败,退出码:" + statusCode);
+                        }
                     }
+                    waitClusterCompletion(cacheClusterId);
+                    clusterTerminate = false;
+                    showCluster();
+                    taskRunning = new AtomicInteger(0);
+                    taskNum = new AtomicLong(0);
+                    submitClusterWatch();
+                    MonitorLog.info("集群创建完成,可以执行任务了.集群ID为：" + cacheClusterId + ".集群IP为:" + getIp());
                 }
+            }
+        } else {
+            if (!isAlive(clusterName)) {
+                destroyCluster();
+                createCluster();
             }
         }
     }
 
     private static void submitClusterWatch() {
         if (clusterWatchFuture == null) {
-            checkJobNum = jobNum.get();
             ScheduledExecutorService pool = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("cluster-destroy-watch", false));
             clusterWatchFuture = pool.scheduleWithFixedDelay(() -> {
-                if (checkJobNum == jobNum.get()) {
+                if (taskRunning.get() == 0) {
                     terminateJob();
                     clusterWatchFuture.cancel(true);
-                } else {
-                    checkJobNum = jobNum.get();
                 }
-            }, 1, 1, TimeUnit.MINUTES);
+            }, 5, 5, TimeUnit.MINUTES);
             pool.shutdown();
         }
     }
@@ -209,7 +245,7 @@ public class EmrUtils {
         emr.setTerminationProtection(new SetTerminationProtectionRequest().withJobFlowIds(cacheClusterId).withTerminationProtected(false));
         TerminateJobFlowsResult terminateResult = emr.terminateJobFlows(new TerminateJobFlowsRequest().withJobFlowIds(cacheClusterId));
         if (terminateResult.getSdkHttpMetadata().getHttpStatusCode() == SUCCESS_HTTP_CODE) {
-            MonitorLog.info("集群:" + cacheClusterId + "关闭成功,执行任务数为:" + jobNum.get());
+            MonitorLog.info("集群:" + cacheClusterId + "关闭成功,执行任务数为:" + taskRunning.get());
             destroyCluster();
         } else {
             MonitorLog.error("集群关闭失败" + cacheClusterId);
@@ -217,10 +253,10 @@ public class EmrUtils {
     }
 
     private static void destroyCluster() {
+        clusterTerminate = true;
         cacheIp = null;
         cacheClusterId = null;
         clusterWatchFuture = null;
-        clusterTerminate = true;
         shutdown();
     }
 
@@ -229,7 +265,7 @@ public class EmrUtils {
      */
     private static void showCluster() {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 14);
+        calendar.add(Calendar.HOUR, -1);
         ListClustersResult running = emr.listClusters(new ListClustersRequest().withCreatedAfter(calendar.getTime()));
         MonitorLog.info("集群个数" + running.getClusters().size());
         for (ClusterSummary cluster : running.getClusters()) {
@@ -260,7 +296,7 @@ public class EmrUtils {
         }
     }
 
-    public static RunJobFlowResult createClient(EmrConf emrConf) {
+    private static RunJobFlowResult createClient(EmrConf emrConf) {
         RunJobFlowRequest request = new RunJobFlowRequest()
                 .withApplications(getApps())
                 .withReleaseLabel("emr-5.13.0")
