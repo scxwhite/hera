@@ -79,7 +79,7 @@ hera:
         shell:
             bin: sh
         hive:
-            bin: hive --hiveconf tez.queue.name=root.normal.dw
+            bin: hive # --hiveconf tez.queue.name=root.normal.dw
         spark-sql:
             bin: spark-sql
 
