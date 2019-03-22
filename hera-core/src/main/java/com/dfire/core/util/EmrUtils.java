@@ -86,7 +86,18 @@ public class EmrUtils {
     }
 
     public static void main(String[] args) {
-        closeCluster("j-8TCBCH0V3Z7D");
+        init();
+    }
+    private static String getSystemProperty(String name) {
+        String val = System.getenv(name);
+        if (StringUtils.isNotBlank(name)) {
+            return val;
+        }
+        val = System.getProperty(name);
+        if (StringUtils.isBlank(name)) {
+            MonitorLog.error("找不到的环境变量:" + name);
+        }
+        return val;
     }
 
     public static void addJob() {
@@ -204,7 +215,8 @@ public class EmrUtils {
     private static void waitClusterCompletion(String clusterId) {
         long start = System.currentTimeMillis();
         long sleepTime = 15 * 1000 * 1000000L;
-        while(!checkCompletion(clusterId)) {
+        while (!checkCompletion(clusterId)) {
+            MonitorLog.info("检测集群是否创建完成:" + clusterId);
             LockSupport.parkNanos(sleepTime);
         }
         MonitorLog.info("创建集群:" + clusterId + "耗时:" + (System.currentTimeMillis() - start) + "ms");
@@ -280,7 +292,7 @@ public class EmrUtils {
         if (emr == null || isShutdown) {
             synchronized (EmrUtils.class) {
                 if (emr == null || isShutdown) {
-                    AWSCredentials credentials = new BasicAWSCredentials("AKIAIDNAUCQ2GWA34WAA", "OCb6tZJfqBWo2tNJbwjw3Cx81siCuvVrnTKveCD8");
+                    AWSCredentials credentials = new BasicAWSCredentials(getSystemProperty("AWS_ACCESS_KEY_ID"), getSystemProperty("AWS_SECRET_ACCESS_KEY"));
                     emr = (AmazonElasticMapReduceClient) AmazonElasticMapReduceClientBuilder.standard().withRegion("ap-south-1").withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
                     isShutdown = false;
                 }

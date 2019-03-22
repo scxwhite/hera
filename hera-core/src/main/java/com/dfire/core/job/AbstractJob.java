@@ -44,9 +44,9 @@ public abstract class AbstractJob implements Job {
     protected String getJobPrefix() {
         String shellPrefix = null;
         if (jobContext.getRunType() == JobContext.SCHEDULE_RUN || jobContext.getRunType() == JobContext.MANUAL_RUN) {
-            shellPrefix = "sudo -u " + jobContext.getHeraJobHistory().getOperator();
+            shellPrefix = "sudo -E -u " + jobContext.getHeraJobHistory().getOperator();
         } else if (jobContext.getRunType() == JobContext.DEBUG_RUN) {
-            shellPrefix = "sudo -u " + jobContext.getDebugHistory().getOwner();
+            shellPrefix = "sudo -E -u " + jobContext.getDebugHistory().getOwner();
         } else if (jobContext.getRunType() == JobContext.SYSTEM_RUN) {
             shellPrefix = "";
         } else {

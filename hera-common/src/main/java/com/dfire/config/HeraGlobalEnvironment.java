@@ -338,7 +338,7 @@ public class HeraGlobalEnvironment {
     public static Map<String, String> userEnvMap = new HashMap<>();
 
     static {
-        String os = System.getProperties().getProperty("os.name");
+        String os = System.getProperty("os.name");
         if (os != null) {
             if (os.toLowerCase().startsWith("win")) {
                 systemEnum = OperatorSystemEnum.WIN;
@@ -349,8 +349,11 @@ public class HeraGlobalEnvironment {
                 linuxSystem = true;
             }
         }
-        // 全局配置，支持中文不乱
+        for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
+            userEnvMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+        }
         userEnvMap.putAll(System.getenv());
+        // 全局配置，支持中文不乱
         userEnvMap.put("LANG", "zh_CN.UTF-8");
     }
 
