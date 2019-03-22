@@ -73,6 +73,8 @@ public class EmrUtils {
      */
     private static AtomicLong taskNum;
 
+    private static long cacheTaskNum;
+
 
     /**
      * check 集群是否需要关闭返回的future
@@ -87,7 +89,13 @@ public class EmrUtils {
 
     public static void main(String[] args) {
         init();
+        ListClustersResult listClustersResult = emr.listClusters(new ListClustersRequest().withCreatedBefore(new Date()));
+        System.out.println(listClustersResult.getMarker());
+        for (ClusterSummary cluster : listClustersResult.getClusters()) {
+            System.out.println(cluster);
+        }
     }
+
     private static String getSystemProperty(String name) {
         String val = System.getenv(name);
         if (StringUtils.isNotBlank(name)) {
@@ -133,7 +141,7 @@ public class EmrUtils {
     }
 
 
-    private static boolean isAlive(String clusterName) {
+    private static boolean notAlive(String clusterName) {
         ListClustersResult clusters = emr.listClusters(new ListClustersRequest()
                 .withClusterStates(ClusterState.STARTING, ClusterState.BOOTSTRAPPING, ClusterState.RUNNING, ClusterState.WAITING));
         List<ClusterSummary> summaries = clusters.getClusters();
@@ -142,12 +150,13 @@ public class EmrUtils {
                 if (summary.getName().startsWith(clusterName)) {
                     cacheClusterId = summary.getId();
                     MonitorLog.info("emr集群已经启动过，无需再次启动");
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
+
 
     private static void createCluster() {
         init();
@@ -155,7 +164,7 @@ public class EmrUtils {
         if (clusterTerminate) {
             synchronized (EmrUtils.class) {
                 if (clusterTerminate) {
-                    if (!isAlive(clusterName)) {
+                    if (notAlive(clusterName)) {
                         clusterName += ActionUtil.getCurrDate();
                         RunJobFlowResult result = createClient(EmrConf.builder()
                                 .loginURl("s3://aws-logs-636856355690-ap-south-1/elasticmapreduce/")
@@ -187,7 +196,7 @@ public class EmrUtils {
                 }
             }
         } else {
-            if (!isAlive(clusterName)) {
+            if (notAlive(clusterName)) {
                 destroyCluster();
                 createCluster();
             }
@@ -197,12 +206,15 @@ public class EmrUtils {
     private static void submitClusterWatch() {
         if (clusterWatchFuture == null) {
             ScheduledExecutorService pool = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("cluster-destroy-watch", false));
+            cacheTaskNum = taskNum.get();
             clusterWatchFuture = pool.scheduleWithFixedDelay(() -> {
-                if (taskRunning.get() == 0) {
+                if (taskRunning.get() == 0 && cacheTaskNum == taskNum.get()) {
                     terminateJob();
                     clusterWatchFuture.cancel(true);
+                } else {
+                    cacheTaskNum = taskNum.get();
                 }
-            }, 5, 5, TimeUnit.MINUTES);
+            }, 10, 10, TimeUnit.MINUTES);
             pool.shutdown();
         }
     }
