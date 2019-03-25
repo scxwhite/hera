@@ -21,9 +21,7 @@ public class HealthController {
     @RequestMapping("/health.do")
     @ResponseBody
     String healthCheck() {
-        StringBuilder buf = new StringBuilder();
-        buf.append("ok");
-        return buf.toString();
+        return "ok";
     }
 
     @RequestMapping("/hc.do")

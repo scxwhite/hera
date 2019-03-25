@@ -46,7 +46,7 @@ druid:
 
 server:
     port: 8080
-    context-path: /hera
+    context-path: /
 
 clean:
     path: ${server.context-path}
