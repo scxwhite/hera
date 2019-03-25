@@ -23,7 +23,6 @@
         <springfox.swagger2.version>2.7.0</springfox.swagger2.version>
         <springfox.swagger.ui.version>2.7.0</springfox.swagger.ui.version>
         <main-class>com.dfire.AdminBootstrap</main-class>
-        <assembly.include.base.directory>true</assembly.include.base.directory>
         <hera.core.version>2.3</hera.core.version>
         <hera.monitor.version>2.3</hera.monitor.version>
     </properties>
@@ -174,27 +173,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    <finalName>hera</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <outputDirectory>../</outputDirectory>
-                    <tarLongFileMode>posix</tarLongFileMode>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
 
