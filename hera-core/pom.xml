@@ -117,46 +117,6 @@
         </dependency>
 
     </dependencies>
-    <!--配置信息-->
-    <profiles>
-        <!--项目环境-->
-        <profile>
-            <id>dev</id>
-            <properties>
-                <env>dev</env>
-                <maven.skip.test>false</maven.skip.test>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-        <!-- 日常环境，默认激活 mvn package -P daily -->
-        <profile>
-            <id>daily</id>
-            <properties>
-                <env>daily</env>
-                <maven.skip.test>false</maven.skip.test>
-            </properties>
-        </profile>
-
-        <!-- 预发环境 -->
-        <profile>
-            <id>pre</id>
-            <properties>
-                <env>pre</env>
-                <maven.skip.test>true</maven.skip.test>
-            </properties>
-        </profile>
-
-        <!--发布环境-->
-        <profile>
-            <id>publish</id>
-            <properties>
-                <env>publish</env>
-                <maven.skip.test>true</maven.skip.test>
-            </properties>
-        </profile>
-    </profiles>
 
 
     <build>

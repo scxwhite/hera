@@ -223,20 +223,20 @@
             <properties>
                 <env>dev</env>
             </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
         </profile>
         <profile>
             <id>daily</id>
             <properties>
                 <env>daily</env>
             </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
         </profile>
         <profile>
-            <id>publish</id>
+            <id>prod</id>
             <properties>
-                <env>publish</env>
+                <env>prod</env>
             </properties>
         </profile>
         <profile>
