@@ -2,6 +2,7 @@ package com.dfire.config;
 
 import com.dfire.common.util.ActionUtil;
 import com.dfire.logs.MonitorLog;
+import io.swagger.models.auth.In;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -20,7 +21,6 @@ public class HeraRunListener implements SpringApplicationRunListener {
 
 
     private Date startTime;
-
     private SpringApplication application;
     private String[] args;
 
@@ -54,6 +54,8 @@ public class HeraRunListener implements SpringApplicationRunListener {
     @Override
     public void finished(ConfigurableApplicationContext context, Throwable exception) {
         Date endTime = new Date();
+        int serverPort = Integer.parseInt(context.getEnvironment().getProperty("server.port"));
+        MonitorLog.info("Tomcat started on port(s):" + serverPort);
         MonitorLog.info("==========启动完成: " + ActionUtil.getDefaultFormatterDate(endTime) + "; 共花费: " + DateBetween(startTime, endTime));
     }
 
@@ -75,7 +77,6 @@ public class HeraRunListener implements SpringApplicationRunListener {
         cost = cost % (60 * 60);
 
         minute = cost / 60;
-        System.out.println(cost);
         cost = cost % 60;
         seconds = cost;
         StringBuilder res = new StringBuilder();
