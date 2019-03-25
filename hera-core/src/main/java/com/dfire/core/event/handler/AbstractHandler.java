@@ -1,7 +1,7 @@
 package com.dfire.core.event.handler;
 
-import com.dfire.core.event.base.ApplicationEvent;
-import com.dfire.core.event.base.EventType;
+import com.dfire.event.ApplicationEvent;
+import com.dfire.event.EventType;
 import lombok.Data;
 
 import java.util.ArrayList;

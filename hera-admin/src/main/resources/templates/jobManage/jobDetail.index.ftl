@@ -5,8 +5,11 @@
     <title>任务历史运行记录</title>
     <#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
-	<link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+
+    <link href="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+  	<link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+
+
 
 
     <style>
@@ -72,8 +75,8 @@
 
 <@netCommon.commonScript />
 <script src="${request.contextPath}/js/jobDetail.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 <script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
 <script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
 
@@ -100,6 +103,7 @@
         $(".form_datetime").val(today);
     })
 </script>
+
 
 
 </html>

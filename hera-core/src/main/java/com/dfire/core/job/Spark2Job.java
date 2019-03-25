@@ -19,7 +19,7 @@ import java.util.List;
 public class Spark2Job extends ProcessJob {
 
 
-    private JdbcDataSourcePool jdbcDataSourcePool = new JdbcDataSourcePool();
+    private static JdbcDataSourcePool jdbcDataSourcePool;
 
     private final int maxOutputNum = 2000;
 
@@ -54,6 +54,13 @@ public class Spark2Job extends ProcessJob {
     }
 
     private boolean executeAndPrint(String script, int startPoint, int endPoint) {
+        if (jdbcDataSourcePool == null) {
+            synchronized (Spark2Job.class) {
+                if (jdbcDataSourcePool == null) {
+                    jdbcDataSourcePool = new JdbcDataSourcePool();
+                }
+            }
+        }
         Connection connection = jdbcDataSourcePool.getConnection();
         try {
             Statement stmt = connection.createStatement();

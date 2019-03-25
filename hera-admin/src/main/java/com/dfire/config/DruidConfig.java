@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 public class DruidConfig {
 
 
-    @Bean(destroyMethod = "close", initMethod = "init")
+    @Bean
     @Primary
     @ConfigurationProperties("druid.datasource")
     public DataSource druidDateSource() {

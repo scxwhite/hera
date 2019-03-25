@@ -16,10 +16,9 @@ import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.util.*;
 import com.dfire.config.HeraGlobalEnvironment;
-import com.dfire.core.HeraException;
+import com.dfire.common.exception.HeraException;
 import com.dfire.core.event.*;
-import com.dfire.core.event.base.ApplicationEvent;
-import com.dfire.core.event.base.Events;
+import com.dfire.event.*;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
@@ -657,44 +656,37 @@ public class Master {
         boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
             JobElement jobElement = masterContext.getScheduleQueue().take();
-            if (jobElement != null) {
-                MasterWorkHolder selectWork = getRunnableWork(jobElement);
-                if (selectWork == null) {
-                    masterContext.getScheduleQueue().put(jobElement);
-                    ScheduleLog.warn("can not get work to execute Schedule job in master,job is:{}", jobElement.toString());
-                } else {
-                    runScheduleJob(selectWork, jobElement.getJobId());
-                    hasTask = true;
-                }
+            MasterWorkHolder selectWork = getRunnableWork(jobElement);
+            if (selectWork == null) {
+                masterContext.getScheduleQueue().put(jobElement);
+                ScheduleLog.warn("can not get work to execute Schedule job in master,job is:{}", jobElement.toString());
+            } else {
+                runScheduleJob(selectWork, jobElement.getJobId());
+                hasTask = true;
             }
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
             JobElement jobElement = masterContext.getManualQueue().take();
-            if (jobElement != null) {
-                MasterWorkHolder selectWork = getRunnableWork(jobElement);
-                if (selectWork == null) {
-                    masterContext.getManualQueue().put(jobElement);
-                    ScheduleLog.warn("can not get work to execute ManualQueue job in master,job is:{}", jobElement.toString());
-                } else {
-                    runManualJob(selectWork, jobElement.getJobId());
-                    hasTask = true;
-
-                }
+            MasterWorkHolder selectWork = getRunnableWork(jobElement);
+            if (selectWork == null) {
+                masterContext.getManualQueue().put(jobElement);
+                ScheduleLog.warn("can not get work to execute ManualQueue job in master,job is:{}", jobElement.toString());
+            } else {
+                runManualJob(selectWork, jobElement.getJobId());
+                hasTask = true;
             }
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
             JobElement jobElement = masterContext.getDebugQueue().take();
-            if (jobElement != null) {
-                MasterWorkHolder selectWork = getRunnableWork(jobElement);
-                if (selectWork == null) {
-                    masterContext.getDebugQueue().put(jobElement);
-                    ScheduleLog.warn("can not get work to execute DebugQueue job in master,job is:{}", jobElement.toString());
-                } else {
-                    runDebugJob(selectWork, jobElement.getJobId());
-                    hasTask = true;
-                }
+            MasterWorkHolder selectWork = getRunnableWork(jobElement);
+            if (selectWork == null) {
+                masterContext.getDebugQueue().put(jobElement);
+                ScheduleLog.warn("can not get work to execute DebugQueue job in master,job is:{}", jobElement.toString());
+            } else {
+                runDebugJob(selectWork, jobElement.getJobId());
+                hasTask = true;
             }
 
         }
@@ -1044,7 +1036,7 @@ public class Master {
         heraAction.setStatisticStartTime(new Date());
         heraAction.setStatisticEndTime(null);
         masterContext.getHeraJobActionService().update(heraAction);
-        heraJobHistory.getLog().append(ActionUtil.getTodayString() + "进入任务队列");
+        heraJobHistory.getLog().append(ActionUtil.getTodayString() + " 进入任务队列");
         masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
         try {
             if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
@@ -1242,6 +1234,11 @@ public class Master {
     }
 
     private void startNewJob(HeraJobHistory heraJobHistory, String illustrate) {
+        HeraJob heraJob = masterContext.getHeraJobService().findById(heraJobHistory.getJobId());
+        if (heraJob == null || heraJob.getAuto() == 0) {
+            ScheduleLog.warn("任务已关闭或者删除，取消重跑." + heraJobHistory.getJobId());
+            return;
+        }
         heraJobHistory.setStatus(StatusEnum.FAILED.toString());
         masterContext.getHeraJobHistoryService().update(heraJobHistory);
         HeraJobHistory newHistory = HeraJobHistory.builder().

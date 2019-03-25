@@ -1,7 +1,8 @@
 package com.dfire.core.event.listenter;
 
 import com.dfire.common.util.NamedThreadFactory;
-import com.dfire.core.event.HeraJobFailedEvent;
+import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.event.HeraJobFailedEvent;
 import com.dfire.core.event.base.MvcEvent;
 import com.dfire.monitor.config.ServiceLoader;
 import com.dfire.monitor.service.JobFailAlarm;
@@ -19,29 +20,35 @@ import java.util.concurrent.TimeUnit;
  */
 public class HeraJobFailListener extends AbstractListener {
 
-    private Executor executor;
+    private volatile Executor executor;
     //告警接口，待开发
 
     private List<JobFailAlarm> alarms;
 
     public HeraJobFailListener() {
         alarms = ServiceLoader.getAlarms();
-        executor = new ThreadPoolExecutor(
-                1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("alarm-thread-pool", true), new ThreadPoolExecutor.AbortPolicy());
+
     }
 
     @Override
     public void beforeDispatch(MvcEvent mvcEvent) {
         if (mvcEvent.getApplicationEvent() instanceof HeraJobFailedEvent) {
-            executor.execute(() -> {
-                HeraJobFailedEvent failedEvent = (HeraJobFailedEvent) mvcEvent.getApplicationEvent();
-                for (JobFailAlarm failAlarm : alarms) {
-                    //failAlarm.alarm(failedEvent.getActionId());
-                    failAlarm.alarm(failedEvent.getActionId(),failedEvent.getHeraJobHistory().getLog().getMailContent()); 
+            if (HeraGlobalEnvironment.getAlarmEnvSet().contains(HeraGlobalEnvironment.getEnv())) {
+                if (executor == null) {
+                    synchronized (this) {
+                        if (executor == null) {
+                            executor = new ThreadPoolExecutor(
+                                    1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("alarm-thread-pool", true), new ThreadPoolExecutor.AbortPolicy());
+                        }
+                    }
                 }
-            });
-
-
+                executor.execute(() -> {
+                    HeraJobFailedEvent failedEvent = (HeraJobFailedEvent) mvcEvent.getApplicationEvent();
+                    for (JobFailAlarm failAlarm : alarms) {
+                        failAlarm.alarm(failedEvent);
+                    }
+                });
+            }
         }
     }
 }

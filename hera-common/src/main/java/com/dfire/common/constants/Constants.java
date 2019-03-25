@@ -109,6 +109,13 @@ public class Constants {
     public final static String CLOSE_STATUS = "关闭";
 
     public final static String INVALID_STATUS = "失效";
+
+
+    public final static String QUARTZ_ID = "actionId";
+
+    public final static String QUARTZ_DISPATCHER = "dispatcher";
+
+
     
     
 }

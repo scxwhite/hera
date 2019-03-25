@@ -1,5 +1,6 @@
 package com.dfire.monitor.config;
 
+import com.dfire.common.exception.UnsupportedTypeException;
 import com.dfire.monitor.service.JobFailAlarm;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -34,7 +35,7 @@ public class ServiceLoader implements ApplicationContextAware {
         Map<String, Object> alarmBeans = applicationContext.getBeansWithAnnotation(Alarm.class);
         for (Object bean : alarmBeans.values()) {
             if (!(bean instanceof JobFailAlarm)) {
-                throw new UnsupportedOperationException("不支持的告警类型:" + bean.getClass().getName() + ",@Alarm注解只能放在" + JobFailAlarm.class + "的实现类上");
+                throw new UnsupportedTypeException("不支持的告警类型:" + bean.getClass().getName() + ",@Alarm注解只能放在" + JobFailAlarm.class + "的实现类上");
             }
             ServiceLoader.alarms.add((JobFailAlarm) bean);
         }
