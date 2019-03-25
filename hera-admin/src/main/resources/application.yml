@@ -125,6 +125,16 @@ spark:
 ---
 ## 开发环境
 spring:
+    profiles: test
+logging:
+    path: /opt/logs/spring-boot
+
+hera:
+    workDir: /opt/logs/spring-boot
+
+---
+## 开发环境
+spring:
     profiles: dev
 
 ---
