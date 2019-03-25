@@ -127,10 +127,6 @@ spark:
 spring:
     profiles: dev
 
-logging:
-    path: /opt/logs/spring-boot
-hera:
-    workDir: /opt/logs/spring-boot
 ---
 ## 日常环境  通常与开发环境一致
 spring:
