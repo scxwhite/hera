@@ -82,7 +82,7 @@ hera:
             bin: hive
         spark-sql:
             bin: spark-sql
-    emrJob: false
+    emrJob: false  #是否为emr集群
 
 
 logging:

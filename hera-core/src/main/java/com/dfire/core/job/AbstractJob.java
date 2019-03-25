@@ -57,6 +57,7 @@ public abstract class AbstractJob implements Job {
 
     protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String prefix, String jobPath) {
         StringBuilder command = new StringBuilder();
+        // emr集群
         if (HeraGlobalEnvironment.isEmrJob()) {
             //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
             command.append("sudo -u docker").append(Constants.BLANK_SPACE);

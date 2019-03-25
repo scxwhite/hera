@@ -392,6 +392,10 @@ public class EmrUtils {
         return instancesConfig;
     }
 
+    /**
+     * emr集群自动扩展策略，可以自己定义
+     * @return AutoScalingPolicy
+     */
     private static AutoScalingPolicy buildAutoScalingPolicy() {
 
         int coolDown = 300;
