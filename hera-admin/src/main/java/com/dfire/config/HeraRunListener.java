@@ -1,14 +1,16 @@
 package com.dfire.config;
 
+import com.alibaba.druid.support.spring.stat.SpringStatUtils;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.logs.AppInfoLog;
-import com.dfire.logs.MonitorLog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+import javax.sound.midi.Soundbank;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * desc:
@@ -55,6 +57,52 @@ public class HeraRunListener implements SpringApplicationRunListener {
     @Override
     public void finished(ConfigurableApplicationContext context, Throwable exception) {
         Date endTime = new Date();
-        AppInfoLog.info("==========启动完成: " + ActionUtil.getDefaultFormatterDate(endTime) + "; 共花费: " + (endTime.getTime() - startTime.getTime()) + "ms");
+        AppInfoLog.info("==========启动完成: " + ActionUtil.getDefaultFormatterDate(endTime) + "; 共花费: " + DateBetween(startTime, endTime));
+    }
+
+
+    private String DateBetween(Date start, Date end) {
+        if (start.compareTo(end) > 0) {
+            Date tmp;
+            tmp = start;
+            start = end;
+            end = tmp;
+        }
+
+        long cost = (end.getTime() - start.getTime()) / 1000;
+
+        long hours, minute, seconds;
+
+        hours = cost / 60 / 60;
+
+        cost = cost % (60 * 60);
+
+        minute = cost / 60;
+        System.out.println(cost);
+        cost = cost % 60;
+
+        seconds = cost;
+
+
+        StringBuilder res = new StringBuilder();
+
+        if (hours > 9) {
+            res.append(hours);
+        } else {
+            res.append("0").append(hours);
+        }
+        res.append(":");
+        if (minute > 9) {
+            res.append(minute);
+        } else {
+            res.append("0").append(minute);
+        }
+        res.append(":");
+        if (seconds > 9) {
+            res.append(seconds);
+        } else {
+            res.append("0").append(seconds);
+        }
+        return res.toString();
     }
 }
