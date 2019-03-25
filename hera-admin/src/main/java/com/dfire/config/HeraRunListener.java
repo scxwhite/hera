@@ -1,6 +1,7 @@
 package com.dfire.config;
 
 import com.dfire.common.util.ActionUtil;
+import com.dfire.logs.MonitorLog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,7 +33,7 @@ public class HeraRunListener implements SpringApplicationRunListener {
     @Override
     public void starting() {
         startTime = new Date();
-        System.out.println("==========开始启动: " + ActionUtil.getDefaultFormatterDate(startTime));
+        MonitorLog.info("==========开始启动: " + ActionUtil.getDefaultFormatterDate(startTime));
     }
 
     @Override
@@ -52,9 +53,7 @@ public class HeraRunListener implements SpringApplicationRunListener {
 
     @Override
     public void finished(ConfigurableApplicationContext context, Throwable exception) {
-
         Date endTime = new Date();
-
-        System.out.println("==========启动完成: " + ActionUtil.getDefaultFormatterDate(endTime) + "; 共花费: " + (endTime.getTime() - startTime.getTime()) + "ms");
+        MonitorLog.info("==========启动完成: " + ActionUtil.getDefaultFormatterDate(endTime) + "; 共花费: " + (endTime.getTime() - startTime.getTime()) + "ms");
     }
 }
