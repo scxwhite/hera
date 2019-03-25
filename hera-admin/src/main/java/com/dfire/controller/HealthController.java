@@ -1,6 +1,7 @@
 package com.dfire.controller;
 
 
+import com.dfire.config.UnCheckLogin;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,12 +21,14 @@ public class HealthController {
 
     @RequestMapping("/health.do")
     @ResponseBody
+    @UnCheckLogin
     String healthCheck() {
         return "ok";
     }
 
     @RequestMapping("/hc.do")
     @ResponseBody
+    @UnCheckLogin
     String doHC(@RequestParam String a) {
         // SLB 心跳
         if ("heartbeat".equals(a)) {
