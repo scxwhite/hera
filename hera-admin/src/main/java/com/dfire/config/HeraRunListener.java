@@ -1,16 +1,13 @@
 package com.dfire.config;
 
-import com.alibaba.druid.support.spring.stat.SpringStatUtils;
 import com.dfire.common.util.ActionUtil;
-import com.dfire.logs.AppInfoLog;
+import com.dfire.logs.MonitorLog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 
-import javax.sound.midi.Soundbank;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * desc:
@@ -36,7 +33,7 @@ public class HeraRunListener implements SpringApplicationRunListener {
     @Override
     public void starting() {
         startTime = new Date();
-        AppInfoLog.info("==========开始启动: " + ActionUtil.getDefaultFormatterDate(startTime));
+        MonitorLog.info("==========开始启动: " + ActionUtil.getDefaultFormatterDate(startTime));
     }
 
     @Override
@@ -57,7 +54,7 @@ public class HeraRunListener implements SpringApplicationRunListener {
     @Override
     public void finished(ConfigurableApplicationContext context, Throwable exception) {
         Date endTime = new Date();
-        AppInfoLog.info("==========启动完成: " + ActionUtil.getDefaultFormatterDate(endTime) + "; 共花费: " + DateBetween(startTime, endTime));
+        MonitorLog.info("==========启动完成: " + ActionUtil.getDefaultFormatterDate(endTime) + "; 共花费: " + DateBetween(startTime, endTime));
     }
 
 
@@ -80,12 +77,8 @@ public class HeraRunListener implements SpringApplicationRunListener {
         minute = cost / 60;
         System.out.println(cost);
         cost = cost % 60;
-
         seconds = cost;
-
-
         StringBuilder res = new StringBuilder();
-
         if (hours > 9) {
             res.append(hours);
         } else {
