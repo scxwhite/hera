@@ -133,7 +133,7 @@
 
 
     <build>
-        <finalName>hera</finalName>
+        <finalName>hera_tuya-start</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
