@@ -1,5 +1,6 @@
 package com.dfire.core.util;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
@@ -27,14 +28,11 @@ public class NetUtils {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
                 NetworkInterface anInterface = en.nextElement();
                 for (Enumeration<InetAddress> addresses = anInterface.getInetAddresses(); addresses.hasMoreElements(); ) {
-                    InetAddress inetAddress = addresses.nextElement();
-                    // 排除loopback类型地址
-                    if (!inetAddress.isLoopbackAddress()) {
-                        if (inetAddress.isSiteLocalAddress()) {
-                            return inetAddress.getHostAddress();
-                        } else if (secondAddress == null) {
-                            secondAddress = inetAddress.getHostAddress();
-                        }
+                    InetAddress ip = addresses.nextElement();
+                    if (ip instanceof Inet4Address
+                            && ip.isSiteLocalAddress()
+                            && !ip.getHostAddress().equals(secondAddress)) {
+                        return ip.getHostAddress();
                     }
                 }
             }
