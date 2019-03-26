@@ -145,7 +145,7 @@ public class LogContent {
         if (content != null) {
             return content.toString() + tailLog();
         }
-        return null;
+        return "";
     }
 
 
