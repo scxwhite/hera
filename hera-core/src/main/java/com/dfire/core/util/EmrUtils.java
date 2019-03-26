@@ -89,11 +89,7 @@ public class EmrUtils {
 
     public static void main(String[] args) {
         init();
-        ListClustersResult listClustersResult = emr.listClusters(new ListClustersRequest().withCreatedBefore(new Date()));
-        System.out.println(listClustersResult.getMarker());
-        for (ClusterSummary cluster : listClustersResult.getClusters()) {
-            System.out.println(cluster);
-        }
+        closeCluster("j-31S93RHZ8CW68");
     }
 
     private static String getSystemProperty(String name) {

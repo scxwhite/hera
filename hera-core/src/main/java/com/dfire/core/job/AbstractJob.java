@@ -60,7 +60,6 @@ public abstract class AbstractJob implements Job {
         // emr集群
         if (HeraGlobalEnvironment.isEmrJob()) {
             //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
-            command.append("sudo -u docker").append(Constants.BLANK_SPACE);
             command.append("ssh -o StrictHostKeyChecking=no").append(Constants.BLANK_SPACE);
             command.append("-i /home/docker/deploy/apps/hera_tuya/conf/bigdata.pem").append(Constants.BLANK_SPACE);
             command.append("hadoop@").append(EmrUtils.getIp()).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
