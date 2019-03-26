@@ -142,8 +142,10 @@ public class LogContent {
     }
 
     public String getContent() {
-        return content.toString() + tailLog();
-
+        if (content != null) {
+            return content.toString() + tailLog();
+        }
+        return null;
     }
 
 
