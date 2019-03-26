@@ -306,7 +306,7 @@ public class EmrUtils {
         if (emr == null || isShutdown) {
             synchronized (EmrUtils.class) {
                 if (emr == null || isShutdown) {
-                    AWSCredentials credentials = new BasicAWSCredentials(getSystemProperty("AWS_ACCESS_KEY_ID"), getSystemProperty("AWS_SECRET_ACCESS_KEY"));
+                    AWSCredentials credentials = new BasicAWSCredentials("AKIAIDNAUCQ2GWA34WAA", "OCb6tZJfqBWo2tNJbwjw3Cx81siCuvVrnTKveCD8");
                     emr = (AmazonElasticMapReduceClient) AmazonElasticMapReduceClientBuilder.standard().withRegion("ap-south-1").withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
                     isShutdown = false;
                 }
@@ -396,6 +396,7 @@ public class EmrUtils {
 
     /**
      * emr集群自动扩展策略，可以自己定义
+     *
      * @return AutoScalingPolicy
      */
     private static AutoScalingPolicy buildAutoScalingPolicy() {
