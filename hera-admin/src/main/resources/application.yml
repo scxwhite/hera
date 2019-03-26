@@ -22,10 +22,10 @@ spring:
 
 druid:
     datasource:
-        username: root  #数据库用户名
-        password: root      #数据库密码
+        username: tuya_hera_task_rw  #数据库用户名
+        password: 2HdCf365+LYrO3eJFuDVU7      #数据库密码
         driver-class-name: com.mysql.jdbc.Driver  #数据库驱动
-        url: jdbc:mysql://10.0.200.5:3306/hera_tuya?characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+        url: jdbc:mysql://tuya-airflow-ind.cluster-cqizwpkccsnh.ap-south-1.rds.amazonaws.com:3306/tuya_hera_task?characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
         initial-size: 5    #初始化连接池数量
         min-idle: 1        #最小生存连接数
         max-active: 16     #最大连接池数量
@@ -82,7 +82,7 @@ hera:
             bin: hive
         spark-sql:
             bin: spark-sql
-    emrJob: false  #是否为emr集群
+    emrJob: true  #是否为emr集群
 
 
 logging:
@@ -111,7 +111,7 @@ mybatis:
 spark:
     address : jdbc:hive2://10.1.21.141:10000 #ThriftServer地址
     driver : org.apache.hive.jdbc.HiveDriver #jdbc driver
-    username : heguozi #ThriftServer用户名
+    username : xxx #ThriftServer用户名
     password : 123456 #ThriftServer密码
     master : --master yarn
     driver-memory : --driver-memory 1g
@@ -144,6 +144,8 @@ spring:
 
 ---
 ## 预发环境
+hera:
+    emrJob: true
 spring:
     profiles: pre
 druid:

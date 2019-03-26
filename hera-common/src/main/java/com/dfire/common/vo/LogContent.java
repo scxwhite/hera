@@ -26,7 +26,16 @@ public class LogContent {
     private StringBuffer content;
 
     private static final int COUNT = 8000;
+
     private static final int TAIL_PRINT_COUNT = 2000;
+
+    private final String limitLog = "控制台输出信息过多,停止记录,建议您优化自己的Job" + Constants.LOG_SPLIT;
+
+    /**
+     * 最大日志大小 ，单位字节
+     */
+    private final int maxBytes = 65000;
+
     private static final String ERROR = "error";
 
     private LinkedList<String> tailLog;
@@ -70,9 +79,7 @@ public class LogContent {
         if (lines < COUNT) {
             content.append(CONSOLE).append(redColorMsg(log)).append(Constants.LOG_SPLIT);
             if (lines + 1 >= COUNT) {
-                content.append(HERA).append("控制台输出信息过多，停止记录，建议您优化自己的Job" + Constants.LOG_SPLIT);
-                content.append(HERA).append("..." + Constants.LOG_SPLIT);
-                content.append(HERA).append("..." + Constants.LOG_SPLIT);
+                appendLimitLog();
             }
         } else {
             queuePushLog(CONSOLE + redColorMsg(log) + Constants.LOG_SPLIT);
@@ -80,9 +87,8 @@ public class LogContent {
     }
 
     public void appendHera(String log) {
-        lines++;
-        if (content == null) {
-            content = new StringBuffer();
+        if (checkLimit(log)) {
+            return;
         }
         if (lines < COUNT) {
             content.append(HERA).append(log).append(Constants.LOG_SPLIT);
@@ -92,15 +98,34 @@ public class LogContent {
     }
 
     public void append(String log) {
-        lines++;
-        if (content == null) {
-            content = new StringBuffer();
+        if (checkLimit(log)) {
+            return;
         }
         if (lines < COUNT) {
             content.append(log).append(Constants.LOG_SPLIT);
         } else {
             queuePushLog(log + Constants.LOG_SPLIT);
         }
+    }
+
+
+
+    private void appendLimitLog() {
+        content.append(HERA).append(limitLog);
+        content.append(HERA).append("..." + Constants.LOG_SPLIT);
+        content.append(HERA).append("..." + Constants.LOG_SPLIT);
+    }
+
+    private boolean checkLimit(String log) {
+        if (getContent().getBytes().length + log.getBytes().length >= maxBytes) {
+            appendLimitLog();
+            return true;
+        }
+        if (content == null) {
+            content = new StringBuffer();
+        }
+        lines++;
+        return false;
     }
 
     public void appendHeraException(Exception e) {
