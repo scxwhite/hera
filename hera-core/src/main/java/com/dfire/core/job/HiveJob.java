@@ -22,7 +22,6 @@ import java.util.List;
 public class HiveJob extends ProcessJob {
 
 
-
     public HiveJob(JobContext jobContext) {
         super(jobContext);
         jobContext.getProperties().setProperty(RunningJobKeyConstant.JOB_RUN_TYPE, "HiveJob");
@@ -46,7 +45,7 @@ public class HiveJob extends ProcessJob {
 
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file),
                 Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")))) {
-            writer.write(script.replaceAll("^--.*", "--"));
+            writer.write(dosToUnix(script.replaceAll("^--.*", "--")));
         } catch (Exception e) {
             if (jobContext.getHeraJobHistory() != null) {
                 jobContext.getHeraJobHistory().getLog().appendHeraException(e);
@@ -66,7 +65,6 @@ public class HiveJob extends ProcessJob {
         List<String> list = new ArrayList<>();
         String shellPrefix = getJobPrefix();
         boolean isDocToUnix = checkDosToUnix(hiveFilePath);
-
         if (isDocToUnix) {
             list.add("dos2unix " + hiveFilePath);
             log("dos2unix file" + hiveFilePath);

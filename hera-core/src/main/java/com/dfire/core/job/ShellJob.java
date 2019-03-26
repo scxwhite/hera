@@ -56,7 +56,7 @@ public class ShellJob extends ProcessJob {
                 }
             }
             outputStreamWriter = new OutputStreamWriter(new FileOutputStream(f), Charset.forName("utf-8"));
-            outputStreamWriter.write(script);
+            outputStreamWriter.write(dosToUnix(script));
             getProperties().setProperty(RunningJobKeyConstant.RUN_SHELL_PATH, f.getAbsolutePath());
 
         } catch (IOException e) {

@@ -49,7 +49,7 @@ public class SparkJob extends ProcessJob {
         try {
             writer = new OutputStreamWriter(new FileOutputStream(file),
                     Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-            writer.write(script.replaceAll("^--.*", "--"));
+            writer.write(dosToUnix(script.replaceAll("^--.*", "--")));
         } catch (Exception e) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
         } finally {
@@ -65,11 +65,10 @@ public class SparkJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         String sparkFilePath = getProperty(RunningJobKeyConstant.RUN_SPARK_PATH, "");
-        List<String> list = new ArrayList<>();
 
         String shellPrefix = getJobPrefix();
         boolean isDocToUnix = checkDosToUnix(sparkFilePath);
-
+        List<String> list = new ArrayList<>();
         if (isDocToUnix) {
             list.add("dos2unix " + sparkFilePath);
             log("dos2unix file" + sparkFilePath);

@@ -115,7 +115,9 @@ public class EmrUtils {
     }
 
     public static synchronized void removeJob() {
-        taskRunning.decrementAndGet();
+        if (taskRunning != null) {
+            taskRunning.decrementAndGet();
+        }
     }
 
     /**

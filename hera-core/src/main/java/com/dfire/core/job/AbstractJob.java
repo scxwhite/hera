@@ -97,7 +97,16 @@ public abstract class AbstractJob implements Job {
         return command.toString();
     }
 
+
+    protected String dosToUnix(String script) {
+        return script.replace("\r\n", "\n");
+    }
+
     protected boolean checkDosToUnix(String filePath) {
+        if (HeraGlobalEnvironment.isEmrJob()) {
+            return false;
+        }
+
         String[] excludeFile = HeraGlobalEnvironment.excludeFile.split(Constants.SEMICOLON);
         if (!ArrayUtils.isEmpty(excludeFile)) {
             String lowCaseShellPath = filePath.toLowerCase();
