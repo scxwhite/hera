@@ -58,10 +58,10 @@ hera:
     maxMemRate: 0.70       #已使用内存占总内存的最大比例,默认0.75
     maxCpuLoadPerCore: 1.0   #cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量，默认1.0
     scanRate: 1000        #队列扫描频率(毫秒)
-    systemMemUsed : 4000  # 系统占用内存
+    systemMemUsed : 1000  # 系统占用内存
     requestTimeout: 10000 # 异步请求超时时间
     channelTimeout: 1000 # netty请求超时时间
-    perTaskUseMem: 500          # 每个任务使用内存500M
+    perTaskUseMem: 50          # 每个任务使用内存500M
     warmUpCheck: 10  # 热身检测 默认10秒,0 表示关闭。在任务连续两次发送到同一台work时 会进行预热检测。#由于任务执行需要经历 发送指令-接受指令-初始化环境-提交任务-开始执行 等阶段， 如果任务分发频率较高时，容易宕机
     jobCacheDay: 2    # <<该配置很重要>> ，表示action最远可以重跑任务的日期，默认2天。
     loadBalance: roundrobin  # 负载均衡策略，默认轮训 可选值有roundrobin（轮训）random(随机)
