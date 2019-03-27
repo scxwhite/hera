@@ -84,6 +84,7 @@ public class ShellJob extends ProcessJob {
         }
 
         if (StringUtils.isNotBlank(shellPrefix)) {
+            shellPrefix = " ";
             String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
             File tmpFile = new File(tmpFilePath);
             OutputStreamWriter tmpWriter = null;
