@@ -62,7 +62,7 @@ public abstract class AbstractJob implements Job {
             //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
             command.append("ssh -o StrictHostKeyChecking=no").append(Constants.BLANK_SPACE);
             command.append("-i /home/docker/conf/xxx.pem").append(Constants.BLANK_SPACE);
-            command.append("hadoop@").append(EmrUtils.getIp()).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
+            command.append("xx@").append(EmrUtils.getIp()).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
             command.append("<< eeooff").append(Constants.NEW_LINE);
             switch (runTypeEnum) {
                 case Spark:
