@@ -66,8 +66,6 @@ public class HeraGlobalEnvironment {
     @Getter
     private static Integer taskTimeout;
     @Getter
-    private static String sparkBaseDir;
-    @Getter
     private static String sparkAddress;
     @Getter
     private static String sparkDriver;
@@ -93,7 +91,8 @@ public class HeraGlobalEnvironment {
     private static String jobHiveBin;
     @Getter
     private static String jobSparkSqlBin;
-
+    @Getter
+    private static boolean emrJob;
 
     @Getter
     private static String mailPort;
@@ -225,11 +224,6 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.channelTimeout = channelTimeout;
     }
 
-    @Value("${spark.baseDir}")
-    public void setSparkBaseDir(String sparkBaseDir) {
-        HeraGlobalEnvironment.sparkBaseDir = sparkBaseDir;
-    }
-
     @Value("${spark.address}")
     public void setSparkAddress(String sparkAddress) {
         HeraGlobalEnvironment.sparkAddress = sparkAddress;
@@ -277,17 +271,17 @@ public class HeraGlobalEnvironment {
 
     @Value("${hera.job.shell.bin}")
     public void setJobShellBin(String jobShellBin) {
-        HeraGlobalEnvironment.jobShellBin = jobShellBin;
+        HeraGlobalEnvironment.jobShellBin = jobShellBin + Constants.BLANK_SPACE;
     }
 
     @Value("${hera.job.hive.bin}")
     public void setJobHiveBin(String jobHiveBin) {
-        HeraGlobalEnvironment.jobHiveBin = jobHiveBin;
+        HeraGlobalEnvironment.jobHiveBin = jobHiveBin + Constants.BLANK_SPACE;
     }
 
     @Value("${hera.job.spark-sql.bin}")
     public void setJobSparkSqlBin(String jobSparkSqlBin) {
-        HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin;
+        HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin + Constants.BLANK_SPACE;
     }
 
 
@@ -325,6 +319,11 @@ public class HeraGlobalEnvironment {
         alarmEnvSet.addAll(Arrays.asList(mailEnv.split(Constants.COMMA)));
     }
 
+    @Value("${hera.emrJob}")
+    public void setEmrJob(boolean emrJob) {
+        HeraGlobalEnvironment.emrJob = emrJob;
+    }
+
     /**
      * 判断是否是linux 环境，有些命令不一样
      */
@@ -339,7 +338,7 @@ public class HeraGlobalEnvironment {
     public static Map<String, String> userEnvMap = new HashMap<>();
 
     static {
-        String os = System.getProperties().getProperty("os.name");
+        String os = System.getProperty("os.name");
         if (os != null) {
             if (os.toLowerCase().startsWith("win")) {
                 systemEnum = OperatorSystemEnum.WIN;
@@ -350,8 +349,11 @@ public class HeraGlobalEnvironment {
                 linuxSystem = true;
             }
         }
-        // 全局配置，支持中文不乱
+        for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
+            userEnvMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+        }
         userEnvMap.putAll(System.getenv());
+        // 全局配置，支持中文不乱
         userEnvMap.put("LANG", "zh_CN.UTF-8");
     }
 

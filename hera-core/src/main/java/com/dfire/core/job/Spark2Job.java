@@ -89,8 +89,7 @@ public class Spark2Job extends ProcessJob {
             try {
                 connection.close();
             } catch (Exception e) {
-                e.printStackTrace();
-                ErrorLog.error("连接归还失败");
+                ErrorLog.error("连接归还失败", e);
             }
         }
         return true;

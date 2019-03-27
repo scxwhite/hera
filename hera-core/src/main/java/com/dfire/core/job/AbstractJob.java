@@ -1,8 +1,10 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.Constants;
+import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.core.util.EmrUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -42,9 +44,9 @@ public abstract class AbstractJob implements Job {
     protected String getJobPrefix() {
         String shellPrefix = null;
         if (jobContext.getRunType() == JobContext.SCHEDULE_RUN || jobContext.getRunType() == JobContext.MANUAL_RUN) {
-            shellPrefix = "sudo -u " + jobContext.getHeraJobHistory().getOperator();
+            shellPrefix = "sudo -E -u " + jobContext.getHeraJobHistory().getOperator();
         } else if (jobContext.getRunType() == JobContext.DEBUG_RUN) {
-            shellPrefix = "sudo -u " + jobContext.getDebugHistory().getOwner();
+            shellPrefix = "sudo -E -u " + jobContext.getDebugHistory().getOwner();
         } else if (jobContext.getRunType() == JobContext.SYSTEM_RUN) {
             shellPrefix = "";
         } else {
@@ -53,7 +55,56 @@ public abstract class AbstractJob implements Job {
         return shellPrefix;
     }
 
+    protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String prefix, String jobPath) {
+        StringBuilder command = new StringBuilder();
+        // emr集群
+        if (HeraGlobalEnvironment.isEmrJob()) {
+            //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
+            command.append("ssh -o StrictHostKeyChecking=no").append(Constants.BLANK_SPACE);
+            command.append("-i /home/docker/conf/xxx.pem").append(Constants.BLANK_SPACE);
+            command.append("hadoop@").append(EmrUtils.getIp()).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
+            command.append("<< eeooff").append(Constants.NEW_LINE);
+            switch (runTypeEnum) {
+                case Spark:
+                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(" -e ").append("\"").append(prefix).append(" `cat ").append(jobPath).append("`\"");
+                    break;
+                case Hive:
+                    command.append(HeraGlobalEnvironment.getJobHiveBin()).append(" -e \"`cat ").append(jobPath).append("`\"");
+                    break;
+                case Shell:
+                    command.append("`cat ").append(jobPath).append("`");
+                    break;
+                default:
+                    break;
+            }
+            command.append(Constants.NEW_LINE);
+            command.append("eeooff");
+        } else {
+            switch (runTypeEnum) {
+                case Shell:
+                    command.append("source ").append(jobPath);
+                    break;
+                case Spark:
+                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(prefix).append(" -f ").append(jobPath);
+                    break;
+                case Hive:
+                    command.append(HeraGlobalEnvironment.getJobHiveBin()).append(" -f ").append(jobPath);
+                default:
+                    break;
+            }
+        }
+        return command.toString();
+    }
+
+
+    protected String dosToUnix(String script) {
+        return script.replace("\r\n", "\n");
+    }
+
     protected boolean checkDosToUnix(String filePath) {
+        if (HeraGlobalEnvironment.isEmrJob()) {
+            return false;
+        }
         String[] excludeFile = HeraGlobalEnvironment.excludeFile.split(Constants.SEMICOLON);
         if (!ArrayUtils.isEmpty(excludeFile)) {
             String lowCaseShellPath = filePath.toLowerCase();
