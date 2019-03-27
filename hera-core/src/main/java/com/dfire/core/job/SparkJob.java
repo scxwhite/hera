@@ -3,6 +3,7 @@ package com.dfire.core.job;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.core.util.CommandUtils;
 import com.dfire.logs.ErrorLog;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,49 +67,31 @@ public class SparkJob extends ProcessJob {
     public List<String> getCommandList() {
         String sparkFilePath = getProperty(RunningJobKeyConstant.RUN_SPARK_PATH, "");
 
-        String shellPrefix = getJobPrefix();
-        boolean isDocToUnix = checkDosToUnix(sparkFilePath);
-        List<String> list = new ArrayList<>();
-        if (isDocToUnix) {
-            list.add("dos2unix " + sparkFilePath);
-            log("dos2unix file" + sparkFilePath);
-        }
-
-        String prefix = HeraGlobalEnvironment.getSparkMaster() + " " +
-                HeraGlobalEnvironment.getSparkDriverCores() + " " +
-                HeraGlobalEnvironment.getSparkDriverMemory();
-
-
-        if (StringUtils.isNotBlank(shellPrefix)) {
-            String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
-            File tmpFile = new File(tmpFilePath);
-            OutputStreamWriter tmpWriter = null;
-            if (!tmpFile.exists()) {
-                try {
-                    tmpFile.createNewFile();
-                    tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
-                            Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write(generateRunCommand(JobRunTypeEnum.Spark, prefix, sparkFilePath));
-                } catch (Exception e) {
-                    jobContext.getHeraJobHistory().getLog().appendHeraException(e);
-                } finally {
-                    if (tmpWriter != null) {
-                        try {
-                            tmpWriter.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+        List<String> commands = new ArrayList<>();
+        dosToUnix(sparkFilePath, commands);
+        String tmpFilePath = jobContext.getWorkDir() + File.separator + "run.sh";
+        File tmpFile = new File(tmpFilePath);
+        OutputStreamWriter tmpWriter = null;
+        if (!tmpFile.exists()) {
+            try {
+                tmpFile.createNewFile();
+                tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
+                        Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
+                tmpWriter.write(generateRunCommand(JobRunTypeEnum.Spark, sparkFilePath));
+            } catch (Exception e) {
+                jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+            } finally {
+                if (tmpWriter != null) {
+                    try {
+                        tmpWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-                list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + " sh " + tmpFilePath);
-            } else {
-                list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + " " + HeraGlobalEnvironment.getJobSparkSqlBin() + "-f" + sparkFilePath);
             }
-        } else {
-            list.add(HeraGlobalEnvironment.getJobSparkSqlBin() + "-f" + sparkFilePath);
         }
-        return list;
+        commands.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
+        commands.add(CommandUtils.getRunShCommand(tmpFilePath));
+        return commands;
     }
 }

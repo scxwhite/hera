@@ -8,6 +8,8 @@ import com.dfire.core.util.EmrUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.List;
+
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 16:49 2018/1/10
@@ -41,7 +43,10 @@ public abstract class AbstractJob implements Job {
         return StringUtils.isBlank(jobContext.getProperties().getProperty(key)) ? defaultValue : jobContext.getProperties().getProperty(key);
     }
 
-    protected String getJobPrefix() {
+    private String getSudoUser() {
+        if (!HeraGlobalEnvironment.isSudoUser()) {
+            return null;
+        }
         String shellPrefix = null;
         if (jobContext.getRunType() == JobContext.SCHEDULE_RUN || jobContext.getRunType() == JobContext.MANUAL_RUN) {
             shellPrefix = "sudo -E -u " + jobContext.getHeraJobHistory().getOperator();
@@ -55,8 +60,12 @@ public abstract class AbstractJob implements Job {
         return shellPrefix;
     }
 
-    protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String prefix, String jobPath) {
+    protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String jobPath) {
         StringBuilder command = new StringBuilder();
+        String sudoUser = getSudoUser();
+        if (StringUtils.isNotBlank(sudoUser)) {
+            command.append(sudoUser).append(" ");
+        }
         // emr集群
         if (HeraGlobalEnvironment.isEmrJob()) {
             //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
@@ -66,7 +75,7 @@ public abstract class AbstractJob implements Job {
             command.append("<< eeooff").append(Constants.NEW_LINE);
             switch (runTypeEnum) {
                 case Spark:
-                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(" -e ").append("\"").append(prefix).append(" `cat ").append(jobPath).append("`\"");
+                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(" -e ").append("\"").append(HeraGlobalEnvironment.getSparkMaster()).append(" ").append(HeraGlobalEnvironment.getSparkDriverCores()).append(" ").append(HeraGlobalEnvironment.getSparkDriverMemory()).append(" `cat ").append(jobPath).append("`\"");
                     break;
                 case Hive:
                     command.append(HeraGlobalEnvironment.getJobHiveBin()).append(" -e \"`cat ").append(jobPath).append("`\"");
@@ -85,7 +94,7 @@ public abstract class AbstractJob implements Job {
                     command.append("source ").append(jobPath);
                     break;
                 case Spark:
-                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(prefix).append(" -f ").append(jobPath);
+                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(HeraGlobalEnvironment.getSparkMaster()).append(" ").append(HeraGlobalEnvironment.getSparkDriverCores()).append(" ").append(HeraGlobalEnvironment.getSparkDriverMemory()).append(" -f ").append(jobPath);
                     break;
                 case Hive:
                     command.append(HeraGlobalEnvironment.getJobHiveBin()).append(" -f ").append(jobPath);
@@ -101,7 +110,18 @@ public abstract class AbstractJob implements Job {
         return script.replace("\r\n", "\n");
     }
 
-    protected boolean checkDosToUnix(String filePath) {
+
+    protected void dosToUnix(String filePath, List<String> commands) {
+        boolean isDocToUnix = checkDosToUnix(filePath);
+        if (isDocToUnix) {
+            commands.add("dos2unix " + filePath);
+            log("dos2unix file" + filePath);
+        } else {
+            log("file path :" + filePath);
+        }
+    }
+
+    private boolean checkDosToUnix(String filePath) {
         if (HeraGlobalEnvironment.isEmrJob()) {
             return false;
         }

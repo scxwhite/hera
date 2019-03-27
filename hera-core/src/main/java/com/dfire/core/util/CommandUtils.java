@@ -24,14 +24,13 @@ public class CommandUtils {
     /**
      * 关闭终端不影响提交的程序
      *
-     * @param prefix        切换的用户命令
      * @param shellFilePath 脚本路径
      * @return 命令
      */
-    public static String getRunShCommand(String prefix, String shellFilePath) {
+    public static String getRunShCommand(String shellFilePath) {
         if (HeraGlobalEnvironment.isLinuxSystem()) {
-            return "setsid " + prefix + RUN_SH_COMMAND + shellFilePath;
+            return "setsid "  + RUN_SH_COMMAND + shellFilePath;
         }
-        return prefix + RUN_SH_COMMAND + shellFilePath;
+        return RUN_SH_COMMAND + shellFilePath;
     }
 }
