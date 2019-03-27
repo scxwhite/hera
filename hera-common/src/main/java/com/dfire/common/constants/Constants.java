@@ -12,7 +12,7 @@ public class Constants {
 
     public final static String PRE_ENV = "pre";
 
-    public final static String PUB_ENV = "prod";
+    public final static String PUB_ENV = "public";
 
     public final static String WORK_PREFIX = "worker-";
 
