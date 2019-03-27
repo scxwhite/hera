@@ -121,7 +121,6 @@ spark:
 
 
 
-
 ---
 ## 开发环境
 spring:
@@ -131,6 +130,17 @@ logging:
 
 hera:
     workDir: /opt/logs/spring-boot
+    emrJob: false
+druid:
+    datasource:
+        username: root
+        password: moye
+        url: jdbc:mysql://localhost:3306/hera?characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+
+server:
+    port: 8080
+    context-path: /hera
+
 
 ---
 ## 开发环境
