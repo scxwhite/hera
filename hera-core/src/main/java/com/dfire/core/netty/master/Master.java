@@ -230,7 +230,7 @@ public class Master {
                     masterContext.getMasterSchedule().schedule(() -> {
                         HeraAction newAction = masterContext.getHeraJobActionService().findById(String.valueOf(actionId));
                         if (StatusEnum.RUNNING.toString().equals(newAction.getStatus())) {
-                            ErrorLog.error("任务信号丢失actionId:{},historyId:{}", actionId, newAction.getHistoryId());
+                            HeartLog.warn("任务信号丢失actionId:{},historyId:{}", actionId, newAction.getHistoryId());
                             Integer jobId = ActionUtil.getJobId(String.valueOf(actionId));
                             boolean scheduleType = actionHistory.getTriggerType().equals(TriggerTypeEnum.SCHEDULE.getId())
                                     || actionHistory.getTriggerType().equals(TriggerTypeEnum.MANUAL_RECOVER.getId());
@@ -375,7 +375,7 @@ public class Master {
                     }
                     shouldRemove.forEach(actionMap::remove);
                     List<AbstractHandler> handlers = new ArrayList<>(masterContext.getDispatcher().getJobHandlers());
-                    if (handlers != null && handlers.size() > 0) {
+                    if (handlers.size() > 0) {
                         for (AbstractHandler handler : handlers) {
                             JobHandler jobHandler = (JobHandler) handler;
                             if (StringUtil.actionIdToJobId(jobHandler.getActionId(), String.valueOf(jobId))) {
@@ -439,7 +439,7 @@ public class Master {
                     if (StringUtils.isNotBlank(cron)) {
                         boolean isCronExp = CronParse.Parser(cron, cronDate, list);
                         if (!isCronExp) {
-                            ErrorLog.error("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
+                            HeraLog.warn("cron parse error,jobId={},cron = {}", heraJob.getId(), cron);
                             continue;
                         }
                         List<HeraAction> heraAction = createHeraAction(list, heraJob);
@@ -585,7 +585,7 @@ public class Master {
                 List<HeraAction> dpActions = idMap.get(dpId);
                 dependenciesMap.put(dependentId, dpActions);
                 if (dpActions == null || dpActions.size() == 0) {
-                    ErrorLog.warn("{}今天找不到版本，无法为任务{}生成版本", dependentId, heraJob.getId());
+                    HeraLog.info("{}今天找不到版本，无法为任务{}生成版本", dependentId, heraJob.getId());
                     noAction = true;
                     break;
                 }
@@ -1057,68 +1057,59 @@ public class Master {
         }
         String actionId = heraJobHistory.getActionId();
         Integer jobId = heraJobHistory.getJobId();
+
+        boolean exists = false;
         if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER || heraJobHistory.getTriggerType() == TriggerTypeEnum.SCHEDULE) {
             // check调度器等待队列是否有此任务在排队
             for (JobElement jobElement : masterContext.getScheduleQueue()) {
                 if (ActionUtil.jobEquals(jobElement.getJobId(), actionId)) {
+                    exists = true;
                     if (!checkOnly) {
                         heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
-                        heraJobHistory.setStartTime(new Date());
-                        heraJobHistory.setEndTime(new Date());
-                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
                     TaskLog.warn("调度队列已存在该任务，添加失败 {}", actionId);
-                    return true;
                 }
             }
             // check所有的worker中是否有此任务的id在执行，如果有，不进入队列等待
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
                 if (workHolder.getRunning().contains(jobId)) {
+                    exists = true;
+
                     if (!checkOnly) {
                         heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().getLocalAddress());
-                        heraJobHistory.setStartTime(new Date());
-                        heraJobHistory.setEndTime(new Date());
-                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
                     TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
-                    return true;
-
                 }
             }
-
         } else if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
 
             for (JobElement jobElement : masterContext.getManualQueue()) {
                 if (ActionUtil.jobEquals(jobElement.getJobId(), actionId)) {
+                    exists = true;
                     if (!checkOnly) {
                         heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
-                        heraJobHistory.setStartTime(new Date());
-                        heraJobHistory.setEndTime(new Date());
-                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
                     TaskLog.warn("手动任务队列已存在该任务，添加失败 {}", actionId);
-                    return true;
                 }
             }
 
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
                 if (workHolder.getManningRunning().contains(jobId)) {
+                    exists = true;
                     if (!checkOnly) {
                         heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().getLocalAddress());
-                        heraJobHistory.setStartTime(new Date());
-                        heraJobHistory.setEndTime(new Date());
-                        heraJobHistory.setStatusEnum(StatusEnum.FAILED);
-                        masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
                     }
                     TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
-                    return true;
                 }
             }
         }
-        return false;
+        if (exists && !checkOnly) {
+            heraJobHistory.setStartTime(new Date());
+            heraJobHistory.setEndTime(new Date());
+            heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+            masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
+        }
+        return exists;
 
     }
 
