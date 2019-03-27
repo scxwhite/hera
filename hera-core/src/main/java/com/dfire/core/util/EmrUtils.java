@@ -147,7 +147,7 @@ public class EmrUtils {
             for (ClusterSummary summary : summaries) {
                 if (summary.getName().startsWith(clusterName)) {
                     cacheClusterId = summary.getId();
-                    MonitorLog.info("emr集群已经启动过，无需再次启动");
+                    MonitorLog.info("emr集群已经启动过，无需再次启动 :" + cacheClusterId);
                     return false;
                 }
             }

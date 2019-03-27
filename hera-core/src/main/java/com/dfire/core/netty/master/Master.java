@@ -1103,7 +1103,7 @@ public class Master {
                 }
             }
         }
-        if (!checkOnly) {
+        if (exists && !checkOnly) {
             heraJobHistory.setStartTime(new Date());
             heraJobHistory.setEndTime(new Date());
             heraJobHistory.setStatusEnum(StatusEnum.FAILED);
