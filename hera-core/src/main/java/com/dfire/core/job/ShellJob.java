@@ -79,6 +79,8 @@ public class ShellJob extends ProcessJob {
         if (isDocToUnix) {
             list.add("dos2unix " + shellFilePath);
             log("dos2unix file:" + shellFilePath);
+        } else {
+            log("file path :" + shellFilePath);
         }
 
         if (StringUtils.isNotBlank(shellPrefix)) {

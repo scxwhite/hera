@@ -226,7 +226,6 @@ public class EmrUtils {
         long start = System.currentTimeMillis();
         long sleepTime = 15 * 1000 * 1000000L;
         while (!checkCompletion(clusterId)) {
-            MonitorLog.info("检测集群是否创建完成:" + clusterId);
             LockSupport.parkNanos(sleepTime);
         }
         MonitorLog.info("创建集群:" + clusterId + "耗时:" + (System.currentTimeMillis() - start) + "ms");

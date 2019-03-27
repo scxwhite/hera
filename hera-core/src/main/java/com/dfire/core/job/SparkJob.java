@@ -72,6 +72,8 @@ public class SparkJob extends ProcessJob {
         if (isDocToUnix) {
             list.add("dos2unix " + sparkFilePath);
             log("dos2unix file" + sparkFilePath);
+        } else {
+            log("file path :" + sparkFilePath);
         }
 
         String prefix = HeraGlobalEnvironment.getSparkMaster() + " " +
