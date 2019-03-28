@@ -75,6 +75,7 @@ public class EmrUtils {
 
     private static long cacheTaskNum;
 
+    private static ScheduledExecutorService pool;
 
     /**
      * check 集群是否需要关闭返回的future
@@ -88,8 +89,8 @@ public class EmrUtils {
     }
 
     public static void main(String[] args) {
-        init();
-        closeCluster("j-31S93RHZ8CW68");
+
+
     }
 
     private static String getSystemProperty(String name) {
@@ -201,11 +202,17 @@ public class EmrUtils {
         }
     }
 
+    /**
+     * createCluster 方法已经同步过
+     */
     private static void submitClusterWatch() {
         if (clusterWatchFuture == null) {
-            ScheduledExecutorService pool = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("cluster-destroy-watch", false));
+            if (pool == null) {
+                pool = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("cluster-destroy-watch", false));
+            }
             cacheTaskNum = taskNum.get();
             clusterWatchFuture = pool.scheduleWithFixedDelay(() -> {
+                MonitorLog.info("正在emr集群运行的任务个数:{},十分钟前运行的总任务个数:{},现在运行的总任务个数:{}", taskRunning.get(), cacheTaskNum, taskNum.get());
                 if (taskRunning.get() == 0 && cacheTaskNum == taskNum.get()) {
                     terminateJob();
                     clusterWatchFuture.cancel(true);
@@ -213,7 +220,6 @@ public class EmrUtils {
                     cacheTaskNum = taskNum.get();
                 }
             }, 10, 10, TimeUnit.MINUTES);
-            pool.shutdown();
         }
     }
 

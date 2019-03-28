@@ -44,7 +44,6 @@ public class ProcessJobContainer extends AbstractJob {
                 EmrUtils.addJob();
                 log("EMR集群启动完毕!");
             }
-
             for (Job job : pres) {
                 if (isCanceled()) {
                     break;
