@@ -194,7 +194,7 @@ public class JobHandler extends AbstractHandler {
             }
         }
         if (allComplete) {
-            ScheduleLog.info("JobId:" + jobId + " all dependency jobs is ready,run!");
+            ScheduleLog.info("JobId:" + actionId + " all dependency jobs is ready,run!");
             startNewJob(heraActionVo, LogConstant.DEPENDENT_READY_LOG);
         } else {
             ScheduleLog.info(actionId + "some of dependency is not ready, waiting" + JSONObject.toJSONString(jobStatus.getReadyDependency().keySet()));
