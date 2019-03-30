@@ -326,7 +326,7 @@ public class EmrUtils {
     private static RunJobFlowResult createClient(EmrConf emrConf) {
         RunJobFlowRequest request = new RunJobFlowRequest()
                 .withApplications(getApps())
-                .withReleaseLabel("emr-5.13.0")
+                .withReleaseLabel("emr-5.21.0")
                 .withLogUri(emrConf.getLoginURl())
                 .withName(emrConf.getClusterName())
                 .withInstances(buildInstances(emrConf))
@@ -479,7 +479,7 @@ public class EmrUtils {
 
         //presto-hive 配置
         Map<String, String> prestoPro = new HashMap<>(1);
-        hivePro.put("hive.metastore.glue.datacatalog.enabled", "true");
+        prestoPro.put("hive.metastore.glue.datacatalog.enabled", "true");
         configs.add(new Configuration()
                 .withClassification("presto-connector-hive")
                 .withProperties(prestoPro)
@@ -487,7 +487,7 @@ public class EmrUtils {
 
         //spark-hive 配置
         Map<String, String> sparkPro = new HashMap<>(1);
-        hivePro.put("hive.metastore.client.factory.class", "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory");
+        sparkPro.put("hive.metastore.client.factory.class", "com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory");
         configs.add(new Configuration()
                 .withClassification("spark-hive-site")
                 .withProperties(sparkPro)
