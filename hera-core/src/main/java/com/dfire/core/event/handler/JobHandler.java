@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraArea;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.model.JobGroupCache;
@@ -12,20 +13,18 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
-import com.dfire.common.service.HeraGroupService;
-import com.dfire.common.service.HeraJobActionService;
-import com.dfire.common.service.HeraJobHistoryService;
-import com.dfire.common.service.HeraUserService;
+import com.dfire.common.service.*;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
-import com.dfire.core.event.*;
-import com.dfire.event.*;
+import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.core.event.Dispatcher;
 import com.dfire.core.job.CancelHadoopJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.quartz.HeraQuartzJob;
+import com.dfire.event.*;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.ScheduleLog;
 import lombok.AllArgsConstructor;
@@ -34,7 +33,8 @@ import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.*;
 
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -55,6 +55,7 @@ public class JobHandler extends AbstractHandler {
     private Master master;
     private MasterContext masterContext;
     private HeraUserService heraUserService;
+    private HeraAreaService heraAreaService;
 
     public JobHandler(String actionId, Master master, MasterContext masterContext) {
         this.actionId = actionId;
@@ -62,6 +63,7 @@ public class JobHandler extends AbstractHandler {
         this.heraGroupService = masterContext.getHeraGroupService();
         this.heraJobActionService = masterContext.getHeraJobActionService();
         this.heraUserService = masterContext.getHeraUserService();
+        this.heraAreaService = masterContext.getHeraAreaService();
         this.cache = JobGroupCache.builder().actionId(actionId).heraJobActionService(heraJobActionService).build();
         this.master = master;
         this.masterContext = masterContext;
@@ -225,10 +227,44 @@ public class JobHandler extends AbstractHandler {
         startNewJob(heraActionVo, "自动调度");
     }
 
+
+    private Set<String> areaList(String areas) {
+        if (StringUtils.isBlank(areas)) {
+            return new HashSet<>(0);
+        }
+
+        Map<Integer, String> areaMap = heraAreaService.findAll().stream()
+                .collect(Collectors.toMap(HeraArea::getId, HeraArea::getName));
+
+        return Arrays.stream(areas.split(Constants.COMMA))
+                .distinct()
+                .map(Integer::parseInt)
+                .map(areaMap::get)
+                .collect(Collectors.toSet());
+    }
+
+
+    private boolean checkJobRun(Integer jobId) {
+        HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
+        if (heraJob == null) {
+            ScheduleLog.warn("任务被删除，取消执行:" + jobId);
+            return false;
+        }
+        if (heraJob.getAuto() == 0) {
+            ScheduleLog.warn("任务被关闭，取消执行:" + jobId);
+            return false;
+        }
+        Set<String> areaList = areaList(heraJob.getAreaId());
+
+        if (!areaList.contains(HeraGlobalEnvironment.getArea()) && !areaList.contains(Constants.ALL_AREA)) {
+            ScheduleLog.info("非{}区域任务，取消执行:{}", HeraGlobalEnvironment.getArea(), jobId);
+            return false;
+        }
+        return true;
+    }
+
     private void startNewJob(HeraActionVo heraActionVo, String illustrate) {
-        HeraJob heraJob = masterContext.getHeraJobService().findById(heraActionVo.getJobId());
-        if (heraJob == null || heraJob.getAuto() == 0) {
-            ScheduleLog.warn("任务被删除或关闭，取消漏跑:" + heraActionVo.getJobId());
+        if (!checkJobRun(heraActionVo.getJobId())) {
             return;
         }
         HeraJobHistory history = HeraJobHistory.builder().

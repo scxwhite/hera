@@ -83,6 +83,7 @@ hera:
         spark-sql:
             bin: spark-sql
     emrJob: true  #是否为emr集群
+    area: indin
 
 
 logging:

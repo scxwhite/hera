@@ -114,7 +114,10 @@ public class Constants {
 
     public final static String QUARTZ_DISPATCHER = "dispatcher";
 
+    /**
+     * 所有区域任务
+     */
+    public final static String ALL_AREA = "all";
 
-    
-    
+
 }

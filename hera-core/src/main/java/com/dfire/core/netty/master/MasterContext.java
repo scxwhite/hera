@@ -57,6 +57,8 @@ public class MasterContext {
     @Qualifier("heraJobMemoryService")
     private HeraJobService heraJobService;
     @Autowired
+    private HeraAreaService heraAreaService;
+    @Autowired
     private HeraDebugHistoryService heraDebugHistoryService;
     @Autowired
     private HeraJobActionService heraJobActionService;

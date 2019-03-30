@@ -64,6 +64,8 @@ public class HeraGlobalEnvironment {
     @Getter
     private static String admin;
     @Getter
+    private static String area;
+    @Getter
     private static Integer taskTimeout;
     @Getter
     private static String sparkAddress;
@@ -284,6 +286,15 @@ public class HeraGlobalEnvironment {
         HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin + Constants.BLANK_SPACE;
     }
 
+
+    @Value("${hera.area}")
+    public void setArea(String area) {
+        if (StringUtils.isBlank(area)) {
+            throw new RuntimeException("请设置hera要执行的任务区域:" + area);
+        } else {
+            HeraGlobalEnvironment.area = area.trim();
+        }
+    }
 
     @Value("${mail.port}")
     public void setMailPort(String mailPort) {
