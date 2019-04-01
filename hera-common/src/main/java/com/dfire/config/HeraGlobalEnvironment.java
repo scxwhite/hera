@@ -95,6 +95,9 @@ public class HeraGlobalEnvironment {
     private static String jobSparkSqlBin;
     @Getter
     private static boolean emrJob;
+    @Getter
+    private static String emrCluster;
+
 
     @Getter
     private static String mailPort;
@@ -331,8 +334,18 @@ public class HeraGlobalEnvironment {
     }
 
     @Value("${hera.emrJob}")
-    public void setEmrJob(boolean emrJob) {
-        HeraGlobalEnvironment.emrJob = emrJob;
+    public void setEmrJob(String emrJob) {
+        if (Boolean.FALSE.toString().equals(emrJob)) {
+            HeraGlobalEnvironment.emrJob = false;
+        } else {
+            HeraGlobalEnvironment.emrJob = true;
+
+            String[] emrCluster = emrJob.split(":");
+            if (emrCluster.length == 0 || emrCluster.length == 1) {
+                throw new RuntimeException("emrJob参数设置错误:" + emrJob);
+            }
+            HeraGlobalEnvironment.emrCluster = emrCluster[1];
+        }
     }
 
     /**

@@ -4,7 +4,8 @@ import com.dfire.common.constants.Constants;
 import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.config.HeraGlobalEnvironment;
-import com.dfire.core.util.EmrUtils;
+import com.dfire.core.emr.Emr;
+import com.dfire.core.emr.WrapEmr;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -19,8 +20,11 @@ public abstract class AbstractJob implements Job {
 
     protected boolean canceled = false;
 
+    protected Emr emr;
+
     public AbstractJob(JobContext jobContext) {
         this.jobContext = jobContext;
+        this.emr = new WrapEmr();
     }
 
     @Override
@@ -62,7 +66,7 @@ public abstract class AbstractJob implements Job {
             //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
             command.append("ssh -o StrictHostKeyChecking=no").append(Constants.BLANK_SPACE);
             command.append("-i /home/docker/conf/bigdata.pem").append(Constants.BLANK_SPACE);
-            command.append("hadoop@").append(EmrUtils.getIp()).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
+            command.append("hadoop@").append(emr.getIp()).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
             command.append("<< eeooff").append(Constants.NEW_LINE);
             switch (runTypeEnum) {
                 case Spark:

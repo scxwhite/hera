@@ -1,4 +1,4 @@
-package com.dfire.core.util;
+package com.dfire.core.emr;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -24,76 +24,74 @@ import java.util.concurrent.locks.LockSupport;
 
 /**
  * desc:
- * emr连接工具
+ * 亚马逊emr集群
  *
  * @author scx
- * @create 2019/03/18
+ * @create 2019/04/01
  */
-public class EmrUtils {
+public class AmazonJob implements Emr {
 
-    private static final String[] APP_NAMES = {"hadoop", "spark", "hive", "livy", "zeppelin", "sqoop"};
+    public static final String NAME = "amazon";
+
+    private final String[] APP_NAMES = {"hadoop", "spark", "hive", "livy", "zeppelin", "sqoop"};
 
     /**
      * httpCode 正常退出码
      */
-    private static final int SUCCESS_HTTP_CODE = 200;
+    private final int SUCCESS_HTTP_CODE = 200;
 
     /**
      * emr 客户端
      */
-    private static volatile AmazonElasticMapReduceClient emr;
+    private volatile AmazonElasticMapReduceClient emr;
 
     /**
      * emr 客户端是否管不
      */
-    private static volatile boolean isShutdown = true;
+    private volatile boolean isShutdown = true;
 
     /**
      * 集群是否已经关闭字段
      */
-    private static volatile boolean clusterTerminate = true;
+    private volatile boolean clusterTerminate = true;
 
     /**
      * 缓存的集群IP
      */
-    private static volatile String cacheIp = null;
+    private volatile String cacheIp = null;
 
     /**
      * 缓存的集群Id
      */
-    private static String cacheClusterId;
+    private String cacheClusterId;
 
     /**
      * 任务数
      */
-    private static AtomicInteger taskRunning;
+    private AtomicInteger taskRunning;
 
     /**
      * 任务计数器
      */
-    private static AtomicLong taskNum;
+    private AtomicLong taskNum;
 
-    private static long cacheTaskNum;
+    private long cacheTaskNum;
 
-    private static ScheduledExecutorService pool;
+    private ScheduledExecutorService pool;
 
     /**
      * check 集群是否需要关闭返回的future
      */
-    private static ScheduledFuture<?> clusterWatchFuture;
+    private ScheduledFuture<?> clusterWatchFuture;
 
-    private static void closeCluster(String clusterId) {
+    private void closeCluster(String clusterId) {
         init();
         cacheClusterId = clusterId;
         terminateJob();
     }
 
-    public static void main(String[] args) {
 
-
-    }
-
-    private static String getSystemProperty(String name) {
+    private String getSystemProperty(String name) {
         String val = System.getenv(name);
         if (StringUtils.isNotBlank(name)) {
             return val;
@@ -105,13 +103,15 @@ public class EmrUtils {
         return val;
     }
 
-    public static void addJob() {
+    @Override
+    public void addJob() {
         createCluster();
         taskRunning.incrementAndGet();
         taskNum.incrementAndGet();
     }
 
-    public static synchronized void removeJob() {
+    @Override
+    public void removeJob() {
         if (taskRunning != null) {
             taskRunning.decrementAndGet();
         }
@@ -122,9 +122,10 @@ public class EmrUtils {
      *
      * @return clusterIp
      */
-    public static String getIp() {
+    @Override
+    public String getIp() {
         if (cacheIp == null) {
-            synchronized (EmrUtils.class) {
+            synchronized (this) {
                 if (cacheIp == null) {
                     createCluster();
                     DescribeClusterResult result = emr.describeCluster(new DescribeClusterRequest().withClusterId(cacheClusterId));
@@ -140,7 +141,7 @@ public class EmrUtils {
     }
 
 
-    private static boolean notAlive(String clusterName) {
+    private boolean notAlive(String clusterName) {
         ListClustersResult clusters = emr.listClusters(new ListClustersRequest()
                 .withClusterStates(ClusterState.STARTING, ClusterState.BOOTSTRAPPING, ClusterState.RUNNING, ClusterState.WAITING));
         List<ClusterSummary> summaries = clusters.getClusters();
@@ -157,11 +158,11 @@ public class EmrUtils {
     }
 
 
-    private static void createCluster() {
+    private void createCluster() {
         init();
         String clusterName = "hera-schedule-";
         if (clusterTerminate) {
-            synchronized (EmrUtils.class) {
+            synchronized (this) {
                 if (clusterTerminate) {
                     if (notAlive(clusterName)) {
                         clusterName += ActionUtil.getCurrDate();
@@ -205,7 +206,7 @@ public class EmrUtils {
     /**
      * createCluster 方法已经同步过
      */
-    private static void submitClusterWatch() {
+    private void submitClusterWatch() {
         if (clusterWatchFuture == null) {
             if (pool == null) {
                 pool = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("cluster-destroy-watch", false));
@@ -228,7 +229,7 @@ public class EmrUtils {
      *
      * @param clusterId 集群ID
      */
-    private static void waitClusterCompletion(String clusterId) {
+    private void waitClusterCompletion(String clusterId) {
         long start = System.currentTimeMillis();
         long sleepTime = 15 * 1000 * 1000000L;
         while (!checkCompletion(clusterId)) {
@@ -243,7 +244,7 @@ public class EmrUtils {
      * @param clusterId 集群ID
      * @return 创建结果
      */
-    private static boolean checkCompletion(String clusterId) {
+    private boolean checkCompletion(String clusterId) {
         try {
             MonitorLog.info("检测集群是否创建完成:" + clusterId);
             ListClustersResult waiting = emr.listClusters(new ListClustersRequest().withClusterStates("WAITING"));
@@ -268,7 +269,7 @@ public class EmrUtils {
     /**
      * 关闭集群
      */
-    private static void terminateJob() {
+    private void terminateJob() {
         emr.setTerminationProtection(new SetTerminationProtectionRequest().withJobFlowIds(cacheClusterId).withTerminationProtected(false));
         TerminateJobFlowsResult terminateResult = emr.terminateJobFlows(new TerminateJobFlowsRequest().withJobFlowIds(cacheClusterId));
         if (terminateResult.getSdkHttpMetadata().getHttpStatusCode() == SUCCESS_HTTP_CODE) {
@@ -279,7 +280,7 @@ public class EmrUtils {
         }
     }
 
-    private static void destroyCluster() {
+    private void destroyCluster() {
         clusterTerminate = true;
         cacheIp = null;
         cacheClusterId = null;
@@ -290,7 +291,7 @@ public class EmrUtils {
     /**
      * 输出最近创建的集群
      */
-    private static void showCluster() {
+    private void showCluster() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, -1);
         ListClustersResult running = emr.listClusters(new ListClustersRequest().withCreatedAfter(calendar.getTime()));
@@ -303,9 +304,9 @@ public class EmrUtils {
     /**
      * emr client 初始化
      */
-    private static void init() {
+    private void init() {
         if (emr == null || isShutdown) {
-            synchronized (EmrUtils.class) {
+            synchronized (this) {
                 if (emr == null || isShutdown) {
                     AWSCredentials credentials = new BasicAWSCredentials("AKIAIDNAUCQ2GWA34WAA", "OCb6tZJfqBWo2tNJbwjw3Cx81siCuvVrnTKveCD8");
                     emr = (AmazonElasticMapReduceClient) AmazonElasticMapReduceClientBuilder.standard().withRegion("ap-south-1").withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
@@ -315,7 +316,7 @@ public class EmrUtils {
         }
     }
 
-    private static synchronized void shutdown() {
+    private synchronized void shutdown() {
         if (!isShutdown) {
             emr.shutdown();
             isShutdown = true;
@@ -323,7 +324,7 @@ public class EmrUtils {
         }
     }
 
-    private static RunJobFlowResult createClient(EmrConf emrConf) {
+    private RunJobFlowResult createClient(EmrConf emrConf) {
         RunJobFlowRequest request = new RunJobFlowRequest()
                 .withApplications(getApps())
                 .withReleaseLabel("emr-5.21.0")
@@ -347,7 +348,7 @@ public class EmrUtils {
      * @param emrConf EmrConf
      * @return JobFlowInstancesConfig
      */
-    private static JobFlowInstancesConfig buildInstances(EmrConf emrConf) {
+    private JobFlowInstancesConfig buildInstances(EmrConf emrConf) {
 
         InstanceGroupConfig masterInstance = new InstanceGroupConfig()
                 .withInstanceCount(1)
@@ -400,7 +401,7 @@ public class EmrUtils {
      *
      * @return AutoScalingPolicy
      */
-    private static AutoScalingPolicy buildAutoScalingPolicy() {
+    private AutoScalingPolicy buildAutoScalingPolicy() {
 
         int coolDown = 300;
         int scalePercent = 10;
@@ -464,7 +465,7 @@ public class EmrUtils {
      *
      * @return configurations
      */
-    private static List<Configuration> buildConfigurations() {
+    private List<Configuration> buildConfigurations() {
 
         List<Configuration> configs = new ArrayList<>();
 
@@ -502,7 +503,7 @@ public class EmrUtils {
      *
      * @return applications
      */
-    private static List<Application> getApps() {
+    private List<Application> getApps() {
         List<Application> apps = new ArrayList<>(APP_NAMES.length);
         for (String appName : APP_NAMES) {
             apps.add(buildApp(appName));
@@ -516,7 +517,7 @@ public class EmrUtils {
      * @param name 集群名称
      * @return application
      */
-    private static Application buildApp(String name) {
+    private Application buildApp(String name) {
         return new Application().withName(name);
     }
 
