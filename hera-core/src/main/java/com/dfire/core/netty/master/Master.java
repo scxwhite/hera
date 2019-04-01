@@ -3,22 +3,18 @@ package com.dfire.core.netty.master;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
-import com.dfire.common.entity.HeraAction;
-import com.dfire.common.entity.HeraJob;
-import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.HeraUser;
+import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
+import com.dfire.common.exception.HeraException;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.util.*;
 import com.dfire.config.HeraGlobalEnvironment;
-import com.dfire.common.exception.HeraException;
-import com.dfire.core.event.*;
-import com.dfire.event.*;
+import com.dfire.core.event.Dispatcher;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.*;
@@ -29,6 +25,7 @@ import com.dfire.core.queue.JobElement;
 import com.dfire.core.route.loadbalance.LoadBalance;
 import com.dfire.core.route.loadbalance.LoadBalanceFactory;
 import com.dfire.core.util.CronParse;
+import com.dfire.event.*;
 import com.dfire.logs.*;
 import com.dfire.protocol.JobExecuteKind;
 import com.dfire.protocol.ResponseStatus;
@@ -45,6 +42,7 @@ import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import static com.dfire.protocol.JobExecuteKind.ExecuteKind.ScheduleKind;
 
@@ -184,7 +182,7 @@ public class Master {
         boolean isCheck = lostJob != null
                 && lostJob.getAuto() == 1
                 && lostJob.getStatus() == null;
-        if (isCheck) {
+        if (isCheck && checkJobRun(lostJob.getJobId())) {
             String dependencies = lostJob.getDependencies();
             if (StringUtils.isNotBlank(dependencies)) {
                 List<String> jobDependList = Arrays.asList(dependencies.split(Constants.COMMA));
@@ -207,6 +205,38 @@ public class Master {
                 addRollBackJob(actionIdList, actionId);
             }
         }
+    }
+
+    public boolean checkJobRun(Integer jobId) {
+        HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
+        if (heraJob == null) {
+            ScheduleLog.warn("任务被删除，取消执行:" + jobId);
+            return false;
+        }
+        if (heraJob.getAuto() == 0) {
+            ScheduleLog.warn("任务被关闭，取消执行:" + jobId);
+            return false;
+        }
+        Set<String> areaList = areaList(heraJob.getAreaId());
+
+        if (!areaList.contains(HeraGlobalEnvironment.getArea()) && !areaList.contains(Constants.ALL_AREA)) {
+            ScheduleLog.info("非{}区域任务，取消执行:{}", HeraGlobalEnvironment.getArea(), jobId);
+            return false;
+        }
+        return true;
+    }
+
+    private Set<String> areaList(String areas) {
+        if (StringUtils.isBlank(areas)) {
+            return new HashSet<>(0);
+        }
+        Map<Integer, String> areaMap = masterContext.getHeraAreaService().findAll().stream()
+                .collect(Collectors.toMap(HeraArea::getId, HeraArea::getName));
+        return Arrays.stream(areas.split(Constants.COMMA))
+                .distinct()
+                .map(Integer::parseInt)
+                .map(areaMap::get)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -1226,7 +1256,7 @@ public class Master {
 
     private void startNewJob(HeraJobHistory heraJobHistory, String illustrate) {
         HeraJob heraJob = masterContext.getHeraJobService().findById(heraJobHistory.getJobId());
-        if (heraJob == null || heraJob.getAuto() == 0) {
+        if (heraJob == null || heraJob.getAuto() == 0 || !checkJobRun(heraJob.getId())) {
             ScheduleLog.warn("任务已关闭或者删除，取消重跑." + heraJobHistory.getJobId());
             return;
         }

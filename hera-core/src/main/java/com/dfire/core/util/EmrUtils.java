@@ -148,7 +148,7 @@ public class EmrUtils {
             for (ClusterSummary summary : summaries) {
                 if (summary.getName().startsWith(clusterName)) {
                     cacheClusterId = summary.getId();
-                    MonitorLog.info("emr集群已经启动过，无需再次启动 :" + cacheClusterId);
+                    MonitorLog.debug("emr集群已经启动过，无需再次启动 :" + cacheClusterId);
                     return false;
                 }
             }
@@ -272,7 +272,7 @@ public class EmrUtils {
         emr.setTerminationProtection(new SetTerminationProtectionRequest().withJobFlowIds(cacheClusterId).withTerminationProtected(false));
         TerminateJobFlowsResult terminateResult = emr.terminateJobFlows(new TerminateJobFlowsRequest().withJobFlowIds(cacheClusterId));
         if (terminateResult.getSdkHttpMetadata().getHttpStatusCode() == SUCCESS_HTTP_CODE) {
-            MonitorLog.info("集群:" + cacheClusterId + "关闭成功,执行任务数为:" + taskRunning.get());
+            MonitorLog.info("集群:" + cacheClusterId + "关闭成功,执行任务数为:" + taskNum.get());
             destroyCluster();
         } else {
             MonitorLog.error("集群关闭失败" + cacheClusterId);
