@@ -17,6 +17,7 @@ import io.netty.channel.Channel;
 public class WorkHandlerRequest {
 
     public void getWorkInfo(HeraChannel channel) {
+
         OsProcessJob processJob = new OsProcessJob();
         Integer exitCode = processJob.run();
         if (exitCode == 0) {
