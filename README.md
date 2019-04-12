@@ -2,9 +2,14 @@
 
 # 数据平台打造的任务调度系统(HERA)
 
-[![Build Status](https://travis-ci.org/scxwhite/hera.svg?branch=open-source)](https://travis-ci.org/scxwhite/hera) [![](https://www.jitpack.io/v/scxwhite/hera.svg)](https://www.jitpack.io/#scxwhite/hera)
+[![Build Status](https://travis-ci.org/scxwhite/hera.svg?branch=open-source)](https://travis-ci.org/scxwhite/hera)
+[![](https://www.jitpack.io/v/scxwhite/hera.svg)](https://www.jitpack.io/#scxwhite/hera)
 
-
+目前接入hera的公司（[点我接入](https://github.com/scxwhite/hera/issues/24)）：
+- 杭州二维火科技有限公司
+- 杭州涂鸦科技有限公司
+- 北京高因科技（居理新房）有限公司
+- 持续更新中。。欢迎大家自荐
 
 
 
@@ -15,11 +20,7 @@
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190102190821351.png)
 
-目前接入hera的公司（[点我接入](https://github.com/scxwhite/hera/issues/24)）：
-- 杭州二维火科技有限公司
-- 杭州涂鸦科技有限公司
-- 北京高因科技（居理新房）有限公司
-- 持续更新中。。欢迎大家自荐
+
 
 
 # 介绍文章
