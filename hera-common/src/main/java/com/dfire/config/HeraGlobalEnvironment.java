@@ -171,7 +171,7 @@ public class HeraGlobalEnvironment {
     }
 
     @Value("${hera.jobCacheDay}")
-    public void setAdmin(int jobCacheDay) {
+    public void setJobCacheDay(int jobCacheDay) {
         HeraGlobalEnvironment.jobCacheDay = jobCacheDay;
     }
 
