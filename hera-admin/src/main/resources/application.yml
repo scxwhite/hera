@@ -76,6 +76,7 @@ hera:
     env: @env@
     alarmEnv: daily,dev,pre,publish # 设置允许哪些环境开启告警，多个用,分开，默认全部环境
     sudoUser: true
+    version: 2.3
     job:
         shell:
             bin: sh
