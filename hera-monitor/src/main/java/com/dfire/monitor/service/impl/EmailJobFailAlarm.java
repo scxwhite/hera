@@ -49,16 +49,18 @@ public class EmailJobFailAlarm implements JobFailAlarm {
         }
         HeraJob heraJob = heraJobService.findById(jobId);
         //非开启任务不处理  最好能把这些抽取出去 提供接口实现
+        // 自己建立的任务运行失败必须收到告警
         if (heraJob.getAuto() != 1 && !Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
             return;
         }
         StringBuilder address = new StringBuilder();
+        HeraUser user = heraUserService.findByName(heraJob.getOwner());
+        address.append(user.getEmail().trim()).append(Constants.SEMICOLON);
         try {
-            HeraJobMonitor monitor = heraJobMonitorService.findByJobId(heraJob.getId());
+            HeraJobMonitor monitor = heraJobMonitorService.findByJobIdWithOutBlank(heraJob.getId());
             if (monitor == null && Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
                 ScheduleLog.info("任务无监控人，发送给owner：{}", heraJob.getId());
-                HeraUser user = heraUserService.findByName(heraJob.getOwner());
-                address.append(user.getEmail().trim());
+
             } else if (monitor != null) {
                 String ids = monitor.getUserIds();
                 String[] id = ids.split(Constants.COMMA);
@@ -66,9 +68,9 @@ public class EmailJobFailAlarm implements JobFailAlarm {
                     if (StringUtils.isBlank(anId)) {
                         continue;
                     }
-                    HeraUser user = heraUserService.findById(Integer.parseInt(anId));
-                    if (user != null && user.getEmail() != null) {
-                        address.append(user.getEmail()).append(Constants.SEMICOLON);
+                    HeraUser monitor_user = heraUserService.findById(Integer.parseInt(anId));
+                    if (monitor_user != null && monitor_user.getEmail() != null) {
+                        address.append(monitor_user.getEmail().trim()).append(Constants.SEMICOLON);
                     }
                 }
             }

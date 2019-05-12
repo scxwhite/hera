@@ -28,4 +28,7 @@ public interface HeraJobMonitorMapper {
 
     @Select("select * from hera_job_monitor where job_id = #{jobId} limit 1")
     HeraJobMonitor findByJobId(Integer jobId);
+
+    @Select("select * from hera_job_monitor where job_id = #{jobId} and user_ids!='' limit 1")
+    HeraJobMonitor findByJobIdWithOutBlank(Integer jobId);
 }

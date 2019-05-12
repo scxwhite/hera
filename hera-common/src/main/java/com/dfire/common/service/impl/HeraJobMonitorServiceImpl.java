@@ -46,4 +46,9 @@ public class HeraJobMonitorServiceImpl implements HeraJobMonitorService {
     public HeraJobMonitor findByJobId(Integer jobId) {
         return heraJobMonitorMapper.findByJobId(jobId);
     }
+
+    @Override
+    public HeraJobMonitor findByJobIdWithOutBlank(Integer jobId) {
+        return heraJobMonitorMapper.findByJobIdWithOutBlank(jobId);
+    }
 }
