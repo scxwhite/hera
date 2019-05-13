@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -131,13 +132,13 @@ public class ScheduleCenterController extends BaseHeraController {
      * 组下搜索任务
      *
      * @param groupId  groupId
-     * @param type     0：all 所有任务 1:running 运行中的任务
+     * @param status   all:全部;
      * @param pageForm layui table分页参数
      * @return 结果
      */
     @RequestMapping(value = "/getGroupTask", method = RequestMethod.GET)
     @ResponseBody
-    public TableResponse<List<GroupTaskVo>> getGroupTask(String groupId, Integer type, TablePageForm pageForm) {
+    public TableResponse<List<GroupTaskVo>> getGroupTask(String groupId, String status,String dt, TablePageForm pageForm) {
 
 
         List<HeraGroup> group = heraGroupService.findDownStreamGroup(getGroupId(groupId));
@@ -145,13 +146,28 @@ public class ScheduleCenterController extends BaseHeraController {
         Set<Integer> groupSet = group.stream().map(HeraGroup::getId).collect(Collectors.toSet());
         List<HeraJob> jobList = heraJobService.getAll();
         Set<Integer> jobIdSet = jobList.stream().filter(job -> groupSet.contains(job.getGroupId())).map(HeraJob::getId).collect(Collectors.toSet());
-
-        //TODO  先写死 只看今天
+        
+        SimpleDateFormat format = new SimpleDateFormat("yyMMdd");
         Calendar calendar = Calendar.getInstance();
-        String startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
-        calendar.add(Calendar.DAY_OF_MONTH, +1);
+        String startDate;
+        Date start = null;
+        if(StringUtils.isBlank(dt)){
+        	start=new Date();
+        }
+        else{
+        	
+        	try {
+    			start = format.parse(dt);
+    		} catch (ParseException e) {
+    			start=new Date();
+    		}
+        }
+        
+        calendar.setTime(start);
+    	startDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
+        calendar.add(Calendar.DAY_OF_YEAR, +1);
         String endDate = ActionUtil.getFormatterDate("yyyyMMdd", calendar.getTime());
-        List<GroupTaskVo> taskVos = heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate, pageForm, type);
+        List<GroupTaskVo> taskVos = heraJobActionService.findByJobIds(new ArrayList<>(jobIdSet), startDate, endDate, pageForm, status);
         return new TableResponse<>(pageForm.getCount(), 0, taskVos);
 
     }
@@ -530,12 +546,16 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<String> generateVersion(String jobId) {
-        if (!hasPermission(Integer.parseInt(jobId), JOB)) {
+    public WebAsyncTask<String> generateVersion(Integer jobId) {
+        if (!hasPermission(jobId, JOB)) {
             return new WebAsyncTask<>(() -> ERROR_MSG);
         }
+        HeraJob heraJob = heraJobService.findById(jobId);
+        if (heraJob.getScheduleType() == 1) {
+            return new WebAsyncTask<>(() -> "不支持依赖任务的版本生成，只支持定时任务的版本生成");
+        }
         WebAsyncTask<String> asyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () ->
-                workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, jobId));
+                workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, String.valueOf(jobId)));
         asyncTask.onTimeout(() -> "版本生成时间较长，请耐心等待下");
         return asyncTask;
     }

@@ -30,4 +30,12 @@ public class JobHistoryVo {
     private String jobName;
 
     private Integer times;
+    
+    private String durations;
+    
+    private String groupId;
+    
+    private String groupName;
+    
+    
 }

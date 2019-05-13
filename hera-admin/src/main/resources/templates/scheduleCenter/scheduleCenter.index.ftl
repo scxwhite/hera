@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
     <title>任务调度中心</title>
-  	<#import "/common/common.macro.ftl" as netCommon>
-	<@netCommon.commonStyle />
-    <link href="${request.contextPath}/plugins/ztree/metroStyle/metroStyle.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/eclipse.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/lucario.min.css" rel="stylesheet">
+    <#import "/common/common.macro.ftl" as netCommon>
+    <@netCommon.commonStyle />
+    <link href="${request.contextPath}/plugins/ztree/css/metroStyle/metroStyle.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/lib/codemirror.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/eclipse.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/lucario.css" rel="stylesheet">
     <link href="${request.contextPath}/plugins/codemirror/theme/3024-day.css" rel="stylesheet">
     <link href="${request.contextPath}/plugins/codemirror/theme/3024-night.css" rel="stylesheet">
     <link href="${request.contextPath}/plugins/codemirror/theme/ambiance.css" rel="stylesheet">
@@ -25,13 +25,13 @@
     <link href="${request.contextPath}/plugins/codemirror/theme/mbo.css" rel="stylesheet">
     <link href="${request.contextPath}/plugins/codemirror/theme/material.css" rel="stylesheet">
     <link href="${request.contextPath}/plugins/codemirror/theme/solarized.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/theme/base16-light.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/css/fileinput.min.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.3/css/bootstrap-select.min.css">
-    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+    <link href="${request.contextPath}/plugins/codemirror/theme/base16-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.css" rel="stylesheet">
+    <link href="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
 
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
+    <link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
 
 </head>
 
@@ -39,9 +39,9 @@
 <body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
     <!-- header -->
-	<@netCommon.commonHeader />
+    <@netCommon.commonHeader />
     <!-- left -->
-	<@netCommon.commonLeft "developCenter" />
+    <@netCommon.commonLeft "developCenter" />
 
     <div class="content-wrapper">
 
@@ -61,7 +61,7 @@
                             </ul>
                             <div class="box-tools">
                                 <button type="button" class="btn btn-box-tool" id="hideTreeBtn"><i
-                                        class="fa fa-minus"></i>
+                                            class="fa fa-minus"></i>
                                 </button>
                             </div>
                         </div>
@@ -113,24 +113,24 @@
                                             </div>
                                             <label class="control-label input-sm col-sm-1">所有人:</label>
                                             <div class="col-sm-3">
-                                            <#--<label class="form-control-static" name="owner">类型</label>-->
+                                                <#--<label class="form-control-static" name="owner">类型</label>-->
                                                 <input class="form-control" type="text" name="owner" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-1">描述:</label>
                                             <div class="col-sm-3">
-                                            <#--<label class="form-control-static" name="description">导数据</label>-->
+                                                <#--<label class="form-control-static" name="description">导数据</label>-->
                                                 <input class="form-control" type="text" name="description" readonly>
                                             </div>
                                             <label class="control-label input-sm col-sm-1">关注人员:</label>
                                             <div class="col-sm-3">
-                                            <#--<label class="form-control-static" name="focusUser"></label>-->
+                                                <#--<label class="form-control-static" name="focusUser"></label>-->
                                                 <input class="form-control" type="text" name="focusUser" readonly>
                                             </div>
                                             <label class="control-label input-sm col-sm-1">管理员:</label>
                                             <div class="col-sm-3">
-                                            <#--<label class="form-control-static" name="uidS"></label>-->
+                                                <#--<label class="form-control-static" name="uidS"></label>-->
                                                 <input class="form-control" type="text" name="uidS" readonly>
                                             </div>
                                         </div>
@@ -515,6 +515,7 @@
                                         </button>
                                     </li>
                                     <br>
+                                 <!--  
                                     <li>
                                         <button class="btn btn-xs  btn-primary btn-block" type="button"
                                                 name="showRunning">正在运行
@@ -527,6 +528,7 @@
                                         </button>
                                     </li>
                                     <br>
+                                     -->
                                     <li>
                                         <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup">
                                             添加组
@@ -556,10 +558,10 @@
                                         </button>
 
                                     </li>
-                                <#--     <br>
-                                     <li>
-                                         <button class="btn  btn-xs btn-primary btn-block" type="button">关注组下任务</button>
-                                     </li>-->
+                                    <#--     <br>
+                                         <li>
+                                             <button class="btn  btn-xs btn-primary btn-block" type="button">关注组下任务</button>
+                                         </li>-->
                                 </ul>
                             </div>
                         </div>
@@ -664,12 +666,27 @@
 
                     <div id="overviewOperator" class="btn-con" style="display: none">
                         <div class="box-body">
+                        	   
                             <ul class="list-unstyled">
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="back">返回
                                     </button>
                                 </li>
                                 <br>
+                                
+                                <li>
+                                <input class="form_datetime form-control" id="jobDt"  type="text" data-date-format="yymmdd" readonly placeholder="请选择日期"  ">
+                                
+                                </li>
+                                <br>
+                                
+                                <li>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showAll">
+                                        全部记录
+                                    </button>
+                                </li>
+                                <br>
+                                
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="showRunning">
                                         正在运行
@@ -681,6 +698,14 @@
                                         失败记录
                                     </button>
                                 </li>
+                                <br>
+                            	<li>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showSucc">
+                                        成功记录
+                                    </button>
+                                </li>
+                                <br>
+                                
                             </ul>
                         </div>
                     </div>
@@ -744,7 +769,7 @@
                                         <option value="shell" selected>shell脚本</option>
                                         <option value="hive">hive脚本</option>
                                         <option value="spark">spark脚本</option>
-                                    <#--没有权限控制，暂时就不开放了<option value="spark2">spark2脚本</option>-->
+                                        <#--没有权限控制，暂时就不开放了<option value="spark2">spark2脚本</option>-->
                                     </select>
                                 </div>
                             </div>
@@ -979,30 +1004,54 @@
 
 <@netCommon.commonScript />
 
-<script src="${request.contextPath}/plugins/ztree/jquery.ztree.core.js"></script>
+<script src="${request.contextPath}/plugins/ztree/js/jquery.ztree.core.min.js"></script>
+<script src="${request.contextPath}/plugins/ztree/js/jquery.ztree.exedit.min.js"></script>
+<script src="${request.contextPath}/plugins/ztree/js/jquery.ztree.excheck.min.js"></script>
+<script src="${request.contextPath}/plugins/ztree/js/jquery.ztree.exhide.min.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/lib/codemirror.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/mode/shell/shell.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/anyword-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/sql-hint.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/addon/hint/active-line.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/mode/python/python.js"></script>
+<script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
+<script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.js"></script>
+<script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/zh.min.js"></script>
 
-<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exedit.min.js"></script>
-<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.excheck.min.js"></script>
-<script src="https://cdn.bootcss.com/zTree.v3/3.5.33/js/jquery.ztree.exhide.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/codemirror.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/shell/shell.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/anyword-hint.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/show-hint.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/hint/sql-hint.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/addon/selection/active-line.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/python/python.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.42.0/mode/sql/sql.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/fileinput.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-fileinput/4.3.5/js/locales/zh.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
-<script src="https://cdn.bootcss.com/dagre-d3/0.4.17/dagre-d3.min.js"></script>
+<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+<script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
 <script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
 <script src="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.js"></script>
 <script src="${request.contextPath}/js/taskGraph.js?v=2"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
 
+<script type="text/javascript">
+ $(".form_datetime").datetimepicker({
+ format: "yymmdd",
+ autoclose: true,
+ todayBtn: true,
+ todayHighlight: true,
+ language: 'zh-CN',//中文，需要引用zh-CN.js包
+ startView: 2,//月视图
+ minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
+ forceParse:false,
+ }); 
+</script> 
+
+<script>
+    $(document).ready(function () {
+        var time = new Date();
+        var day = ("0" + time.getDate()).slice(-2);
+        var month = ("0" + (time.getMonth() + 1)).slice(-2);
+        var today = (time.getFullYear()+'').substring(2)   + (month)   + (day);
+        $(".form_datetime").val(today);
+    })
+</script>
 
 </body>
 

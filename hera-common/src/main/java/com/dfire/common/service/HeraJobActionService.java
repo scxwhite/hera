@@ -77,6 +77,6 @@ public interface HeraJobActionService {
 
 
 
-    List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate, TablePageForm pageForm, Integer type);
+    List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate, TablePageForm pageForm, String status);
 
 }

@@ -7,7 +7,7 @@
     <groupId>com.dfire.hera</groupId>
     <artifactId>hera</artifactId>
     <packaging>pom</packaging>
-    <version>2.2</version>
+    <version>2.3</version>
 
     <name>${project.artifactId}</name>
     <description>A Distributed Job Schedule System</description>
@@ -24,7 +24,6 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>1.5.9.RELEASE</version>
-
         <relativePath/>
     </parent>
 
@@ -236,12 +235,6 @@
             <id>publish</id>
             <properties>
                 <env>publish</env>
-            </properties>
-        </profile>
-        <profile>
-            <id>foreign</id>
-            <properties>
-                <env>foreign</env>
             </properties>
         </profile>
         <profile>

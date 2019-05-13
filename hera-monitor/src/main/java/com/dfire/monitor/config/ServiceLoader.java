@@ -1,5 +1,6 @@
 package com.dfire.monitor.config;
 
+import com.dfire.common.exception.UnsupportedTypeException;
 import com.dfire.monitor.service.JobFailAlarm;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -17,14 +18,26 @@ import java.util.Map;
 @Component
 public class ServiceLoader implements ApplicationContextAware {
 
-    private static List<JobFailAlarm> alarms;
+    private static List<JobFailAlarm> alarms = new ArrayList<>();
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        Map<String, JobFailAlarm> alarmMap = applicationContext.getBeansOfType(JobFailAlarm.class);
-        if (alarmMap != null && alarmMap.size() > 0) {
-            alarms = new ArrayList<>(alarmMap.size());
-            alarms.addAll(alarmMap.values());
+        setAlarms(applicationContext);
+    }
+
+
+    /**
+     * 通过@Alarms 注解 找到所有需要告警的实现类
+     *
+     * @param applicationContext applicationContext
+     */
+    private void setAlarms(ApplicationContext applicationContext) {
+        Map<String, Object> alarmBeans = applicationContext.getBeansWithAnnotation(Alarm.class);
+        for (Object bean : alarmBeans.values()) {
+            if (!(bean instanceof JobFailAlarm)) {
+                throw new UnsupportedTypeException("不支持的告警类型:" + bean.getClass().getName() + ",@Alarm注解只能放在" + JobFailAlarm.class + "的实现类上");
+            }
+            ServiceLoader.alarms.add((JobFailAlarm) bean);
         }
     }
 

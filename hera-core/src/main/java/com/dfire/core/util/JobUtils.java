@@ -98,9 +98,10 @@ public class JobUtils {
         script = replace(jobContext.getProperties().getAllProperties(), script);
         script = RenderHierarchyProperties.render(script, history.getActionId().substring(0, 12));
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
-
+        //TODO 可以加入 emr 动态集群创建
         List<Job> pres = new ArrayList<>();
         pres.add(new DownLoadJob(jobContext));
+        //TODO 可以加入 emr 集群延迟销毁
         List<Job> posts = new ArrayList<>();
         Job core = null;
         JobRunTypeEnum runType = JobRunTypeEnum.parser(jobBean.getHeraJob().getRunType());
