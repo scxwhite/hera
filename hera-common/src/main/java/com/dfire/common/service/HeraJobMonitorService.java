@@ -16,4 +16,6 @@ public interface HeraJobMonitorService {
 
 
     HeraJobMonitor findByJobId(Integer jobId);
+
+    HeraJobMonitor findByJobIdWithOutBlank(Integer jobId);
 }
