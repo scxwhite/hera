@@ -2,22 +2,26 @@
 
 # 数据平台打造的任务调度系统(HERA)
 
-[![Build Status](https://travis-ci.org/scxwhite/hera.svg?branch=open-source)](https://travis-ci.org/scxwhite/hera) [![](https://www.jitpack.io/v/scxwhite/hera.svg)](https://www.jitpack.io/#scxwhite/hera)
-
 [![Build Status](https://travis-ci.org/scxwhite/hera.svg?branch=open-source)](https://travis-ci.org/scxwhite/hera)
+[![](https://www.jitpack.io/v/scxwhite/hera.svg)](https://www.jitpack.io/#scxwhite/hera)
 
+目前接入hera的公司（[点我接入](https://github.com/scxwhite/hera/issues/24)）：
+- 杭州二维火科技有限公司
+- 杭州涂鸦科技有限公司
+- 北京高因科技（居理新房）有限公司
+- 盈亚科技有限公司
+- 持续更新中。。欢迎大家自荐
 
 
 
 # 交流群
 
-微信交流群
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2019010219083078.png)
-
-个人微信(失效加我拉你进去)
+个人微信(已满99人，需要我拉你进去)
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190102190821351.png)
+
+
 
 
 # 介绍文章
@@ -26,6 +30,10 @@
 [赫拉(hera)分布式任务调度系统之项目启动(二)](https://blog.csdn.net/su20145104009/article/details/85161711)
 
 [赫拉(hera)分布式任务调度系统之开发中心(三)](https://blog.csdn.net/su20145104009/article/details/85336364)
+
+[赫拉(hera)分布式任务调度系统之版本(四)](https://blog.csdn.net/su20145104009/article/details/85778303)
+
+[赫拉(hera)分布式任务调度系统之Q&A(五)](https://blog.csdn.net/su20145104009/article/details/86076137)
 ## 前言
 在大数据平台，随着业务发展，每天承载着成千上万的ETL任务调度，这些任务集中在hive,shell脚本调度。怎么样让大量的ETL任务准确的完成调度而不出现问题，甚至在任务调度执行中出现错误的情况下，任务能够完成自我恢复甚至执行错误告警与完整的日志查询。`hera`任务调度系统就是在这种背景下衍生的一款分布式调度系统。随着hera集群动态扩展，可以承载成千上万的任务调度。它是一款原生的分布式任务调度，可以快速的添加部署`wokrer`节点，动态扩展集群规模。支持`shell,hive,spark`脚本调度,可以动态的扩展支持`python`等服务器端脚本调度。 
 

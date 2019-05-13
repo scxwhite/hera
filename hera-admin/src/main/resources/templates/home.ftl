@@ -162,7 +162,7 @@
 <!-- ./wrapper -->
 <@netCommon.commonScript />
 <script src="${request.contextPath}/plugins/easyPie/jquery.easypiechart.min.js"></script>
-<script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.common.min.js"></script>
+<script src="${request.contextPath}/plugins/echarts/echarts.min.js"></script>
 <script src="${request.contextPath}/plugins/echarts/PercentPie.js"></script>
 <script src="${request.contextPath}/plugins/echarts/macarons.js"></script>
 <script src="${request.contextPath}/plugins/echarts/shine.js"></script>

@@ -5,8 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="${request.contextPath}/adminlte/plugins/font-awesome-4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/AdminLTE.css">
     <link rel="stylesheet" href="${request.contextPath}/adminlte/dist/css/skins/_all-skins.css">
     <link rel="stylesheet" href="${request.contextPath}/plugins/ionicons-2.0.1/css/ionicons.min.css">
@@ -22,8 +23,8 @@
 </#macro>
 
 <#macro commonScript>
-    <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="${request.contextPath}/adminlte/plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap.min.js"></script>
     <script src="${request.contextPath}/plugins/layui/layui.js"></script>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -114,7 +115,7 @@
                     </a>
                     <ul class="treeview-menu">
                         <li class="" id="jobDetailMenu"><a href="${request.contextPath}/jobDetail"><i
-                                class="fa fa-circle-o"></i>今日任务详情</a>
+                                class="fa fa-circle-o"></i>任务详情</a>
                         </li>
                         <li class="" id="jobDag"><a href="${request.contextPath}/jobDag"><i
                                 class="fa fa-circle-o"></i>任务依赖图</a></li>

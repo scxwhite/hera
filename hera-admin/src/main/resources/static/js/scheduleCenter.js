@@ -11,7 +11,7 @@ layui.use(['table'], function () {
         let selected;
         let triggerType;
         let allArea = [];
-        let groupTaskTable, groupTaskType, focusId = -1;
+        let groupTaskTable, groupTaskType,jobDt='', focusId = -1;
         let inheritConfigCM, selfConfigCM;
         let editor = $('#editor');
         let setting = {
@@ -1208,31 +1208,63 @@ layui.use(['table'], function () {
         });
         $('#showAllBtn').click(function () {
             // 表格渲染
-            groupTaskType = 0;
+            groupTaskType = 'all';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
 
         });
 
-
-        $('#groupOperate [name="showRunning"]').on('click', function () {
-            groupTaskType = 1;
+        $('#overviewOperator [name="showAll"]').on('click', function () {
+            groupTaskType = 'all';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
+
 
         $('#overviewOperator [name="showRunning"]').on('click', function () {
-            groupTaskType = 1;
+            groupTaskType = 'running';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
 
         $('#overviewOperator [name="showFaild"]').on('click', function () {
-            groupTaskType = 2;
+            groupTaskType = 'failed';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
+        
+        $('#overviewOperator [name="showSucc"]').on('click', function () {
+            groupTaskType = 'success';
+            jobDt=$('#jobDt').val();
+            reloadGroupTaskTable();
+        });
+       
 
         $('#groupOperate [name="showFaild"]').on('click', function () {
-            groupTaskType = 2;
+            groupTaskType = 'failed';
+            jobDt=$('#jobDt').val();
             reloadGroupTaskTable();
         });
+        
+        $('#groupOperate [name="showRunning"]').on('click', function () {
+            groupTaskType = 'running';
+            jobDt=$('#jobDt').val();
+            reloadGroupTaskTable();
+        });
+        
+        $('#groupOperate [name="showAll"]').on('click', function () {
+            groupTaskType = 'all';
+            jobDt=$('#jobDt').val();
+            reloadGroupTaskTable();
+        });
+        
+        $('#groupOperate [name="showSucc"]').on('click', function () {
+            groupTaskType = 'success';
+            jobDt=$('#jobDt').val();
+            reloadGroupTaskTable();
+        });
+        
+        
         $('#closeAll').click(function (e) {
             $("#showAllModal").modal('hide');
         });
@@ -1255,7 +1287,8 @@ layui.use(['table'], function () {
                     , url: base_url + '/scheduleCenter/getGroupTask'
                     , where: {
                         groupId: focusId,
-                        type: groupTaskType
+                        status: groupTaskType,
+                        dt:jobDt
                     }
                     , method: 'get'
                     , page: true
@@ -1265,7 +1298,8 @@ layui.use(['table'], function () {
                 groupTaskTable.reload({
                     where: {
                         groupId: focusId,
-                        type: groupTaskType
+                        status: groupTaskType,
+                        dt:jobDt
                     },
                     page: {
                         curr: 1 //重新从第 1 页开始
@@ -1424,42 +1458,39 @@ let JobLogTable = function (jobId) {
             columns: [
                 {
                     field: "id",
-                    title: "id",
+                    title: "ID",
                     width: "5%",
                 }, {
                     field: "actionId",
                     title: "版本号",
                     width: "15%",
+                    formatter: function (val) {
+                        let val01 = val.substring(0,8);
+                        let val02 = val.substring(8,14);
+                        let val03 = val.substring(14);
+                        let re = '<a class="text-primary" >'+val01+'</a>' + '<a class="text-warning" >'+val02+'</a>' + '<a class="text-success" >'+val03+'</a>' ;
+                        return re;
+                    }
                 }, {
                     field: "jobId",
                     title: "任务ID",
                     width: "5%",
-                }, {
-                    field: "executeHost",
-                    title: "执行机器ip",
-                    width: "8%",
-
                 }, {
                     field: "status",
                     title: "执行状态",
                     width: "8%",
                     formatter: function (val) {
                         if (val === 'running') {
-                            return '<a class="layui-btn layui-btn-xs" style="width: 100%;">' + val + '</a>';
+                            return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
                         }
                         if (val === 'success') {
                             return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
                         }
                         if (val === 'wait') {
-                            return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                            return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + val + '</a>';
                         }
                         return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
                     }
-                }, {
-                    field: "operator",
-                    title: "执行人",
-                    width: "8%",
-
                 }, {
                     field: "startTime",
                     title: "开始时间",
@@ -1469,6 +1500,22 @@ let JobLogTable = function (jobId) {
                     title: "结束时间",
                     width: "12%"
                 }, {
+                    field: "durations",
+                    title: "时长(分)",
+                    width: "8%",
+                    formatter: function (index, row) {
+                        let st =new Date( row['startTime']);
+                        if (row['endTime'] == null || row['endTime'] == '' ){
+                        	let ed=new Date();
+                        	return (parseInt(ed - st)/1000.0/60.0).toFixed(1);
+                        }else{
+                        	let ed=new Date( row['endTime']);
+                        	return (parseInt(ed - st)/1000.0/60.0).toFixed(1);
+                        }
+                    }
+                }
+                
+                , {
                     field: "illustrate",
                     title: "说明",
                     width: "8%",
@@ -1506,6 +1553,15 @@ let JobLogTable = function (jobId) {
                             return html;
                         }
                     }
+                }, {
+                    field: "executeHost",
+                    title: "机器|执行人",
+                    width: "12%",
+                    formatter: function (index, row) {
+                        let val01 = row['executeHost'] + '|' + row['operator'];
+                        return val01;
+                    }
+
                 }
             ],
             detailView: true,

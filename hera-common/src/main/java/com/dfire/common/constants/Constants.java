@@ -12,7 +12,7 @@ public class Constants {
 
     public final static String PRE_ENV = "pre";
 
-    public final static String PUB_ENV = "publish";
+    public final static String PUB_ENV = "public";
 
     public final static String WORK_PREFIX = "worker-";
 
@@ -21,6 +21,8 @@ public class Constants {
     public final static String STATUS_NONE = "none";
 
     public final static Integer HTML_FONT_SIZE = 1;
+
+    public final static Integer AVAILABLE_CORES = Runtime.getRuntime().availableProcessors();
 
     public final static String HTML_FONT_RED_LEFT = "<font color=\"red\" size=\"" + HTML_FONT_SIZE + "\" >";
 
@@ -66,9 +68,6 @@ public class Constants {
     public final static int INTERRUPTED_EXIT_CODE = WAIT_EXIT_CODE + 2;
 
 
-
-
-
     public final static String SPARK_FILE = "spark";
 
     public final static String HIVE_FILE = "hive";
@@ -91,6 +90,8 @@ public class Constants {
 
     public final static String NEW_LINE = "\n";
 
+    public final static String BLANK_SPACE = " ";
+
     public final static String HTML_NEW_LINE = "<br>";
 
 
@@ -109,4 +110,11 @@ public class Constants {
     public final static String INVALID_STATUS = "失效";
 
 
+    public final static String QUARTZ_ID = "actionId";
+
+    public final static String QUARTZ_DISPATCHER = "dispatcher";
+
+
+    
+    
 }

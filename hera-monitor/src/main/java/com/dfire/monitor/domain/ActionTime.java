@@ -16,7 +16,5 @@ public class ActionTime {
 
     private String jobTime;
 
-    private String runType;
-
     private Integer yesterdayTime;
 }

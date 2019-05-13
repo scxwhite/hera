@@ -34,7 +34,7 @@ public class RandomLoadBalance extends AbstractLoadBalance {
                 }
             }
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
-                if (workHolder.getHeartBeatInfo().getHost().equals(hosts.get(select).trim())) {
+                if (workHolder.getHeartBeatInfo() != null && workHolder.getHeartBeatInfo().getHost().equals(hosts.get(select).trim())) {
                     if (check(workHolder)) {
                         ScheduleLog.warn("select work is :{}", workHolder.getChannel().getRemoteAddress());
                         return workHolder;
