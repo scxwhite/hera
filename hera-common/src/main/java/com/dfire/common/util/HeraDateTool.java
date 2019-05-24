@@ -94,6 +94,20 @@ public class HeraDateTool {
         return date;
     }
 
+    /**
+     * @param date 需要转换的日期
+     * @param formatStr 需要格式的目标字符串  举例 yyyy-MM-dd
+     * @return String 返回转换后日期格式字符串
+     * @desc 时间类型转换到字符串
+     */
+    public static String DateToString(Date date, String formatStr) {
+        DateFormat sdf = new SimpleDateFormat(formatStr);
+        if (date == null){
+            return null;
+        }
+        return sdf.format(date);
+    }
+
     public static String getToday() {
         return new DateTime().toString(TimeFormatConstant.YYYY_MM_DD);
     }

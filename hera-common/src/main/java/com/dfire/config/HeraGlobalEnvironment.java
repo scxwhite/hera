@@ -107,6 +107,10 @@ public class HeraGlobalEnvironment {
     @Getter
     private static String mailPassword;
     @Getter
+    private static String smsDankeUrl;
+    @Getter
+    private static String smsDankeTemplateCode;
+    @Getter
     private static Set<String> alarmEnvSet;
 
     @Value("${hera.excludeFile")
@@ -310,6 +314,16 @@ public class HeraGlobalEnvironment {
     @Value("${mail.password}")
     public void setMailPassword(String mailPassword) {
         HeraGlobalEnvironment.mailPassword = mailPassword;
+    }
+
+    @Value("${sms.danke.url}")
+    public void setSmsDankeUrl(String smsDankeUrl) {
+        HeraGlobalEnvironment.smsDankeUrl = smsDankeUrl;
+    }
+
+    @Value("${sms.danke.templateCode}")
+    public void setSmsDankeTemplateCode(String smsDankeTemplateCode) {
+        HeraGlobalEnvironment.smsDankeTemplateCode = smsDankeTemplateCode;
     }
 
     @Value("${hera.alarmEnv}")

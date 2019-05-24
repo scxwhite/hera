@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.mail.MessagingException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author xiaosuda
@@ -52,14 +54,16 @@ public class EmailJobFailAlarm implements JobFailAlarm {
         if (heraJob.getAuto() != 1) {
             return;
         }
-        StringBuilder address = new StringBuilder();
+        Set<String> address = new HashSet<>();
         try {
-            HeraJobMonitor monitor = heraJobMonitorService.findByJobId(heraJob.getId());
-            if (monitor == null && Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
+            if (Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
                 ScheduleLog.info("任务无监控人，发送给owner：{}", heraJob.getId());
                 HeraUser user = heraUserService.findByName(heraJob.getOwner());
-                address.append(user.getEmail().trim());
-            } else if (monitor != null) {
+                address.add(user.getEmail().trim());
+            }
+
+            HeraJobMonitor monitor = heraJobMonitorService.findByJobId(heraJob.getId());
+            if (monitor != null) {
                 String ids = monitor.getUserIds();
                 String[] id = ids.split(Constants.COMMA);
                 for (String anId : id) {
@@ -68,7 +72,7 @@ public class EmailJobFailAlarm implements JobFailAlarm {
                     }
                     HeraUser user = heraUserService.findById(Integer.parseInt(anId));
                     if (user != null && user.getEmail() != null) {
-                        address.append(user.getEmail()).append(Constants.SEMICOLON);
+                        address.add(user.getEmail().trim());
                     }
                 }
             }
@@ -84,7 +88,7 @@ public class EmailJobFailAlarm implements JobFailAlarm {
             if (errorMsg != null) {
                 content += Constants.HTML_NEW_LINE + Constants.HTML_NEW_LINE + "--------------------------------------------" + Constants.HTML_NEW_LINE + errorMsg;
             }
-            emailService.sendEmail(title, content, address.toString());
+            emailService.sendEmail(title, content, StringUtils.join(address, Constants.SEMICOLON));
         } catch (MessagingException e) {
             e.printStackTrace();
             ErrorLog.error("发送邮件失败");
