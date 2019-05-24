@@ -7,12 +7,11 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>${global.version}</version>
-        <relativePath>..</relativePath>
+        <version>3.0-beta</version>
     </parent>
 
     <artifactId>hera-admin</artifactId>
-    <!--<version>${global.version}</version>-->
+    <version>${global.version}</version>
     <packaging>jar</packaging>
     <name>hera-admin</name>
     <description>hera任务调度系统</description>
@@ -25,8 +24,8 @@
         <springfox.swagger.ui.version>2.7.0</springfox.swagger.ui.version>
         <main-class>com.dfire.AdminBootstrap</main-class>
         <assembly.include.base.directory>true</assembly.include.base.directory>
-        <hera.core.version>2.3</hera.core.version>
-        <hera.monitor.version>2.3</hera.monitor.version>
+        <!--<hera.core.version>2.3</hera.core.version>-->
+        <!--<hera.monitor.version>2.3</hera.monitor.version>-->
     </properties>
 
     <dependencies>
@@ -116,7 +115,6 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-core</artifactId>
-            <version>${hera.core.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
         <dependency>

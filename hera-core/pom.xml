@@ -7,8 +7,7 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>${global.version}</version>
-        <relativePath>..</relativePath>
+        <version>3.0-beta</version>
     </parent>
 
     <artifactId>hera-core</artifactId>
@@ -21,8 +20,8 @@
         <quartz.version>2.2.1</quartz.version>
         <jwt.version>3.3.0</jwt.version>
         <lang3.version>3.4</lang3.version>
-        <hera.common.version>2.3</hera.common.version>
-        <hera.protocol.version>2.3</hera.protocol.version>
+        <!--<hera.common.version>2.3</hera.common.version>-->
+        <!--<hera.protocol.version>2.3</hera.protocol.version>-->
     </properties>
 
     <dependencies>
@@ -83,13 +82,13 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-monitor</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${global.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-protocol</artifactId>
-            <version>${hera.protocol.version}</version>
+            <version>${global.version}</version>
         </dependency>
 
         <dependency>
