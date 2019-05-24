@@ -5,8 +5,7 @@
     <parent>
         <artifactId>hera</artifactId>
         <groupId>com.dfire.hera</groupId>
-        <version>${global.version}</version>
-        <relativePath>..</relativePath>
+        <version>3.0-beta</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <version>${global.version}</version>
