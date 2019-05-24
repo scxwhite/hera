@@ -7,12 +7,13 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>2.3</version>
+        <version>${global.version}</version>
+        <relativePath>..</relativePath>
     </parent>
 
     <artifactId>hera-core</artifactId>
     <packaging>jar</packaging>
-    <version>2.3</version>
+    <version>${global.version}</version>
     <name>hera-core</name>
     <description>hera project for Spring Boot</description>
 

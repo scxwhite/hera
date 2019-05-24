@@ -5,12 +5,13 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>2.3</version>
+        <version>${global.version}</version>
+        <relativePath>..</relativePath>
     </parent>
 
     <artifactId>hera-common</artifactId>
     <packaging>jar</packaging>
-    <version>2.3</version>
+    <version>${global.version}</version>
     <name>hera-common</name>
 
     <dependencies>

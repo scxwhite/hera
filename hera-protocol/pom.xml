@@ -5,10 +5,11 @@
     <parent>
         <artifactId>hera</artifactId>
         <groupId>com.dfire.hera</groupId>
-        <version>2.3</version>
+        <version>${global.version}</version>
+        <relativePath>..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>2.3</version>
+    <version>${global.version}</version>
     <artifactId>hera-protocol</artifactId>
     <dependencies>
         <dependency>
