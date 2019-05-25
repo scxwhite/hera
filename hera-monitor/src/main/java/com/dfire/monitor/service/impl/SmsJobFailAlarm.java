@@ -133,21 +133,18 @@ public class SmsJobFailAlarm implements JobFailAlarm {
     }
 
     public class DankeSmsRequest{
-        private ArrayList<Map<String, String>> params = new ArrayList<>();
+        private Map<String, String> templateParams = new HashMap<>();
         private String templateCode;
 
         public void addParam(String key, String value){
-            Map<String, String> kv = new HashMap<>();
-            kv.put("key", key);
-            kv.put("value", value);
-
-            params.add(kv);
+            templateParams.put(key, value);
         }
 
-        public void setParams(ArrayList<Map<String, String>> params){
-            this.params = params;
+        public void setTemplateParams(Map<String, String> params){
+            this.templateParams = templateParams;
         }
-        public ArrayList<Map<String, String>> getParams(){ return params; }
+        @JSONField(name = "template_params")
+        public Map<String, String> getTemplateParams(){ return templateParams; }
 
         @JSONField(name = "template_code")
         public String getTemplateCode() {
