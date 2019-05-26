@@ -82,13 +82,13 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-monitor</artifactId>
-            <version>${global.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-protocol</artifactId>
-            <version>${global.version}</version>
+            <version>${hera.protocol.version}</version>
         </dependency>
 
         <dependency>
