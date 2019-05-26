@@ -53,6 +53,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <snakeyaml.version>1.24</snakeyaml.version>
+        <protobuf.java.version>3.5.1</protobuf.java.version>
+        <netty.bom.version>4.1.20.Final</netty.bom.version>
 
     </properties>
 
@@ -222,14 +224,14 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.20.Final</version>
+                <version>${netty.bom.version}</version>
                 <type>pom</type>
             </dependency>
 
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>3.7.1</version>
+                <version>${protobuf.java.version}</version>
             </dependency>
 
         </dependencies>
