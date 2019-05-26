@@ -28,7 +28,6 @@ import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
 import com.dfire.protocol.RpcSocketMessage;
 import com.dfire.protocol.RpcWebResponse;
 import com.dfire.protocol.RpcWorkInfo.*;
-import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -380,7 +379,7 @@ public class WorkClient {
         return "生成版本成功";
     }
 
-    public Map<String, HeartBeatInfo> getJobQueueInfoFromWeb() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
+    public Map<String, HeartBeatInfo> getJobQueueInfoFromWeb() throws Exception {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getJobQueueInfoFromMaster(workContext).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
             ErrorLog.error("获取心跳信息失败:{}", response.getErrorText());
@@ -407,7 +406,7 @@ public class WorkClient {
         return infoMap;
     }
 
-    public HashMap<String, WorkInfoVo> getAllWorkInfo() throws ExecutionException, InterruptedException, InvalidProtocolBufferException {
+    public HashMap<String, WorkInfoVo> getAllWorkInfo() throws Exception {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.getAllWorkInfoFromMaster(workContext).get();
         if (response == null || response.getStatus() == ResponseStatus.Status.ERROR) {
             ErrorLog.error("获取work信息失败:{}", response.getErrorText());

@@ -30,7 +30,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netty.version>4.1.9.Final</netty.version>
+        <netty.version>4.0.20.Final</netty.version>
         <druid.version>1.0.14</druid.version>
         <mysql.version>5.1.47</mysql.version>
         <fastjson.version>1.2.7</fastjson.version>
@@ -217,6 +217,19 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${snakeyaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>4.1.20.Final</version>
+                <type>pom</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.7.1</version>
             </dependency>
 
         </dependencies>
