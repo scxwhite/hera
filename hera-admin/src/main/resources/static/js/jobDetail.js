@@ -44,17 +44,35 @@ layui.use(['table'], function () {
                             return index + 1;
                         }
                     }, {
-                        field: 'jobId',
-                        title: '任务ID',
-                        formatter: function (val) {
-                            return '<a href = "#">' + val + '</a>';
-                        }
+                        field: 'groupName',
+                        title: '任务组',
+                        sortable: true
                     }, {
                         field: 'jobName',
-                        title: '任务名称'
+                        title: '任务名称',
+                        sortable: true,
+                        formatter: function (val, row, index) {
+                        	let val01 =   '<a href = "#">' + val +'['+row['jobId']+']' + '</a>' ;
+                            return val01;
+                        }
                     }, {
                         field: 'description',
                         title: '任务描述'
+                    }, {
+                        field: 'status',
+                        title: '状态',
+                        formatter: function (val) {
+                            if (val === 'running') {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                            }
+                            if (val === 'success') {
+                                return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
+                            }
+                            if (val === 'wait') {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + val + '</a>';
+                            }
+                            return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
+                        }
                     }, {
                         field: 'startTime',
                         title: '开始时间',
@@ -63,18 +81,19 @@ layui.use(['table'], function () {
                         },
                         sortable: true
                     }, {
-                        field: 'times',
-                        title: '执行次数',
+                        field: 'durations',
+                        title: '时长(分)',
                         sortable: true
                     }, {
-                        field: 'executeHost',
-                        title: '执行服务器'
+                        field: 'times',
+                        title: '次数'
                     }, {
-                        field: 'status',
-                        title: '执行状态'
-                    }, {
-                        field: 'operator',
-                        title: '执行人'
+                    	field: "executeHost",
+                        title: "机器|执行人",
+                        formatter: function (index, row) {
+                            let val01 = row['executeHost'] + '|' + row['operator'];
+                            return val01;
+                        }
                     }
                 ],
                 // data:info.data
@@ -94,6 +113,7 @@ layui.use(['table'], function () {
     function params(params) {
         var temp = {
             status: $('#jobStatus').val(),
+            dt: $('#jobDt').val(),
         };
         return temp;
     }
@@ -167,27 +187,51 @@ layui.use(['table'], function () {
                         title: "id"
                     }, {
                         field: "actionId",
-                        title: "版本号"
+                        title: "版本号",
+                        formatter: function (val) {
+                            let val01 = val.substring(0,8);
+                            let val02 = val.substring(8,14);
+                            let val03 = val.substring(14);
+                            let re = '<a class="text-primary" >'+val01+'</a>' + '<a class="text-warning" >'+val02+'</a>' + '<a class="text-success" >'+val03+'</a>' ;
+                            return re;
+                        }
                     }, {
                         field: "jobId",
                         title: "任务ID"
                     }, {
-                        field: "executeHost",
-                        title: "执行机器ip"
-                    }, {
                         field: "status",
-                        title: "执行状态"
-                    }, {
-                        field: "operator",
-                        title: "执行人"
+                        title: "状态",
+                        formatter: function (val) {
+                            if (val === 'running') {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                            }
+                            if (val === 'success') {
+                                return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
+                            }
+                            if (val === 'wait') {
+                                return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + val + '</a>';
+                            }
+                            return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
+                        }
                     }, {
                         field: "startTime",
-                        title: "开始时间",
-                        width: "20%"
+                        title: "开始时间"
                     }, {
                         field: "endTime",
-                        title: "结束时间",
-                        width: "20%"
+                        title: "结束时间"
+                    }, {
+                        field: "durations",
+                        title: "时长(分)",
+                        formatter: function (index, row) {
+                            let st =new Date( row['startTime']);
+                            if (row['endTime'] == null || row['endTime'] == '' ){
+                            	let ed=new Date();
+                            	return (parseInt(ed - st)/1000.0/60.0).toFixed(1);
+                            }else{
+                            	let ed=new Date( row['endTime']);
+                            	return (parseInt(ed - st)/1000.0/60.0).toFixed(1);
+                            }
+                        }
                     }, {
                         field: "illustrate",
                         title: "说明",
@@ -200,8 +244,7 @@ layui.use(['table'], function () {
                     },
                     {
                         field: "triggerType",
-                        title: "触发类型",
-                        width: "20%",
+                        title: "触发类型" ,
                         formatter: function (value, row) {
                             if (row['triggerType'] == 1) {
                                 return "自动调度";
@@ -218,13 +261,20 @@ layui.use(['table'], function () {
                     {
                         field: "status",
                         title: "操作",
-                        width: "20%",
                         formatter: function (index, row) {
                             var html = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消任务</a>';
                             if (row['status'] == 'running') {
                                 return html;
                             }
                         }
+                    }, {
+                        field: "executeHost",
+                        title: "机器|执行人",
+                        formatter: function (index, row) {
+                            let val01 = row['executeHost'] + '|' + row['operator'];
+                            return val01;
+                        }
+
                     }
                 ],
                 detailView: true,

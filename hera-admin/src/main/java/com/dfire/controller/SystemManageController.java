@@ -124,15 +124,15 @@ public class SystemManageController extends BaseHeraController {
     }
 
     /**
-     * 任务管理页面今日任务详情
+     * 任务管理页面今日任务详情--> 今日 -->N天内
      *
      * @param status
      * @return
      */
     @RequestMapping(value = "/jobManage/findJobHistoryByStatus", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse findJobHistoryByStatus(@RequestParam("status") String status) {
-        return jobManageService.findJobHistoryByStatus(status);
+    public JsonResponse findJobHistoryByStatus(@RequestParam("status") String status,@RequestParam("dt") String dt) {
+        return jobManageService.findJobHistoryByStatus(status,dt);
     }
 
     /**

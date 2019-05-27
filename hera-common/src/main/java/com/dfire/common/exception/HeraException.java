@@ -1,4 +1,4 @@
-package com.dfire.core;
+package com.dfire.common.exception;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

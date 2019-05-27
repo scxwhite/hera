@@ -1,5 +1,8 @@
 package com.dfire.core.job;
 
+import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.core.util.EmrUtils;
+
 import java.util.List;
 
 /**
@@ -34,43 +37,51 @@ public class ProcessJobContainer extends AbstractJob {
      */
     @Override
     public int run() throws Exception {
-        int preExitCode = -1;
-        for (Job job : pres) {
-            if (isCanceled()) {
-                break;
+        int exitCode = -1;
+        try {
+            if (HeraGlobalEnvironment.isEmrJob()) {
+                log("启动EMR集群中,请等待...");
+                EmrUtils.addJob();
+                log("EMR集群启动完毕!");
             }
-            running = job;
-            log("开始执行前置处理单元" + job.getClass().getSimpleName());
-            preExitCode = running.run();
-            jobContext.setPreExitCode(preExitCode);
-            log("前置处理单元" + job.getClass().getSimpleName() + "处理完毕");
-            running = null;
-        }
 
-        Integer exitCode = -1;
-        jobContext.setCoreExitCode(exitCode);
-        if (!isCanceled()) {
-            log("开始执行核心job");
-            running = job;
-            exitCode = job.run();
+            for (Job job : pres) {
+                if (isCanceled()) {
+                    break;
+                }
+                running = job;
+                log("开始执行前置处理单元" + job.getClass().getSimpleName());
+                jobContext.setPreExitCode(running.run());
+                log("前置处理单元" + job.getClass().getSimpleName() + "处理完毕");
+                running = null;
+            }
             jobContext.setCoreExitCode(exitCode);
-        }
-        log("核心job处理完毕");
-        running = null;
-
-        int postExitCode = -1;
-        for (Job job : posts) {
-            if (isCanceled()) {
-                break;
+            if (!isCanceled()) {
+                log("开始执行核心job");
+                running = job;
+                exitCode = job.run();
+                jobContext.setCoreExitCode(exitCode);
             }
-            log("开始执行后置处理单元" + job.getClass().getSimpleName());
-            running = job;
-            postExitCode = running.run();
-            jobContext.setPreExitCode(postExitCode);
-            log("后置置处理单元" + job.getClass().getSimpleName() + "处理完毕");
+            log("核心job处理完毕");
             running = null;
+
+            for (Job job : posts) {
+                if (isCanceled()) {
+                    break;
+                }
+                log("开始执行后置处理单元" + job.getClass().getSimpleName());
+                running = job;
+                jobContext.setPreExitCode(running.run());
+                log("后置置处理单元" + job.getClass().getSimpleName() + "处理完毕");
+                running = null;
+            }
+        } finally {
+            if (HeraGlobalEnvironment.isEmrJob()) {
+                EmrUtils.removeJob();
+            }
+            log("exitCode = " + exitCode);
         }
-        log("exitCode = " + exitCode);
+
         return exitCode;
     }
 

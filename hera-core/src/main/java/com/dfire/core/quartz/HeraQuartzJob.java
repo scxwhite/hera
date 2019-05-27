@@ -1,7 +1,8 @@
 package com.dfire.core.quartz;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.core.event.Dispatcher;
-import com.dfire.core.event.HeraScheduleTriggerEvent;
+import com.dfire.event.HeraScheduleTriggerEvent;
 import com.dfire.logs.ScheduleLog;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -14,10 +15,10 @@ public class HeraQuartzJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        String jobId = context.getJobDetail().getJobDataMap().getString("actionId");
-        Dispatcher dispatcher = (Dispatcher) context.getJobDetail().getJobDataMap().get("dispatcher");
+        String jobId = context.getJobDetail().getJobDataMap().getString(Constants.QUARTZ_ID);
+        Dispatcher dispatcher = (Dispatcher) context.getJobDetail().getJobDataMap().get(Constants.QUARTZ_DISPATCHER);
         HeraScheduleTriggerEvent scheduledEvent = HeraScheduleTriggerEvent.builder().jobId(jobId).build();
         dispatcher.forwardEvent(scheduledEvent);
-        ScheduleLog.warn("execute schedule job {}", jobId);
+        ScheduleLog.info("execute schedule job {}", jobId);
     }
 }

@@ -1,5 +1,6 @@
 package com.dfire.monitor.service.impl;
 
+import com.dfire.event.HeraJobFailedEvent;
 import com.dfire.monitor.config.Alarm;
 import com.dfire.monitor.service.JobFailAlarm;
 
@@ -14,9 +15,7 @@ public class PhoneJobFailAlarm implements JobFailAlarm {
 
 
     @Override
-    public void alarm(String actionId) {
-
-
+    public void alarm(HeraJobFailedEvent failedEvent) {
 
     }
 }

@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.LinkedList;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -24,33 +25,57 @@ public class LogContent {
     private final String HERA = "<b>HERA#</b> ";
     private StringBuffer content;
 
-    private static final int COUNT = 10000;
+    private static final int COUNT = 8000;
+    private static final int TAIL_PRINT_COUNT = 2000;
     private static final String ERROR = "error";
+
+    private LinkedList<String> tailLog;
+
+
+    /**
+     * size大小的队列
+     *
+     * @param log
+     */
+    private void queuePushLog(String log) {
+        if (tailLog == null) {
+            tailLog = new LinkedList<>();
+        }
+        tailLog.add(log);
+        if (tailLog.size() >= TAIL_PRINT_COUNT) {
+            tailLog.removeFirst();
+        }
+    }
+
+    private String tailLog() {
+        if (lines >= COUNT) {
+            StringBuilder sb = new StringBuilder();
+            String[] tailLogs = tailLog.toArray(new String[0]);
+            for (String log : tailLogs) {
+                sb.append(log);
+            }
+            return sb.toString();
+        } else {
+            return "";
+        }
+    }
 
 
     public void appendConsole(String log) {
-
+        //空日志不记录
+        if (StringUtils.isBlank(log)) {
+            return;
+        }
+        lines++;
         if (lines < COUNT) {
-            //空日志不记录
-            if (StringUtils.isBlank(log)) {
-                return ;
+            content.append(CONSOLE).append(redColorMsg(log)).append(Constants.LOG_SPLIT);
+            if (lines + 1 >= COUNT) {
+                content.append(HERA).append("控制台输出信息过多，停止记录，建议您优化自己的Job" + Constants.LOG_SPLIT);
+                content.append(HERA).append("..." + Constants.LOG_SPLIT);
+                content.append(HERA).append("..." + Constants.LOG_SPLIT);
             }
-            if (log.toLowerCase().contains(ERROR)
-                    || log.toLowerCase().contains(StatusEnum.FAILED.toString())
-                    || log.contains("Exception")
-                    || log.contains("NullPointException")
-                    || log.contains("No such file or directory")
-                    || log.contains("command not found")
-                    || log.contains("Permission denied")) {
-                content.append(CONSOLE).append("<font style=\"color:red\">")
-                        .append(log).append("</font>")
-                        .append(Constants.LOG_SPLIT);
-            } else {
-                content.append(CONSOLE).append(log).append(Constants.LOG_SPLIT);
-            }
-            if (++lines >= COUNT) {
-                content.append(HERA).append("控制台输出信息过多，停止记录，建议您优化自己的Job");
-            }
+        } else {
+            queuePushLog(CONSOLE + redColorMsg(log) + Constants.LOG_SPLIT);
         }
     }
 
@@ -61,6 +86,8 @@ public class LogContent {
         }
         if (lines < COUNT) {
             content.append(HERA).append(log).append(Constants.LOG_SPLIT);
+        } else {
+            queuePushLog(HERA + log + Constants.LOG_SPLIT);
         }
     }
 
@@ -70,7 +97,9 @@ public class LogContent {
             content = new StringBuffer();
         }
         if (lines < COUNT) {
-            content.append(HERA).append(log).append(Constants.LOG_SPLIT);
+            content.append(log).append(Constants.LOG_SPLIT);
+        } else {
+            queuePushLog(log + Constants.LOG_SPLIT);
         }
     }
 
@@ -88,8 +117,29 @@ public class LogContent {
     }
 
     public String getContent() {
-        return content.toString();
+        return content.toString() + tailLog();
+
     }
+
+
+    public String getMailContent() {
+        return getContent();
+    }
+
+    private String redColorMsg(String log) {
+        if (log.toLowerCase().contains(ERROR)
+                || log.toLowerCase().contains(StatusEnum.FAILED.toString())
+                || log.contains("Exception")
+                || log.contains("NullPointException")
+                || log.contains("No such file or directory")
+                || log.contains("command not found")
+                || log.contains("Permission denied")) {
+            return "<font style=\"color:red\">" + log + "</font>";
+        } else {
+            return log;
+        }
+    }
+
 
     public int getLines() {
         return lines;

@@ -1,0 +1,334 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] hera                                                               [pom]
+[INFO] hera-common                                                        [jar]
+[INFO] hera-protocol                                                      [jar]
+[INFO] hera-monitor                                                       [jar]
+[INFO] hera-core                                                          [jar]
+[INFO] hera-admin                                                         [jar]
+[INFO] 
+[INFO] ------------------------< com.dfire.hera:hera >-------------------------
+[INFO] Building hera 2.3                                                  [1/6]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ hera ---
+[INFO] com.dfire.hera:hera:pom:2.3
+[INFO] 
+[INFO] ---------------------< com.dfire.hera:hera-common >---------------------
+[INFO] Building hera-common 2.3                                           [2/6]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ hera-common ---
+[INFO] com.dfire.hera:hera-common:jar:2.3
+[INFO] +- org.mybatis.spring.boot:mybatis-spring-boot-starter:jar:1.1.1:compile
+[INFO] |  \- org.mybatis.spring.boot:mybatis-spring-boot-autoconfigure:jar:1.1.1:compile
+[INFO] |     +- org.mybatis:mybatis:jar:3.4.0:compile
+[INFO] |     +- org.mybatis:mybatis-spring:jar:1.3.0:compile
+[INFO] |     +- org.springframework.boot:spring-boot:jar:2.0.6.RELEASE:compile
+[INFO] |     |  +- org.springframework:spring-core:jar:5.0.10.RELEASE:compile
+[INFO] |     |  |  \- org.springframework:spring-jcl:jar:5.0.10.RELEASE:compile
+[INFO] |     |  \- org.springframework:spring-context:jar:5.0.10.RELEASE:compile
+[INFO] |     |     +- org.springframework:spring-aop:jar:5.0.10.RELEASE:compile
+[INFO] |     |     +- org.springframework:spring-beans:jar:5.0.10.RELEASE:compile
+[INFO] |     |     \- org.springframework:spring-expression:jar:5.0.10.RELEASE:compile
+[INFO] |     +- org.springframework.boot:spring-boot-autoconfigure:jar:2.0.6.RELEASE:compile
+[INFO] |     \- org.springframework.boot:spring-boot-starter-jdbc:jar:2.0.6.RELEASE:compile
+[INFO] |        +- org.springframework.boot:spring-boot-starter:jar:2.0.6.RELEASE:compile
+[INFO] |        |  +- org.springframework.boot:spring-boot-starter-logging:jar:2.0.6.RELEASE:compile
+[INFO] |        |  |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |        |  |  |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] |        |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.10.0:compile
+[INFO] |        |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.10.0:compile
+[INFO] |        |  |  \- org.slf4j:jul-to-slf4j:jar:1.7.9:compile
+[INFO] |        |  +- javax.annotation:javax.annotation-api:jar:1.3.2:compile
+[INFO] |        |  \- org.yaml:snakeyaml:jar:1.24:runtime
+[INFO] |        +- com.zaxxer:HikariCP:jar:2.7.9:compile
+[INFO] |        |  \- org.slf4j:slf4j-api:jar:1.7.9:compile
+[INFO] |        \- org.springframework:spring-jdbc:jar:5.0.10.RELEASE:compile
+[INFO] |           \- org.springframework:spring-tx:jar:5.0.10.RELEASE:compile
+[INFO] +- mysql:mysql-connector-java:jar:5.1.47:compile
+[INFO] +- org.projectlombok:lombok:jar:1.18.2:compile
+[INFO] +- com.alibaba:druid:jar:1.0.14:compile
+[INFO] |  +- com.alibaba:jconsole:jar:1.8.0:system
+[INFO] |  \- com.alibaba:tools:jar:1.8.0:system
+[INFO] +- com.github.pagehelper:pagehelper:jar:5.1.2:compile
+[INFO] |  \- com.github.jsqlparser:jsqlparser:jar:1.0:compile
+[INFO] +- com.google.guava:guava:jar:23.0:compile
+[INFO] |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  +- com.google.errorprone:error_prone_annotations:jar:2.0.18:compile
+[INFO] |  +- com.google.j2objc:j2objc-annotations:jar:1.1:compile
+[INFO] |  \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.14:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.7:compile
+[INFO] +- junit:junit:jar:4.12:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- javax.mail:mail:jar:1.4.5:compile
+[INFO] |  \- javax.activation:activation:jar:1.1:compile
+[INFO] +- org.apache.velocity:velocity:jar:1.5:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.1:compile
+[INFO] |  \- oro:oro:jar:2.0.8:compile
+[INFO] +- com.sun.mail:javax.mail:jar:1.5.4:compile
+[INFO] \- joda-time:joda-time:jar:2.9.9:compile
+[INFO] 
+[INFO] --------------------< com.dfire.hera:hera-protocol >--------------------
+[INFO] Building hera-protocol 2.3                                         [3/6]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ hera-protocol ---
+[INFO] com.dfire.hera:hera-protocol:jar:2.3
+[INFO] \- com.google.protobuf:protobuf-java:jar:3.5.1:compile
+[INFO] 
+[INFO] --------------------< com.dfire.hera:hera-monitor >---------------------
+[INFO] Building hera-monitor 2.3                                          [4/6]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ hera-monitor ---
+[INFO] com.dfire.hera:hera-monitor:jar:2.3
+[INFO] +- com.dfire.hera:hera-common:jar:2.3:compile
+[INFO] |  +- org.mybatis.spring.boot:mybatis-spring-boot-starter:jar:1.1.1:compile
+[INFO] |  |  \- org.mybatis.spring.boot:mybatis-spring-boot-autoconfigure:jar:1.1.1:compile
+[INFO] |  |     +- org.mybatis:mybatis:jar:3.4.0:compile
+[INFO] |  |     +- org.mybatis:mybatis-spring:jar:1.3.0:compile
+[INFO] |  |     +- org.springframework.boot:spring-boot:jar:2.0.6.RELEASE:compile
+[INFO] |  |     |  +- org.springframework:spring-core:jar:5.0.10.RELEASE:compile
+[INFO] |  |     |  |  \- org.springframework:spring-jcl:jar:5.0.10.RELEASE:compile
+[INFO] |  |     |  \- org.springframework:spring-context:jar:5.0.10.RELEASE:compile
+[INFO] |  |     |     +- org.springframework:spring-aop:jar:5.0.10.RELEASE:compile
+[INFO] |  |     |     +- org.springframework:spring-beans:jar:5.0.10.RELEASE:compile
+[INFO] |  |     |     \- org.springframework:spring-expression:jar:5.0.10.RELEASE:compile
+[INFO] |  |     +- org.springframework.boot:spring-boot-autoconfigure:jar:2.0.6.RELEASE:compile
+[INFO] |  |     \- org.springframework.boot:spring-boot-starter-jdbc:jar:2.0.6.RELEASE:compile
+[INFO] |  |        +- org.springframework.boot:spring-boot-starter:jar:2.0.6.RELEASE:compile
+[INFO] |  |        |  +- org.springframework.boot:spring-boot-starter-logging:jar:2.0.6.RELEASE:compile
+[INFO] |  |        |  |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  |        |  |  |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] |  |        |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.10.0:compile
+[INFO] |  |        |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.10.0:compile
+[INFO] |  |        |  |  \- org.slf4j:jul-to-slf4j:jar:1.7.9:compile
+[INFO] |  |        |  +- javax.annotation:javax.annotation-api:jar:1.3.2:compile
+[INFO] |  |        |  \- org.yaml:snakeyaml:jar:1.24:runtime
+[INFO] |  |        +- com.zaxxer:HikariCP:jar:2.7.9:compile
+[INFO] |  |        |  \- org.slf4j:slf4j-api:jar:1.7.9:compile
+[INFO] |  |        \- org.springframework:spring-jdbc:jar:5.0.10.RELEASE:compile
+[INFO] |  |           \- org.springframework:spring-tx:jar:5.0.10.RELEASE:compile
+[INFO] |  +- mysql:mysql-connector-java:jar:5.1.47:compile
+[INFO] |  +- org.projectlombok:lombok:jar:1.18.2:compile
+[INFO] |  +- com.alibaba:druid:jar:1.0.14:compile
+[INFO] |  |  +- com.alibaba:jconsole:jar:1.8.0:system
+[INFO] |  |  \- com.alibaba:tools:jar:1.8.0:system
+[INFO] |  +- com.github.pagehelper:pagehelper:jar:5.1.2:compile
+[INFO] |  |  \- com.github.jsqlparser:jsqlparser:jar:1.0:compile
+[INFO] |  +- com.google.guava:guava:jar:23.0:compile
+[INFO] |  |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  |  +- com.google.errorprone:error_prone_annotations:jar:2.0.18:compile
+[INFO] |  |  +- com.google.j2objc:j2objc-annotations:jar:1.1:compile
+[INFO] |  |  \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.14:compile
+[INFO] |  +- com.alibaba:fastjson:jar:1.2.7:compile
+[INFO] |  +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  +- javax.mail:mail:jar:1.4.5:compile
+[INFO] |  |  \- javax.activation:activation:jar:1.1:compile
+[INFO] |  +- org.apache.velocity:velocity:jar:1.5:compile
+[INFO] |  |  +- commons-collections:commons-collections:jar:3.1:compile
+[INFO] |  |  \- oro:oro:jar:2.0.8:compile
+[INFO] |  +- com.sun.mail:javax.mail:jar:1.6.2:compile
+[INFO] |  \- joda-time:joda-time:jar:2.9.9:compile
+[INFO] \- junit:junit:jar:4.11:test
+[INFO]    \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] 
+[INFO] ----------------------< com.dfire.hera:hera-core >----------------------
+[INFO] Building hera-core 2.3                                             [5/6]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ hera-core ---
+[INFO] com.dfire.hera:hera-core:jar:2.3
+[INFO] +- org.quartz-scheduler:quartz:jar:2.2.1:compile
+[INFO] |  \- c3p0:c3p0:jar:0.9.1.1:compile
+[INFO] +- io.netty:netty-all:jar:4.0.20.Final:compile
+[INFO] +- com.auth0:java-jwt:jar:3.3.0:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.9.7:compile
+[INFO] |  |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.9.0:compile
+[INFO] |  |  \- com.fasterxml.jackson.core:jackson-core:jar:2.9.7:compile
+[INFO] |  \- commons-codec:commons-codec:jar:1.11:compile
+[INFO] +- com.google.guava:guava:jar:23.0:compile
+[INFO] |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  +- com.google.errorprone:error_prone_annotations:jar:2.0.18:compile
+[INFO] |  +- com.google.j2objc:j2objc-annotations:jar:1.1:compile
+[INFO] |  \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.14:compile
+[INFO] +- org.projectlombok:lombok:jar:1.18.2:compile
+[INFO] +- com.alibaba:fastjson:jar:1.2.7:compile
+[INFO] +- com.google.protobuf:protobuf-java:jar:3.5.1:compile
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.9:compile
+[INFO] +- org.apache.commons:commons-lang3:jar:3.4:compile
+[INFO] +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- com.dfire.hera:hera-monitor:jar:2.3:compile
+[INFO] |  \- com.dfire.hera:hera-common:jar:2.3:compile
+[INFO] |     +- org.mybatis.spring.boot:mybatis-spring-boot-starter:jar:1.1.1:compile
+[INFO] |     |  \- org.mybatis.spring.boot:mybatis-spring-boot-autoconfigure:jar:1.1.1:compile
+[INFO] |     |     +- org.mybatis:mybatis:jar:3.4.0:compile
+[INFO] |     |     +- org.mybatis:mybatis-spring:jar:1.3.0:compile
+[INFO] |     |     +- org.springframework.boot:spring-boot:jar:2.0.6.RELEASE:compile
+[INFO] |     |     |  +- org.springframework:spring-core:jar:5.0.10.RELEASE:compile
+[INFO] |     |     |  |  \- org.springframework:spring-jcl:jar:5.0.10.RELEASE:compile
+[INFO] |     |     |  \- org.springframework:spring-context:jar:5.0.10.RELEASE:compile
+[INFO] |     |     |     +- org.springframework:spring-aop:jar:5.0.10.RELEASE:compile
+[INFO] |     |     |     +- org.springframework:spring-beans:jar:5.0.10.RELEASE:compile
+[INFO] |     |     |     \- org.springframework:spring-expression:jar:5.0.10.RELEASE:compile
+[INFO] |     |     +- org.springframework.boot:spring-boot-autoconfigure:jar:2.0.6.RELEASE:compile
+[INFO] |     |     \- org.springframework.boot:spring-boot-starter-jdbc:jar:2.0.6.RELEASE:compile
+[INFO] |     |        +- org.springframework.boot:spring-boot-starter:jar:2.0.6.RELEASE:compile
+[INFO] |     |        |  +- org.springframework.boot:spring-boot-starter-logging:jar:2.0.6.RELEASE:compile
+[INFO] |     |        |  |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |     |        |  |  |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] |     |        |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.10.0:compile
+[INFO] |     |        |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.10.0:compile
+[INFO] |     |        |  |  \- org.slf4j:jul-to-slf4j:jar:1.7.9:compile
+[INFO] |     |        |  +- javax.annotation:javax.annotation-api:jar:1.3.2:compile
+[INFO] |     |        |  \- org.yaml:snakeyaml:jar:1.24:runtime
+[INFO] |     |        +- com.zaxxer:HikariCP:jar:2.7.9:compile
+[INFO] |     |        \- org.springframework:spring-jdbc:jar:5.0.10.RELEASE:compile
+[INFO] |     |           \- org.springframework:spring-tx:jar:5.0.10.RELEASE:compile
+[INFO] |     +- mysql:mysql-connector-java:jar:5.1.47:compile
+[INFO] |     +- com.alibaba:druid:jar:1.0.14:compile
+[INFO] |     |  +- com.alibaba:jconsole:jar:1.8.0:system
+[INFO] |     |  \- com.alibaba:tools:jar:1.8.0:system
+[INFO] |     +- com.github.pagehelper:pagehelper:jar:5.1.2:compile
+[INFO] |     |  \- com.github.jsqlparser:jsqlparser:jar:1.0:compile
+[INFO] |     +- javax.mail:mail:jar:1.4.5:compile
+[INFO] |     |  \- javax.activation:activation:jar:1.1:compile
+[INFO] |     +- org.apache.velocity:velocity:jar:1.5:compile
+[INFO] |     |  +- commons-collections:commons-collections:jar:3.1:compile
+[INFO] |     |  \- oro:oro:jar:2.0.8:compile
+[INFO] |     +- com.sun.mail:javax.mail:jar:1.6.2:compile
+[INFO] |     \- joda-time:joda-time:jar:2.9.9:compile
+[INFO] +- com.dfire.hera:hera-protocol:jar:2.3:compile
+[INFO] +- javax.servlet:javax.servlet-api:jar:3.1.0:provided
+[INFO] \- junit:junit:jar:4.12:test
+[INFO]    \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] 
+[INFO] ---------------------< com.dfire.hera:hera-admin >----------------------
+[INFO] Building hera-admin 2.3                                            [6/6]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:3.0.2:tree (default-cli) @ hera-admin ---
+[INFO] com.dfire.hera:hera-admin:jar:2.3
+[INFO] +- org.springframework.boot:spring-boot-starter-web:jar:2.0.6.RELEASE:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter:jar:2.0.6.RELEASE:compile
+[INFO] |  |  +- org.springframework.boot:spring-boot-starter-logging:jar:2.0.6.RELEASE:compile
+[INFO] |  |  |  +- ch.qos.logback:logback-classic:jar:1.2.3:compile
+[INFO] |  |  |  |  \- ch.qos.logback:logback-core:jar:1.2.3:compile
+[INFO] |  |  |  +- org.apache.logging.log4j:log4j-to-slf4j:jar:2.10.0:compile
+[INFO] |  |  |  |  \- org.apache.logging.log4j:log4j-api:jar:2.10.0:compile
+[INFO] |  |  |  \- org.slf4j:jul-to-slf4j:jar:1.7.9:compile
+[INFO] |  |  +- javax.annotation:javax.annotation-api:jar:1.3.2:compile
+[INFO] |  |  \- org.yaml:snakeyaml:jar:1.24:runtime
+[INFO] |  +- org.springframework.boot:spring-boot-starter-json:jar:2.0.6.RELEASE:compile
+[INFO] |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.9.7:compile
+[INFO] |  |  |  \- com.fasterxml.jackson.core:jackson-core:jar:2.9.7:compile
+[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.9.7:compile
+[INFO] |  |  +- com.fasterxml.jackson.datatype:jackson-datatype-jsr310:jar:2.9.7:compile
+[INFO] |  |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.9.7:compile
+[INFO] |  +- org.springframework.boot:spring-boot-starter-tomcat:jar:2.0.6.RELEASE:compile
+[INFO] |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:8.5.34:compile
+[INFO] |  |  +- org.apache.tomcat.embed:tomcat-embed-el:jar:8.5.34:compile
+[INFO] |  |  \- org.apache.tomcat.embed:tomcat-embed-websocket:jar:8.5.34:compile
+[INFO] |  +- org.hibernate.validator:hibernate-validator:jar:6.0.13.Final:compile
+[INFO] |  |  +- javax.validation:validation-api:jar:2.0.1.Final:compile
+[INFO] |  |  \- org.jboss.logging:jboss-logging:jar:3.3.2.Final:compile
+[INFO] |  +- org.springframework:spring-web:jar:5.0.10.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-beans:jar:5.0.10.RELEASE:compile
+[INFO] |  \- org.springframework:spring-webmvc:jar:5.0.10.RELEASE:compile
+[INFO] |     +- org.springframework:spring-aop:jar:5.0.10.RELEASE:compile
+[INFO] |     +- org.springframework:spring-context:jar:5.0.10.RELEASE:compile
+[INFO] |     \- org.springframework:spring-expression:jar:5.0.10.RELEASE:compile
+[INFO] +- org.springframework.boot:spring-boot-starter-freemarker:jar:2.0.6.RELEASE:compile
+[INFO] |  +- org.freemarker:freemarker:jar:2.3.28:compile
+[INFO] |  \- org.springframework:spring-context-support:jar:5.0.10.RELEASE:compile
+[INFO] +- org.springframework:spring-test:jar:5.0.10.RELEASE:compile
+[INFO] |  \- org.springframework:spring-core:jar:5.0.10.RELEASE:compile
+[INFO] |     \- org.springframework:spring-jcl:jar:5.0.10.RELEASE:compile
+[INFO] +- org.springframework.boot:spring-boot-test:jar:2.0.6.RELEASE:compile
+[INFO] |  \- org.springframework.boot:spring-boot:jar:2.0.6.RELEASE:compile
+[INFO] +- mysql:mysql-connector-java:jar:5.1.47:compile
+[INFO] +- com.alibaba:druid:jar:1.0.14:compile
+[INFO] |  +- com.alibaba:jconsole:jar:1.8.0:system
+[INFO] |  \- com.alibaba:tools:jar:1.8.0:system
+[INFO] +- com.alibaba:fastjson:jar:1.2.7:compile
+[INFO] +- org.mybatis.spring.boot:mybatis-spring-boot-starter:jar:1.1.1:compile
+[INFO] |  \- org.mybatis.spring.boot:mybatis-spring-boot-autoconfigure:jar:1.1.1:compile
+[INFO] |     +- org.mybatis:mybatis:jar:3.4.0:compile
+[INFO] |     +- org.mybatis:mybatis-spring:jar:1.3.0:compile
+[INFO] |     \- org.springframework.boot:spring-boot-starter-jdbc:jar:2.0.6.RELEASE:compile
+[INFO] |        +- com.zaxxer:HikariCP:jar:2.7.9:compile
+[INFO] |        \- org.springframework:spring-jdbc:jar:5.0.10.RELEASE:compile
+[INFO] |           \- org.springframework:spring-tx:jar:5.0.10.RELEASE:compile
+[INFO] +- com.github.pagehelper:pagehelper:jar:5.1.2:compile
+[INFO] |  \- com.github.jsqlparser:jsqlparser:jar:1.0:compile
+[INFO] +- org.springframework.boot:spring-boot-devtools:jar:2.0.6.RELEASE:compile (optional) 
+[INFO] |  \- org.springframework.boot:spring-boot-autoconfigure:jar:2.0.6.RELEASE:compile
+[INFO] +- org.projectlombok:lombok:jar:1.18.2:compile
+[INFO] +- junit:junit:jar:4.12:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] +- log4j:log4j:jar:1.2.17:compile
+[INFO] +- org.slf4j:log4j-over-slf4j:jar:1.7.9:compile
+[INFO] |  \- org.slf4j:slf4j-api:jar:1.7.9:compile
+[INFO] +- commons-fileupload:commons-fileupload:jar:1.3.1:compile
+[INFO] |  \- commons-io:commons-io:jar:2.2:compile
+[INFO] +- io.springfox:springfox-swagger2:jar:2.7.0:compile
+[INFO] |  +- io.swagger:swagger-annotations:jar:1.5.13:compile
+[INFO] |  +- io.swagger:swagger-models:jar:1.5.13:compile
+[INFO] |  |  \- com.fasterxml.jackson.core:jackson-annotations:jar:2.9.0:compile
+[INFO] |  +- io.springfox:springfox-spi:jar:2.7.0:compile
+[INFO] |  |  \- io.springfox:springfox-core:jar:2.7.0:compile
+[INFO] |  |     \- net.bytebuddy:byte-buddy:jar:1.7.11:compile
+[INFO] |  +- io.springfox:springfox-schema:jar:2.7.0:compile
+[INFO] |  +- io.springfox:springfox-swagger-common:jar:2.7.0:compile
+[INFO] |  +- io.springfox:springfox-spring-web:jar:2.7.0:compile
+[INFO] |  |  \- org.reflections:reflections:jar:0.9.11:compile
+[INFO] |  |     \- org.javassist:javassist:jar:3.21.0-GA:compile
+[INFO] |  +- com.google.guava:guava:jar:23.0:compile
+[INFO] |  |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  |  +- com.google.errorprone:error_prone_annotations:jar:2.0.18:compile
+[INFO] |  |  +- com.google.j2objc:j2objc-annotations:jar:1.1:compile
+[INFO] |  |  \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.14:compile
+[INFO] |  +- com.fasterxml:classmate:jar:1.3.4:compile
+[INFO] |  +- org.springframework.plugin:spring-plugin-core:jar:1.2.0.RELEASE:compile
+[INFO] |  +- org.springframework.plugin:spring-plugin-metadata:jar:1.2.0.RELEASE:compile
+[INFO] |  \- org.mapstruct:mapstruct:jar:1.1.0.Final:compile
+[INFO] +- io.springfox:springfox-swagger-ui:jar:2.7.0:compile
+[INFO] +- com.dfire.hera:hera-core:jar:2.3:compile
+[INFO] |  +- org.quartz-scheduler:quartz:jar:2.2.1:compile
+[INFO] |  |  \- c3p0:c3p0:jar:0.9.1.1:compile
+[INFO] |  +- io.netty:netty-all:jar:4.0.20.Final:compile
+[INFO] |  +- com.auth0:java-jwt:jar:3.3.0:compile
+[INFO] |  |  \- commons-codec:commons-codec:jar:1.11:compile
+[INFO] |  +- org.apache.commons:commons-lang3:jar:3.7:compile
+[INFO] |  +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  +- com.dfire.hera:hera-monitor:jar:2.3:compile
+[INFO] |  |  \- com.dfire.hera:hera-common:jar:2.3:compile
+[INFO] |  |     +- javax.mail:mail:jar:1.4.5:compile
+[INFO] |  |     |  \- javax.activation:activation:jar:1.1:compile
+[INFO] |  |     +- org.apache.velocity:velocity:jar:1.5:compile
+[INFO] |  |     |  +- commons-collections:commons-collections:jar:3.1:compile
+[INFO] |  |     |  \- oro:oro:jar:2.0.8:compile
+[INFO] |  |     +- com.sun.mail:javax.mail:jar:1.6.2:compile
+[INFO] |  |     \- joda-time:joda-time:jar:2.9.9:compile
+[INFO] |  \- com.dfire.hera:hera-protocol:jar:2.3:compile
+[INFO] +- org.aspectj:aspectjrt:jar:1.9.1:compile
+[INFO] \- org.aspectj:aspectjweaver:jar:1.8.8:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for hera 2.3:
+[INFO] 
+[INFO] hera ............................................... SUCCESS [  0.667 s]
+[INFO] hera-common ........................................ SUCCESS [  0.209 s]
+[INFO] hera-protocol ...................................... SUCCESS [  0.019 s]
+[INFO] hera-monitor ....................................... SUCCESS [  0.069 s]
+[INFO] hera-core .......................................... SUCCESS [  0.135 s]
+[INFO] hera-admin ......................................... SUCCESS [  0.225 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.880 s
+[INFO] Finished at: 2019-05-26T23:35:18+08:00
+[INFO] ------------------------------------------------------------------------

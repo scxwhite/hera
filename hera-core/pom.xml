@@ -26,6 +26,20 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-emr</artifactId>
+            <version>1.11.513</version>
+        </dependency>
+
+
+
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-core -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>1.11.513</version>
+        </dependency>
 
         <dependency>
             <groupId>org.quartz-scheduler</groupId>

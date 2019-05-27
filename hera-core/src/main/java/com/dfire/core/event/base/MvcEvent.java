@@ -1,6 +1,9 @@
 package com.dfire.core.event.base;
 
 import com.dfire.core.event.Dispatcher;
+import com.dfire.event.AbstractEvent;
+import com.dfire.event.ApplicationEvent;
+import com.dfire.event.EventType;
 import lombok.Data;
 
 /**

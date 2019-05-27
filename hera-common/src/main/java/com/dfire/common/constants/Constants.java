@@ -12,7 +12,7 @@ public class Constants {
 
     public final static String PRE_ENV = "pre";
 
-    public final static String PUB_ENV = "publish";
+    public final static String PUB_ENV = "public";
 
     public final static String WORK_PREFIX = "worker-";
 
@@ -90,6 +90,8 @@ public class Constants {
 
     public final static String NEW_LINE = "\n";
 
+    public final static String BLANK_SPACE = " ";
+
     public final static String HTML_NEW_LINE = "<br>";
 
 
@@ -108,4 +110,11 @@ public class Constants {
     public final static String INVALID_STATUS = "失效";
 
 
+    public final static String QUARTZ_ID = "actionId";
+
+    public final static String QUARTZ_DISPATCHER = "dispatcher";
+
+
+    
+    
 }

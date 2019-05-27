@@ -1,6 +1,5 @@
 package com.dfire.monitor.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobMonitor;
@@ -11,6 +10,7 @@ import com.dfire.common.service.HeraJobService;
 import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.event.HeraJobFailedEvent;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.ScheduleLog;
 import com.dfire.monitor.config.Alarm;
@@ -25,7 +25,7 @@ import javax.mail.MessagingException;
  * @author xiaosuda
  * @date 2019/2/25
  */
-@Alarm
+@Alarm("emailJobFailAlarm")
 public class EmailJobFailAlarm implements JobFailAlarm {
 
     @Autowired
@@ -42,15 +42,14 @@ public class EmailJobFailAlarm implements JobFailAlarm {
     private EmailService emailService;
 
     @Override
-    public void alarm(String actionId) {
+    public void alarm(HeraJobFailedEvent failedEvent) {
+        String actionId = failedEvent.getActionId();
         Integer jobId = ActionUtil.getJobId(actionId);
         if (jobId == null) {
             return;
         }
         HeraJob heraJob = heraJobService.findById(jobId);
-        System.out.println(JSONObject.toJSONString(heraJob));
-        //非开启任务不处理  最好能把这些抽取出去 提供接口实现
-        if (heraJob.getAuto() != 1 && !Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
+        if (heraJob.getAuto() != 1) {
             return;
         }
         StringBuilder address = new StringBuilder();
@@ -73,7 +72,19 @@ public class EmailJobFailAlarm implements JobFailAlarm {
                     }
                 }
             }
-            emailService.sendEmail("hera任务失败了(" + HeraGlobalEnvironment.getEnv() + ")", "任务Id :" + actionId, address.toString());
+
+            String title = "hera调度任务失败[任务=" + heraJob.getName() + "(" + heraJob.getId() + "),版本号=" + actionId + "]";
+            String content = "任务ID：" + heraJob.getId() + Constants.HTML_NEW_LINE
+                    + "任务名：" + heraJob.getName() + Constants.HTML_NEW_LINE
+                    + "任务版本号：" + actionId + Constants.HTML_NEW_LINE
+                    + "任务描述：" + heraJob.getDescription() + Constants.HTML_NEW_LINE
+                    + "任务OWNER：" + heraJob.getOwner() + Constants.HTML_NEW_LINE;
+
+            String errorMsg = failedEvent.getHeraJobHistory().getLog().getMailContent();
+            if (errorMsg != null) {
+                content += Constants.HTML_NEW_LINE + Constants.HTML_NEW_LINE + "--------------------------------------------" + Constants.HTML_NEW_LINE + errorMsg;
+            }
+            emailService.sendEmail(title, content, address.toString());
         } catch (MessagingException e) {
             e.printStackTrace();
             ErrorLog.error("发送邮件失败");

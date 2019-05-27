@@ -1,6 +1,8 @@
 package com.dfire.core.event.base;
 
 import com.dfire.core.event.listenter.Listener;
+import com.dfire.event.AbstractEvent;
+import com.dfire.event.EventType;
 
 import java.util.List;
 

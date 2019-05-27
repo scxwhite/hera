@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
 
     <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
+    <link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
 
 </head>
 
@@ -514,6 +515,7 @@
                                         </button>
                                     </li>
                                     <br>
+                                 <!--  
                                     <li>
                                         <button class="btn btn-xs  btn-primary btn-block" type="button"
                                                 name="showRunning">正在运行
@@ -526,6 +528,7 @@
                                         </button>
                                     </li>
                                     <br>
+                                     -->
                                     <li>
                                         <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup">
                                             添加组
@@ -663,12 +666,27 @@
 
                     <div id="overviewOperator" class="btn-con" style="display: none">
                         <div class="box-body">
+                        	   
                             <ul class="list-unstyled">
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="back">返回
                                     </button>
                                 </li>
                                 <br>
+                                
+                                <li>
+                                <input class="form_datetime form-control" id="jobDt"  type="text" data-date-format="yymmdd" readonly placeholder="请选择日期"  ">
+                                
+                                </li>
+                                <br>
+                                
+                                <li>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showAll">
+                                        全部记录
+                                    </button>
+                                </li>
+                                <br>
+                                
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="showRunning">
                                         正在运行
@@ -680,6 +698,14 @@
                                         失败记录
                                     </button>
                                 </li>
+                                <br>
+                            	<li>
+                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showSucc">
+                                        成功记录
+                                    </button>
+                                </li>
+                                <br>
+                                
                             </ul>
                         </div>
                     </div>
@@ -1001,7 +1027,31 @@
 <script src="${request.contextPath}/js/taskGraph.js?v=2"></script>
 <script src="${request.contextPath}/js/scheduleCenter.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
 
+<script type="text/javascript">
+ $(".form_datetime").datetimepicker({
+ format: "yymmdd",
+ autoclose: true,
+ todayBtn: true,
+ todayHighlight: true,
+ language: 'zh-CN',//中文，需要引用zh-CN.js包
+ startView: 2,//月视图
+ minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
+ forceParse:false,
+ }); 
+</script> 
+
+<script>
+    $(document).ready(function () {
+        var time = new Date();
+        var day = ("0" + time.getDate()).slice(-2);
+        var month = ("0" + (time.getMonth() + 1)).slice(-2);
+        var today = (time.getFullYear()+'').substring(2)   + (month)   + (day);
+        $(".form_datetime").val(today);
+    })
+</script>
 
 </body>
 

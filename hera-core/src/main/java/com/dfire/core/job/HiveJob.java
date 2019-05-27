@@ -1,7 +1,9 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.RunningJobKeyConstant;
-import com.dfire.logs.ErrorLog;
+import com.dfire.common.enums.JobRunTypeEnum;
+import com.dfire.common.exception.HeraException;
+import com.dfire.config.HeraGlobalEnvironment;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -37,25 +39,20 @@ public class HiveJob extends ProcessJob {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                ErrorLog.error("创建.hive失败");
+                throw new HeraException("创建.hive失败");
             }
         }
 
-        OutputStreamWriter writer = null;
-        try {
-            writer = new OutputStreamWriter(new FileOutputStream(file),
-                    Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-            writer.write(script.replaceAll("^--.*", "--"));
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file),
+                Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")))) {
+            writer.write(dosToUnix(script.replaceAll("^--.*", "--")));
         } catch (Exception e) {
             if (jobContext.getHeraJobHistory() != null) {
                 jobContext.getHeraJobHistory().getLog().appendHeraException(e);
             } else {
                 jobContext.getDebugHistory().getLog().appendHeraException(e);
             }
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
+            throw new HeraException("脚本写入文件失败:" + script);
         }
 
         getProperties().setProperty(RunningJobKeyConstant.RUN_HIVE_PATH, file.getAbsolutePath());
@@ -66,16 +63,13 @@ public class HiveJob extends ProcessJob {
     public List<String> getCommandList() {
         String hiveFilePath = getProperty(RunningJobKeyConstant.RUN_HIVE_PATH, "");
         List<String> list = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
         String shellPrefix = getJobPrefix();
         boolean isDocToUnix = checkDosToUnix(hiveFilePath);
-
         if (isDocToUnix) {
             list.add("dos2unix " + hiveFilePath);
             log("dos2unix file" + hiveFilePath);
         }
-
-        sb.append(" -f ").append(hiveFilePath);
+        String hiveCommand = " -f " + hiveFilePath;
 
         if (StringUtils.isNotBlank(shellPrefix)) {
             String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
@@ -86,7 +80,7 @@ public class HiveJob extends ProcessJob {
                     tmpFile.createNewFile();
                     tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                             Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write("hive " + sb.toString());
+                    tmpWriter.write(generateRunCommand(JobRunTypeEnum.Hive, "", hiveFilePath));
                 } catch (Exception e) {
                     jobContext.getHeraJobHistory().getLog().appendHeraException(e);
                 } finally {
@@ -102,11 +96,11 @@ public class HiveJob extends ProcessJob {
                 list.add(shellPrefix + " sh " + tmpFilePath);
             } else {
                 list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + " hive " + sb.toString());
+                list.add(shellPrefix + HeraGlobalEnvironment.getJobHiveBin() + hiveCommand);
             }
 
         } else {
-            list.add("hive" + sb.toString());
+            list.add(HeraGlobalEnvironment.getJobHiveBin() + hiveCommand);
         }
         return list;
     }

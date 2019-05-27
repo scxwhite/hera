@@ -23,16 +23,33 @@ public interface JobManagerMapper {
      * @return
      */
 
-    @Select("select " +
-            " his.job_id,job.name as job_name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator,count(*) as times " +
-            " from" +
-            " (select job_id,start_time start_time,end_time,execute_host,status,operator from hera_action_history " +
-            " where action_id >= CURRENT_DATE () * 10000000000  and status = #{status,jdbcType=VARCHAR}) his " +
-            " left join hera_job job on his.job_id = job.id" +
-            " group by his.job_id,job.name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator" +
-            " order by job_id")
-    List<JobHistoryVo> findAllJobHistoryByStatus(String status);
-
+//    @Select("select " +
+//            " his.job_id,job.name as job_name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator,count(*) as times " +
+//            " from" +
+//            " (select job_id,start_time start_time,end_time,execute_host,status,operator from hera_action_history " +
+//            " where action_id >= CURRENT_DATE () * 10000000000  and status = #{status,jdbcType=VARCHAR}) his " +
+//            " left join hera_job job on his.job_id = job.id" +
+//            " group by his.job_id,job.name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator" +
+//            " order by job_id")
+    
+    @Select(
+    		"select his.job_id,job.name as job_name,job.description,his.start_time,his.end_time "
+    		+ " ,his.execute_host, his.status ,his.operator "
+    		+ " ,j.times  "
+    		+ " ,CAST(timestampdiff(SECOND, his.start_time,CASE WHEN his.end_time IS NOT NULL THEN his.end_time WHEN his.status='running' THEN NOW() END)/60.0 AS decimal(10,1))  AS durations  "
+    		+ " ,job.group_id as groupId,grp.name as groupName"
+    		+ " FROM "  
+    		+ " (SELECT job_id,MAX(`id`) as id_max,count(1) as times   "
+    		+ " FROM hera_action_history   "
+    		+ " WHERE (start_time>=CAST(#{dt,jdbcType=VARCHAR} AS date) and  start_time< ADDDATE(CAST(#{dt,jdbcType=VARCHAR} AS date) ,1) ) "
+    		+ " and ( status = #{status,jdbcType=VARCHAR}  or 'all' =  #{status,jdbcType=VARCHAR} ) "
+    		+ " GROUP BY job_id ) j   "
+    		+ " left join hera_action_history his on j.job_id=his.job_id and j.id_max=his.`id`   "
+    		+ " left join hera_job job on j.job_id = job.`id` "
+    		+ " left join hera_group grp on job.group_id=grp.`id` "
+    		+ " ORDER BY his.start_time DESC, grp.name,job.name"
+    		)
+    List<JobHistoryVo> findAllJobHistoryByStatus(@Param("status") String status,@Param("dt") String dt);
 
     /**
      * 任务运行时长top10
