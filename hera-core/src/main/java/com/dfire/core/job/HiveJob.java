@@ -4,6 +4,7 @@ import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.exception.HeraException;
 import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.core.util.CommandUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -62,46 +63,31 @@ public class HiveJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         String hiveFilePath = getProperty(RunningJobKeyConstant.RUN_HIVE_PATH, "");
-        List<String> list = new ArrayList<>();
-        String shellPrefix = getJobPrefix();
-        boolean isDocToUnix = checkDosToUnix(hiveFilePath);
-        if (isDocToUnix) {
-            list.add("dos2unix " + hiveFilePath);
-            log("dos2unix file" + hiveFilePath);
-        }
-        String hiveCommand = " -f " + hiveFilePath;
-
-        if (StringUtils.isNotBlank(shellPrefix)) {
-            String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
-            File tmpFile = new File(tmpFilePath);
-            OutputStreamWriter tmpWriter = null;
-            if (!tmpFile.exists()) {
-                try {
-                    tmpFile.createNewFile();
-                    tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
-                            Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write(generateRunCommand(JobRunTypeEnum.Hive, "", hiveFilePath));
-                } catch (Exception e) {
-                    jobContext.getHeraJobHistory().getLog().appendHeraException(e);
-                } finally {
-                    if (tmpWriter != null) {
-                        try {
-                            tmpWriter.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+        List<String> commands = new ArrayList<>();
+        dosToUnix(hiveFilePath, commands);
+        String runFile = jobContext.getWorkDir() + File.separator + "run.sh";
+        File tmpFile = new File(runFile);
+        OutputStreamWriter tmpWriter = null;
+        if (!tmpFile.exists()) {
+            try {
+                tmpFile.createNewFile();
+                tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
+                        Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
+                tmpWriter.write(generateRunCommand(JobRunTypeEnum.Hive,  hiveFilePath));
+            } catch (Exception e) {
+                jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+            } finally {
+                if (tmpWriter != null) {
+                    try {
+                        tmpWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-                list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + " sh " + tmpFilePath);
-            } else {
-                list.add("chmod -R 777 " + jobContext.getWorkDir());
-                list.add(shellPrefix + HeraGlobalEnvironment.getJobHiveBin() + hiveCommand);
             }
-
-        } else {
-            list.add(HeraGlobalEnvironment.getJobHiveBin() + hiveCommand);
         }
-        return list;
+        commands.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
+        commands.add(CommandUtils.RUN_SH_COMMAND + runFile);
+        return commands;
     }
 }

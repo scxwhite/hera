@@ -93,6 +93,8 @@ public class HeraGlobalEnvironment {
     private static String jobSparkSqlBin;
     @Getter
     private static boolean emrJob;
+    @Getter
+    private static boolean sudoUser;
 
     @Getter
     private static String mailPort;
@@ -169,7 +171,7 @@ public class HeraGlobalEnvironment {
     }
 
     @Value("${hera.jobCacheDay}")
-    public void setAdmin(int jobCacheDay) {
+    public void setJobCacheDay(int jobCacheDay) {
         HeraGlobalEnvironment.jobCacheDay = jobCacheDay;
     }
 
@@ -323,7 +325,10 @@ public class HeraGlobalEnvironment {
     public void setEmrJob(boolean emrJob) {
         HeraGlobalEnvironment.emrJob = emrJob;
     }
-
+    @Value("${hera.sudoUser}")
+    public void setSudoUser(boolean sudoUser) {
+        HeraGlobalEnvironment.sudoUser = sudoUser;
+    }
     /**
      * 判断是否是linux 环境，有些命令不一样
      */

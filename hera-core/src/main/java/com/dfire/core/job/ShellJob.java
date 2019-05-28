@@ -71,49 +71,36 @@ public class ShellJob extends ProcessJob {
             }
         }
         String shellFilePath = getProperty(RunningJobKeyConstant.RUN_SHELL_PATH, "");
-        List<String> list = new ArrayList<>();
-        //修改权限
-        String shellPrefix = getJobPrefix();
-        //过滤不需要转化的后缀名
-        boolean isDocToUnix = checkDosToUnix(shellFilePath);
-        if (isDocToUnix) {
-            list.add("dos2unix " + shellFilePath);
-            log("dos2unix file:" + shellFilePath);
-        }
-
-        if (StringUtils.isNotBlank(shellPrefix)) {
-            String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
-            File tmpFile = new File(tmpFilePath);
-            OutputStreamWriter tmpWriter = null;
-
-            if (!tmpFile.exists()) {
-                try {
-                    if (!tmpFile.createNewFile()) {
-                        log("ERROR:创建文件失败," + tmpFilePath);
-                        HeraLog.error("创建文件失败", tmpFile);
-                    }
-                    tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
-                            Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                    tmpWriter.write(generateRunCommand(JobRunTypeEnum.Shell, "", shellFilePath));
-                } catch (Exception e) {
-                    jobContext.getHeraJobHistory().getLog().appendHeraException(e);
-                } finally {
-                    if (tmpWriter != null) {
-                        try {
-                            tmpWriter.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+        List<String> commands = new ArrayList<>();
+        dosToUnix(shellFilePath, commands);
+        String tmpFilePath = jobContext.getWorkDir() + File.separator + "run.sh";
+        File tmpFile = new File(tmpFilePath);
+        OutputStreamWriter tmpWriter = null;
+        if (!tmpFile.exists()) {
+            try {
+                if (!tmpFile.createNewFile()) {
+                    log("ERROR:创建文件失败," + tmpFilePath);
+                    HeraLog.error("创建文件失败", tmpFile);
+                }
+                tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
+                        Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
+                tmpWriter.write(generateRunCommand(JobRunTypeEnum.Shell, shellFilePath));
+            } catch (Exception e) {
+                jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+            } finally {
+                if (tmpWriter != null) {
+                    try {
+                        tmpWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
-            list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-            list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
-        } else {
-            list.add(CommandUtils.RUN_SH_COMMAND + shellFilePath);
         }
-        TaskLog.info("5.1 命令：{}", JSONObject.toJSONString(list));
-        return list;
+        commands.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
+        commands.add(CommandUtils.getRunShCommand(tmpFilePath));
+        TaskLog.info("5.1 命令：{}", JSONObject.toJSONString(commands));
+        return commands;
     }
 
     @Override

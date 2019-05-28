@@ -546,12 +546,16 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)
     @ResponseBody
-    public WebAsyncTask<String> generateVersion(String jobId) {
-        if (!hasPermission(Integer.parseInt(jobId), JOB)) {
+    public WebAsyncTask<String> generateVersion(Integer jobId) {
+        if (!hasPermission(jobId, JOB)) {
             return new WebAsyncTask<>(() -> ERROR_MSG);
         }
+        HeraJob heraJob = heraJobService.findById(jobId);
+        if (heraJob.getScheduleType() == 1) {
+            return new WebAsyncTask<>(() -> "不支持依赖任务的版本生成，只支持定时任务的版本生成");
+        }
         WebAsyncTask<String> asyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () ->
-                workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, jobId));
+                workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, String.valueOf(jobId)));
         asyncTask.onTimeout(() -> "版本生成时间较长，请耐心等待下");
         return asyncTask;
     }
