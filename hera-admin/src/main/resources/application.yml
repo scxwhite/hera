@@ -141,13 +141,13 @@ spring:
     profiles: pre
 druid:
     datasource:
-        url: jdbc:mysql://localhost:3306/lineage?characterEncoding=utf8mb4&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+        url: jdbc:mysql://localhost:3306/hera?characterEncoding=utf8mb4&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
         username: root
         password: root
 #spark 配置
 spark :
     baseDir : /opt/app/Spark-AE #Spark基础路径
-    address : jdbc:hive2://spark-server001.2dfire-inc.com:10000 #ThriftServer地址
+    address : jdbc:hive2://localhost:10000 #ThriftServer地址
     master : --master yarn
     driver-memory : --driver-memory 2g
     driver-cores : --driver-cores 1
@@ -159,13 +159,13 @@ spring:
     profiles: publish
 druid:
     datasource:
-        url: jdbc:mysql://rdsdb1101.my.2dfire-inc.com:3306/lineage?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
-        username: lineage
-        password: lineage@552208
+        url: jdbc:mysql://localhost:3306/hera?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+        username: root
+        password: root
 #spark 配置
 spark :
     baseDir : /opt/app/Spark-AE #Spark基础路径
-    address : jdbc:hive2://spark-server001.2dfire-inc.com:10000 #ThriftServer地址
+    address : jdbc:hive2://localhost:10000 #ThriftServer地址
     master : --master yarn
     driver-memory : --driver-memory 2g
     driver-cores : --driver-cores 1
