@@ -15,7 +15,7 @@ layui.use(['table', 'laytpl', 'form'], function () {
     tableIns = table.render({
         elem: '#userTable'
         , height: "full"
-        , url: base_url + '/userManage/initUser.do'
+        , url: base_url + '/userManage/initUser'
         , page: false //开启分页
         , toolbar: '#toolbar'
         , defaultToolbar: ['filter', 'print', 'exports']

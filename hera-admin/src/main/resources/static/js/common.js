@@ -170,7 +170,7 @@ function uploadFile() {
     $("#uploadFile").modal('show');
 
     $("#fileForm").fileinput({
-        uploadUrl: base_url + "/uploadResource/upload.do",
+        uploadUrl: base_url + "/uploadResource/upload",
         maxFileCount: 1,
         enctype: 'multipart/form-data',
         language: 'zh',

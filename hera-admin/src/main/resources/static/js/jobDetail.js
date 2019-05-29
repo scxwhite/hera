@@ -130,7 +130,7 @@ layui.use(['table'], function () {
         function scheduleLog() {
 
             $.ajax({
-                url: base_url + "/scheduleCenter/getLog.do",
+                url: base_url + "/scheduleCenter/getLog",
                 type: "get",
                 data: {
                     id: actionRow.id,
@@ -161,7 +161,7 @@ layui.use(['table'], function () {
 
         oTableInit.init = function () {
             table.bootstrapTable({
-                url: base_url + "/scheduleCenter/getJobHistory.do",
+                url: base_url + "/scheduleCenter/getJobHistory",
                 queryParams: parameter,
                 pagination: true,
                 showPaginationSwitch: false,
@@ -308,7 +308,7 @@ layui.use(['table'], function () {
 
 
     function cancelJob(historyId, jobId) {
-        var url = base_url + "/scheduleCenter/cancelJob.do";
+        var url = base_url + "/scheduleCenter/cancelJob";
         var parameter = {historyId: historyId, jobId: jobId};
         $.get(url, parameter, function (data) {
             layer.msg(data);

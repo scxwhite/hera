@@ -164,7 +164,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                         parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
                     }
                     $.ajax({
-                        url: base_url + "/developCenter/addFile.do",
+                        url: base_url + "/developCenter/addFile",
                         type: "get",
                         async: false,
                         data: parameter + "&hostGroupId=" + $('#hostGroupId').val(),
@@ -198,7 +198,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             let name = "文件夹" + addCount;
             let parameter = "parent=" + id + "&type=" + "1" + "&name=" + name;
             $.ajax({
-                url: base_url + "/developCenter/addFile.do",
+                url: base_url + "/developCenter/addFile",
                 type: "get",
                 async: false,
                 data: parameter,
@@ -226,7 +226,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
     //修改文件名后回调
     function renameFile(event, treeId, treeNode, isCancel) {
         $.ajax({
-            url: base_url + "/developCenter/rename.do",
+            url: base_url + "/developCenter/rename",
             type: 'get',
             data: {
                 id: treeNode.id,
@@ -288,7 +288,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
         }, function (index, layero) {
             layer.close(index)
             $.ajax({
-                url: base_url + "/developCenter/delete.do",
+                url: base_url + "/developCenter/delete",
                 type: 'get',
                 data: {
                     id: treeNode.id
@@ -349,7 +349,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
      */
     let addCount = 1;
 
-    let zNodes = getDataByPost(base_url + "/developCenter/init.do");
+    let zNodes = getDataByPost(base_url + "/developCenter/init");
     let editor = $("#fileScript");
 
 
@@ -434,7 +434,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
         let timerHandler = null;
         actionRow.id = targetId;
         $.ajax({
-            url: base_url + "/developCenter/getLog.do",
+            url: base_url + "/developCenter/getLog",
             data: {
                 fileId: actionRow.id
             },
@@ -461,7 +461,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             id: fileId,
             content: fileScript
         };
-        let url = base_url + "/developCenter/saveScript.do";
+        let url = base_url + "/developCenter/saveScript";
 
         $.ajax({
             url: url,
@@ -587,7 +587,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             id: fileId,
             content: fileScript
         };
-        let url = base_url + "/developCenter/debug.do";
+        let url = base_url + "/developCenter/debug";
 
         $.ajax({
             url: url,
@@ -621,7 +621,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
         rightNowLogCon.prepend('<div class=\"right-now-log show-right-now-log \" id=\"log' + debugId + '\"></div>');
         let timer = setInterval(function () {
             $.ajax({
-                url: base_url + "/developCenter/getLog.do",
+                url: base_url + "/developCenter/getLog",
                 type: "get",
                 data: {
                     id: debugId
@@ -689,7 +689,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
         let width = li.width();
         let debugId = li.attr('his-id');
         $.ajax({
-            url: base_url + "/developCenter/getLog.do",
+            url: base_url + "/developCenter/getLog",
             type: "get",
             data: {
                 id: debugId,
@@ -717,7 +717,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             $('.show-right-now-log').prev().addClass('show-right-now-log');
             $('.show-right-now-log:last').remove();
             clearInterval(rightTimer);
-            let url = base_url + "/developCenter/cancelJob.do";
+            let url = base_url + "/developCenter/cancelJob";
             let parameter = {id: debugId};
             $.get(url, parameter, function (data) {
                 layer.msg(data);
@@ -737,7 +737,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             content: fileScript
         };
         let result = null;
-        let url = base_url + "/developCenter/debugSelectCode.do";
+        let url = base_url + "/developCenter/debugSelectCode";
 
         $.ajax({
             url: url,
@@ -837,7 +837,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                     id: fileId,
                     content: fileScript
                 };
-                let url = base_url + "/developCenter/saveScript.do";
+                let url = base_url + "/developCenter/saveScript";
 
                 $.ajax({
                     url: url,
@@ -1017,7 +1017,7 @@ let TableInit = function (targetId) {
 
     function debugLog() {
         $.ajax({
-            url: base_url + "/developCenter/getLog.do",
+            url: base_url + "/developCenter/getLog",
             type: "get",
             data: {
                 id: actionRow.id,
@@ -1049,7 +1049,7 @@ let TableInit = function (targetId) {
 
     oTableInit.init = function () {
         table.bootstrapTable({
-            url: base_url + "/developCenter/findDebugHistory.do",
+            url: base_url + "/developCenter/findDebugHistory",
             queryParams: parameter,
             pagination: true,
             showPaginationSwitch: false,
@@ -1127,7 +1127,7 @@ let TableInit = function (targetId) {
 
 
 function cancelJob(historyId) {
-    let url = base_url + "/developCenter/cancelJob.do";
+    let url = base_url + "/developCenter/cancelJob";
     let parameter = {id: historyId};
     $.get(url, parameter, function (data) {
         layer.msg(data);
@@ -1144,7 +1144,7 @@ function cancelJob(historyId) {
 function setScript(id) {
     setDefaultSelectNode(id);
     let parameter = "id=" + id;
-    let url = base_url + "/developCenter/find.do";
+    let url = base_url + "/developCenter/find";
     let result = getDataByGet(url, parameter);
 
     if (result.name == null) {

@@ -236,7 +236,7 @@
 <script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 <script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-tab.js"></script>
 <script src="${request.contextPath}/js/common.js"></script>
-<script src="${request.contextPath}/js/developCenter.js?v=1"></script>
+<script src="${request.contextPath}/js/developCenter.js"></script>
 </body>
 
 </html>

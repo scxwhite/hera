@@ -23,7 +23,7 @@ spring:
 druid:
     datasource:
         username: root  #数据库用户名
-        password: moye      #数据库密码
+        password: 123456      #数据库密码
         driver-class-name: com.mysql.jdbc.Driver  #数据库驱动
         url: jdbc:mysql://localhost:3306/hera?characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
         initial-size: 5    #初始化连接池数量
@@ -46,10 +46,11 @@ druid:
 
 server:
     port: 8080
-    context-path: /hera
+    servlet:
+        context-path: /hera
 
 clean:
-    path: ${server.context-path}
+    path: ${server.servlet.context-path}
 #hera全局配置
 hera:
     defaultWorkerGroup: 1 #默认worker的host组id

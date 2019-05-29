@@ -219,7 +219,7 @@ layui.use(['table'], function () {
 
         $('#addGroupModal [name="addBtn"]').on('click', function () {
             $.ajax({
-                url: base_url + "/scheduleCenter/addGroup.do",
+                url: base_url + "/scheduleCenter/addGroup",
                 type: "post",
                 data: {
                     name: $('#addGroupModal [name="groupName"]').val(),
@@ -348,7 +348,7 @@ layui.use(['table'], function () {
                 return;
             }
             $.ajax({
-                url: base_url + "/scheduleCenter/addJob.do",
+                url: base_url + "/scheduleCenter/addJob",
                 type: "post",
                 data: {
                     name: name,
@@ -545,7 +545,7 @@ layui.use(['table'], function () {
         $('#editOperator [name="save"]').on('click', function () {
             if (!isGroup) {
                 $.ajax({
-                    url: base_url + "/scheduleCenter/updateJobMessage.do",
+                    url: base_url + "/scheduleCenter/updateJobMessage",
                     data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
                     "&script=" + encodeURIComponent(codeMirror.getValue()) +
                     "&id=" + focusId,
@@ -560,7 +560,7 @@ layui.use(['table'], function () {
                 });
             } else {
                 $.ajax({
-                    url: base_url + "/scheduleCenter/updateGroupMessage.do",
+                    url: base_url + "/scheduleCenter/updateGroupMessage",
                     data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
                     "&resource=" + "&groupId=" + focusId,
                     type: "post",
@@ -593,7 +593,7 @@ layui.use(['table'], function () {
                 anim: 0
             }, function (index, layero) {
                 $.ajax({
-                    url: base_url + "/scheduleCenter/deleteJob.do",
+                    url: base_url + "/scheduleCenter/deleteJob",
                     data: {
                         id: focusId,
                         isGroup: isGroup
@@ -780,7 +780,7 @@ layui.use(['table'], function () {
                     isGroup = false;
 
                     $.ajax({
-                        url: base_url + "/scheduleCenter/getJobMessage.do",
+                        url: base_url + "/scheduleCenter/getJobMessage",
                         type: "get",
                         async: false,
                         data: {
@@ -834,7 +834,7 @@ layui.use(['table'], function () {
                     isGroup = true;
 
                     $.ajax({
-                        url: base_url + "/scheduleCenter/getGroupMessage.do",
+                        url: base_url + "/scheduleCenter/getGroupMessage",
                         type: "get",
                         async: false,
                         data: {
@@ -900,7 +900,7 @@ layui.use(['table'], function () {
 
         $("#myModal .add-btn").click(function () {
             $.ajax({
-                url: base_url + "/scheduleCenter/manual.do",
+                url: base_url + "/scheduleCenter/manual",
                 type: "get",
                 data: {
                     actionId: $("#selectJobVersion").val(),
@@ -923,7 +923,7 @@ layui.use(['table'], function () {
         function setAction() {
             //获得版本
             jQuery.ajax({
-                url: base_url + "/scheduleCenter/getJobVersion.do",
+                url: base_url + "/scheduleCenter/getJobVersion",
                 type: "get",
                 data: {
                     jobId: focusId
@@ -972,7 +972,7 @@ layui.use(['table'], function () {
                         areas.selectpicker('refresh');
                     }
                 });
-                zNodes = getDataByPost(base_url + "/scheduleCenter/init.do");
+                zNodes = getDataByPost(base_url + "/scheduleCenter/init");
                 $('#allScheBtn').click(function (e) {
                     e.stopPropagation();
                     allJobTree();
@@ -1404,7 +1404,7 @@ let JobLogTable = function (jobId) {
     function scheduleLog() {
 
         $.ajax({
-            url: base_url + "/scheduleCenter/getLog.do",
+            url: base_url + "/scheduleCenter/getLog",
             type: "get",
             data: {
                 id: actionRow.id,
@@ -1435,7 +1435,7 @@ let JobLogTable = function (jobId) {
 
     oTableInit.init = function () {
         table.bootstrapTable({
-            url: base_url + "/scheduleCenter/getJobHistory.do",
+            url: base_url + "/scheduleCenter/getJobHistory",
             queryParams: parameter,
             pagination: true,
             showPaginationSwitch: false,
@@ -1600,7 +1600,7 @@ function selectTheme() {
 }
 
 function cancelJob(historyId, jobId) {
-    let url = base_url + "/scheduleCenter/cancelJob.do";
+    let url = base_url + "/scheduleCenter/cancelJob";
     let parameter = {historyId: historyId, jobId: jobId};
     $.get(url, parameter, function (data) {
         layer.msg(data);
