@@ -28,12 +28,13 @@ public class OsProcessJob extends RunShell {
     private final String GB = "G";
     private final String numRegex = "[^.&&\\D]";
 
+
     private final String command;
 
     {
         switch (HeraGlobalEnvironment.getSystemEnum()) {
             case LINUX:
-                command = "top -b -n 1";
+                command = "ps aux | awk '{if (NR>1) {print $0}}'";
                 break;
             case MAC:
                 command = "top -s 0 -n 30 -o cpu -O mem -l 2  -stats pid,user,cpu,time,mem,command,cpu_me";
@@ -159,82 +160,93 @@ public class OsProcessJob extends RunShell {
                 String result = super.getResult();
                 if (result != null) {
                     String[] lines = result.split("\n");
-                    float user = 0.0f, system = 0.0f, cpu = 0.0f,
-                            swap = 0.0f, swapTotal = 0.0f, swapUsed = 0.0f, swapCached = 0.0f, swapFree = 0.0f,
-                            mem = 0.0f, memTotal = 0.0f, memFree = 0.0f, memBuffers = 0.0f;
                     processMonitors = new ArrayList<>();
-                    for (String line : lines) {
-                        String[] words = line.trim().split("\\s+");
-                        if (words.length > 0) {
-                            String first = words[0];
-                            if (StringUtils.isBlank(first)) {
-                                continue;
-                            }
-                            if (first.contains("Cpu")) {
-                                if ("Cpu(s):".equals(first)) {
-                                    user = Float.parseFloat(words[1].replace("%us,", ""));
-                                    system = Float.parseFloat(words[2].replace("%sy,", ""));
-                                    cpu = Float.parseFloat(words[4].replace("%id,", ""));
-                                } else if ("%Cpu(s):".equals(first)) {
-                                    user = Float.parseFloat(words[1]);
-                                    system = Float.parseFloat(words[3]);
-                                    try {
-                                        cpu = Float.parseFloat(words[7]);
-                                    } catch (Exception e) {
-                                        cpu = Float.parseFloat(words[6].replace("ni,", ""));
-                                    }
-                                }
-                            } else if ("Mem:".equals(first)) {
-                                memTotal = parseKb(words[1]);
-                                memFree = parseKb(words[5]);
-                                memBuffers = parseKb(words[7]);
-                            } else if ("Swap:".equals(first)) {
-                                swapTotal = parseKb(words[1]);
-                                swapUsed = parseKb(words[3]);
-                                swapFree = parseKb(words[5]);
-                                swapCached = parseKb(words[7]);
-                            } else if ("KiB".equals(first)) {
-                                if ("Mem".equals(words[1])) {
-                                    memTotal = parseKb(words[3]);
-                                    memFree = parseKb(words[5]);
-                                    memBuffers = parseKb(words[9]);
-                                } else if ("Swap".equals(words[1])) {
-                                    swapTotal = parseKb(words[2]);
-                                    swapFree = parseKb(words[4]);
-                                    swapCached = parseKb(words[8]);
-                                }
 
-                            } else if (StringUtils.isNumeric(first)) {
-                                try {
-                                    if (processMonitors.size() > 30) {
-                                        continue;
+                    for (String line : lines) {
+                        int len = line.length();
+                        StringBuilder word = new StringBuilder();
+                        char ch;
+                        int index = -1;
+                        int wordIndex = 0;
+                        boolean workSplit = true;
+                        String user = null, pid = null, cpu = null, mem = null, time = null, command;
+                        while (++index < len) {
+                            ch = line.charAt(index);
+                            if (ch == ' ') {
+                                if (wordIndex < 11 && workSplit) {
+                                    workSplit = false;
+                                    wordIndex++;
+                                    if (wordIndex == 1) {
+                                        user = word.toString();
+                                    } else if (wordIndex == 2) {
+                                        pid = word.toString();
+                                    } else if (wordIndex == 3) {
+                                        cpu = word.toString();
+                                    } else if (wordIndex == 4) {
+                                        mem = word.toString();
+                                    } else if (wordIndex == 10) {
+                                        time = word.toString();
                                     }
-                                    processMonitors.add(ProcessMonitor.newBuilder()
-                                            .setPid(words[0])
-                                            .setUser(words[1])
-                                            .setViri(words[4])
-                                            .setRes(words[5])
-                                            .setCpu(words[8])
-                                            .setMem(words[9])
-                                            .setTime(words[10])
-                                            .setCommand(words[11])
-                                            .build());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                    word = new StringBuilder();
+                                } else if (wordIndex >= 11) {
+                                    word.append(' ');
                                 }
+                            } else {
+                                workSplit = true;
+                                word.append(ch);
                             }
                         }
+                        command = word.toString();
+
+                        processMonitors.add(ProcessMonitor.newBuilder()
+                                .setUser(user)
+                                .setPid(pid)
+                                .setCpu(cpu)
+                                .setMem(mem)
+                                .setTime(time)
+                                .setRes("")
+                                .setCommand(command)
+                                .build());
+
                     }
 
-                    mem = 1.0f - ((memFree + memBuffers + swapCached) / memTotal);
-                    swap = 1.0f - ((swapFree) / swapTotal);
+
                     processMonitors.sort((o1, o2) -> {
                         int comp;
-                        if ((comp = o1.getMem().compareTo(o2.getCommand())) == 0) {
+                        if ((comp = o1.getMem().compareTo(o2.getMem())) == 0) {
                             return -o1.getCpu().compareTo(o2.getCpu());
                         }
                         return -comp;
                     });
+                    float zero = 0.0f;
+                    float user, system, cpu,
+                            swap = zero, swapTotal, swapCached, swapFree,
+                            mem = zero, memTotal, memFree, memBuffers;
+                    // 设置cpu信息
+                    super.setCommand("vmstat 1 1 | awk '{if (NR >2) print  $13,$14,$15}'");
+                    super.run();
+                    String[] cpuVal = super.getResult().split(" ");
+                    user = parseFloat(cpuVal[0]);
+                    system = parseFloat(cpuVal[1]);
+                    cpu = parseFloat(cpuVal[2]);
+
+                    //设置内存信息
+                    super.setCommand("vmstat -s | grep -E 'total memory|used memory|free memory|buffer memory|swap cache|free swap|total swap' | awk '{print $1}'");
+                    super.run();
+                    String[] memInfo = super.getResult().split("\n");
+                    memTotal = parseKb(memInfo[0]);
+                    memFree = parseKb(memInfo[2]);
+                    memBuffers = parseKb(memInfo[3]);
+                    swapCached = parseKb(memInfo[4]);
+                    swapTotal = parseKb(memInfo[5]);
+                    swapFree = parseKb(memInfo[6]);
+
+                    if (memTotal != zero) {
+                        mem = 1.0f - ((memFree + memBuffers + swapCached) / memTotal);
+                    }
+                    if (swapTotal != zero) {
+                        swap = 1.0f - ((swapFree) / swapTotal);
+                    }
                     osInfo = OSInfo.newBuilder()
                             .setUser(user)
                             .setSystem(system)
