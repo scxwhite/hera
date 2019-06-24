@@ -4,34 +4,33 @@
     <title>任务调度中心</title>
     <#import "/common/common.macro.ftl" as netCommon>
     <@netCommon.commonStyle />
-    <link href="${request.contextPath}/plugins/ztree/css/metroStyle/metroStyle.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/lib/codemirror.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/eclipse.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/lucario.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/3024-day.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/3024-night.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/ambiance.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/base16-dark.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/base16-light.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/bespin.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/blackboard.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/colorforth.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/dracula.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/duotone-dark.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/duotone-light.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/erlang-dark.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/gruvbox-dark.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/mbo.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/material.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/solarized.css" rel="stylesheet">
-    <link href="${request.contextPath}/plugins/codemirror/theme/base16-light.css" rel="stylesheet">
-    <link href="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.css" rel="stylesheet">
-    <link href="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.css">
-
-    <link rel="stylesheet" href="${request.contextPath}/css/scheduleCenter.css">
-    <link href="${request.contextPath}/adminlte/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="${request.contextPath}/static/plugins/ztree/css/metroStyle/metroStyle.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/lib/codemirror.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/addon/hint/show-hint.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/eclipse.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/lucario.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/3024-day.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/3024-night.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/ambiance.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/base16-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/base16-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/bespin.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/blackboard.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/colorforth.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/dracula.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/duotone-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/duotone-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/erlang-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/gruvbox-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/mbo.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/material.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/solarized.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/theme/base16-light.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/adminlte/plugins/bootstrap-fileinput/fileinput.min.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/adminlte/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="${request.contextPath}/static/plugins/bootstrap-select/bootstrap-select.min.css">
+    <link rel="stylesheet" href="${request.contextPath}/static/css/scheduleCenter.css">
+    <link href="${request.contextPath}/static/adminlte/bootstrap/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
 
 </head>
 
@@ -230,7 +229,14 @@
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">预计时长:</label>
                                             <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="" readonly>
+                                                <input class="form-control" type="text" name="mustEndMinute" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">报警级别</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="alarmLevel" readonly>
                                             </div>
                                         </div>
 
@@ -361,6 +367,17 @@
                                                 </select>
                                             </div>
                                         </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">报警级别:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select class="form-control" name="offset">
+                                                    <option value="2">电话</option>
+                                                    <option value="1">微信</option>
+                                                    <option value="0" selected="selected">邮件</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">描述:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
@@ -415,7 +432,7 @@
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">预计时长(分):</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" name="jobName">
+                                                <input class="form-control" type="text" name="mustEndMinute">
 
                                             </div>
                                         </div>
@@ -1004,31 +1021,31 @@
 
 <@netCommon.commonScript />
 
-<script src="${request.contextPath}/plugins/ztree/js/jquery.ztree.core.min.js"></script>
-<script src="${request.contextPath}/plugins/ztree/js/jquery.ztree.exedit.min.js"></script>
-<script src="${request.contextPath}/plugins/ztree/js/jquery.ztree.excheck.min.js"></script>
-<script src="${request.contextPath}/plugins/ztree/js/jquery.ztree.exhide.min.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/lib/codemirror.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/mode/shell/shell.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/anyword-hint.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/show-hint.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/sql-hint.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/addon/hint/active-line.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/mode/python/python.js"></script>
-<script src="${request.contextPath}/plugins/codemirror/mode/sql/sql.js"></script>
-<script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/fileinput.min.js"></script>
-<script src="${request.contextPath}/adminlte/plugins/bootstrap-fileinput/zh.min.js"></script>
+<script src="${request.contextPath}/static/plugins/ztree/js/jquery.ztree.core.min.js"></script>
+<script src="${request.contextPath}/static/plugins/ztree/js/jquery.ztree.exedit.min.js"></script>
+<script src="${request.contextPath}/static/plugins/ztree/js/jquery.ztree.excheck.min.js"></script>
+<script src="${request.contextPath}/static/plugins/ztree/js/jquery.ztree.exhide.min.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/lib/codemirror.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/mode/shell/shell.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/addon/hint/anyword-hint.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/addon/hint/show-hint.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/addon/hint/sql-hint.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/addon/hint/active-line.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/mode/python/python.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/mode/sql/sql.js"></script>
+<script src="${request.contextPath}/static/adminlte/plugins/bootstrap-fileinput/fileinput.min.js"></script>
+<script src="${request.contextPath}/static/adminlte/plugins/bootstrap-fileinput/zh.min.js"></script>
 
-<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
-<script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
-<script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
-<script src="${request.contextPath}/plugins/bootstrap-select/bootstrap-select.min.js"></script>
-<script src="${request.contextPath}/js/taskGraph.js?v=2"></script>
-<script src="${request.contextPath}/js/scheduleCenter.js"></script>
-<script src="${request.contextPath}/js/common.js"></script>
-<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
-<script src="${request.contextPath}/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="${request.contextPath}/static/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="${request.contextPath}/static/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+<script src="${request.contextPath}/static/plugins/d3/dagre-d3.js"></script>
+<script src="${request.contextPath}/static/plugins/d3/d3.v3.min.js"></script>
+<script src="${request.contextPath}/static/plugins/bootstrap-select/bootstrap-select.min.js"></script>
+<script src="${request.contextPath}/static/js/taskGraph.js?v=2"></script>
+<script src="${request.contextPath}/static/js/scheduleCenter.js"></script>
+<script src="${request.contextPath}/static/js/common.js"></script>
+<script src="${request.contextPath}/static/adminlte/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
+<script src="${request.contextPath}/static/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
  $(".form_datetime").datetimepicker({

@@ -1,22 +1,29 @@
 package com.dfire.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
+import com.dfire.common.entity.HeraSso;
 import com.dfire.common.entity.HeraUser;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.service.HeraSsoService;
 import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.StringUtil;
 import com.dfire.config.UnCheckLogin;
-import com.dfire.config.WebSecurityConfig;
 import com.dfire.core.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /**
@@ -31,6 +38,9 @@ public class LoginController {
     @Autowired
     private HeraUserService heraUserService;
 
+    @Autowired
+    private HeraSsoService heraSsoService;
+
 
     @RequestMapping("/")
     public String toLogin() {
@@ -42,16 +52,22 @@ public class LoginController {
         return "/login";
     }
 
+    @RequestMapping("/login/admin")
+    public String admin() {
+        return "/admin";
+    }
+
     @RequestMapping("/home")
     public String index() {
         return "home";
     }
 
-    @RequestMapping(value = "/loginCheck", method = RequestMethod.POST)
+    @UnCheckLogin
     @ResponseBody
-    public JsonResponse toLogin(String userName, String password, HttpServletResponse response) {
+    @RequestMapping(value = "admin/login", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public JsonResponse adminLogin(String userName, String password, HttpServletResponse response) {
         HeraUser user = heraUserService.findByName(userName);
-
         if (user == null) {
             return new JsonResponse(false, "用户不存在");
         }
@@ -62,8 +78,9 @@ public class LoginController {
                 if (user.getIsEffective() == 0) {
                     return new JsonResponse(false, "审核未通过,请联系管理员");
                 }
-                Cookie cookie = new Cookie(WebSecurityConfig.TOKEN_NAME, JwtUtils.createToken(userName, String.valueOf(user.getId())));
+                Cookie cookie = new Cookie(Constants.TOKEN_NAME, JwtUtils.createToken(userName, String.valueOf(user.getId()), Constants.DEFAULT_ID, userName));
                 cookie.setMaxAge(Constants.LOGIN_TIME_OUT);
+                cookie.setPath("/");
                 response.addCookie(cookie);
                 return new JsonResponse(true, "登录成功");
             } else {
@@ -73,18 +90,81 @@ public class LoginController {
         return new JsonResponse(false, "请输入密码");
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
     @ResponseBody
     @UnCheckLogin
-    public JsonResponse register(HeraUser user) {
+    @ResponseStatus(HttpStatus.CREATED)
+    @RequestMapping(value = "admin/register", method = RequestMethod.POST)
+    public JsonResponse adminRegister(HeraUser user) {
         HeraUser check = heraUserService.findByName(user.getName());
         if (check != null) {
             return new JsonResponse(false, "用户名已存在，请更换用户名");
         }
-
         int res = heraUserService.insert(user);
         return new JsonResponse(res > 0, res > 0 ? "注册成功，等待管理员审核" : "注册失败,请联系管理员");
     }
 
+    @ResponseBody
+    @UnCheckLogin
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "sso/login", method = RequestMethod.POST)
+    public JsonResponse ssoLogin(String userName, String password, HttpServletResponse response) {
+        HeraSso heraSso = heraSsoService.findSsoByName(userName);
+        if (heraSso == null) {
+            return new JsonResponse(false, "用户不存在");
+        }
+        String pwd = heraSso.getPassword();
+        if (!StringUtils.isEmpty(password)) {
+            password = StringUtil.EncoderByMd5(password);
+            if (pwd.equals(password)) {
+                if (heraSso.getIsValid() == 0) {
+                    return new JsonResponse(false, "审核未通过,请联系管理员");
+                }
 
+                String owner = Optional.of(heraUserService.findById(heraSso.getGid())).orElse(HeraUser.builder().name("read_only").build()).getName();
+                Cookie cookie = new Cookie(Constants.TOKEN_NAME, JwtUtils.createToken(owner
+                        , String.valueOf(heraSso.getGid())
+                        , String.valueOf(heraSso.getId())
+                        , userName));
+                cookie.setMaxAge(Constants.LOGIN_TIME_OUT);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+                return new JsonResponse(true, "登录成功");
+            } else {
+                return new JsonResponse(false, "密码错误，请重新输入");
+            }
+        }
+        return new JsonResponse(false, "请输入密码");
+    }
+
+    @ResponseBody
+    @UnCheckLogin
+    @ResponseStatus(HttpStatus.CREATED)
+    @RequestMapping(value = "sso/register", method = RequestMethod.POST)
+    public JsonResponse ssoRegister(HeraSso heraSso) {
+        heraSso.setName(heraSso.getEmail().substring(0, heraSso.getEmail().indexOf("@")));
+        boolean exist = heraSsoService.checkByName(heraSso.getName());
+        if (exist) {
+            return new JsonResponse(false, "用户名已存在，请更换用户名");
+        }
+        boolean res = heraSsoService.addSso(heraSso);
+        return new JsonResponse(res, res ? "注册成功，等待管理员审核" : "注册失败,请联系管理员");
+    }
+
+    @ResponseBody
+    @UnCheckLogin
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "sso/groups", method = RequestMethod.GET)
+    public JsonResponse ssoGroups() {
+        List<HeraUser> users = heraUserService.getAll();
+        if (users == null || users.size() == 0) {
+            return new JsonResponse(false, "找不到部门,请联系管理员");
+        }
+        List<JSONObject> groups = users.stream().filter(user -> user.getIsEffective() == 1).map(x -> {
+            JSONObject group = new JSONObject();
+            group.put("id", x.getId());
+            group.put("name", x.getName());
+            return group;
+        }).collect(Collectors.toList());
+        return new JsonResponse(true, "查询成功", groups);
+    }
 }

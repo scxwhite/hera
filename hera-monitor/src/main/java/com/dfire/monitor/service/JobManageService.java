@@ -17,8 +17,6 @@ public interface JobManageService {
      * @return
      */
     JsonResponse findJobHistoryByStatus(String status,String dt);
-    
-    //JsonResponse findJobHistoryByStatus(String status);
 
     /**
      * 查询任务运行时长top10

@@ -1,4 +1,4 @@
-let nodes, edges, g, headNode, currIndex = 0, len, inner, initialScale = 0.75, zoom, nodeIndex = {}, graphType,
+let nodes, edges, g, headNode, currIndex = 0, len, inner, initialScale = 1.25, zoom, nodeIndex = {}, graphType,
     codeMirror, themeSelect = $('#themeSelect');
 
 layui.use(['table'], function () {
@@ -11,7 +11,7 @@ layui.use(['table'], function () {
         let selected;
         let triggerType;
         let allArea = [];
-        let groupTaskTable, groupTaskType,jobDt='', focusId = -1;
+        let groupTaskTable, groupTaskType, jobDt = '', focusId = -1;
         let inheritConfigCM, selfConfigCM;
         let editor = $('#editor');
         let setting = {
@@ -160,7 +160,7 @@ layui.use(['table'], function () {
                 type: "get",
                 data: {
                     jobId: focusId,
-                    type: isGroup
+                    type: isGroup ? "GROUP" : "JOB"
                 },
                 success: function (data) {
                     if (data.success) {
@@ -194,7 +194,7 @@ layui.use(['table'], function () {
                 data: {
                     uIdS: JSON.stringify(uids),
                     id: focusId,
-                    type: isGroup
+                    type: isGroup ? "GROUP" : "JOB"
                 },
                 success: function (data) {
                     layer.msg(data.message);
@@ -207,7 +207,6 @@ layui.use(['table'], function () {
         $('#jobOperate [name="jobDag"]').on('click', function () {
             $('#jobDagModal').modal('show');
             $('#item').val($('#jobMessage [name="id"]').val());
-            keypath(0);
         });
 
         $("#groupOperate [name='addGroup']").on('click', function () {
@@ -250,7 +249,7 @@ layui.use(['table'], function () {
                 },
                 type: "post",
                 success: function (res) {
-                    layer.msg(res);
+                    layer.msg(res.message);
                 },
                 error: function (err) {
                     layer.msg(err);
@@ -421,6 +420,11 @@ layui.use(['table'], function () {
                 if (key !== null && key !== "" && key !== undefined) {
                     keys = key.split(" ");
                     length = keys.length;
+                    for (let i = 0; i < length; i++) {
+                        if (isNaN(keys[i])) {
+                            keys[i] = keys[i].toLowerCase();
+                        }
+                    }
                     let nodeShow = tree.getNodesByFilter(filterNodes);
                     if (nodeShow && nodeShow.length > 0) {
                         nodeShow.forEach(function (node) {
@@ -467,7 +471,7 @@ layui.use(['table'], function () {
                                 return true;
                             }
                         } else {//name搜索
-                            if (node.jobName.indexOf(keys[i]) != -1) {
+                            if (node.jobName.toLowerCase().indexOf(keys[i]) != -1) {
                                 if (isDepen) {
                                     node.isParent ? node.highlight = 1 : node.highlight = 2;
                                     tree.showNode(node);
@@ -547,8 +551,8 @@ layui.use(['table'], function () {
                 $.ajax({
                     url: base_url + "/scheduleCenter/updateJobMessage.do",
                     data: $('#jobMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                    "&script=" + encodeURIComponent(codeMirror.getValue()) +
-                    "&id=" + focusId,
+                        "&script=" + encodeURIComponent(codeMirror.getValue()) +
+                        "&id=" + focusId,
                     type: "post",
                     success: function (data) {
                         if (data.success == false) {
@@ -562,7 +566,7 @@ layui.use(['table'], function () {
                 $.ajax({
                     url: base_url + "/scheduleCenter/updateGroupMessage.do",
                     data: $('#groupMessageEdit form').serialize() + "&selfConfigs=" + encodeURIComponent(selfConfigCM.getValue()) +
-                    "&resource=" + "&groupId=" + focusId,
+                        "&resource=" + "&groupId=" + focusId,
                     type: "post",
                     success: function (data) {
                         if (data.success == false) {
@@ -596,7 +600,7 @@ layui.use(['table'], function () {
                     url: base_url + "/scheduleCenter/deleteJob.do",
                     data: {
                         id: focusId,
-                        isGroup: isGroup
+                        type: isGroup ? "GROUP" : "JOB"
                     },
                     type: "post",
                     success: function (data) {
@@ -786,9 +790,14 @@ layui.use(['table'], function () {
                         data: {
                             jobId: id
                         },
-                        success: function (data) {
+                        success: function (result) {
+                            if (result.success === false) {
+                                layer.msg(result.message);
+                                return;
+                            }
+                            let data = result.data;
                             focusItem = data;
-                            if (data.runType == "Shell") {
+                            if (data.runType === "Shell") {
                                 codeMirror.setOption("mode", "text/x-sh");
                             } else {
                                 codeMirror.setOption("mode", "text/x-hive");
@@ -808,8 +817,6 @@ layui.use(['table'], function () {
                             $('#jobMessage [name="auto"]').removeClass("label-primary")
                                 .removeClass("label-default").removeClass("label-info")
                                 .addClass(data.auto === "开启" ? "label-primary" : data.auto === "失效" ? "label-info" : "label-default");
-
-
                             $('#jobMessage [name="repeatRun"]').removeClass("label-primary")
                                 .removeClass("label-default").addClass(data.repeatRun === 1 ? "label-primary" : "label-default").val(data.repeatRun === 1 ? "是" : "否");
 
@@ -840,7 +847,11 @@ layui.use(['table'], function () {
                         data: {
                             groupId: id
                         },
-                        success: function (data) {
+                        success: function (result) {
+                            if (result.success === false) {
+                                layer.msg(result.message);
+                            }
+                            var data = result.data;
                             focusItem = data;
                             formDataLoad("groupMessage form", data);
                             inheritConfigCM.setValue(parseJson(data.inheritConfig));
@@ -934,15 +945,13 @@ layui.use(['table'], function () {
                         return;
                     }
                     let jobVersion = "";
-                    data.forEach(function (action, index) {
+                    data.data.forEach(function (action, index) {
                         jobVersion += '<option value="' + action.id + '" >' + action.id + '</option>';
                     });
-
                     let jobVer = $('#selectJobVersion');
                     jobVer.empty();
                     jobVer.append(jobVersion);
                     jobVer.selectpicker('refresh');
-
                     $('#myModal').modal('show');
 
                 }
@@ -1037,7 +1046,12 @@ layui.use(['table'], function () {
                 $.ajax({
                     url: base_url + "/scheduleCenter/getHostGroupIds",
                     type: "get",
-                    success: function (data) {
+                    success: function (result) {
+                        if (result.success === false) {
+                            layer.msg(data.message);
+                            return;
+                        }
+                        let data = result.data;
                         let hostGroup = $('#jobMessageEdit [name="hostGroupId"]');
                         let option = '';
                         data.forEach(function (val) {
@@ -1209,62 +1223,62 @@ layui.use(['table'], function () {
         $('#showAllBtn').click(function () {
             // 表格渲染
             groupTaskType = 'all';
-            jobDt=$('#jobDt').val();
+            jobDt = $('#jobDt').val();
             reloadGroupTaskTable();
 
         });
 
         $('#overviewOperator [name="showAll"]').on('click', function () {
             groupTaskType = 'all';
-            jobDt=$('#jobDt').val();
+            jobDt = $('#jobDt').val();
             reloadGroupTaskTable();
         });
 
 
         $('#overviewOperator [name="showRunning"]').on('click', function () {
             groupTaskType = 'running';
-            jobDt=$('#jobDt').val();
+            jobDt = $('#jobDt').val();
             reloadGroupTaskTable();
         });
 
         $('#overviewOperator [name="showFaild"]').on('click', function () {
             groupTaskType = 'failed';
-            jobDt=$('#jobDt').val();
+            jobDt = $('#jobDt').val();
             reloadGroupTaskTable();
         });
-        
+
         $('#overviewOperator [name="showSucc"]').on('click', function () {
             groupTaskType = 'success';
-            jobDt=$('#jobDt').val();
+            jobDt = $('#jobDt').val();
             reloadGroupTaskTable();
         });
-       
+
 
         $('#groupOperate [name="showFaild"]').on('click', function () {
             groupTaskType = 'failed';
-            jobDt=$('#jobDt').val();
+            jobDt = $('#jobDt').val();
             reloadGroupTaskTable();
         });
-        
+
         $('#groupOperate [name="showRunning"]').on('click', function () {
             groupTaskType = 'running';
-            jobDt=$('#jobDt').val();
+            jobDt = $('#jobDt').val();
             reloadGroupTaskTable();
         });
-        
+
         $('#groupOperate [name="showAll"]').on('click', function () {
             groupTaskType = 'all';
-            jobDt=$('#jobDt').val();
+            jobDt = $('#jobDt').val();
             reloadGroupTaskTable();
         });
-        
+
         $('#groupOperate [name="showSucc"]').on('click', function () {
             groupTaskType = 'success';
-            jobDt=$('#jobDt').val();
+            jobDt = $('#jobDt').val();
             reloadGroupTaskTable();
         });
-        
-        
+
+
         $('#closeAll').click(function (e) {
             $("#showAllModal").modal('hide');
         });
@@ -1288,7 +1302,7 @@ layui.use(['table'], function () {
                     , where: {
                         groupId: focusId,
                         status: groupTaskType,
-                        dt:jobDt
+                        dt: jobDt
                     }
                     , method: 'get'
                     , page: true
@@ -1299,7 +1313,7 @@ layui.use(['table'], function () {
                     where: {
                         groupId: focusId,
                         status: groupTaskType,
-                        dt:jobDt
+                        dt: jobDt
                     },
                     page: {
                         curr: 1 //重新从第 1 页开始
@@ -1409,7 +1423,12 @@ let JobLogTable = function (jobId) {
             data: {
                 id: actionRow.id,
             },
-            success: function (data) {
+            success: function (result) {
+                if (result.success === false) {
+                    layer.msg(data.message);
+                    return;
+                }
+                let data = result.data;
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
@@ -1453,32 +1472,46 @@ let JobLogTable = function (jobId) {
                     jobId: jobId
                 };
                 return tmp;
+            }, onLoadSuccess: function (data) {
+                if (data.success === false) {
+                    layer.msg("加载日志失败");
+                    return;
+                }
+                table.bootstrapTable("load", data.data)
             },
             pageList: [10, 25, 40, 60],
             columns: [
                 {
                     field: "id",
-                    title: "ID",
-                    width: "5%",
+                    title: "id",
+                    width: "4%",
+                    align: 'center',
+                    halign: 'center'
                 }, {
                     field: "actionId",
                     title: "版本号",
-                    width: "15%",
+                    width: "11%",
+                    halign: 'center',
+                    align: 'center',
                     formatter: function (val) {
-                        let val01 = val.substring(0,8);
-                        let val02 = val.substring(8,14);
+                        let val01 = val.substring(0, 8);
+                        let val02 = val.substring(8, 14);
                         let val03 = val.substring(14);
-                        let re = '<a class="text-primary" >'+val01+'</a>' + '<a class="text-warning" >'+val02+'</a>' + '<a class="text-success" >'+val03+'</a>' ;
+                        let re = '<a class="text-primary" >' + val01 + '</a>' + '<a class="text-warning" >' + val02 + '</a>' + '<a class="text-success" >' + val03 + '</a>';
                         return re;
                     }
                 }, {
                     field: "jobId",
                     title: "任务ID",
                     width: "5%",
+                    align: 'center',
+                    halign: 'center'
                 }, {
                     field: "status",
                     title: "执行状态",
-                    width: "8%",
+                    width: "6%",
+                    halign: 'center',
+                    align: 'center',
                     formatter: function (val) {
                         if (val === 'running') {
                             return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
@@ -1494,31 +1527,40 @@ let JobLogTable = function (jobId) {
                 }, {
                     field: "startTime",
                     title: "开始时间",
-                    width: "12%"
+                    width: "11%",
+                    align: 'center',
+                    halign: 'center'
+
                 }, {
                     field: "endTime",
                     title: "结束时间",
-                    width: "12%"
+                    width: "11%",
+                    align: 'center',
+                    halign: 'center'
+
                 }, {
                     field: "durations",
                     title: "时长(分)",
-                    width: "8%",
+                    width: "5%",
+                    halign: 'center',
+                    align: 'center',
                     formatter: function (index, row) {
-                        let st =new Date( row['startTime']);
-                        if (row['endTime'] == null || row['endTime'] == '' ){
-                        	let ed=new Date();
-                        	return (parseInt(ed - st)/1000.0/60.0).toFixed(1);
-                        }else{
-                        	let ed=new Date( row['endTime']);
-                        	return (parseInt(ed - st)/1000.0/60.0).toFixed(1);
+                        let st = new Date(row['startTime']);
+                        if (row['endTime'] == null || row['endTime'] == '') {
+                            let ed = new Date();
+                            return (parseInt(ed - st) / 1000.0 / 60.0).toFixed(1);
+                        } else {
+                            let ed = new Date(row['endTime']);
+                            return (parseInt(ed - st) / 1000.0 / 60.0).toFixed(1);
                         }
                     }
                 }
-                
                 , {
                     field: "illustrate",
                     title: "说明",
-                    width: "8%",
+                    width: "7%",
+                    halign: 'center',
+                    align: 'center',
                     formatter: function (val) {
                         if (val == null) {
                             return val;
@@ -1529,7 +1571,9 @@ let JobLogTable = function (jobId) {
                 {
                     field: "triggerType",
                     title: "触发类型",
-                    width: "8%",
+                    width: "5%",
+                    halign: 'center',
+                    align: 'center',
                     formatter: function (value, row) {
                         if (row['triggerType'] == 1) {
                             return "自动调度";
@@ -1544,24 +1588,26 @@ let JobLogTable = function (jobId) {
                     }
                 },
                 {
-                    field: "status",
-                    title: "操作",
-                    width: "10%",
-                    formatter: function (index, row) {
-                        let html = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消任务</a>';
-                        if (row['status'] == 'running') {
-                            return html;
-                        }
-                    }
-                }, {
                     field: "executeHost",
                     title: "机器|执行人",
                     width: "12%",
+                    halign: 'center',
+                    align: 'center',
                     formatter: function (index, row) {
-                        let val01 = row['executeHost'] + '|' + row['operator'];
-                        return val01;
+                        return row['executeHost'] + ' | ' + row['operator'];
                     }
-
+                }, {
+                    field: "status",
+                    title: "操作",
+                    width: "5%",
+                    halign: 'center',
+                    align: 'center',
+                    formatter: function (index, row) {
+                        let html = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消任务</a>';
+                        if (row['status'] === 'running') {
+                            return html;
+                        }
+                    }
                 }
             ],
             detailView: true,

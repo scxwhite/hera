@@ -60,7 +60,7 @@ public class ActionUtil {
     /**
      * 生成今天 Action版本的最早时间
      */
-    public static final int ACTION_CREATE_MIN_HOUR = 7;
+    public static final int ACTION_CREATE_MIN_HOUR = 6;
 
 
     public static String getTodayString() {
@@ -150,7 +150,7 @@ public class ActionUtil {
         return ActionUtil.getCurrActionVersion().compareTo(actionId) <= 0;
     }
 
-    public static boolean isInitActionVersion(String actionId) {
+    public static boolean isTodayActionVersion(String actionId) {
         return ActionUtil.getInitActionVersion().compareTo(actionId) <= 0;
     }
 

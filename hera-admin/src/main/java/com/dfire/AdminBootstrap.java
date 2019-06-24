@@ -4,6 +4,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 @MapperScan(basePackages = "com.dfire.*.mapper")
 @SpringBootApplication(scanBasePackages = "com.dfire")
 @ServletComponentScan(value = "com.dfire.config")
+@EnableAspectJAutoProxy(exposeProxy = true, proxyTargetClass = true)
 public class AdminBootstrap {
 
     public static void main(String[] args) {

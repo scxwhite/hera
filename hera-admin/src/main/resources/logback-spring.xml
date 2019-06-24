@@ -70,11 +70,11 @@
         </encoder>
     </appender>
 
-    <appender name="alertMonitor" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}/alertMonitor.log</file>
+    <appender name="all" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/info.log</file>
         <Append>true</Append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${logPath}/bak/alertMonitor.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+            <fileNamePattern>${logPath}/bak/info.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
             <!-- keep 10 days worth of history -->
             <maxHistory>10</maxHistory>
         </rollingPolicy>
@@ -188,7 +188,7 @@
     <root>
         <level value="${logLevel}"/>
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="alertMonitor"/>
+        <appender-ref ref="all"/>
     </root>
 
 
@@ -233,7 +233,6 @@
         <level value="INFO"/>
         <appender-ref ref="scanLog"/>
     </logger>
-
 
     <logger name="com.dfire.logs.ErrorLog" additivity="true">
         <level value="INFO"/>

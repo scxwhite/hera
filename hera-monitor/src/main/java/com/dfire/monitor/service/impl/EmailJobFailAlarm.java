@@ -57,7 +57,7 @@ public class EmailJobFailAlarm implements JobFailAlarm {
         HeraUser user = heraUserService.findByName(heraJob.getOwner());
         address.append(user.getEmail().trim()).append(Constants.SEMICOLON);
         try {
-            HeraJobMonitor monitor = heraJobMonitorService.findByJobIdWithOutBlank(heraJob.getId());
+            HeraJobMonitor monitor = heraJobMonitorService.findByJobId(heraJob.getId());
             if (monitor == null && Constants.PUB_ENV.equals(HeraGlobalEnvironment.getEnv())) {
                 ScheduleLog.info("任务无监控人，发送给owner：{}", heraJob.getId());
 

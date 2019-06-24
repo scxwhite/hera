@@ -4,10 +4,10 @@ package com.dfire.common.util;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPathException;
+import com.dfire.common.constants.Constants;
 import com.dfire.common.processor.DownProcessor;
 import com.dfire.common.processor.Processor;
 import com.dfire.logs.ErrorLog;
-import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.StringUtils;
 
 import java.security.MessageDigest;
@@ -35,7 +35,7 @@ public class StringUtil {
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            ErrorLog.error("MD5 错误");
+            ErrorLog.error("MD5 错误", e);
         }
         md.update(sourceStr.getBytes());
         byte b[] = md.digest();
@@ -58,11 +58,11 @@ public class StringUtil {
      * @param config
      * @return
      */
-    public static Map<String, String> convertStringToMap(String config) throws RuntimeException{
+    public static Map<String, String> convertStringToMap(String config) throws RuntimeException {
         if (config == null || "{}".equals(config)) {
             return new HashMap<>(0);
         }
-        JSONObject jsonObject = new JSONObject();
+        JSONObject jsonObject;
         try {
             jsonObject = JSONObject.parseObject(config);
         } catch (JSONPathException e) {
@@ -171,5 +171,20 @@ public class StringUtil {
             resource = resArray.toString();
         }
         return resource;
+    }
+
+    public static Integer getGroupId(String group) {
+        String groupNum = group;
+        if (group.startsWith(Constants.GROUP_PREFIX)) {
+            groupNum = group.split("_")[1];
+        }
+        Integer res;
+        try {
+            res = Integer.parseInt(groupNum);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("无法识别的groupId：" + group);
+        }
+
+        return res;
     }
 }

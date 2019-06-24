@@ -1,5 +1,6 @@
 package com.dfire.config;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.controller.BaseHeraController;
 import com.dfire.core.util.JwtUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,10 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 @Configuration
 public class WebSecurityConfig extends WebMvcConfigurerAdapter {
 
-    public final static String SESSION_USERNAME = "username";
-    public final static String SESSION_USER_ID = "userId";
-    public final static String TOKEN_NAME = "HERA_Token";
-
     @Bean
     public SecurityInterceptor getSecurityInterceptor() {
         return new SecurityInterceptor();
@@ -35,33 +32,26 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry interceptorRegistry) {
         InterceptorRegistration addRegistry = interceptorRegistry.addInterceptor(getSecurityInterceptor());
-        addRegistry.excludePathPatterns("/error").excludePathPatterns("/login**");
+        addRegistry.excludePathPatterns("/error").excludePathPatterns("/login/**");
     }
-
 
     private class SecurityInterceptor extends HandlerInterceptorAdapter {
 
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-
             if (!(handler instanceof HandlerMethod)) {
                 return true;
             }
-
             HandlerMethod method = (HandlerMethod) handler;
             UnCheckLogin methodAnnotation = method.getMethodAnnotation(UnCheckLogin.class);
             if (methodAnnotation != null) {
                 return true;
             }
-
             UnCheckLogin declaredAnnotation = method.getBeanType().getDeclaredAnnotation(UnCheckLogin.class);
-
             if (declaredAnnotation != null) {
                 return true;
             }
-
-            String heraToken = JwtUtils.getValFromCookies(TOKEN_NAME, request);
+            String heraToken = JwtUtils.getValFromCookies(Constants.TOKEN_NAME, request);
             if (StringUtils.isNotBlank(heraToken) && JwtUtils.verifyToken(heraToken)) {
                 return true;
             }

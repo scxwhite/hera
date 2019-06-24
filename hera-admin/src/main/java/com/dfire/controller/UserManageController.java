@@ -1,11 +1,14 @@
 package com.dfire.controller;
 
 import com.dfire.common.entity.HeraFile;
+import com.dfire.common.entity.HeraSso;
 import com.dfire.common.entity.HeraUser;
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.model.TableResponse;
+import com.dfire.common.entity.vo.HeraSsoVo;
 import com.dfire.common.entity.vo.HeraUserVo;
 import com.dfire.common.service.HeraFileService;
+import com.dfire.common.service.HeraSsoService;
 import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.ActionUtil;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -32,12 +36,15 @@ public class UserManageController {
     private HeraUserService heraUserService;
 
     @Autowired
+    private HeraSsoService heraSsoService;
+
+    @Autowired
     @Qualifier("heraFileMemoryService")
     private HeraFileService heraFileService;
 
     @RequestMapping(value = "/initUser", method = RequestMethod.GET)
     @ResponseBody
-    public TableResponse<List<HeraUserVo>> initUser() {
+    public TableResponse initUser() {
         List<HeraUser> users = heraUserService.getAll();
         List<HeraUserVo> res;
         if (users != null) {
@@ -53,7 +60,28 @@ public class UserManageController {
             res = new ArrayList<>(0);
         }
         res.sort((o1, o2) -> -(o1.getCreateTime().compareTo(o2.getCreateTime())));
-        return new TableResponse<>(res.size(), 0, res);
+        return new TableResponse(res.size(), 0, res);
+    }
+
+    @RequestMapping(value = "/initSso", method = RequestMethod.GET)
+    @ResponseBody
+    public TableResponse initSso() {
+        List<HeraSso> ssoList = heraSsoService.getAll();
+        if (ssoList == null || ssoList.size() == 0) {
+            return new TableResponse(-1, "数据为空");
+        }
+        Map<Integer, String> userMap = Optional.ofNullable(heraUserService.getAll())
+                .orElse(new ArrayList<>(0))
+                .stream()
+                .filter(user -> user.getIsEffective() == 1)
+                .collect(Collectors.toMap(HeraUser::getId, HeraUser::getName));
+        List<HeraSsoVo> ssoVoList = ssoList.stream().map(sso -> {
+            HeraSsoVo ssoVo = new HeraSsoVo();
+            BeanUtils.copyProperties(sso, ssoVo);
+            ssoVo.setGName(userMap.getOrDefault(sso.getGid(), "佚名"));
+            return ssoVo;
+        }).collect(Collectors.toList());
+        return new TableResponse(ssoVoList.size(), 0, ssoVoList);
     }
 
     @RequestMapping(value = "/editUser", method = RequestMethod.POST)
@@ -76,46 +104,106 @@ public class UserManageController {
 
     @RequestMapping(value = "/operateUser", method = RequestMethod.POST)
     @ResponseBody
-    public JsonResponse operateUser(Integer id, String operateType) {
-
+    public JsonResponse operateUser(Integer id, String operateType, Integer userType) {
         JsonResponse response = new JsonResponse(false, "更新失败");
-        int result;
-
-        OperateTypeEnum operateTypeEnum = OperateTypeEnum.parse(operateType);
-        if (operateTypeEnum == OperateTypeEnum.Delete) {
-            result = heraUserService.delete(id);
-            if (result > 0) {
-                response.setMessage("删除成功");
-                response.setSuccess(true);
-            }
-        } else if (operateTypeEnum == OperateTypeEnum.Approve) {
-            result = heraUserService.updateEffective(id, "1");
-            if (result > 0) {
-                HeraUser user = heraUserService.findById(id);
-                if (user != null) {
-                    HeraFile file = heraFileService.findDocByOwner(user.getName());
-                    if (file == null) {
-                        Integer integer = heraFileService.insert(HeraFile.builder().name("个人文档").gmtModified(new Date()).gmtCreate(new Date()).owner(user.getName()).type(1).build());
-                        if (integer <= 0) {
-                            return new JsonResponse(false, "新增文档失败，请联系管理员");
+        switch (UserType.parse(userType)) {
+            case SSO:
+                switch (OperateTypeEnum.parse(operateType)) {
+                    case Refuse:
+                        if (heraSsoService.setValid(id, 0)) {
+                            response.setSuccess(true);
+                            response.setMessage("审核拒绝");
+                        } else {
+                            response.setSuccess(false);
+                            response.setMessage("拒绝失败");
                         }
-                    }
+                        break;
+                    case Delete:
+                        if (heraSsoService.deleteSsoById(id)) {
+                            response.setSuccess(true);
+                            response.setMessage("删除成功");
+                        } else {
+                            response.setSuccess(false);
+                            response.setMessage("删除失败");
+                        }
+                        break;
+                    case Approve:
+                        if (heraSsoService.setValid(id, 1)) {
+                            response.setSuccess(true);
+                            response.setMessage("审核通过");
+                        } else {
+                            response.setSuccess(false);
+                            response.setMessage("审核通过失败");
+                        }
+                        break;
+                    default:
+                        response.setMessage("未知的操作类型");
+                        response.setSuccess(false);
+                        break;
                 }
-                response.setMessage("审核通过");
-                response.setSuccess(true);
-            }
-        } else if (operateTypeEnum == OperateTypeEnum.Refuse) {
-            result = heraUserService.updateEffective(id, "0");
-            if (result > 0) {
-                response.setMessage("审核拒绝");
-                response.setSuccess(true);
-            }
+                break;
+            case ADMIN:
+                int result;
+                switch (OperateTypeEnum.parse(operateType)) {
+                    case Refuse:
+                        result = heraUserService.updateEffective(id, "0");
+                        if (result > 0) {
+                            response.setMessage("审核拒绝");
+                            response.setSuccess(true);
+                        }
+                        break;
+                    case Delete:
+                        result = heraUserService.delete(id);
+                        if (result > 0) {
+                            response.setMessage("删除成功");
+                            response.setSuccess(true);
+                        }
+                        break;
+                    case Approve:
+                        result = heraUserService.updateEffective(id, "1");
+                        if (result > 0) {
+                            HeraUser user = heraUserService.findById(id);
+                            if (user != null) {
+                                HeraFile file = heraFileService.findDocByOwner(user.getName());
+                                if (file == null) {
+                                    Integer integer = heraFileService.insert(HeraFile.builder().name("个人文档").owner(user.getName()).type(1).build());
+                                    if (integer <= 0) {
+                                        return new JsonResponse(false, "新增文档失败，请联系管理员");
+                                    }
+                                }
+                            }
+                            response.setMessage("审核通过");
+                            response.setSuccess(true);
+                        }
+                        break;
+                    default:
+                        response.setMessage("未知的操作类型");
+                        response.setSuccess(false);
+                        break;
+                }
+                break;
+            default:
+                response.setSuccess(false);
+                response.setMessage("未知的用户类型");
+                break;
         }
         return response;
+
     }
 
-    public enum OperateTypeEnum {
-        Delete("1"), Approve("2"), Refuse("3");
+    private enum OperateTypeEnum {
+        /**
+         * 删除操作
+         */
+        Delete("1"),
+        /**
+         * 同意操作
+         */
+        Approve("2"),
+        /**
+         * 拒绝操作
+         */
+        Refuse("3");
         private String operateType;
 
         @Override
@@ -128,11 +216,34 @@ public class UserManageController {
         }
 
         public static OperateTypeEnum parse(String operateType) {
-            Optional<OperateTypeEnum> option = Arrays.asList(OperateTypeEnum.values())
-                    .stream()
+            Optional<OperateTypeEnum> typeEnum = Arrays.stream(OperateTypeEnum.values())
                     .filter(operate -> operate.toString().equals(operateType))
                     .findAny();
-            return option.get();
+            return typeEnum.orElse(OperateTypeEnum.Refuse);
+        }
+    }
+
+    private enum UserType {
+        /**
+         * sso相关操作
+         */
+        SSO(1),
+        /**
+         * 管理员相关
+         */
+        ADMIN(0);
+        private Integer userType;
+
+
+        UserType(Integer type) {
+            this.userType = type;
+        }
+
+        public static UserType parse(Integer userType) {
+            Optional<UserType> typeEnum = Arrays.stream(UserType.values())
+                    .filter(operate -> operate.userType.equals(userType))
+                    .findAny();
+            return typeEnum.orElse(null);
         }
     }
 }

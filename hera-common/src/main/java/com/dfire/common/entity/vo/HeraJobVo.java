@@ -50,7 +50,9 @@ public class HeraJobVo {
 
     private String name;
 
-    private String offset;
+    private String alarmLevel;
+
+    private Integer offset;
 
     private String owner;
 
@@ -84,7 +86,7 @@ public class HeraJobVo {
 
     private String hostGroupName;
 
-    private Long mustEndMinute;
+    private int mustEndMinute;
 
     private String rollBackTimes;
 

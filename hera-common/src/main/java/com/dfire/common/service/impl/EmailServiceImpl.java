@@ -5,7 +5,6 @@ import com.dfire.common.service.EmailService;
 import com.dfire.config.HeraGlobalEnvironment;
 import com.dfire.logs.MonitorLog;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
@@ -14,7 +13,10 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * @author xiaosuda
@@ -28,16 +30,16 @@ public class EmailServiceImpl implements EmailService {
         if (StringUtils.isEmpty(address)) {
             return;
         }
-        String[] userEmails = address.split(Constants.SEMICOLON);
-        int len = userEmails.length;
+        List<String> userEmails = Arrays.stream(address.split(Constants.SEMICOLON)).distinct().collect(Collectors.toList());
+        int len = userEmails.size();
         InternetAddress[] addresses = new InternetAddress[len];
         for (int i = 0; i < len; i++) {
-            addresses[i] = new InternetAddress(userEmails[i]);
+            addresses[i] = new InternetAddress(userEmails.get(i));
         }
         Properties properties = new Properties();
-        properties.setProperty("mail.smtp.host", HeraGlobalEnvironment.getMailPort());
-        properties.setProperty("mail.transport.protocol", HeraGlobalEnvironment.getMailProtocol());
-        properties.setProperty("mail.smtp.auth", "true");
+        properties.put("mail.smtp.host", HeraGlobalEnvironment.getMailHost());
+        properties.put("mail.transport.protocol", HeraGlobalEnvironment.getMailProtocol());
+        properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         properties.put("mail.smtp.socketFactory.fallback", "false");
         properties.put("mail.smtp.port", HeraGlobalEnvironment.getMailPort());
@@ -47,7 +49,7 @@ public class EmailServiceImpl implements EmailService {
 
         session.setDebug(false);
 
-        Transport transport = session.getTransport(HeraGlobalEnvironment.getMailProtocol());
+        Transport transport = session.getTransport();
 
         transport.connect(HeraGlobalEnvironment.getMailHost(), HeraGlobalEnvironment.getMailUser(), HeraGlobalEnvironment.getMailPassword());
 

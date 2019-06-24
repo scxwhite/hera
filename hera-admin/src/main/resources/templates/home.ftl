@@ -4,7 +4,7 @@
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link rel="stylesheet" href="${request.contextPath}/plugins/easyPie/style.css">
+    <link rel="stylesheet" href="${request.contextPath}/static/plugins/easyPie/style.css">
     <style>
         .my-easy-pie{
             text-align: center;
@@ -161,13 +161,13 @@
 </div>
 <!-- ./wrapper -->
 <@netCommon.commonScript />
-<script src="${request.contextPath}/plugins/easyPie/jquery.easypiechart.min.js"></script>
-<script src="${request.contextPath}/plugins/echarts/echarts.min.js"></script>
-<script src="${request.contextPath}/plugins/echarts/PercentPie.js"></script>
-<script src="${request.contextPath}/plugins/echarts/macarons.js"></script>
-<script src="${request.contextPath}/plugins/echarts/shine.js"></script>
+<script src="${request.contextPath}/static/plugins/easyPie/jquery.easypiechart.min.js"></script>
+<script src="${request.contextPath}/static/plugins/echarts/echarts.min.js"></script>
+<script src="${request.contextPath}/static/plugins/echarts/PercentPie.js"></script>
+<script src="${request.contextPath}/static/plugins/echarts/macarons.js"></script>
+<script src="${request.contextPath}/static/plugins/echarts/shine.js"></script>
 
-<script src="${request.contextPath}/js/home.js"></script>
+<script src="${request.contextPath}/static/js/home.js"></script>
 
 </body>
 </html>

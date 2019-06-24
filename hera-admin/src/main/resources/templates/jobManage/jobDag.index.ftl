@@ -114,10 +114,10 @@
 </body>
 
 <@netCommon.commonScript />
-<script src="${request.contextPath}/js/taskGraph.js?v=2"></script>
-<script src="${request.contextPath}/js/jobDag.js?v=2"></script>
-<script src="${request.contextPath}/plugins/d3/d3.v3.min.js"></script>
-<script src="${request.contextPath}/plugins/d3/dagre-d3.js"></script>
+<script src="${request.contextPath}/static/js/taskGraph.js?v=2"></script>
+<script src="${request.contextPath}/static/js/jobDag.js?v=2"></script>
+<script src="${request.contextPath}/static/plugins/d3/d3.v3.min.js"></script>
+<script src="${request.contextPath}/static/plugins/d3/dagre-d3.js"></script>
 
 </body>
 </html>

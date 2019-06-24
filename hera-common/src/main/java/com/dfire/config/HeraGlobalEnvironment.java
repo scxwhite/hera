@@ -39,6 +39,8 @@ public class HeraGlobalEnvironment {
 
     @Getter
     private static String env;
+    @Getter
+    private static boolean sudoUser;
 
     @Getter
     private static int warmUpCheck;
@@ -63,6 +65,8 @@ public class HeraGlobalEnvironment {
     private static Integer heartBeat;
     @Getter
     private static String admin;
+    @Getter
+    private static String area;
     @Getter
     private static Integer taskTimeout;
     @Getter
@@ -94,7 +98,20 @@ public class HeraGlobalEnvironment {
     @Getter
     private static boolean emrJob;
     @Getter
-    private static boolean sudoUser;
+    private static String emrCluster;
+    @Getter
+    private static String keyPath;
+
+
+    @Getter
+    private static String aliYunAccessKey;
+    @Getter
+    private static String indiaAccessKey;
+
+    @Getter
+    private static String aliYunAccessSecret;
+    @Getter
+    private static String indiaAccessSecret;
 
     @Getter
     private static String mailPort;
@@ -108,6 +125,46 @@ public class HeraGlobalEnvironment {
     private static String mailPassword;
     @Getter
     private static Set<String> alarmEnvSet;
+    @Getter
+    public static String emrFixedHost;
+    @Getter
+    public static String monitorUsers;
+    @Getter
+    public static String monitorEmails;
+
+    @Value("${hera.sudoUser}")
+    public void setSudoUser(boolean sudoUser) {
+        HeraGlobalEnvironment.sudoUser = sudoUser;
+    }
+    @Value("${hera.monitorUsers}")
+    public void setMonitorUsers(String monitorUsers) {
+        HeraGlobalEnvironment.monitorUsers = monitorUsers;
+    }
+
+    @Value("${hera.monitorEmails}")
+    public void setMonitorEmails(String monitorEmails) {
+        HeraGlobalEnvironment.monitorEmails = monitorEmails;
+    }
+
+    @Value("${india.accessKey}")
+    public void setIndiaAccessKey(String indiaAccessKey) {
+        HeraGlobalEnvironment.indiaAccessKey = indiaAccessKey;
+    }
+
+    @Value("${india.accessSecret}")
+    public void setIndiaAccessSecret(String indiaAccessSecret) {
+        HeraGlobalEnvironment.indiaAccessSecret = indiaAccessSecret;
+    }
+
+    @Value("${aliYun.accessKey}")
+    public void setAliYunAccessKey(String aliYunAccessKey) {
+        HeraGlobalEnvironment.aliYunAccessKey = aliYunAccessKey;
+    }
+
+    @Value("${aliYun.accessSecret}")
+    public void setAliYunAccessSecret(String aliYunAccessSecret) {
+        HeraGlobalEnvironment.aliYunAccessSecret = aliYunAccessSecret;
+    }
 
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
@@ -126,7 +183,11 @@ public class HeraGlobalEnvironment {
 
     @Value("${hera.env}")
     public void setEnv(String env) {
-        HeraGlobalEnvironment.env = env;
+        if (env.contains("_")) {
+            HeraGlobalEnvironment.env = env.split("_")[0];
+        } else {
+            HeraGlobalEnvironment.env = env;
+        }
     }
 
     @Value("${hera.maxMemRate}")
@@ -287,6 +348,15 @@ public class HeraGlobalEnvironment {
     }
 
 
+    @Value("${hera.area}")
+    public void setArea(String area) {
+        if (StringUtils.isBlank(area)) {
+            throw new RuntimeException("请设置hera要执行的任务区域:" + area);
+        } else {
+            HeraGlobalEnvironment.area = area.trim();
+        }
+    }
+
     @Value("${mail.port}")
     public void setMailPort(String mailPort) {
         HeraGlobalEnvironment.mailPort = mailPort;
@@ -321,14 +391,31 @@ public class HeraGlobalEnvironment {
         alarmEnvSet.addAll(Arrays.asList(mailEnv.split(Constants.COMMA)));
     }
 
+    @Value("${hera.emr_fixed_host}")
+    public void setEmrFixedHost(String emrFixedHost) {
+        HeraGlobalEnvironment.emrFixedHost = emrFixedHost;
+    }
+
     @Value("${hera.emrJob}")
-    public void setEmrJob(boolean emrJob) {
-        HeraGlobalEnvironment.emrJob = emrJob;
+    public void setEmrJob(String emrJob) {
+        if (Boolean.FALSE.toString().equals(emrJob)) {
+            HeraGlobalEnvironment.emrJob = false;
+        } else {
+            HeraGlobalEnvironment.emrJob = true;
+
+            String[] emrCluster = emrJob.split(":");
+            if (emrCluster.length == 0 || emrCluster.length == 1) {
+                throw new RuntimeException("emrJob参数设置错误:" + emrJob);
+            }
+            HeraGlobalEnvironment.emrCluster = emrCluster[1];
+        }
     }
-    @Value("${hera.sudoUser}")
-    public void setSudoUser(boolean sudoUser) {
-        HeraGlobalEnvironment.sudoUser = sudoUser;
+
+    @Value("${hera.keyPath}")
+    public void setKeyPath(String keyPath) {
+        HeraGlobalEnvironment.keyPath = keyPath;
     }
+
     /**
      * 判断是否是linux 环境，有些命令不一样
      */
