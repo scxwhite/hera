@@ -4,7 +4,9 @@ import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.core.netty.master.RunJobThreadPool;
 import com.dfire.event.HeraJobMaintenanceEvent;
 import com.dfire.event.Events;
 import com.dfire.core.exception.RemotingException;
@@ -12,7 +14,7 @@ import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.worker.WorkContext;
-import com.dfire.core.queue.JobElement;
+import com.dfire.common.vo.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
 import com.dfire.logs.HeraLog;
@@ -54,7 +56,7 @@ public class MasterHandlerWebResponse {
 
             HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
             HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
-            context.getMaster().run(history);
+            context.getMaster().run(history, context.getHeraJobService().findById(history.getJobId()));
             WebResponse webResponse = WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(WebOperate.ExecuteJob)
@@ -202,15 +204,25 @@ public class MasterHandlerWebResponse {
             }
         });
 
+
         //debug任务队列
-        List<String> masterDebugQueue = new ArrayList<>(context.getDebugQueue().size());
+        List<String> waitDebugQueue = RunJobThreadPool.getWaitClusterJob(TriggerTypeEnum.DEBUG);
+        List<String> masterDebugQueue = new ArrayList<>(waitDebugQueue.size() + context.getDebugQueue().size());
         context.getDebugQueue().forEach(jobElement -> masterDebugQueue.add(jobElement.getJobId()));
+        masterDebugQueue.addAll(waitDebugQueue);
         //自动任务队列
-        List<String> masterScheduleQueue = new ArrayList<>(context.getScheduleQueue().size());
+
+        List<String> waitScheduleQueue = RunJobThreadPool.getWaitClusterJob(TriggerTypeEnum.SCHEDULE, TriggerTypeEnum.MANUAL_RECOVER);
+        List<String> masterScheduleQueue = new ArrayList<>(waitScheduleQueue.size() + context.getScheduleQueue().size());
+        masterScheduleQueue.addAll(waitScheduleQueue);
         context.getScheduleQueue().forEach(jobElement -> masterScheduleQueue.add(jobElement.getJobId()));
+
         //手动任务队列
-        List<String> masterManualQueue = new ArrayList<>(context.getManualQueue().size());
+        List<String> waitManualQueue = RunJobThreadPool.getWaitClusterJob(TriggerTypeEnum.MANUAL);
+        List<String> masterManualQueue = new ArrayList<>(waitManualQueue.size() + context.getManualQueue().size());
+        masterManualQueue.addAll(waitManualQueue);
         context.getManualQueue().forEach(jobElement -> masterManualQueue.add(jobElement.getJobId()));
+
 
         MemUseRateJob memUseRateJob = new MemUseRateJob(1);
         memUseRateJob.readMemUsed();

@@ -181,7 +181,7 @@ public class HeraAspect {
     }
 
     private boolean isAdmin(String owner) {
-        return owner.equals(HeraGlobalEnvironment.getAdmin());
+        return owner.equals(HeraGlobalEnv.getAdmin());
     }
 
 

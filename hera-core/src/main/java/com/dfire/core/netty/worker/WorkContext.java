@@ -2,7 +2,7 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.common.service.*;
 import com.dfire.common.util.NamedThreadFactory;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.job.Job;
 import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.tool.RunShell;
@@ -73,7 +73,7 @@ public class WorkContext {
         host = NetUtils.getLocalAddress();
 
         HeraLog.info("-----------------------------当前机器的IP为:{}-----------------------------", host);
-        if (HeraGlobalEnvironment.isLinuxSystem()) {
+        if (HeraGlobalEnv.isLinuxSystem()) {
             RunShell shell = new RunShell(loadStr);
             Integer exitCode = shell.run();
             if (exitCode == 0) {

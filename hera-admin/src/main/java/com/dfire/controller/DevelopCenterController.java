@@ -7,7 +7,7 @@ import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.exception.HeraException;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.logs.MonitorLog;
 import com.dfire.protocol.JobExecuteKind;
@@ -111,7 +111,7 @@ public class DevelopCenterController extends BaseHeraController {
                 .script(heraFile.getContent())
                 .startTime(new Date())
                 .owner(Constants.FILE_ALL_NAME.equals(file.getOwner()) ? owner : file.getOwner())
-                .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnvironment.defaultWorkerGroup : file.getHostGroupId())
+                .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnv.defaultWorkerGroup : file.getHostGroupId())
                 .build();
         return executeJob(name, history);
     }
@@ -134,7 +134,7 @@ public class DevelopCenterController extends BaseHeraController {
                 .script(heraFile.getContent())
                 .startTime(new Date())
                 .owner(owner)
-                .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnvironment.defaultWorkerGroup : file.getHostGroupId())
+                .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnv.defaultWorkerGroup : file.getHostGroupId())
                 .build();
 
         return executeJob(name, history);
@@ -223,7 +223,7 @@ public class DevelopCenterController extends BaseHeraController {
     }
 
     private boolean checkPermission(Integer id) {
-        if (HeraGlobalEnvironment.getAdmin().equals(getOwner())) {
+        if (HeraGlobalEnv.getAdmin().equals(getOwner())) {
             return true;
         }
         HeraFile heraFile = heraFileService.findById(id);

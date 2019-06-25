@@ -10,7 +10,7 @@ import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.job.Job;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.worker.WorkContext;
@@ -72,7 +72,7 @@ public class WorkExecuteJob {
             workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
 
             String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            File directory = new File(HeraGlobalEnvironment.getWorkDir()
+            File directory = new File(HeraGlobalEnv.getWorkDir()
                     + File.separator + date + File.separator + "manual-" + history.getId());
             if (!directory.exists()) {
                 if (!directory.mkdirs()) {
@@ -151,7 +151,7 @@ public class WorkExecuteJob {
             workContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(history));
             HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(heraJobHistory.getJobId());
             String date = ActionUtil.getCurrDate();
-            File directory = new File(HeraGlobalEnvironment.getWorkDir()
+            File directory = new File(HeraGlobalEnv.getWorkDir()
                     + File.separator + date + File.separator + history.getId());
             if (!directory.exists()) {
                 if (!directory.mkdirs()) {
@@ -226,7 +226,7 @@ public class WorkExecuteJob {
                 workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
 
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-                File directory = new File(HeraGlobalEnvironment.getWorkDir() + File.separator + date + File.separator + "debug-" + debugId);
+                File directory = new File(HeraGlobalEnv.getWorkDir() + File.separator + date + File.separator + "debug-" + debugId);
                 if (!directory.exists()) {
                     if (directory.mkdirs()) {
                         HeraLog.error("创建文件失败:" + directory.getAbsolutePath());

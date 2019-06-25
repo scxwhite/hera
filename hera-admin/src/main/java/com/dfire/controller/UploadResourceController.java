@@ -2,11 +2,13 @@ package com.dfire.controller;
 
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.util.HierarchyProperties;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.job.JobContext;
+import com.dfire.core.job.ProcessJob;
+import com.dfire.core.job.UploadEmrFileJob;
 import com.dfire.core.job.UploadLocalFileJob;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,9 +28,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/uploadResource")
-public class UploadResourceController {
-
-
+public class UploadResourceController extends BaseHeraController {
 
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
@@ -38,45 +36,50 @@ public class UploadResourceController {
     @Transactional(rollbackFor = Exception.class)
     public JsonResponse uploadResource(MultipartHttpServletRequest request) {
         Map<String, MultipartFile> fileMap = request.getFileMap();
-        String fileName;
+        String fileName = null;
         String newFilePath;
-        String newFileName = "";
-        File file = null;
-        JsonResponse jsonResponse = new JsonResponse();
+        File file;
+        JsonResponse response = new JsonResponse();
+        response.setSuccess(true);
+        StringBuilder resMsg = new StringBuilder();
         try {
-            try {
-                for (String key : fileMap.keySet()) {
-                    MultipartFile multipartFile = fileMap.get(key);
-                    fileName = multipartFile.getOriginalFilename();
-                    String prefix = StringUtils.substringBefore(fileName, ".");
-                    String suffix = StringUtils.substringAfter(fileName, ".");
-                    newFileName = prefix + "-" + new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()) + "." + suffix;
-                    newFilePath = HeraGlobalEnvironment.getWorkDir() + File.separator + newFileName;
-                    file = new File(newFilePath);
-                    multipartFile.transferTo(file);
+            for (String key : fileMap.keySet()) {
+                MultipartFile multipartFile = fileMap.get(key);
+                fileName = multipartFile.getOriginalFilename();
+                String[] nameSplit = fileName.split("\\.");
+                fileName = nameSplit[0] + "_" + System.nanoTime() + "." + nameSplit[1];
+                newFilePath = HeraGlobalEnv.getWorkDir() + File.separator + fileName;
+                file = new File(newFilePath);
+                multipartFile.transferTo(file);
+                JobContext jobContext = JobContext.builder().build();
+                jobContext.setProperties(new HierarchyProperties(new HashMap<>(16)));
+                jobContext.setWorkDir(HeraGlobalEnv.getWorkDir());
+                ProcessJob uploadJob;
+                int exitCode;
+                //如果是emr集群 先 scp 到emr固定机器上
+                if (HeraGlobalEnv.isEmrJob()) {
+                    //默认都是hadoop用户
+                    uploadJob = new UploadEmrFileJob(jobContext, file.getAbsolutePath(), null, fileName, HeraGlobalEnv.emrFixedHost);
+                    exitCode = uploadJob.run();
+                } else {
+                    uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), HeraGlobalEnv.getHdfsUploadPath());
+                    exitCode = uploadJob.run();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            JobContext jobContext = JobContext.builder().build();
-            jobContext.setProperties(new HierarchyProperties(new HashMap<>(16)));
-            jobContext.setWorkDir(HeraGlobalEnvironment.getWorkDir());
-            UploadLocalFileJob uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), HeraGlobalEnvironment.getHdfsUploadPath());
-            HeraLog.info("controller upload file command {}", uploadJob.getCommandList().toString());
-            int exitCode = uploadJob.run();
-            if (exitCode == 0) {
-                jsonResponse.setSuccess(true);
-                jsonResponse.setMessage(HeraGlobalEnvironment.getHdfsUploadPath() + newFileName);
-                return jsonResponse;
-            } else {
-                jsonResponse.setSuccess(false);
-                jsonResponse.setMessage("upload file error");
+                HeraLog.info("controller upload file command {}", uploadJob.getCommandList().toString());
+                if (exitCode == 0) {
+                    resMsg.append(fileName).append("[上传成功]: ").append(HeraGlobalEnv.getHdfsUploadPath()).append(fileName).append("<br>");
+                } else {
+                    response.setSuccess(false);
+                    resMsg.append(fileName).append("[上传失败]: ").append(HeraGlobalEnv.getHdfsUploadPath()).append(fileName).append("<br>");
+                }
+                //删除临时文件
+                file.delete();
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            HeraLog.info("upload file error", e);
-
+            ErrorLog.error("上传文件异常:" + fileName, e);
+            return new JsonResponse(false,"上传文件异常，请联系管理员");
         }
-        return jsonResponse;
+        response.setMessage(resMsg.toString());
+        return response;
     }
 }

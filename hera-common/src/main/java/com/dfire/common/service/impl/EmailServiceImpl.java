@@ -2,7 +2,7 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.service.EmailService;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.logs.MonitorLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -37,13 +37,13 @@ public class EmailServiceImpl implements EmailService {
             addresses[i] = new InternetAddress(userEmails.get(i));
         }
         Properties properties = new Properties();
-        properties.put("mail.smtp.host", HeraGlobalEnvironment.getMailHost());
-        properties.put("mail.transport.protocol", HeraGlobalEnvironment.getMailProtocol());
+        properties.put("mail.smtp.host", HeraGlobalEnv.getMailHost());
+        properties.put("mail.transport.protocol", HeraGlobalEnv.getMailProtocol());
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         properties.put("mail.smtp.socketFactory.fallback", "false");
-        properties.put("mail.smtp.port", HeraGlobalEnvironment.getMailPort());
-        properties.put("mail.smtp.socketFactory.port", HeraGlobalEnvironment.getMailPort());
+        properties.put("mail.smtp.port", HeraGlobalEnv.getMailPort());
+        properties.put("mail.smtp.socketFactory.port", HeraGlobalEnv.getMailPort());
 
         Session session = Session.getInstance(properties);
 
@@ -51,7 +51,7 @@ public class EmailServiceImpl implements EmailService {
 
         Transport transport = session.getTransport();
 
-        transport.connect(HeraGlobalEnvironment.getMailHost(), HeraGlobalEnvironment.getMailUser(), HeraGlobalEnvironment.getMailPassword());
+        transport.connect(HeraGlobalEnv.getMailHost(), HeraGlobalEnv.getMailUser(), HeraGlobalEnv.getMailPassword());
 
         Message message = createSimpleMessage(session, title, content, addresses);
         transport.sendMessage(message, message.getAllRecipients());
@@ -61,7 +61,7 @@ public class EmailServiceImpl implements EmailService {
 
     private Message createSimpleMessage(Session session, String title, String content, InternetAddress[] addresses) throws MessagingException {
         MimeMessage mimeMessage = new MimeMessage(session);
-        mimeMessage.setFrom(new InternetAddress(HeraGlobalEnvironment.getMailUser()));
+        mimeMessage.setFrom(new InternetAddress(HeraGlobalEnv.getMailUser()));
         mimeMessage.setRecipients(Message.RecipientType.TO, addresses);
         mimeMessage.setSubject(title);
         mimeMessage.setContent(content, "text/html;charset=UTF-8");

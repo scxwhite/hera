@@ -3,12 +3,10 @@ package com.dfire.core.job;
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.enums.JobRunTypeEnum;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.common.exception.HeraException;
 import com.dfire.core.util.CommandUtils;
-import com.dfire.core.util.EmrUtils;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,7 +37,7 @@ public class ShellJob extends ProcessJob {
      * @return 命令集合
      */
     @Override
-    public List<String> getCommandList() {
+    public List<String> getCommandList() throws HeraException {
         String script;
         if (shell != null) {
             script = shell;
@@ -60,7 +58,7 @@ public class ShellJob extends ProcessJob {
             getProperties().setProperty(RunningJobKeyConstant.RUN_SHELL_PATH, f.getAbsolutePath());
 
         } catch (IOException e) {
-            jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+            throw new HeraException("创建文件失败，请检查是否有权限", e);
         } finally {
             if (outputStreamWriter != null) {
                 try {
@@ -71,11 +69,21 @@ public class ShellJob extends ProcessJob {
             }
         }
         String shellFilePath = getProperty(RunningJobKeyConstant.RUN_SHELL_PATH, "");
-        List<String> commands = new ArrayList<>();
-        dosToUnix(shellFilePath, commands);
-        String tmpFilePath = jobContext.getWorkDir() + File.separator + "run.sh";
+        List<String> list = new ArrayList<>();
+        //修改权限
+        String shellPrefix = getJobPrefix();
+        //过滤不需要转化的后缀名
+        boolean isDocToUnix = checkDosToUnix(shellFilePath);
+        if (isDocToUnix) {
+            list.add("dos2unix " + shellFilePath);
+            log("dos2unix file:" + shellFilePath);
+        } else {
+            log("file path :" + shellFilePath);
+        }
+        String tmpFilePath = jobContext.getWorkDir() + File.separator + "tmp.sh";
         File tmpFile = new File(tmpFilePath);
         OutputStreamWriter tmpWriter = null;
+
         if (!tmpFile.exists()) {
             try {
                 if (!tmpFile.createNewFile()) {
@@ -84,9 +92,9 @@ public class ShellJob extends ProcessJob {
                 }
                 tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                         Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
-                tmpWriter.write(generateRunCommand(JobRunTypeEnum.Shell, shellFilePath));
+                tmpWriter.write(generateRunCommand(JobRunTypeEnum.Shell, "", shellFilePath));
             } catch (Exception e) {
-                jobContext.getHeraJobHistory().getLog().appendHeraException(e);
+                throw new HeraException("组装命令异常", e);
             } finally {
                 if (tmpWriter != null) {
                     try {
@@ -97,10 +105,10 @@ public class ShellJob extends ProcessJob {
                 }
             }
         }
-        commands.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
-        commands.add(CommandUtils.getRunShCommand(tmpFilePath));
-        TaskLog.info("5.1 命令：{}", JSONObject.toJSONString(commands));
-        return commands;
+        list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
+        list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
+        TaskLog.info("5.1 命令：{}", JSONObject.toJSONString(list));
+        return list;
     }
 
     @Override

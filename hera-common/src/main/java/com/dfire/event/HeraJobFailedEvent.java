@@ -1,5 +1,6 @@
 package com.dfire.event;
 
+import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.TriggerTypeEnum;
 import lombok.Data;
@@ -17,8 +18,10 @@ public class HeraJobFailedEvent extends ApplicationEvent {
     private final HeraJobHistoryVo heraJobHistory;
     private final String actionId;
     private final TriggerTypeEnum triggerType;
+    private HeraJob heraJob;
     private int runCount = 0;
     private int rollBackTime = 0;
+    private int retryCount = 0;
 
     public HeraJobFailedEvent(String jobId, TriggerTypeEnum triggerType, HeraJobHistoryVo heraJobHistory) {
         super(Events.JobFailed);
@@ -32,7 +35,6 @@ public class HeraJobFailedEvent extends ApplicationEvent {
             this.rollBackTime = value;
         }
     }
-
 
 
 }

@@ -144,7 +144,7 @@ spring:
 hera:
   admin: hera
   emrJob: false
-  area: AY
+  area: CN
 ---
 ## 中国开发环境
 spring:
@@ -155,7 +155,7 @@ druid:
     username: root
     password: root
 hera:
-  area: AY
+  area: CN
   workDir: /home/docker/logs
   emrJob: true:aliYun
 logging:
@@ -174,7 +174,7 @@ druid:
     password: xx
 hera:
   workDir: /home/docker/logs
-  area: AY
+  area: CN
   emrJob: true:aliYun
   maxParallelNum: 2
 server:
@@ -194,7 +194,7 @@ druid:
     password: xx
 hera:
   workDir: /home/docker/logs
-  area: AY
+  area: CN
   emrJob: true:aliYun
   emr_fixed_host: xx.xx.xx.xx
   hdfsUploadPath: oss://xxx/pre/hera/
@@ -215,7 +215,7 @@ druid:
     password: xx
 hera:
   workDir: /home/docker/logs
-  area: AY
+  area: CN
   emrJob: true:aliYun
   emr_fixed_host: xx.xx.xx.xx
   hdfsUploadPath: oss://xxx/hera/

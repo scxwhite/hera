@@ -2,7 +2,7 @@ package com.dfire.core.netty.master.response;
 
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.ActionUtil;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
@@ -127,7 +127,7 @@ public class MasterExecuteJob {
         context.getHandler().addListener(responseListener);
         Future<Response> future = context.getThreadPool().submit(() -> {
             try {
-                latch.await(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
+                latch.await(HeraGlobalEnv.getTaskTimeout(), TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
                     ErrorLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
                 }

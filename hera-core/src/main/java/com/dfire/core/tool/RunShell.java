@@ -1,6 +1,6 @@
 package com.dfire.core.tool;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import lombok.Data;
 
 import java.io.*;
@@ -38,7 +38,7 @@ public class RunShell {
     public Integer run() {
         builder = new ProcessBuilder(commands);
         builder.directory(new File(directory));
-        builder.environment().putAll(HeraGlobalEnvironment.userEnvMap);
+        builder.environment().putAll(HeraGlobalEnv.userEnvMap);
         try {
             process = builder.start();
             if (process.waitFor(2, TimeUnit.SECONDS)) {

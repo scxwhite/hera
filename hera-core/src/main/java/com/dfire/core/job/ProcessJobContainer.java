@@ -1,6 +1,6 @@
 package com.dfire.core.job;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.util.EmrUtils;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class ProcessJobContainer extends AbstractJob {
     public int run() throws Exception {
         int exitCode = -1;
         try {
-            if (HeraGlobalEnvironment.isEmrJob()) {
+            if (HeraGlobalEnv.isEmrJob()) {
                 log("启动EMR集群中,请等待...");
                 EmrUtils.addJob();
                 log("EMR集群启动完毕!");
@@ -76,7 +76,7 @@ public class ProcessJobContainer extends AbstractJob {
                 running = null;
             }
         } finally {
-            if (HeraGlobalEnvironment.isEmrJob()) {
+            if (HeraGlobalEnv.isEmrJob()) {
                 EmrUtils.removeJob();
             }
             log("exitCode = " + exitCode);

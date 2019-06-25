@@ -6,10 +6,10 @@ import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.common.vo.JobElement;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
-import com.dfire.core.queue.JobElement;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 
@@ -104,7 +104,7 @@ public class MasterCancelJob {
                             workHolder.getChannel(), JobExecuteKind.ExecuteKind.ManualKind, historyId);
                     workHolder.getManningRunning().remove(jobId);
                     try {
-                        future.get(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
+                        future.get(HeraGlobalEnv.getRequestTimeout(), TimeUnit.SECONDS);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -161,7 +161,7 @@ public class MasterCancelJob {
                             workHolder.getChannel(), JobExecuteKind.ExecuteKind.ScheduleKind, historyId);
                     workHolder.getRunning().remove(jobId);
                     try {
-                        future.get(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
+                        future.get(HeraGlobalEnv.getRequestTimeout(), TimeUnit.SECONDS);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

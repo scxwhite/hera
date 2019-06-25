@@ -1,6 +1,6 @@
 package com.dfire.core.route.loadbalance;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.route.loadbalance.impl.RandomLoadBalance;
 import com.dfire.core.route.loadbalance.impl.RoundRobinLoadBalance;
 
@@ -14,11 +14,11 @@ public class LoadBalanceFactory {
 
     public static LoadBalance getLoadBalance() {
 
-        if (RoundRobinLoadBalance.NAME.equals(HeraGlobalEnvironment.getLoadBalance())) {
+        if (RoundRobinLoadBalance.NAME.equals(HeraGlobalEnv.getLoadBalance())) {
             return new RoundRobinLoadBalance();
         }
 
-        if (RandomLoadBalance.NAME.equals(HeraGlobalEnvironment.getLoadBalance())) {
+        if (RandomLoadBalance.NAME.equals(HeraGlobalEnv.getLoadBalance())) {
             return new RandomLoadBalance();
         }
 

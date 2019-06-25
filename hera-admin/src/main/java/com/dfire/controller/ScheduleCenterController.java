@@ -17,7 +17,7 @@ import com.dfire.common.service.*;
 import com.dfire.common.util.*;
 import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.config.AdminCheck;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.config.RunAuth;
 import com.dfire.config.UnCheckLogin;
 import com.dfire.core.netty.worker.WorkClient;
@@ -439,7 +439,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RunAuth(authType = RunAuthType.GROUP, idIndex = 1)
     public JsonResponse addJob(HeraJob heraJob, String parentId) {
         heraJob.setGroupId(StringUtil.getGroupId(parentId));
-        heraJob.setHostGroupId(HeraGlobalEnvironment.defaultWorkerGroup);
+        heraJob.setHostGroupId(HeraGlobalEnv.defaultWorkerGroup);
         heraJob.setOwner(getOwner());
         heraJob.setScheduleType(JobScheduleTypeEnum.Independent.getType());
         int insert = heraJobService.insert(heraJob);

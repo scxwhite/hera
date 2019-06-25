@@ -3,15 +3,16 @@ package com.dfire.core.netty.master;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.service.*;
 import com.dfire.common.util.NamedThreadFactory;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
-import com.dfire.core.queue.JobElement;
+import com.dfire.common.vo.JobElement;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,20 +58,27 @@ public class MasterContext {
     @Qualifier("heraJobMemoryService")
     private HeraJobService heraJobService;
     @Autowired
+    private HeraAreaService heraAreaService;
+    @Autowired
     private HeraDebugHistoryService heraDebugHistoryService;
     @Autowired
     private HeraJobActionService heraJobActionService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private HeraJobMonitorService heraJobMonitorService;
+    @Autowired
+    private HeraSsoService heraSsoService;
 
     private Dispatcher dispatcher;
     private Map<Integer, HeraHostGroupVo> hostGroupCache;
-    private BlockingQueue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, Comparator.comparing(JobElement::getPriorityLevel));
-    private BlockingQueue<JobElement> debugQueue = new LinkedBlockingQueue<>(1000);
-    private BlockingQueue<JobElement> manualQueue = new LinkedBlockingQueue<>(1000);
+    private BlockingQueue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, Comparator.comparing(JobElement::getPriorityLevel).reversed());
+    private BlockingQueue<JobElement> debugQueue = new LinkedBlockingQueue<>(10000);
+    private BlockingQueue<JobElement> manualQueue = new LinkedBlockingQueue<>(10000);
 
     private MasterHandler handler;
     private MasterServer masterServer;
+    @Getter
     private ExecutorService threadPool;
 
     /**
@@ -89,7 +97,7 @@ public class MasterContext {
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);
         masterServer = new MasterServer(handler);
-        masterServer.start(HeraGlobalEnvironment.getConnectPort());
+        masterServer.start(HeraGlobalEnv.getConnectPort());
         master.init(this);
         HeraLog.info("end init master content success ");
     }
@@ -105,8 +113,7 @@ public class MasterContext {
                 quartzSchedulerService.shutdown();
                 HeraLog.info("quartz schedule shutdown success");
             } catch (Exception e) {
-                e.printStackTrace();
-                ErrorLog.error("quartz schedule shutdown error");
+                ErrorLog.error("quartz schedule shutdown error", e);
             }
         }
         HeraLog.info("destroy master context success");

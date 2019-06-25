@@ -1,7 +1,7 @@
 package com.dfire.common.util;
 
 import com.dfire.common.constants.Constants;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 
 /**
  * desc:
@@ -12,8 +12,8 @@ import com.dfire.config.HeraGlobalEnvironment;
 public class EnvUtils {
 
 
-    private static String env = HeraGlobalEnvironment.getEnv() == null ? "pre" : HeraGlobalEnvironment.getEnv();
-    private static String area = HeraGlobalEnvironment.getArea();
+    private static String env = HeraGlobalEnv.getEnv() == null ? "pre" : HeraGlobalEnv.getEnv();
+    private static String area = HeraGlobalEnv.getArea();
 
     public static boolean isDaily() {
         return env.equals(Constants.DAILY_ENV);

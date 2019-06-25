@@ -1,6 +1,6 @@
 package com.dfire.core.tool;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.worker.WorkContext;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class CpuLoadPerCoreJob extends RunShell {
 
     @Override
     public Integer run() {
-        if (!HeraGlobalEnvironment.isLinuxSystem()) {
+        if (!HeraGlobalEnv.isLinuxSystem()) {
             return -1;
         }
         Integer exitCode = super.run();

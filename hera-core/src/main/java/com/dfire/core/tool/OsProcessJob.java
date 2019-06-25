@@ -1,6 +1,6 @@
 package com.dfire.core.tool;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.logs.ErrorLog;
 import com.dfire.protocol.RpcWorkInfo;
 import com.dfire.protocol.RpcWorkInfo.OSInfo;
@@ -32,7 +32,7 @@ public class OsProcessJob extends RunShell {
     private final String command;
 
     {
-        switch (HeraGlobalEnvironment.getSystemEnum()) {
+        switch (HeraGlobalEnv.getSystemEnum()) {
             case LINUX:
                 command = "ps aux | awk '{if (NR>1) {print $0}}'";
                 break;
@@ -56,7 +56,7 @@ public class OsProcessJob extends RunShell {
             throw new NullPointerException("指令为空，无法执行Shell");
         }
         super.setCommand(command);
-        switch (HeraGlobalEnvironment.getSystemEnum()) {
+        switch (HeraGlobalEnv.getSystemEnum()) {
             case LINUX:
                 return runLinux();
             case MAC:

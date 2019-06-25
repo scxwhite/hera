@@ -1,6 +1,6 @@
 package com.dfire.core.tool;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.logs.SocketLog;
 import lombok.Data;
 
@@ -43,7 +43,7 @@ public class MemUseRateJob {
      * 在 /proc/meminfo 文件有系统内存的实时信息
      */
     public void readMemUsed() {
-        if (!HeraGlobalEnvironment.isLinuxSystem()) {
+        if (!HeraGlobalEnv.isLinuxSystem()) {
             rate = 0.1f;
             memTotal = 10240f;
             return;

@@ -14,7 +14,7 @@ import com.dfire.common.service.HeraJobActionService;
 import com.dfire.common.service.HeraJobMonitorService;
 import com.dfire.common.service.HeraSsoService;
 import com.dfire.config.AdminCheck;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.monitor.service.JobManageService;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -278,7 +278,7 @@ public class SystemManageController extends BaseHeraController {
     @RequestMapping(value = "/isAdmin", method = RequestMethod.GET)
     @ResponseBody
     public JsonResponse isAdmin() {
-        return new JsonResponse(true, getOwner().equals(HeraGlobalEnvironment.getAdmin()));
+        return new JsonResponse(true, getOwner().equals(HeraGlobalEnv.getAdmin()));
     }
 
 

@@ -11,7 +11,7 @@ import com.dfire.common.vo.MachineInfoVo;
 import com.dfire.common.vo.OSInfoVo;
 import com.dfire.common.vo.ProcessMonitorVo;
 import com.dfire.common.vo.WorkInfoVo;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.job.Job;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.cluster.FailFastCluster;
@@ -141,10 +141,10 @@ public class WorkClient {
                 } catch (Exception e) {
                     ErrorLog.error("heart beat error:", e);
                 } finally {
-                    workSchedule.schedule(this, (failCount + 1) * HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
+                    workSchedule.schedule(this, (failCount + 1) * HeraGlobalEnv.getHeartBeat(), TimeUnit.SECONDS);
                 }
             }
-        }, HeraGlobalEnvironment.getHeartBeat(), TimeUnit.SECONDS);
+        }, HeraGlobalEnv.getHeartBeat(), TimeUnit.SECONDS);
 
         /**
          * 定时 刷新日志到数据库
@@ -260,9 +260,9 @@ public class WorkClient {
                 latch.countDown();
             }
         };
-        ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, HeraGlobalEnvironment.getConnectPort()));
+        ChannelFuture connectFuture = bootstrap.connect(new InetSocketAddress(host, HeraGlobalEnv.getConnectPort()));
         connectFuture.addListener(futureListener);
-        if (!latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS)) {
+        if (!latch.await(HeraGlobalEnv.getRequestTimeout(), TimeUnit.SECONDS)) {
             connectFuture.removeListener(futureListener);
             connectFuture.cancel(true);
             throw new ExecutionException(new TimeoutException("connect server consumption of 2 seconds"));
