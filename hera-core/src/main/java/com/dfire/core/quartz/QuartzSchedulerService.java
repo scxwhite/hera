@@ -79,7 +79,7 @@ public class QuartzSchedulerService {
                 HeraLog.warn("remove action {} from quartz", actionId);
             }
         } catch (SchedulerException e) {
-            ErrorLog.error("remove quartz schedule error : " + actionId);
+            ErrorLog.error("remove quartz schedule error : " + actionId, e);
         }
 
     }

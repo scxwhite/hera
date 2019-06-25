@@ -51,7 +51,6 @@ public class HeraJobHistoryVo {
 
     private Map<String, String> properties;
 
-    private StatusEnum status;
 
 
 

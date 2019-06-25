@@ -6,7 +6,15 @@ package com.dfire.common.enums;
  * @desc
  */
 public enum JobScheduleTypeEnum {
-    Independent(0), Dependent(1);
+    /**
+     * 定时任务
+     */
+    Independent(0),
+
+    /**
+     * 依赖任务
+     */
+    Dependent(1);
     private Integer type;
 
     JobScheduleTypeEnum(Integer type) {
@@ -18,15 +26,6 @@ public enum JobScheduleTypeEnum {
         return type.toString();
     }
 
-    public static JobScheduleTypeEnum parser(String value) {
-        if ("0".equals(value)) {
-            return Independent;
-        }
-        if ("1".equals(value)) {
-            return Dependent;
-        }
-        return null;
-    }
 
     public static JobScheduleTypeEnum parser(Integer v) {
         for (JobScheduleTypeEnum t : JobScheduleTypeEnum.values()) {

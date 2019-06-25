@@ -1,6 +1,7 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.Constants;
+import com.dfire.config.HeraGlobalEnv;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,16 +40,21 @@ public class CancelHadoopJob extends ProcessJob {
         if (logContent != null) {
             String hadoopCmd = getHadoopCmd(envMap);
             String[] logLine = logContent.split(Constants.LOG_SPLIT);
-            String killCommand;
             for (String line : logLine) {
                 if (line.contains("Starting Job =")) {
                     String jobId = line.substring(line.indexOf("job_"), line.indexOf(Constants.COMMA));
-                    killCommand = hadoopCmd + " job -kill " + jobId;
+                    String killCommand = hadoopCmd + " job -kill " + jobId;
+                    if (HeraGlobalEnv.isEmrJob()) {
+                        killCommand = getLoginCmd() + " " + killCommand;
+                    }
                     commands.add(killCommand);
                     log(killCommand);
                 } else if (line.contains("Submitted application")) {
-                    String appId = line.substring(line.indexOf("application_")).replace(Constants.LOG_SPLIT, "");
-                    killCommand = "yarn application -kill " + appId;
+                    String appId = line.substring(line.indexOf("Submitted application") + "Submitted application".length() + 1).replace(Constants.LOG_SPLIT, "");
+                    String killCommand = "yarn application -kill " + appId;
+                    if (HeraGlobalEnv.isEmrJob()) {
+                        killCommand = getLoginCmd() + " " + killCommand;
+                    }
                     commands.add(killCommand);
                     log(killCommand);
                 }

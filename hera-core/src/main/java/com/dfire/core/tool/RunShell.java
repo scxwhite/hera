@@ -74,10 +74,4 @@ public class RunShell {
         return result.toString().trim();
     }
 
-    public static void main(String[] args) throws IOException {
-        RunShell shell = new RunShell("top -b -n 1");
-        shell.run();
-        System.out.println(shell.getResult());
-    }
-
 }

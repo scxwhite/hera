@@ -58,7 +58,7 @@ public class WorkHandleCancel {
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)
                     .setStatusEnum(ResponseStatus.Status.ERROR)
-                    .setErrorText("运行任务中查无此任务")
+                    .setErrorText("任务已经执行完成")
                     .build());
         }
         return workContext.getWorkExecuteThreadPool().submit(() -> {

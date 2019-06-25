@@ -52,7 +52,7 @@ public class HeraGroupMemoryServiceImpl extends HeraGroupServiceImpl {
 
     @Override
     public List<HeraGroup> findByParent(Integer parentId) {
-        return getMemoryJob().values().stream().filter(group -> group.getParent().equals(parentId)).collect(Collectors.toList());
+        return getMemoryJob().values().stream().filter(group -> group.getExisted() == 1 && group.getParent().equals(parentId)).collect(Collectors.toList());
     }
 
     @Override

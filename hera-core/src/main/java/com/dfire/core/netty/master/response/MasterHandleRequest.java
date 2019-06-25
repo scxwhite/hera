@@ -36,7 +36,7 @@ public class MasterHandleRequest {
             heartBeatInfo.setTimestamp(heartBeatMessage.getTimestamp());
             heartBeatInfo.setCores(heartBeatMessage.getCores());
             workHolder.setHeartBeatInfo(heartBeatInfo);
-            HeartLog.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
+            HeartLog.debug("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
         } catch (InvalidProtocolBufferException e) {
             ErrorLog.error("解析消息异常", e);
         }

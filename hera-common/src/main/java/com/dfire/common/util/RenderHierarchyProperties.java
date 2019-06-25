@@ -36,37 +36,6 @@ public class RenderHierarchyProperties extends HierarchyProperties {
         this.properties = properties;
     }
 
-    /**
-     * @param template
-     * @return
-     * @desc hera配置日期变量替换, 如：${zdt.addDay(-2).format("yyyyMMdd")}，${zdt.addDay(-1).format("yyyyMMdd")}
-     */
-    public static String render(String template) {
-        if (template == null) {
-            return null;
-        }
-        Matcher matcher = pt.matcher(template);
-        while (matcher.find()) {
-            String m = template.substring(matcher.start(), matcher.end());
-            StringWriter sw = new StringWriter();
-            try {
-                VelocityContext context = new VelocityContext();
-                context.put("zdt", new HeraDateTool(new Date()));
-                Velocity.evaluate(context, sw, "", m);
-                if (m.equals(sw.toString())) {
-                    ErrorLog.error("render fail with target:" + m);
-                    break;
-                }
-            } catch (Exception e) {
-                ErrorLog.error("zdt render error", e);
-                break;
-            }
-            template = template.replace(m, sw.toString());
-            matcher = pt.matcher(template);
-        }
-        template = template.replace("${yesterday}", new HeraDateTool(new Date()).addDay(-1).format(TimeFormatConstant.YYYYMMDD));
-        return template;
-    }
 
     /**
      * @param template
@@ -107,9 +76,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
 
     @Override
     public Map<String, String> getLocalProperties() {
-        Map<String, String> map = properties.getLocalProperties();
-        Map<String, String> result = properties.getLocalProperties().keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s)), (t, k) -> k));
-        return result;
+        return properties.getLocalProperties();
     }
 
     @Override
@@ -119,47 +86,37 @@ public class RenderHierarchyProperties extends HierarchyProperties {
 
     @Override
     public Set<String> getPropertyKeys() {
-        Set<String> result = new HashSet<>();
-        for (String s : properties.getPropertyKeys()) {
-            String render = render(s);
-            if (render != null) {
-                result.add(render);
-            }
-        }
         return properties.getPropertyKeys();
     }
 
     @Override
     public String getProperty(String key) {
-        return render(properties.getProperty(key));
+        return properties.getProperty(key);
     }
 
     @Override
     public String getProperty(String key, String defaultValue) {
-        return render(properties.getProperty(key, defaultValue));
+        return properties.getProperty(key, defaultValue);
     }
 
     @Override
     public String getLocalProperty(String key) {
-        return render(properties.getLocalProperty(key));
+        return properties.getLocalProperty(key);
     }
 
     @Override
     public String getLocalProperty(String key, String defaultValue) {
-        return render(properties.getLocalProperty(key));
+        return properties.getLocalProperty(key);
     }
 
     @Override
     public List<String> getHierarchyProperty(String key) {
-        List<String> result = properties.getHierarchyProperty(key).stream().map(RenderHierarchyProperties::render).collect(Collectors.toList());
-        return result;
+        return properties.getHierarchyProperty(key);
     }
 
     @Override
     public Map<String, String> getAllProperties() {
-        Map<String, String> map = properties.getAllProperties();
-        Map<String, String> result = properties.getAllProperties().keySet().stream().collect(Collectors.toMap(v -> v, s -> render(map.get(s)), (t, k) -> k));
-        return result;
+        return properties.getAllProperties();
     }
 
 }

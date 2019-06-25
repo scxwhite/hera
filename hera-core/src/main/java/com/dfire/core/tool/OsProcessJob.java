@@ -28,6 +28,8 @@ public class OsProcessJob extends RunShell {
     private final String GB = "G";
     private final String numRegex = "[^.&&\\D]";
 
+    private float zero = 0.0f;
+
 
     private final String command;
 
@@ -218,7 +220,6 @@ public class OsProcessJob extends RunShell {
                         }
                         return -comp;
                     });
-                    float zero = 0.0f;
                     float user, system, cpu,
                             swap = zero, swapTotal, swapCached, swapFree,
                             mem = zero, memTotal, memFree, memBuffers;

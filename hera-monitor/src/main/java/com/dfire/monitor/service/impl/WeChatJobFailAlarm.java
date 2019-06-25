@@ -42,7 +42,7 @@ public class WeChatJobFailAlarm extends AbstractJobFailAlarm {
             return;
         }
         //给监控任务的所有人告警
-        String msg = buildJobErrorMsg(heraJob, failedEvent.getRunCount());
+        String msg = buildJobErrorMsg(heraJob, failedEvent.getRunCount(), monitorUser);
         String split = "|";
         //获得小组组上的工号
         StringBuilder noticeIds = new StringBuilder(

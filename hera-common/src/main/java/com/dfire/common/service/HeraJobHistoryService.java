@@ -3,6 +3,7 @@ package com.dfire.common.service;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.PageHelper;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ public interface HeraJobHistoryService {
     int delete(String id);
 
     int update(HeraJobHistory heraJobHistory);
+
+    int updateStatusAndIllustrate(Integer id, String status, String illustrate, Date endTime);
 
     List<HeraJobHistory> getAll();
 
@@ -45,5 +48,7 @@ public interface HeraJobHistoryService {
     Map<String, Object> findLogByPage(PageHelper pageHelper);
 
     List<HeraJobHistory> findTodayJobHistory();
+
+    void deleteHistoryRecord(Integer beforeDay);
 
 }

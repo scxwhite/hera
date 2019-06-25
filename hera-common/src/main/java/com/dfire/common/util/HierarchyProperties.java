@@ -49,7 +49,7 @@ public class HierarchyProperties {
         if (parent != null) {
             set.addAll(parent.getPropertyKeys());
         }
-        properties.keySet().stream().forEach(key -> set.add(key));
+        set.addAll(properties.keySet());
         return set;
     }
 

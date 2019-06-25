@@ -30,13 +30,7 @@ public class HeraStringUtilTest {
 
     @Test
     public void parseDate() {
-        String s = RenderHierarchyProperties.render("${zdt.add(5,-2).format(\"yyyy-MM-dd\")}");
-        System.out.println(s);
-        s = RenderHierarchyProperties.render("${zdt.addDay(100).format(\"yyyyMMdd\")}");
-        System.out.println(s);
-        s = RenderHierarchyProperties.render("${yesterday}");
-        System.out.println(s);
-        System.out.println( RenderHierarchyProperties.render("${zdt.format(\"yyyyMMddHHmmss\")}"));
+
     }
 
     @Test

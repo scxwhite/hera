@@ -7,7 +7,22 @@ package com.dfire.common.enums;
  */
 public enum TriggerTypeEnum {
 
-    SCHEDULE(1), MANUAL(2), MANUAL_RECOVER(3),DEBUG(4);
+    /**
+     * 定时任务
+     */
+    SCHEDULE(1),
+    /**
+     * 手动执行任务
+     */
+    MANUAL(2),
+    /**
+     * 手动回复任务
+     */
+    MANUAL_RECOVER(3),
+    /**
+     * 开发中心任务
+     */
+    DEBUG(4);
     private Integer id;
 
     TriggerTypeEnum(Integer id) {

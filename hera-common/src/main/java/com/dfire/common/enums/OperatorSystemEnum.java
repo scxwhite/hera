@@ -1,20 +1,21 @@
 package com.dfire.common.enums;
 
 /**
+ *
  * @author xiaosuda
  * @date 2018/11/22
  */
 public enum OperatorSystemEnum {
     /**
-     * mac os系统
+     * mac os 系统机器
      */
     MAC,
     /**
-     * linux 系统
+     * linux系统机器
      */
     LINUX,
     /**
-     * windows 系统
+     * windows系统机器
      */
     WIN;
 

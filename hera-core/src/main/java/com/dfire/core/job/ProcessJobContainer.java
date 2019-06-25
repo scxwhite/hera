@@ -1,7 +1,7 @@
 package com.dfire.core.job;
 
-import com.dfire.config.HeraGlobalEnv;
-import com.dfire.core.util.EmrUtils;
+import com.dfire.common.constants.Constants;
+import com.dfire.common.exception.HeraException;
 
 import java.util.List;
 
@@ -21,11 +21,13 @@ public class ProcessJobContainer extends AbstractJob {
 
     private Job running;
 
+
     public ProcessJobContainer(JobContext jobContext, List<Job> pres, List<Job> posts, Job core) {
         super(jobContext);
         this.pres = pres;
         this.job = core;
         this.posts = posts;
+
     }
 
 
@@ -33,18 +35,12 @@ public class ProcessJobContainer extends AbstractJob {
      * 单个任务完整执行逻辑，按照前置，core，后置顺序执行
      *
      * @return
-     * @throws Exception
      */
     @Override
     public int run() throws Exception {
         int exitCode = -1;
         try {
-            if (HeraGlobalEnv.isEmrJob()) {
-                log("启动EMR集群中,请等待...");
-                EmrUtils.addJob();
-                log("EMR集群启动完毕!");
-            }
-
+            getProperties().setProperty(Constants.EMR_SELECT_WORK, getLoginCmd());
             for (Job job : pres) {
                 if (isCanceled()) {
                     break;
@@ -75,10 +71,10 @@ public class ProcessJobContainer extends AbstractJob {
                 log("后置置处理单元" + job.getClass().getSimpleName() + "处理完毕");
                 running = null;
             }
+        } catch (Exception e) {
+            log(e);
+            throw new HeraException("执行任务异常:", e);
         } finally {
-            if (HeraGlobalEnv.isEmrJob()) {
-                EmrUtils.removeJob();
-            }
             log("exitCode = " + exitCode);
         }
 

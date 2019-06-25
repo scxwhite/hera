@@ -65,7 +65,7 @@ public class MasterServer {
         if (channelFuture != null && channelFuture.isSuccess()) {
             HeraLog.info("start master server success");
         } else {
-            ErrorLog.error("start master server success");
+            ErrorLog.error("start master server failed");
         }
 
         return true;

@@ -119,6 +119,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                     case GetAllWorkInfo:
                         completionService.submit(() ->
                                 new ChannelResponse(FailBackCluster.wrap(channel), MasterHandlerWebResponse.buildAllWorkInfo(masterContext, webRequest)));
+                        break;
                     default:
                         ErrorLog.error("unknown webRequest operate error:{}", webRequest.getOperate());
                         break;

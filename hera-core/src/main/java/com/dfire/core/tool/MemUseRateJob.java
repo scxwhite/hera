@@ -2,7 +2,6 @@ package com.dfire.core.tool;
 
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.logs.ErrorLog;
-import com.dfire.logs.SocketLog;
 import lombok.Data;
 
 import java.io.*;

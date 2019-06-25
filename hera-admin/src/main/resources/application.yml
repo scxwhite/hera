@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+      active: @env@
   http:
     multipart:
       max-file-size: 100Mb    #允许上传文件的最大大小

@@ -12,12 +12,10 @@ import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.service.HeraJobService;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.util.StringUtil;
 import com.dfire.common.vo.GroupTaskVo;
 import com.dfire.common.vo.JobStatus;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.ScheduleLog;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,18 +216,6 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
         params.put("page", (pageForm.getPage() - 1) * pageForm.getLimit());
         params.put("limit", pageForm.getPage() * pageForm.getLimit());
         List<HeraAction> actionList;
-//        if (status == 0) {
-//            params.put("status", null);
-//        } else if (status == 1) {
-//            params.put("status", StatusEnum.RUNNING.toString());
-//        } else if (status == 2) {
-//            params.put("status", StatusEnum.FAILED.toString());
-//        } else if (status == 3) {
-//            params.put("status", StatusEnum.SUCCESS.toString());
-//        } else {
-//            return null;
-//        }
-        
         if(StringUtils.isBlank(status) || status.equals("all") ){
         	params.put("status", null);
         }else{
@@ -279,6 +265,17 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
             res.add(taskVo);
         });
         return res;
+    }
+
+    @Override
+    public void deleteHistoryRecord(Integer beforeDay) {
+        heraJobActionMapper.deleteHistoryRecord(beforeDay);
+    }
+
+    @Override
+    public void deleteAllHistoryRecord(Integer beforeDay) {
+        this.deleteHistoryRecord(beforeDay);
+        heraJobHistoryService.deleteHistoryRecord(beforeDay);
     }
 
     private String buildFont(String str, String type) {

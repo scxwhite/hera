@@ -6,7 +6,6 @@ import com.dfire.common.exception.HeraException;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.common.exception.HeraCaughtExceptionHandler;
-import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
 

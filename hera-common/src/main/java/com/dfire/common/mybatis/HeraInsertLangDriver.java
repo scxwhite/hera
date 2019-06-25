@@ -35,7 +35,7 @@ public class HeraInsertLangDriver extends XMLLanguageDriver implements LanguageD
 
             sb.deleteCharAt(sb.lastIndexOf(","));
             tmp.deleteCharAt(tmp.lastIndexOf(","));
-            sb.append(") values (" + tmp.toString() + ")");
+            sb.append(") values (").append(tmp.toString()).append(")");
 
             script = matcher.replaceAll(sb.toString());
             script = "<script>" + script + "</script>";

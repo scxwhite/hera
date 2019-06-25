@@ -13,11 +13,8 @@ import java.io.IOException;
 public class CpuLoadPerCoreJob extends RunShell {
 
     private float loadPerCore = 1f;
-    private final String keys = "load average:";
-    private final Integer keysLen = keys.length();
-
     public CpuLoadPerCoreJob() {
-        super("uptime");
+        super("uptime | awk '{print $(NF-2)}'");
     }
 
     @Override
@@ -39,10 +36,7 @@ public class CpuLoadPerCoreJob extends RunShell {
 
 
     private Float getCpuLoad(String result) {
-        String loadStr = result.substring(result.indexOf(keys) + keysLen);
-        loadStr = loadStr.replace(",", " ").trim();
-        String[] split = loadStr.split(" ");
-        return Float.parseFloat(split[0]);
+        return Float.parseFloat(result.replace(",", ""));
     }
 
     public float getLoadPerCore() {

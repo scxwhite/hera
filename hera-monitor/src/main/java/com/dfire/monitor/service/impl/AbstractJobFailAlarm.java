@@ -1,10 +1,15 @@
 package com.dfire.monitor.service.impl;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraJob;
+import com.dfire.common.entity.HeraSso;
+import com.dfire.common.service.JobFailAlarm;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
-import com.dfire.common.service.JobFailAlarm;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * desc:
@@ -15,14 +20,16 @@ import com.dfire.common.service.JobFailAlarm;
 public abstract class AbstractJobFailAlarm implements JobFailAlarm {
 
 
-    protected String buildJobErrorMsg(HeraJob heraJob, int runCount) {
+    protected String buildJobErrorMsg(HeraJob heraJob, int runCount, Set<HeraSso> monitorUser) {
+
         return "hera任务失败了 \n"
                 + "环境:" + HeraGlobalEnv.getEnv() + "\n"
                 + "区域:" + HeraGlobalEnv.getArea() + "\n"
                 + "名称:" + heraJob.getName() + "\n"
                 + "描述:" + heraJob.getDescription() + "\n"
                 + "任务ID:" + heraJob.getId() + "\n"
-                + "失败次数:" + runCount + "\n";
+                + "失败次数:" + runCount + "\n"
+                + "负责人:" + monitorUser.stream().map(HeraSso::getName).collect(Collectors.joining(Constants.SEMICOLON)) + "\n";
     }
 
 

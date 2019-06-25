@@ -60,8 +60,8 @@ public class HeraGroupServiceImpl implements HeraGroupService {
 
 
     @Override
-    public int insert(HeraGroup heraFile) {
-        return heraGroupMapper.insert(heraFile);
+    public int insert(HeraGroup heraGroup) {
+        return heraGroupMapper.insert(heraGroup);
     }
 
     @Override
@@ -70,8 +70,8 @@ public class HeraGroupServiceImpl implements HeraGroupService {
     }
 
     @Override
-    public int update(HeraGroup heraFile) {
-        return heraGroupMapper.update(heraFile);
+    public int update(HeraGroup heraGroup) {
+        return heraGroupMapper.update(heraGroup);
     }
 
     @Override

@@ -5,11 +5,13 @@ import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.enums.StatusEnum;
+import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
+import com.dfire.core.netty.master.RunJobThreadPool;
+import com.dfire.common.vo.JobElement;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
@@ -31,6 +33,16 @@ public class MasterCancelJob {
         RpcWebResponse.WebResponse webResponse = null;
         Integer debugId = Integer.parseInt(request.getId());
         HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
+
+
+        if (RunJobThreadPool.cancelJob(String.valueOf(debugId), TriggerTypeEnum.DEBUG)) {
+            webResponse = RpcWebResponse.WebResponse.newBuilder()
+                    .setRid(request.getRid())
+                    .setOperate(request.getOperate())
+                    .setStatus(ResponseStatus.Status.OK)
+                    .build();
+            SocketLog.info("任务在等待创建集群中，稍等会被取消{}", debugId);
+        }
         for (JobElement element : context.getDebugQueue()) {
             if (element.getJobId().equals(String.valueOf(debugId))) {
                 webResponse = RpcWebResponse.WebResponse.newBuilder()
@@ -89,6 +101,16 @@ public class MasterCancelJob {
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         String actionId = heraJobHistory.getActionId();
         Integer jobId = heraJobHistory.getJobId();
+
+
+        if (RunJobThreadPool.cancelJob(actionId, TriggerTypeEnum.MANUAL)) {
+            webResponse = RpcWebResponse.WebResponse.newBuilder()
+                    .setRid(request.getRid())
+                    .setOperate(request.getOperate())
+                    .setStatus(ResponseStatus.Status.OK)
+                    .build();
+            SocketLog.info("任务在等待创建集群中，稍等会被取消{}", actionId);
+        }
         //手动执行队列 查找该job是否存在
         if (remove(context.getManualQueue().iterator(), actionId)) {
             webResponse = RpcWebResponse.WebResponse.newBuilder()
@@ -146,6 +168,15 @@ public class MasterCancelJob {
         HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
         Integer jobId = heraJobHistory.getJobId();
         String actionId = heraJobHistory.getActionId();
+
+        if (RunJobThreadPool.cancelJob(actionId, TriggerTypeEnum.SCHEDULE, TriggerTypeEnum.MANUAL_RECOVER)) {
+            webResponse = RpcWebResponse.WebResponse.newBuilder()
+                    .setRid(request.getRid())
+                    .setOperate(request.getOperate())
+                    .setStatus(ResponseStatus.Status.OK)
+                    .build();
+            SocketLog.info("任务在等待创建集群中，稍等会被取消{}", actionId);
+        }
 
         if (remove(context.getScheduleQueue().iterator(), actionId)) {
             webResponse = RpcWebResponse.WebResponse.newBuilder()

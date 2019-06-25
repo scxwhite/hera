@@ -41,7 +41,7 @@ public class MasterHandleCancelJob {
         Future<RpcResponse.Response> future = context.getThreadPool().submit(() -> {
             latch.await(HeraGlobalEnv.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
-                ErrorLog.error("取消任务信号消失，三小时未收到work返回：{}", jobId);
+                ErrorLog.warn("取消任务信号消失，三小时未收到work返回：{}", jobId);
             }
             context.getHandler().removeListener(responseListener);
             return responseListener.getResponse();
@@ -50,7 +50,7 @@ public class MasterHandleCancelJob {
             SocketLog.info("send cancel job success {}", request.getRid());
             channel.writeAndFlush(socketMessage);
         } catch (RemotingException e) {
-            ErrorLog.error("send cancel job exception ", e);
+            ErrorLog.error("send cancel job exception {}", e);
         }
         return future;
     }
