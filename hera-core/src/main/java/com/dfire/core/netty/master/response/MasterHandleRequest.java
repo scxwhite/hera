@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeartLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
@@ -37,7 +38,7 @@ public class MasterHandleRequest {
             workHolder.setHeartBeatInfo(heartBeatInfo);
             HeartLog.info("received heart beat from {} : {}", heartBeatMessage.getHost(), JSONObject.toJSONString(heartBeatInfo));
         } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
+            ErrorLog.error("解析消息异常", e);
         }
     }
 
@@ -48,7 +49,7 @@ public class MasterHandleRequest {
             workHolder.setWorkInfo(workInfo);
             HeraLog.info("set workInfo success,{}", channel.remoteAddress());
         } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
+            ErrorLog.error("解析消息异常", e);
         }
     }
 }

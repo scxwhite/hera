@@ -39,23 +39,19 @@ public class SparkJob extends ProcessJob {
         File file = new File(jobContext.getWorkDir() + File.separator + System.currentTimeMillis() + ".spark");
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    throw new IOException();
+                }
             } catch (IOException e) {
                 ErrorLog.error("创建.spark失败", e);
             }
         }
 
-        OutputStreamWriter writer = null;
-        try {
-            writer = new OutputStreamWriter(new FileOutputStream(file),
-                    Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
+        try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file),
+                Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")))) {
             writer.write(dosToUnix(script.replaceAll("^--.*", "--")));
         } catch (Exception e) {
             throw new HeraException("写入文件失败:", e);
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
         }
 
         getProperties().setProperty(RunningJobKeyConstant.RUN_SPARK_PATH, file.getAbsolutePath());
@@ -90,7 +86,9 @@ public class SparkJob extends ProcessJob {
         OutputStreamWriter tmpWriter = null;
         if (!tmpFile.exists()) {
             try {
-                tmpFile.createNewFile();
+                if (!tmpFile.createNewFile()) {
+                    throw new HeraException("创建临时文件失败" + tmpFile.getAbsolutePath());
+                }
                 tmpWriter = new OutputStreamWriter(new FileOutputStream(tmpFile),
                         Charset.forName(jobContext.getProperties().getProperty("hera.fs.encode", "utf-8")));
                 tmpWriter.write(generateRunCommand(JobRunTypeEnum.Spark, prefix, sparkFilePath));

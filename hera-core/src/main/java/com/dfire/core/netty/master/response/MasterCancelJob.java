@@ -10,6 +10,7 @@ import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 
@@ -52,7 +53,7 @@ public class MasterCancelJob {
                 try {
                     future.get(10, TimeUnit.SECONDS);
                 } catch (Exception e) {
-
+                    ErrorLog.error("请求超时 ", e);
                 }
                 webResponse = RpcWebResponse.WebResponse.newBuilder()
                         .setRid(request.getRid())
@@ -106,7 +107,7 @@ public class MasterCancelJob {
                     try {
                         future.get(HeraGlobalEnv.getRequestTimeout(), TimeUnit.SECONDS);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        ErrorLog.error("请求超时 ", e);
                     }
                     SocketLog.info("远程从删除该任务{}", heraJobHistory.getJobId());
                     webResponse = RpcWebResponse.WebResponse.newBuilder()
@@ -163,7 +164,7 @@ public class MasterCancelJob {
                     try {
                         future.get(HeraGlobalEnv.getRequestTimeout(), TimeUnit.SECONDS);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        ErrorLog.error("请求超时 ", e);
                     }
                     SocketLog.info("远程删除该任务{}", actionId);
                     webResponse = RpcWebResponse.WebResponse.newBuilder()

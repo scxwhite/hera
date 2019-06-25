@@ -17,6 +17,7 @@ import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.common.vo.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
@@ -260,7 +261,7 @@ public class MasterHandlerWebResponse {
                             .setBody(RpcRequest.Request.newBuilder().setOperate(RpcOperate.Operate.GetWorkInfo).build().toByteString())
                             .build());
                 } catch (RemotingException e) {
-                    e.printStackTrace();
+                    ErrorLog.error("发送消息异常", e);
                 }
             }));
             CountDownLatch latch = new CountDownLatch(1);
@@ -284,7 +285,7 @@ public class MasterHandlerWebResponse {
                         TimeUnit.MILLISECONDS.sleep(10);
                     }
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    ErrorLog.error("InterruptedException ", e);
                 } finally {
                     latch.countDown();
                 }
@@ -292,7 +293,7 @@ public class MasterHandlerWebResponse {
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                ErrorLog.error("InterruptedException", e);
             }
 
             context.getMasterSchedule().schedule(() -> {

@@ -255,7 +255,7 @@ public class WorkClient {
                     SocketLog.info(workContext.getServerChannel().toString());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                ErrorLog.error("连接master异常", e);
             } finally {
                 latch.countDown();
             }

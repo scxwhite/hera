@@ -114,11 +114,10 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                     try {
                         response = Response.newBuilder().mergeFrom(socketMessage.getBody()).build();
                     } catch (InvalidProtocolBufferException e) {
-                        e.printStackTrace();
+                        ErrorLog.error("解析消息异常", e);
                     }
                     TaskLog.info("4.WorkHandler:receiver: socket info from master {}, response is {}", ctx.channel().remoteAddress(), response.getRid());
                     for (ResponseListener listener : listeners) {
-
                         listener.onResponse(response);
                     }
                 });
@@ -130,7 +129,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                     try {
                         webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
                     } catch (InvalidProtocolBufferException e) {
-                        e.printStackTrace();
+                        ErrorLog.error("解析消息失败", e);
                     }
                     TaskLog.info("4.WorkHandler:receiver socket info from master {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
                     for (ResponseListener listener : listeners) {
@@ -170,9 +169,8 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
-        ErrorLog.error("work exception: {}, {}", ctx.channel().remoteAddress(), cause.toString());
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        ErrorLog.error("work exception: " + ctx.channel().remoteAddress(), cause.toString());
     }
 
     private class ChannelResponse {

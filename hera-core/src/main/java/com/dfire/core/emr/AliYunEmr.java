@@ -74,8 +74,7 @@ public class AliYunEmr extends AbstractEmr {
             client.getAcsResponse(request);
             MonitorLog.info("关闭集群" + clusterId + "成功");
         } catch (ClientException e) {
-            MonitorLog.error("关闭集群" + clusterId + "失败");
-            e.printStackTrace();
+            MonitorLog.error("关闭集群" + clusterId + "失败", e);
         }
     }
 
@@ -186,7 +185,7 @@ public class AliYunEmr extends AbstractEmr {
                 }
             }
         } catch (ClientException e) {
-            e.printStackTrace();
+            ErrorLog.error("读取emr存活集群失败", e);
         }
         return null;
     }
@@ -248,7 +247,7 @@ public class AliYunEmr extends AbstractEmr {
             DescribeClusterV2Response acsResponse = client.getAcsResponse(request);
             clusterInfo = acsResponse.getClusterInfo();
         } catch (ClientException e) {
-            e.printStackTrace();
+            ErrorLog.error("获取集群信息失败", e);
         }
         return clusterInfo;
     }

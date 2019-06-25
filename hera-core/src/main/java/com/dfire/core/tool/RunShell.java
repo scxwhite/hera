@@ -1,6 +1,7 @@
 package com.dfire.core.tool;
 
 import com.dfire.config.HeraGlobalEnv;
+import com.dfire.logs.ErrorLog;
 import lombok.Data;
 
 import java.io.*;
@@ -46,7 +47,7 @@ public class RunShell {
             }
             return exitCode;
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            ErrorLog.error("执行shell异常", e);
         }
         return exitCode;
     }

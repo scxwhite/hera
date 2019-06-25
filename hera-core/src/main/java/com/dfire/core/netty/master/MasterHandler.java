@@ -60,10 +60,8 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                             TaskLog.info("3-2.MasterHandler:-->master send response success, requestId={}", response.webResponse.getRid());
                         } catch (Exception e) {
                             ErrorLog.error("master handler future take error:{}", e);
-                            e.printStackTrace();
                         } catch (Throwable throwable) {
                             ErrorLog.error("master handler future take throwable{}", throwable);
-                            throwable.printStackTrace();
                         }
                     }
                 }
@@ -137,7 +135,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                             listener.onResponse(response);
                         }
                     } catch (InvalidProtocolBufferException e) {
-                        e.printStackTrace();
+                        ErrorLog.error("解析消息异常", e);
                     }
                 });
 
@@ -148,7 +146,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                     try {
                         webResponse = WebResponse.newBuilder().mergeFrom(socketMessage.getBody()).build();
                     } catch (InvalidProtocolBufferException e) {
-                        e.printStackTrace();
+                        ErrorLog.error("解析消息异常", e);
                     }
                     SocketLog.info("6.MasterHandler:receiver socket info from work {}, webResponse is {}", ctx.channel().remoteAddress(), webResponse.getRid());
                     for (ResponseListener listener : listeners) {

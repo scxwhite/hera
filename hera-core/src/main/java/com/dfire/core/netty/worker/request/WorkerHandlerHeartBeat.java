@@ -1,10 +1,12 @@
 package com.dfire.core.netty.worker.request;
 
+import com.dfire.common.exception.HeraException;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.util.AtomicIncrease;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
+import com.dfire.logs.ErrorLog;
 import com.dfire.protocol.RpcHeartBeatMessage;
 import com.dfire.protocol.RpcOperate;
 import com.dfire.protocol.RpcRequest;
@@ -17,7 +19,7 @@ import com.dfire.protocol.RpcSocketMessage;
 public class WorkerHandlerHeartBeat {
 
 
-    public boolean send(WorkContext context) {
+    public boolean send(WorkContext context) throws HeraException {
         try {
             MemUseRateJob memUseRateJob = new MemUseRateJob(1);
             memUseRateJob.readMemUsed();
@@ -43,8 +45,7 @@ public class WorkerHandlerHeartBeat {
                             build().toByteString()).
                     build());
         } catch (RemotingException e) {
-            e.printStackTrace();
-            return false;
+            throw new HeraException("发送心跳消息失败", e);
         }
         return true;
     }

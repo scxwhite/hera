@@ -31,7 +31,8 @@ public class HttpUtils {
             URL url = new URL(urlStr);
             uri = new URI(url.getProtocol(), url.getHost() + ":" + url.getPort(), url.getPath(), url.getQuery(), null);
         } catch (URISyntaxException | MalformedURLException e) {
-            e.printStackTrace();
+            ErrorLog.error("url格式错误", e);
+
         }
 
         HttpGet httpGet = new HttpGet(uri);
@@ -55,7 +56,7 @@ public class HttpUtils {
                 ErrorLog.error(url + " http请求异常:" + response.getStatusLine().getStatusCode() + response.getEntity().toString());
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorLog.error("发送http请求失败", e);
         }
         return null;
     }

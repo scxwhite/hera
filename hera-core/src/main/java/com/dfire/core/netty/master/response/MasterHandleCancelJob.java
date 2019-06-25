@@ -50,8 +50,7 @@ public class MasterHandleCancelJob {
             SocketLog.info("send cancel job success {}", request.getRid());
             channel.writeAndFlush(socketMessage);
         } catch (RemotingException e) {
-            e.printStackTrace();
-            ErrorLog.error("send cancel job exception {}", request.getRid());
+            ErrorLog.error("send cancel job exception ", e);
         }
         return future;
     }

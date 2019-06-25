@@ -200,7 +200,7 @@ public class MasterRunJob implements RunJob {
             try {
                 TimeUnit.MINUTES.sleep(retryWaitTime);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                ErrorLog.error("sleep interrupted", e);
             }
         }
         HeraJobHistoryVo heraJobHistoryVo;

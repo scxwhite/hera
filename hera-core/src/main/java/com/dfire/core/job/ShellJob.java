@@ -57,7 +57,6 @@ public class ShellJob extends ProcessJob {
             outputStreamWriter = new OutputStreamWriter(new FileOutputStream(f), Charset.forName("utf-8"));
             outputStreamWriter.write(dosToUnix(script));
             getProperties().setProperty(RunningJobKeyConstant.RUN_SHELL_PATH, f.getAbsolutePath());
-
         } catch (IOException e) {
             throw new HeraException("创建文件失败，请检查是否有权限", e);
         } finally {

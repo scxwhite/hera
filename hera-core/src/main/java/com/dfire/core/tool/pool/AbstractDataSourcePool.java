@@ -42,8 +42,7 @@ public abstract class AbstractDataSourcePool {
         try {
             return dataSource.getConnection();
         } catch (Exception e) {
-            e.printStackTrace();
-            ErrorLog.error("获取连接失败");
+            ErrorLog.error("获取连接失败", e);
             return null;
         }
     }

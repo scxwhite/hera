@@ -4,6 +4,7 @@ import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.netty.NettyChannel;
 import com.dfire.core.tool.OsProcessJob;
+import com.dfire.logs.ErrorLog;
 import com.dfire.protocol.RpcOperate;
 import com.dfire.protocol.RpcRequest.Request;
 import com.dfire.protocol.RpcSocketMessage.SocketMessage;
@@ -34,7 +35,7 @@ public class WorkHandlerRequest {
                                         .toByteString())
                                 .build());
             } catch (RemotingException e) {
-                e.printStackTrace();
+                ErrorLog.error("发送消息失败", e);
             }
         }
 

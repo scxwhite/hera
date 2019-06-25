@@ -1,6 +1,7 @@
 package com.dfire.core.util;
 
 import com.dfire.common.util.ActionUtil;
+import com.dfire.logs.ErrorLog;
 import org.quartz.CronExpression;
 
 import java.text.ParseException;
@@ -26,7 +27,7 @@ public class CronParse {
                 // 初始化cron表达式解析器
                 exp = new CronExpression(cronExpression);
             } catch (ParseException e) {
-                e.printStackTrace();
+                ErrorLog.error("解析cron表达式异常", e);
                 return false;
             }
             // 定义生成时间范围
@@ -39,7 +40,8 @@ public class CronParse {
             try {
                 dStart = sdf.parse(sStart);
             } catch (ParseException e) {
-                e.printStackTrace();
+                ErrorLog.error("日期解析失败", e);
+                return false;
             }
             c.setTime(dStart);
             c.add(Calendar.SECOND, -1);

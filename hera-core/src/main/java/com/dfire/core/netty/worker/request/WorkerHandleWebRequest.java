@@ -93,9 +93,8 @@ public class WorkerHandleWebRequest {
                     .build());
             SocketLog.info("1.WorkerHandleWebRequest: send web request to master requestId ={}", request.getRid());
         } catch (RemotingException e) {
-            e.printStackTrace();
             workContext.getHandler().removeListener(responseListener);
-            ErrorLog.error("1.WorkerHandleWebRequest: send web request to master exception requestId ={}", request.getRid());
+            ErrorLog.error("1.WorkerHandleWebRequest: send web request to master exception requestId =" + request.getRid(), e);
         }
         return future;
 

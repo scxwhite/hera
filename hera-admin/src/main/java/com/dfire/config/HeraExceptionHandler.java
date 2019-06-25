@@ -79,7 +79,7 @@ public class HeraExceptionHandler {
                     return method.getReturnType();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                ErrorLog.error("获取返回类型失败", e);
             }
         }
         return null;

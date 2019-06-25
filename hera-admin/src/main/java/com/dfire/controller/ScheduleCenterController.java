@@ -21,6 +21,7 @@ import com.dfire.config.HeraGlobalEnv;
 import com.dfire.config.RunAuth;
 import com.dfire.config.UnCheckLogin;
 import com.dfire.core.netty.worker.WorkClient;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.MonitorLog;
 import com.dfire.protocol.JobExecuteKind;
 import org.apache.commons.lang3.StringUtils;
@@ -667,7 +668,7 @@ public class ScheduleCenterController extends BaseHeraController {
                 try {
                     workClient.updateJobFromWeb(String.valueOf(id));
                 } catch (ExecutionException | InterruptedException e) {
-                    e.printStackTrace();
+                    ErrorLog.error("更新异常", e);
                 }
             });
         }

@@ -7,6 +7,7 @@ import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
+import com.dfire.common.exception.HeraException;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
@@ -15,6 +16,7 @@ import com.dfire.core.job.Job;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.util.JobUtils;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.ScheduleLog;
 import com.dfire.logs.SocketLog;
@@ -34,12 +36,16 @@ import java.util.concurrent.Future;
 public class WorkExecuteJob {
 
     public Future<RpcResponse.Response> execute(final WorkContext workContext, final RpcRequest.Request request) {
-        if (request.getOperate() == RpcOperate.Operate.Debug) {
-            return debug(workContext, request);
-        } else if (request.getOperate() == RpcOperate.Operate.Manual) {
-            return manual(workContext, request);
-        } else if (request.getOperate() == RpcOperate.Operate.Schedule) {
-            return schedule(workContext, request);
+        try {
+            if (request.getOperate() == RpcOperate.Operate.Debug) {
+                return debug(workContext, request);
+            } else if (request.getOperate() == RpcOperate.Operate.Manual) {
+                return manual(workContext, request);
+            } else if (request.getOperate() == RpcOperate.Operate.Schedule) {
+                return schedule(workContext, request);
+            }
+        } catch (HeraException e) {
+            ErrorLog.error("执行任务失败", e);
         }
         return null;
     }
@@ -54,13 +60,12 @@ public class WorkExecuteJob {
      */
 
 
-    private Future<RpcResponse.Response> manual(WorkContext workContext, RpcRequest.Request request) {
+    private Future<RpcResponse.Response> manual(WorkContext workContext, RpcRequest.Request request) throws HeraException {
         RpcExecuteMessage.ExecuteMessage message;
         try {
             message = RpcExecuteMessage.ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
         } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-            return null;
+            throw new HeraException("解析消息异常", e);
         }
         final String actionId = message.getActionId();
         SocketLog.info("worker received master request to run manual job, actionId = {}", actionId);
@@ -84,7 +89,7 @@ public class WorkExecuteJob {
                     jobBean, history, directory.getAbsolutePath(), workContext);
             workContext.getManualRunning().put(actionId, job);
 
-            Integer exitCode = -1;
+            int exitCode = -1;
             Exception exception = null;
             try {
                 exitCode = job.run();
@@ -132,12 +137,12 @@ public class WorkExecuteJob {
      * @return
      */
 
-    private Future<RpcResponse.Response> schedule(WorkContext workContext, RpcRequest.Request request) {
-        RpcExecuteMessage.ExecuteMessage message = null;
+    private Future<RpcResponse.Response> schedule(WorkContext workContext, RpcRequest.Request request) throws HeraException {
+        RpcExecuteMessage.ExecuteMessage message;
         try {
             message = RpcExecuteMessage.ExecuteMessage.newBuilder().mergeFrom(request.getBody()).build();
         } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
+            throw new HeraException("解析消息异常", e);
         }
         // 查看master分发 actionHistoryId
         final String jobId = message.getActionId();
@@ -207,12 +212,12 @@ public class WorkExecuteJob {
      * @param request
      * @return
      */
-    private Future<RpcResponse.Response> debug(WorkContext workContext, RpcRequest.Request request) {
-        RpcDebugMessage.DebugMessage debugMessage = null;
+    private Future<RpcResponse.Response> debug(WorkContext workContext, RpcRequest.Request request) throws HeraException {
+        RpcDebugMessage.DebugMessage debugMessage;
         try {
             debugMessage = RpcDebugMessage.DebugMessage.newBuilder().mergeFrom(request.getBody()).build();
         } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
+            throw new HeraException("解析消息异常", e);
         }
         String debugId = debugMessage.getDebugId();
         HeraDebugHistoryVo history = workContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));

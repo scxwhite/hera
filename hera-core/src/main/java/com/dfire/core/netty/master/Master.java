@@ -123,7 +123,7 @@ public class Master {
                 generateBatchAction();
                 clearInvalidAction();
             } catch (Exception e) {
-                e.printStackTrace();
+                ErrorLog.error("定时任务异常", e);
             }
         }, 30, TimeUnit.SECONDS);
 
@@ -135,7 +135,7 @@ public class Master {
                     clearInvalidAction();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                ErrorLog.error("定时任务异常", e);
             }
         }, 60 - new DateTime().getMinuteOfHour(), 60, TimeUnit.MINUTES);
     }
@@ -277,7 +277,7 @@ public class Master {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorLog.error("信号丢失检测异常", e);
         }
 
     }
@@ -440,7 +440,8 @@ public class Master {
                 return true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorLog.error("生成版本异常", e);
+
         } finally {
             isGenerateActioning = false;
         }
@@ -746,7 +747,8 @@ public class Master {
             try {
                 TimeUnit.SECONDS.sleep(HeraGlobalEnv.getWarmUpCheck());
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                ErrorLog.error("InterruptedException", e);
+
             }
             lastWork = null;
             return null;
@@ -959,7 +961,7 @@ public class Master {
             try {
                 masterContext.getEmailService().sendEmail("警告:work断线了", ip, admin.getEmail());
             } catch (MessagingException e) {
-                e.printStackTrace();
+                ErrorLog.error("发送邮件失败", e);
             }
         }
         MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);

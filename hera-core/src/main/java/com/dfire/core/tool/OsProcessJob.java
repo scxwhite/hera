@@ -257,7 +257,7 @@ public class OsProcessJob extends RunShell {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorLog.error("读取linux进程信息失败", e);
         }
         return exitCode;
     }

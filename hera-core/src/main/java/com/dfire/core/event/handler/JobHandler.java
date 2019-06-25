@@ -126,7 +126,7 @@ public class JobHandler extends AbstractHandler {
                             new CancelHadoopJob(tmp).run();
                             startNewJob(BeanConvertUtils.transform(heraAction), LogConstant.SERVER_START_JOB_LOG);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            ErrorLog.error("取消任务异常", e);
                         }
                     }
                     jobHistory.setStatus(StatusEnum.FAILED.toString());
@@ -276,7 +276,7 @@ public class JobHandler extends AbstractHandler {
             try {
                 createScheduleJob(masterContext.getDispatcher(), heraActionVo);
             } catch (SchedulerException e) {
-                e.printStackTrace();
+                ErrorLog.error("创建调度任务异常", e);
             }
         }
     }

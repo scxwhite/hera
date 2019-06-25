@@ -1,6 +1,7 @@
 package com.dfire.common.util;
 
 
+import com.dfire.logs.ErrorLog;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -32,7 +33,7 @@ public class PasswordUtils {
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return new BASE64Encoder().encode(cipher.doFinal(content.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
+            ErrorLog.error("加密失败", e);
         }
         return null;
     }
@@ -55,7 +56,7 @@ public class PasswordUtils {
             //5.根据字节数组生成AES密钥
             return new SecretKeySpec(raw, "AES");
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            ErrorLog.error("算法不存在", e);
         }
         return null;
     }
@@ -67,7 +68,7 @@ public class PasswordUtils {
             cipher.init(Cipher.DECRYPT_MODE, key);
             return new String(cipher.doFinal(new BASE64Decoder().decodeBuffer(content)), StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | IOException | IllegalBlockSizeException | BadPaddingException e) {
-            e.printStackTrace();
+            ErrorLog.error("解密失败", e);
         }
         return null;
     }

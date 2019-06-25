@@ -2,6 +2,7 @@ package com.dfire.core.tool;
 
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.ErrorLog;
 
 import java.io.IOException;
 
@@ -30,7 +31,7 @@ public class CpuLoadPerCoreJob extends RunShell {
                 String result = super.getResult();
                 loadPerCore = getCpuLoad(result) / WorkContext.cpuCoreNum;
             } catch (IOException e) {
-                e.printStackTrace();
+                ErrorLog.error("获取负载信息失败", e);
             }
         }
         return exitCode;
