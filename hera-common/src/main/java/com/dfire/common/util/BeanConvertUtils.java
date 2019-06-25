@@ -116,7 +116,7 @@ public class BeanConvertUtils {
                 jobHistory.setGmtModified(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jobHistoryVo.getGmtModified()));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorLog.error("解析日期异常", e);
         }
         return jobHistory;
     }

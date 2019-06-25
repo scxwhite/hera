@@ -101,7 +101,7 @@ public class SparkJob extends ProcessJob {
                     try {
                         tmpWriter.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        ErrorLog.error("关闭输出流异常", e);
                     }
                 }
             }

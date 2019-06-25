@@ -48,13 +48,7 @@ public class DistributeLock {
     @PostConstruct
     public void init() {
 
-        workClient.workSchedule.scheduleAtFixedRate(() -> {
-            try {
-                checkLock();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, 10, 60, TimeUnit.SECONDS);
+        workClient.workSchedule.scheduleAtFixedRate(this::checkLock, 10, 60, TimeUnit.SECONDS);
     }
 
     public void checkLock() {
@@ -104,12 +98,13 @@ public class DistributeLock {
         try {
             workClient.connect(heraLock.getHost().trim());
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorLog.error("连接master失败", e);
         }
     }
 
     /**
      * 检测该ip是否具有抢占master的权限
+     *
      * @return 是/否
      */
     private boolean isPreemptionHost() {

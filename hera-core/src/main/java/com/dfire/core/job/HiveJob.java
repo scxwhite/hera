@@ -4,6 +4,7 @@ import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.exception.HeraException;
 import com.dfire.config.HeraGlobalEnv;
+import com.dfire.logs.ErrorLog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -80,7 +81,7 @@ public class HiveJob extends ProcessJob {
                     try {
                         tmpWriter.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        ErrorLog.error("关闭输出流失败", e);
                     }
                 }
             }

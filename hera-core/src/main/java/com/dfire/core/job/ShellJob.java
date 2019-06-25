@@ -5,6 +5,7 @@ import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.exception.HeraException;
 import com.dfire.core.util.CommandUtils;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
 
@@ -64,7 +65,7 @@ public class ShellJob extends ProcessJob {
                 try {
                     outputStreamWriter.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    ErrorLog.error("关闭输出流异常", e);
                 }
             }
         }
@@ -100,7 +101,7 @@ public class ShellJob extends ProcessJob {
                     try {
                         tmpWriter.close();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        ErrorLog.error("关闭输出流异常", e);
                     }
                 }
             }

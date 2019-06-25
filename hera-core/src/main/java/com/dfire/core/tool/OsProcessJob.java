@@ -114,7 +114,7 @@ public class OsProcessJob extends RunShell {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorLog.error("读取mac进行信息失败", e);
         }
 
         return exitCode;

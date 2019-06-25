@@ -143,7 +143,7 @@ public class StringUtil {
             try {
                 resArray = JSONArray.parseArray(resource);
             } catch (Exception e) {
-                e.printStackTrace();
+                ErrorLog.error("解析字符串异常", e);
             }
             for (int i = 0; i < resArray.size(); i++) {
                 JSONObject o = resArray.getJSONObject(i);

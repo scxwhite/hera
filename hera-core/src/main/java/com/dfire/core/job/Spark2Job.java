@@ -82,7 +82,6 @@ public class Spark2Job extends ProcessJob {
             stmt.close();
             resultSet.close();
         } catch (Exception e) {
-            e.printStackTrace();
             log("执行或打印结果错误");
             return false;
         } finally {

@@ -1,6 +1,7 @@
 package com.dfire.common.util;
 
 import com.dfire.common.kv.Tuple;
+import com.dfire.logs.ErrorLog;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
@@ -141,7 +142,7 @@ public class ActionUtil {
         try {
             result = simpleDateFormat.parse(tmp);
         } catch (ParseException e) {
-            e.printStackTrace();
+            ErrorLog.error("转换日期异常", e);
         }
         return result;
     }

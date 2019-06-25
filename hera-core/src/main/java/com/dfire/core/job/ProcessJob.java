@@ -6,6 +6,7 @@ import com.dfire.common.exception.HeraException;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.common.exception.HeraCaughtExceptionHandler;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
 
@@ -34,9 +35,10 @@ public abstract class ProcessJob extends AbstractJob implements Job {
     }
 
     /**
-     *  组装命令
-     * @return  cmdList
-     * @throws HeraException    组装异常
+     * 组装命令
+     *
+     * @return cmdList
+     * @throws HeraException 组装异常
      */
     public abstract List<String> getCommandList() throws HeraException;
 
@@ -58,7 +60,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             try {
                 process = builder.start();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new HeraException("执行脚本" + command + "失败", e);
             }
             String threadName;
             if (jobContext.getHeraJobHistory() != null && jobContext.getHeraJobHistory().getJobId() != null) {

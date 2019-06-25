@@ -58,7 +58,6 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                     response.channel.writeAndFlush(wrapper(response.response));
                     TaskLog.info("1.WorkHandler: worker send response,rid={}", response.response.getRid());
                 } catch (InterruptedException | ExecutionException | RemotingException e) {
-                    e.printStackTrace();
                     ErrorLog.error("1.WorkHandler: worker send response timeout,rid={}", response == null ? null : response.response.getRid());
                 }
             }
