@@ -60,7 +60,7 @@ public class EmailServiceImpl implements EmailService {
             MonitorLog.info("发送邮件成功,Title:{}, 联系人:{}", title, address);
             transport.close();
         } catch (MessagingException e) {
-            ErrorLog.error("发送邮件失败");
+            ErrorLog.error("发送" + title + "邮件失败", e);
             return false;
         }
         return true;

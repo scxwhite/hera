@@ -70,7 +70,7 @@ public abstract class AbstractJob implements Job {
     }
 
     private String buildPrefix() {
-        if (HeraGlobalEnv.isEmrJob() || HeraGlobalEnv.isSudoUser()) {
+        if (HeraGlobalEnv.isEmrJob() || !HeraGlobalEnv.isSudoUser()) {
             return null;
         }
         String user = getUser();

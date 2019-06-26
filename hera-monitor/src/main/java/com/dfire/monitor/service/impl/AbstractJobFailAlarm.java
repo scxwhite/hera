@@ -20,6 +20,13 @@ import java.util.stream.Collectors;
 public abstract class AbstractJobFailAlarm implements JobFailAlarm {
 
 
+    /**
+     * 任务失败告警
+     * @param heraJob       任务实例
+     * @param runCount      运行次数
+     * @param monitorUser   监控人
+     * @return              消息
+     */
     protected String buildJobErrorMsg(HeraJob heraJob, int runCount, Set<HeraSso> monitorUser) {
 
         return "hera任务失败了 \n"
@@ -33,6 +40,11 @@ public abstract class AbstractJobFailAlarm implements JobFailAlarm {
     }
 
 
+    /**
+     * 任务超时告警消息
+     * @param element   JobElement
+     * @return          消息体
+     */
     protected String buildTimeoutMsg(JobElement element) {
         return "【警告】任务执行超时\n"
                 + "环境:" + HeraGlobalEnv.getEnv() + "\n"
