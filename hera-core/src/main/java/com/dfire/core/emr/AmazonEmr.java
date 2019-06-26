@@ -281,6 +281,7 @@ public class AmazonEmr extends AbstractEmr {
                 .withJobFlowRole("EMR_EC2_DefaultRole")
                 .withServiceRole("EMR_DefaultRole")
                 .withBootstrapActions(buildBootstrapActions())
+                .withTags(new Tag("hera", "hera-schedule"))
                 .withScaleDownBehavior("TERMINATE_AT_TASK_COMPLETION");
         MonitorLog.info("准备创建集群...");
         return emr.runJobFlow(request);

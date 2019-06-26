@@ -53,4 +53,7 @@ public interface HeraUserMapper {
     int updateEffective(@Param("id") Integer id, @Param("isEffective") String effective);
 
 
+    @Select("select id,name from hera_user where is_effective = 1")
+    List<HeraUser> selectGroups();
+
 }

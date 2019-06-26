@@ -70,7 +70,7 @@ public class HeraSsoServiceImpl implements HeraSsoService {
 
     @Override
     public boolean setValid(Integer id, Integer val) {
-        Integer integer = heraSsoMapper.updateValid(id, val);
+        Integer integer = heraSsoMapper.updateValid(id, val,System.currentTimeMillis());
         return integer != null && integer > 0;
     }
 }
