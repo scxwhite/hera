@@ -1,15 +1,13 @@
 package com.dfire.core.event;
 
 import com.dfire.core.event.base.AbstractObservable;
-import com.dfire.event.ApplicationEvent;
-import com.dfire.event.EventType;
 import com.dfire.core.event.base.MvcEvent;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
 import com.dfire.core.event.listenter.AbstractListener;
-import com.dfire.event.Events;
+import com.dfire.event.ApplicationEvent;
+import com.dfire.event.EventType;
 import com.dfire.logs.ErrorLog;
-import com.dfire.logs.ScheduleLog;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 
@@ -80,11 +78,15 @@ public class Dispatcher extends AbstractObservable {
             if (fireEvent(beforeDispatch, mvcEvent)) {
                 List<AbstractHandler> jobHandlersCopy = Lists.newArrayList(jobHandlers);
                 for (AbstractHandler jobHandler : jobHandlersCopy) {
-                    if (jobHandler.canHandle(applicationEvent)) {
-                        if (!jobHandler.isInitialized()) {
-                            jobHandler.setInitialized(true);
+                    try {
+                        if (jobHandler.canHandle(applicationEvent)) {
+                            if (!jobHandler.isInitialized()) {
+                                jobHandler.setInitialized(true);
+                            }
+                            jobHandler.handleEvent(applicationEvent);
                         }
-                        jobHandler.handleEvent(applicationEvent);
+                    } catch (Exception e) {
+                        ErrorLog.error(((JobHandler) jobHandler).getActionId() + "广播异常", e);
                     }
                 }
                 fireEvent(afterDispatch, mvcEvent);
