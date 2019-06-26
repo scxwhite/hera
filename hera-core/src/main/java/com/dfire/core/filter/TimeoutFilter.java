@@ -8,6 +8,8 @@ import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
+import com.dfire.logs.MonitorLog;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.Timer;
@@ -28,11 +30,12 @@ public class TimeoutFilter implements ExecuteFilter {
 
     private volatile Timer timeoutCheck;
 
-    private ConcurrentHashMap<JobElement, Timeout> cache;
+    private volatile ConcurrentHashMap<JobElement, Timeout> cache;
 
     @Override
     public void onExecute(JobElement jobElement) {
         if (jobElement.getCostMinute() == null || jobElement.getCostMinute() <= 0) {
+            MonitorLog.warn("任务:{}的预计时间设置为为null或者为小于等于0,不进行检测", jobElement.getJobId());
             return;
         }
         if (timeoutCheck == null) {
@@ -61,9 +64,9 @@ public class TimeoutFilter implements ExecuteFilter {
     @Override
     public void onResponse(JobElement element) {
         if (cache != null) {
-            Timeout remove = cache.remove(element);
-            if (remove != null) {
-                remove.cancel();
+            Timeout timeoutCheck = cache.remove(element);
+            if (timeoutCheck != null) {
+                timeoutCheck.cancel();
             }
         }
     }

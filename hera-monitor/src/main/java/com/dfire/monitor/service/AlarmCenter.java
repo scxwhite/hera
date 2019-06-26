@@ -13,7 +13,7 @@ public interface AlarmCenter {
      * @param alarmInfo
      * @return JSONObject
      */
-    void sendToWeChat(AlarmInfo alarmInfo);
+    boolean sendToWeChat(AlarmInfo alarmInfo);
 
     /**
      * 发送监控信息到手机
@@ -21,6 +21,16 @@ public interface AlarmCenter {
      * @param alarmInfo alarmInfo
      * @return JSONObject
      */
-    void sendToPhone(AlarmInfo alarmInfo);
+    boolean sendToPhone(AlarmInfo alarmInfo);
+
+
+    /**
+     * 发送信息到邮件
+     *
+     * @param title   邮件标题
+     * @param content 邮件内容（html格式）
+     * @param address 邮件地址，多个使用;分割
+     */
+    boolean sendToEmail(String title, String content, String address);
 
 }

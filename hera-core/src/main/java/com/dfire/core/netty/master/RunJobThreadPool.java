@@ -110,13 +110,13 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
             //抛出异常打断任务的执行
             throw new IllegalStateException("任务被手动取消:" + jobElement.getJobId());
         }
-        // doFilter(FilterType.execute, jobElement);
+        doFilter(FilterType.execute, jobElement);
 
     }
 
     private void doFilter(FilterType filterType, JobElement element) {
-        List<ExecuteFilter> filters = ServiceLoader.getFilters();
         try {
+            List<ExecuteFilter> filters = ServiceLoader.getFilters();
             switch (filterType) {
                 case execute:
                     for (ExecuteFilter filter : filters) {
@@ -148,7 +148,7 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
         } finally {
             jobEmrType.remove(r);
             jobElement.setStatus(JobStatus.complete);
-            //       doFilter(FilterType.response, jobElement);
+            doFilter(FilterType.response, jobElement);
         }
     }
 

@@ -9,6 +9,7 @@ import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.common.vo.JobElement;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
+import com.dfire.monitor.service.AlarmCenter;
 import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -64,7 +65,7 @@ public class MasterContext {
     @Autowired
     private HeraJobActionService heraJobActionService;
     @Autowired
-    private EmailService emailService;
+    private AlarmCenter alarmCenter;
     @Autowired
     private HeraJobMonitorService heraJobMonitorService;
     @Autowired

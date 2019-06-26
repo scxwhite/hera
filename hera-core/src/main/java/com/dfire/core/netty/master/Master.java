@@ -9,19 +9,28 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.kv.Tuple;
-import com.dfire.common.util.*;
+import com.dfire.common.util.ActionUtil;
+import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.util.HeraDateTool;
+import com.dfire.common.util.StringUtil;
+import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
-import com.dfire.core.event.listenter.*;
+import com.dfire.core.event.listenter.HeraAddJobListener;
+import com.dfire.core.event.listenter.HeraDebugListener;
+import com.dfire.core.event.listenter.HeraJobFailListener;
+import com.dfire.core.event.listenter.HeraJobSuccessListener;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.constant.MasterConstant;
-import com.dfire.common.vo.JobElement;
 import com.dfire.core.route.loadbalance.LoadBalance;
 import com.dfire.core.route.loadbalance.LoadBalanceFactory;
 import com.dfire.core.util.CronParse;
-import com.dfire.event.*;
+import com.dfire.event.Events;
+import com.dfire.event.HeraJobLostEvent;
+import com.dfire.event.HeraJobMaintenanceEvent;
+import com.dfire.event.HeraJobSuccessEvent;
 import com.dfire.logs.*;
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -34,7 +43,8 @@ import org.springframework.stereotype.Component;
 import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -948,11 +958,7 @@ public class Master {
         HeraUser admin = masterContext.getHeraUserService().findByName(HeraGlobalEnv.getAdmin());
 
         if (admin != null) {
-            try {
-                masterContext.getEmailService().sendEmail("警告:work断线了", ip, admin.getEmail());
-            } catch (MessagingException e) {
-                ErrorLog.error("发送邮件失败", e);
-            }
+            masterContext.getAlarmCenter().sendToEmail("警告:work断线了", ip, admin.getEmail());
         }
         MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);
         masterContext.getWorkMap().remove(channel);
