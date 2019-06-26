@@ -167,7 +167,7 @@ public class HeraGlobalEnv {
         HeraGlobalEnv.aliYunAccessSecret = aliYunAccessSecret;
     }
 
-    @Value("${hera.excludeFile")
+    @Value("${hera.excludeFile}")
     public void setExcludeFile(String excludeFile) {
         HeraGlobalEnv.excludeFile = excludeFile;
     }
