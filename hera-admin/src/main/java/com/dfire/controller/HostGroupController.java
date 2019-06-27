@@ -20,15 +20,14 @@ import java.util.List;
 @RequestMapping("/hostGroup/")
 public class HostGroupController {
 
+
     @Autowired
     private HeraHostGroupService heraHostGroupService;
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
     public TableResponse getAll() {
-
         List<HeraHostGroup> groupList = heraHostGroupService.getAll();
-
         if (groupList == null) {
             return new TableResponse(-1, "查询失败");
         }
