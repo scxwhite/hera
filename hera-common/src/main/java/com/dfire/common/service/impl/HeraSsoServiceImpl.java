@@ -25,6 +25,7 @@ public class HeraSsoServiceImpl implements HeraSsoService {
     @Override
     public boolean addSso(HeraSso heraSso) {
         heraSso.setGmtModified(System.currentTimeMillis());
+        heraSso.setIsValid(0);
         Integer insert = heraSsoMapper.insert(heraSso);
         return insert != null && insert > 0;
     }
@@ -70,7 +71,7 @@ public class HeraSsoServiceImpl implements HeraSsoService {
 
     @Override
     public boolean setValid(Integer id, Integer val) {
-        Integer integer = heraSsoMapper.updateValid(id, val,System.currentTimeMillis());
+        Integer integer = heraSsoMapper.updateValid(id, val, System.currentTimeMillis());
         return integer != null && integer > 0;
     }
 }
