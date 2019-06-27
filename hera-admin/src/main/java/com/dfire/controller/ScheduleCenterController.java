@@ -95,7 +95,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
     public JsonResponse initJobTree() {
-        return new JsonResponse(true, heraJobService.buildJobTree(getOwner()));
+        return new JsonResponse(true, Optional.of(heraJobService.buildJobTree(getOwner())).get());
     }
 
     @RequestMapping(value = "/getJobMessage", method = RequestMethod.GET)
@@ -830,11 +830,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/getAllArea", method = RequestMethod.GET)
     @ResponseBody
     public JsonResponse getAllArea() {
-        List<HeraArea> heraAreas = heraAreaService.findAll();
-        if (heraAreas == null) {
-            return new JsonResponse(false, "查询异常");
-        }
-        return new JsonResponse(true, "成功", heraAreas);
+        return new JsonResponse(true, "成功", Optional.of(heraAreaService.findAll()).get());
     }
 
 
@@ -880,7 +876,6 @@ public class ScheduleCenterController extends BaseHeraController {
             MonitorLog.info("任务{}:发生移动{}  --->  {}", newId, lastParent, newParent);
             return new JsonResponse(result, result ? "处理成功" : "移动失败");
         }
-
     }
 
 

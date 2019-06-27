@@ -94,6 +94,7 @@ public class SystemManageController extends BaseHeraController {
 
     @RequestMapping(value = "/workManage/list", method = RequestMethod.GET)
     @ResponseBody
+    @AdminCheck
     public TableResponse workManageList() {
         List<HeraHostRelation> hostRelations = heraHostRelationService.getAll();
         if (hostRelations == null) {
@@ -104,6 +105,7 @@ public class SystemManageController extends BaseHeraController {
 
     @RequestMapping(value = "/workManage/add", method = RequestMethod.POST)
     @ResponseBody
+    @AdminCheck
     public JsonResponse workManageAdd(HeraHostRelation heraHostRelation) {
         int insert = heraHostRelationService.insert(heraHostRelation);
         if (insert > 0) {
@@ -115,6 +117,7 @@ public class SystemManageController extends BaseHeraController {
 
     @RequestMapping(value = "/workManage/del", method = RequestMethod.POST)
     @ResponseBody
+    @AdminCheck
     public JsonResponse workManageDel(Integer id) {
         int delete = heraHostRelationService.delete(id);
         if (delete > 0) {
@@ -125,6 +128,7 @@ public class SystemManageController extends BaseHeraController {
 
     @RequestMapping(value = "/workManage/update", method = RequestMethod.POST)
     @ResponseBody
+    @AdminCheck
     public JsonResponse workManageUpdate(HeraHostRelation heraHostRelation) {
         int update = heraHostRelationService.update(heraHostRelation);
         if (update > 0) {
@@ -181,6 +185,7 @@ public class SystemManageController extends BaseHeraController {
 
     @PostMapping(value = "/jobMonitor/add")
     @ResponseBody
+    @AdminCheck
     public JsonResponse jobMonitorAdd(Integer jobId, String monitors) {
         HeraJobMonitor monitor = heraJobMonitorService.findByJobId(jobId);
         if (monitor != null) {
@@ -192,6 +197,7 @@ public class SystemManageController extends BaseHeraController {
 
     @PostMapping(value = "/jobMonitor/update")
     @ResponseBody
+    @AdminCheck
     public JsonResponse jobMonitorUpdate(Integer jobId, String monitors) {
         boolean res = heraJobMonitorService.updateMonitor(monitors, jobId);
         return new JsonResponse(res, res ? "添加监控成功" : "添加监控失败");
