@@ -16,13 +16,13 @@ layui.use(['table', 'laytpl', 'form'], function () {
         elem: '#monitorTable'
         , height: "full"
         , url: base_url + '/jobMonitor/list'
-        , page: true //开启分页
+        , page: false //开启分页
         , toolbar: '#toolbar'
         , defaultToolbar: ['filter', 'print', 'exports']
         , cols: [[ //表头
-            {field: 'id', title: '任务Id', fixed: 'left', align: 'center'}
-            , {field: 'jobName', title: '任务名称', align: 'center'}
-            , {field: 'description', title: '任务描述', align: 'center'}
+            {field: 'id', title: '任务Id', fixed: 'left', align: 'center', sort: true}
+            , {field: 'jobName', title: '任务名称', align: 'center', sort: true}
+            , {field: 'description', title: '任务描述', align: 'center', sort: true}
             , {
                 field: 'monitors', title: '监控人', align: 'center', sort: true, templet: function (data) {
                     var monitors = '';
@@ -94,11 +94,7 @@ layui.use(['table', 'laytpl', 'form'], function () {
                 });
                 break;
             case 'refresh':
-                tableIns.reload({
-                    page: {
-                        curr: 1
-                    }
-                });
+                tableIns.reload();
                 break;
         }
     });
