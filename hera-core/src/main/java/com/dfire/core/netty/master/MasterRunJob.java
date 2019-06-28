@@ -202,6 +202,7 @@ public class MasterRunJob implements RunJob {
             } catch (InterruptedException e) {
                 ErrorLog.error("sleep interrupted", e);
             }
+
         }
         HeraJobHistoryVo heraJobHistoryVo;
         HeraJobHistory heraJobHistory;
@@ -225,11 +226,16 @@ public class MasterRunJob implements RunJob {
                     .operator(heraAction.getOwner())
                     .hostGroupId(heraAction.getHostGroupId())
                     .build();
+
+            heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
+            if (master.checkJobExists(heraJobHistoryVo, true)) {
+                TaskLog.info("--------------------------{}正在执行，取消重试--------------------------", heraAction.getJobId());
+                return;
+            }
             masterContext.getHeraJobHistoryService().insert(heraJobHistory);
             heraAction.setHistoryId(heraJobHistory.getId());
             heraAction.setStatus(StatusEnum.RUNNING.toString());
             masterContext.getHeraJobActionService().update(heraAction);
-            heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
             heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行\n");
             triggerType = heraJobHistoryVo.getTriggerType();
         }
@@ -285,12 +291,10 @@ public class MasterRunJob implements RunJob {
         heraAction.setStatisticEndTime(new Date());
         masterContext.getHeraJobActionService().update(heraAction);
         if (runCount < (retryCount + 1) && !success && !isCancelJob) {
-            if (master.checkJobExists(heraJobHistoryVo, true)) {
-                DebugLog.info("--------------------------任务在队列中，取消重试--------------------------");
-            } else {
-                DebugLog.info("--------------------------失败任务，准备重试--------------------------");
-                runScheduleJobContext(selectWork, actionId, runCount, retryCount, retryWaitTime);
-            }
+
+            DebugLog.info("--------------------------失败任务，准备重试--------------------------");
+            runScheduleJobContext(selectWork, actionId, runCount, retryCount, retryWaitTime);
+
         }
     }
 

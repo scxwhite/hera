@@ -40,7 +40,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -898,9 +897,6 @@ public class Master {
             for (JobElement jobElement : masterContext.getScheduleQueue()) {
                 if (ActionUtil.jobEquals(jobElement.getJobId(), actionId)) {
                     exists = true;
-                    if (!checkOnly) {
-                        heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
-                    }
                     TaskLog.warn("调度队列已存在该任务，添加失败 {}", actionId);
                 }
             }
@@ -908,10 +904,6 @@ public class Master {
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
                 if (workHolder.getRunning().contains(jobId)) {
                     exists = true;
-
-                    if (!checkOnly) {
-                        heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().getLocalAddress());
-                    }
                     TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
                 }
             }
@@ -920,9 +912,6 @@ public class Master {
             for (JobElement jobElement : masterContext.getManualQueue()) {
                 if (ActionUtil.jobEquals(jobElement.getJobId(), actionId)) {
                     exists = true;
-                    if (!checkOnly) {
-                        heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG);
-                    }
                     TaskLog.warn("手动任务队列已存在该任务，添加失败 {}", actionId);
                 }
             }
@@ -930,17 +919,17 @@ public class Master {
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
                 if (workHolder.getManningRunning().contains(jobId)) {
                     exists = true;
-                    if (!checkOnly) {
-                        heraJobHistory.getLog().append(LogConstant.CHECK_MANUAL_QUEUE_LOG + "执行worker ip " + workHolder.getChannel().getLocalAddress());
-                    }
                     TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
                 }
             }
         }
         if (exists && !checkOnly) {
+            heraJobHistory.getLog().append(LogConstant.CHECK_QUEUE_LOG);
             heraJobHistory.setStartTime(new Date());
             heraJobHistory.setEndTime(new Date());
-            heraJobHistory.setStatusEnum(StatusEnum.FAILED);
+            heraJobHistory.setIllustrate("任务已在调度队列");
+            //由于设置为失败会被告警   所以暂时设置为wait状态
+            heraJobHistory.setStatusEnum(StatusEnum.WAIT);
             masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
         }
         return exists;
