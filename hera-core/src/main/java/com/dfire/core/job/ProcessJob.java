@@ -227,8 +227,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
         @Override
         public void run() {
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     logConsole(line);
