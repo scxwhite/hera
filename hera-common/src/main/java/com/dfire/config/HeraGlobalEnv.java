@@ -98,6 +98,8 @@ public class HeraGlobalEnv {
     @Getter
     private static boolean emrJob;
     @Getter
+    private static boolean scriptEcho;
+    @Getter
     private static String emrCluster;
     @Getter
     private static String keyPath;
@@ -135,6 +137,11 @@ public class HeraGlobalEnv {
     @Value("${hera.sudoUser}")
     public void setSudoUser(boolean sudoUser) {
         HeraGlobalEnv.sudoUser = sudoUser;
+    }
+
+    @Value("${hera.job.script-echo}")
+    public void setScriptEcho(boolean scriptEcho) {
+        HeraGlobalEnv.scriptEcho = scriptEcho;
     }
 
     @Value("${hera.monitorUsers}")
