@@ -227,8 +227,12 @@ public class MasterRunJob implements RunJob {
                     .hostGroupId(heraAction.getHostGroupId())
                     .build();
 
-            heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
-            if (master.checkJobExists(heraJobHistoryVo, true)) {
+            if (master.checkJobExists(HeraJobHistoryVo.builder()
+                            .actionId(String.valueOf(heraAction.getId()))
+                            .jobId(heraAction.getJobId())
+                            .triggerType(TriggerTypeEnum.SCHEDULE)
+                            .build()
+                    , true)) {
                 TaskLog.info("--------------------------{}正在执行，取消重试--------------------------", heraAction.getJobId());
                 return;
             }
@@ -236,6 +240,7 @@ public class MasterRunJob implements RunJob {
             heraAction.setHistoryId(heraJobHistory.getId());
             heraAction.setStatus(StatusEnum.RUNNING.toString());
             masterContext.getHeraJobActionService().update(heraAction);
+            heraJobHistoryVo = BeanConvertUtils.convert(heraJobHistory);
             heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行\n");
             triggerType = heraJobHistoryVo.getTriggerType();
         }
