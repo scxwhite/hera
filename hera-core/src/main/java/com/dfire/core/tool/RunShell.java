@@ -71,6 +71,7 @@ public class RunShell {
         while ((line = input.readLine()) != null) {
             result.append(line).append("\n");
         }
+        input.close();
         return result.toString().trim();
     }
 
