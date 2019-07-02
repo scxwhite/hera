@@ -14,21 +14,12 @@ public interface HeraPermissionService {
 
     int insert(HeraPermission heraPermission);
 
-    int delete(@Param("id") String id);
+    List<HeraPermission> findByTargetId(Integer targetId, String type, Integer isValid);
 
-    int update(HeraPermission heraPermission);
+    HeraPermission findByCond(Integer id, String owner, String type);
 
-    List<HeraPermission> getAll();
+    Integer updateByUid(Integer id, String type, Integer isValid, String uId);
 
-    HeraPermission findById(HeraPermission heraPermission);
-
-    List<HeraPermission> findByIds(List<Integer> list);
-
-    List<HeraPermission> findByTargetId(Integer targetId);
-
-    HeraPermission findByCond(Integer id, String owner);
-
-    Integer deleteByTargetId(Integer id);
 
     Integer insertList(List<HeraPermission> permissions);
 }
