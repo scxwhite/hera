@@ -256,6 +256,7 @@ CREATE TABLE `hera_permission`
   `target_id`    bigint(20)  DEFAULT NULL COMMENT '授权的任务或者组id',
   `type`         varchar(32) DEFAULT NULL COMMENT '授权类型(job或者group)',
   `uid`          varchar(32) DEFAULT NULL COMMENT '被授权着名称',
+  `is_valid` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='任务授权记录表';

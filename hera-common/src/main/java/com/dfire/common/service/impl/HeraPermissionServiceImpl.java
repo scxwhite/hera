@@ -21,6 +21,7 @@ public class HeraPermissionServiceImpl implements HeraPermissionService {
 
     @Override
     public int insert(HeraPermission heraPermission) {
+        heraPermission.setIsValid(1);
         permissionMapper.insert(heraPermission);
         return heraPermission.getId();
     }

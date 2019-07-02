@@ -607,30 +607,39 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
     @ResponseBody
     @RunAuth(idIndex = 1)
-    public JsonResponse cancelJob(String historyId, String jobId) throws ExecutionException, InterruptedException {
+    public JsonResponse cancelJob(String historyId, String jobId) {
         if (cancelSet.contains(historyId)) {
             return new JsonResponse(true, "任务正在取消中，请稍后");
         }
-        String res;
-        try {
-            cancelSet.add(historyId);
-            HeraJobHistory history = heraJobHistoryService.findById(historyId);
-            JobExecuteKind.ExecuteKind kind;
-            if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
-                kind = JobExecuteKind.ExecuteKind.ManualKind;
-            } else {
-                kind = JobExecuteKind.ExecuteKind.ScheduleKind;
+        poolExecutor.execute(() -> {
+            String res = null;
+            try {
+                cancelSet.add(historyId);
+                HeraJobHistory history = heraJobHistoryService.findById(historyId);
+                JobExecuteKind.ExecuteKind kind;
+                if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
+                    kind = JobExecuteKind.ExecuteKind.ManualKind;
+                } else {
+                    kind = JobExecuteKind.ExecuteKind.ScheduleKind;
+                }
+                try {
+                    res = workClient.cancelJobFromWeb(kind, historyId);
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                cancelSet.remove(historyId);
+                MonitorLog.info("取消任务{}结果为:{}", jobId, res);
             }
-            res = workClient.cancelJobFromWeb(kind, historyId);
-        } finally {
-            cancelSet.remove(historyId);
-        }
-        return new JsonResponse(true, res);
+        });
+
+        return new JsonResponse(true, "任务正在取消中，请稍后");
     }
 
     @RequestMapping(value = "getLog", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse getJobLog(Integer id) {
+    @RunAuth(idIndex = 1)
+    public JsonResponse getJobLog(Integer id, Integer jobId) {
         return new JsonResponse(true, heraJobHistoryService.findLogById(id));
     }
 
