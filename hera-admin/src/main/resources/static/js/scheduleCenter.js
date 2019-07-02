@@ -1422,17 +1422,19 @@ let JobLogTable = function (jobId) {
             type: "get",
             data: {
                 id: actionRow.id,
+                jobId: actionRow.jobId
             },
             success: function (result) {
+                let logArea = $('#log_' + actionRow.id);
                 if (result.success === false) {
-                    layer.msg(data.message);
+                    layer.msg(result.message);
+                    logArea[0].innerHTML = "无日志查看权限,请联系管理员进行配置";
                     return;
                 }
                 let data = result.data;
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
-                let logArea = $('#log_' + actionRow.id);
                 logArea[0].innerHTML = data.log;
                 logArea.scrollTop(logArea.prop("scrollHeight"), 200);
                 actionRow.log = data.log;
