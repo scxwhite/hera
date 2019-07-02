@@ -237,34 +237,4 @@ public class DevelopCenterController extends BaseHeraController {
         return new JsonResponse(result, result ? "保存成功" : "保存失败");
     }
 
-    public static void main(String[] args) {
-        List<Class<?>> asList = Arrays.asList(DevelopCenterController.class
-                , HeraAdviceController.class
-                , HostGroupController.class
-                , LoginController.class
-                , ScheduleCenterController.class
-                , SystemManageController.class
-                , UploadResourceController.class
-                , UserManageController.class);
-
-        asList.forEach(clazz -> {
-            Method[] methods = clazz.getMethods();
-            Set<Class<?>> mSet = new HashSet<>();
-            for (Method method : methods) {
-                if (Modifier.isPublic(method.getModifiers()) &&
-                        (method.isAnnotationPresent(RequestMapping.class)
-                                || method.isAnnotationPresent(PostMapping.class)
-                                || method.isAnnotationPresent(GetMapping.class))) {
-                    mSet.add(method.getReturnType());
-                }
-            }
-            String name;
-            for (Class<?> aClass : mSet) {
-                if (!"TableResponse".equals(name = aClass.getSimpleName()) && !"JsonResponse".equals(name)) {
-                    System.out.println(clazz.getName() + ":" + aClass.getSimpleName());
-                }
-            }
-        });
-
-    }
 }
