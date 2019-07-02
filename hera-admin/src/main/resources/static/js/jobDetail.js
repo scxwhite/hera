@@ -59,7 +59,13 @@ layui.use(['table'], function () {
                         title: '任务组',
                         halign: 'center',
                         align: 'center',
-                        sortable: true
+                        sortable: true,
+                        formatter: function (val) {
+                            if (val == null) {
+                                return val;
+                            }
+                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 6) + '</label>';
+                        }
                     }, {
                         field: 'jobName',
                         title: '任务名称',
@@ -74,7 +80,13 @@ layui.use(['table'], function () {
                         field: 'description',
                         halign: 'center',
                         align: 'center',
-                        title: '任务描述'
+                        title: '任务描述',
+                        formatter: function (val) {
+                            if (val == null) {
+                                return val;
+                            }
+                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 6) + '</label>';
+                        }
                     }, {
                         field: 'status',
                         title: '状态',
@@ -102,8 +114,8 @@ layui.use(['table'], function () {
                         },
                         sortable: true
                     }, {
-                        field: 'durations',
-                        title: '时长(分)',
+                        field: 'endTime',
+                        title: '结束时间',
                         halign: 'center',
                         align: 'center',
                         sortable: true

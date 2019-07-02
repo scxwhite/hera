@@ -29,5 +29,7 @@ public class JobHistoryVo {
 
     private String jobName;
 
+    private String groupName;
+
     private Integer times;
 }
