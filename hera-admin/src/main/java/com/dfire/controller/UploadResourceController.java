@@ -46,8 +46,8 @@ public class UploadResourceController extends BaseHeraController {
             for (String key : fileMap.keySet()) {
                 MultipartFile multipartFile = fileMap.get(key);
                 fileName = multipartFile.getOriginalFilename();
-                String[] nameSplit = fileName.split("\\.");
-                fileName = nameSplit[0] + "_" + System.nanoTime() + "." + nameSplit[1];
+                int lastPoint = fileName.lastIndexOf(".");
+                fileName = fileName.substring(0, lastPoint) + "_" + System.nanoTime() + fileName.substring(lastPoint);
                 newFilePath = HeraGlobalEnv.getWorkDir() + File.separator + fileName;
                 file = new File(newFilePath);
                 multipartFile.transferTo(file);
@@ -77,7 +77,7 @@ public class UploadResourceController extends BaseHeraController {
             }
         } catch (Exception e) {
             ErrorLog.error("上传文件异常:" + fileName, e);
-            return new JsonResponse(false,"上传文件异常，请联系管理员");
+            return new JsonResponse(false, "上传文件异常，请联系管理员");
         }
         response.setMessage(resMsg.toString());
         return response;
