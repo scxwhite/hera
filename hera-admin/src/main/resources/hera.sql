@@ -314,7 +314,7 @@ BEGIN;
 insert into hera_user (email, name, uid, password, user_type, is_effective)
 values ('1142819049@qq.com', 'hera', 'hera', 'd3886bd3bcba3d88e2ab14ba8c9326da', 0, 1);
 insert into hera_area (name)
-values ('中国');
+values ('all');
 INSERT INTO `hera_group`
 VALUES ('1', '{\"name\":\"赫拉分布式任务调度系统\"}', '', '0', '2018-12-21 15:11:39', '2018-12-28 10:46:47', 'hera分布式调度系统', 'hera',
         '0', '[]', '1'),
