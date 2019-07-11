@@ -2,13 +2,19 @@ package com.dfire.core.job;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.enums.JobRunTypeEnum;
+import com.dfire.common.exception.HeraException;
 import com.dfire.common.util.HierarchyProperties;
-import com.dfire.config.HeraGlobalEnvironment;
-import com.dfire.core.util.EmrUtils;
+import com.dfire.config.HeraGlobalEnv;
+import com.dfire.core.emr.Emr;
+import com.dfire.core.emr.WrapEmr;
+import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.List;
+import java.io.File;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -21,9 +27,16 @@ public abstract class AbstractJob implements Job {
 
     protected boolean canceled = false;
 
+
+    private static Pattern hostPattern = Pattern.compile("\\w+@[\\w\\.-]+\\s*");
+
+    protected Emr emr;
+
     public AbstractJob(JobContext jobContext) {
         this.jobContext = jobContext;
+        emr = new WrapEmr();
     }
+
 
     @Override
     public boolean isCanceled() {
@@ -40,64 +53,76 @@ public abstract class AbstractJob implements Job {
     }
 
     protected String getProperty(String key, String defaultValue) {
-        return StringUtils.isBlank(jobContext.getProperties().getProperty(key)) ? defaultValue : jobContext.getProperties().getProperty(key);
+        String val;
+        return StringUtils.isBlank(val = jobContext.getProperties().getProperty(key)) ? defaultValue : val;
     }
 
-    private String getSudoUser() {
-        if (!HeraGlobalEnvironment.isSudoUser()) {
+    protected String getProperty(String key) throws NullPointerException {
+        String val;
+        if ((val = jobContext.getProperties().getProperty(key)) == null) {
+            throw new NullPointerException("找不到" + key + "的值");
+        }
+        return val;
+    }
+
+    protected String getJobPrefix() {
+        return Optional.ofNullable(buildPrefix()).orElse(Constants.BLANK_SPACE);
+    }
+
+    private String buildPrefix() {
+        if (HeraGlobalEnv.isEmrJob() || HeraGlobalEnv.isSudoUser()) {
             return null;
         }
-        String shellPrefix = null;
-        if (jobContext.getRunType() == JobContext.SCHEDULE_RUN || jobContext.getRunType() == JobContext.MANUAL_RUN) {
-            shellPrefix = "sudo -s -E -u " + jobContext.getHeraJobHistory().getOperator();
-        } else if (jobContext.getRunType() == JobContext.DEBUG_RUN) {
-            shellPrefix = "sudo -s -E -u " + jobContext.getDebugHistory().getOwner();
-        } else if (jobContext.getRunType() == JobContext.SYSTEM_RUN) {
-            shellPrefix = "";
-        } else {
-            log("没有RunType=" + jobContext.getRunType() + " 的执行类别");
+        String user = getUser();
+        if (StringUtils.isBlank(user)) {
+            return null;
         }
-        return shellPrefix;
+        if (HeraGlobalEnv.isMacOS()) {
+            return "sudo -u " + user;
+        }
+        return "sudo -E -i -s -u " + user;
     }
 
-    protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String jobPath) {
+    protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String prefix, String jobPath) throws Exception {
         StringBuilder command = new StringBuilder();
-        String sudoUser = getSudoUser();
-        if (StringUtils.isNotBlank(sudoUser)) {
-            command.append(sudoUser).append(" ");
-        }
         // emr集群
-        if (HeraGlobalEnvironment.isEmrJob()) {
+        if (HeraGlobalEnv.isEmrJob()) {
+            File file = new File(jobPath);
+            if (!file.exists()) {
+                throw new HeraException("找不到脚本:" + jobPath);
+            }
+            String loginCmd = getProperty(Constants.EMR_SELECT_WORK);
+            String targetPath = Constants.TMP_PATH;
+            uploadFile(loginCmd, targetPath, file.getParent());
+            String runPath = targetPath + File.separator + file.getParentFile().getName() + File.separator + file.getAbsoluteFile().getName();
             //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
-            command.append("ssh -o StrictHostKeyChecking=no").append(Constants.BLANK_SPACE);
-            command.append("-i /home/docker/conf/xxx.pem").append(Constants.BLANK_SPACE);
-            command.append("xx@").append(EmrUtils.getIp()).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
-            command.append("<< eeooff").append(Constants.NEW_LINE);
+            command.append(loginCmd).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
+            command.append(Constants.SSH_PREFIX).append(Constants.NEW_LINE);
             switch (runTypeEnum) {
                 case Spark:
-                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(" -e ").append("\"").append(HeraGlobalEnvironment.getSparkMaster()).append(" ").append(HeraGlobalEnvironment.getSparkDriverCores()).append(" ").append(HeraGlobalEnvironment.getSparkDriverMemory()).append(" `cat ").append(jobPath).append("`\"");
+                    command.append(HeraGlobalEnv.getJobSparkSqlBin()).append(prefix).append(" -f ").append(runPath);
                     break;
                 case Hive:
-                    command.append(HeraGlobalEnvironment.getJobHiveBin()).append(" -e \"`cat ").append(jobPath).append("`\"");
+                    command.append(HeraGlobalEnv.getJobHiveBin()).append(" -f ").append(runPath);
                     break;
                 case Shell:
-                    command.append("`cat ").append(jobPath).append("`");
+                    command.append("bash ").append(runPath);
                     break;
                 default:
                     break;
             }
             command.append(Constants.NEW_LINE);
-            command.append("eeooff");
+            command.append(Constants.SSH_SUFFIX);
         } else {
             switch (runTypeEnum) {
                 case Shell:
-                    command.append("source ").append(jobPath);
+                    command.append("bash ").append(jobPath);
                     break;
                 case Spark:
-                    command.append(HeraGlobalEnvironment.getJobSparkSqlBin()).append(HeraGlobalEnvironment.getSparkMaster()).append(" ").append(HeraGlobalEnvironment.getSparkDriverCores()).append(" ").append(HeraGlobalEnvironment.getSparkDriverMemory()).append(" -f ").append(jobPath);
+                    command.append(HeraGlobalEnv.getJobSparkSqlBin()).append(prefix).append(" -f ").append(jobPath);
                     break;
                 case Hive:
-                    command.append(HeraGlobalEnvironment.getJobHiveBin()).append(" -f ").append(jobPath);
+                    command.append(HeraGlobalEnv.getJobHiveBin()).append(" -f ").append(jobPath);
                 default:
                     break;
             }
@@ -106,26 +131,80 @@ public abstract class AbstractJob implements Job {
     }
 
 
+    protected String getLoginCmd() {
+        if (!HeraGlobalEnv.isEmrJob()) {
+            return "localhost";
+        }
+        String host;
+        return isFixedEmrJob() && StringUtils.isNotBlank(host = getFixedHost()) ? emr.getFixLogin(host) : emr.getLogin(getUser());
+    }
+
+    private void uploadFile(String loginCmd, String targetPath, String parentPath) throws Exception {
+        String scpCmd = loginCmd.replace("ssh", "scp");
+        Matcher matcher = hostPattern.matcher(scpCmd);
+        String loginStr;
+        if (matcher.find()) {
+            loginStr = matcher.group(0);
+        } else {
+            throw new HeraException("查找ip失败" + scpCmd);
+        }
+        String prefix = scpCmd.replace(loginStr, "").replace("-p", "-P") + " -r ";
+        UploadEmrFileJob uploadJob = new UploadEmrFileJob(prefix,
+                parentPath, targetPath, loginStr, jobContext);
+        uploadJob.run();
+    }
+
+
+    /**
+     * 判断是否为固定集群任务
+     *
+     * @return boolean
+     */
+    protected boolean isFixedEmrJob() {
+        return Boolean.valueOf(getProperty(HeraGlobalEnv.getArea() + Constants.POINT + Constants.HERA_EMR_FIXED, getProperty(Constants.HERA_EMR_FIXED, "false")).trim().toLowerCase());
+    }
+
+    /**
+     * 获得固定集群的ip
+     *
+     * @return boolean
+     */
+    protected String getFixedHost() {
+        return getProperty(HeraGlobalEnv.getArea() + "." + Constants.HERA_EMR_FIXED_HOST, HeraGlobalEnv.emrFixedHost).trim();
+    }
+
+    /**
+     * 判断是否为动态emr集群任务
+     *
+     * @return boolean
+     */
+    protected boolean isDynamicEmrJob() {
+        return HeraGlobalEnv.isEmrJob() && !isFixedEmrJob();
+    }
+
+    protected String getUser() {
+        if (jobContext.getRunType() == JobContext.SCHEDULE_RUN || jobContext.getRunType() == JobContext.MANUAL_RUN) {
+            return jobContext.getHeraJobHistory().getOperator();
+        } else if (jobContext.getRunType() == JobContext.DEBUG_RUN) {
+            return jobContext.getDebugHistory().getOwner();
+        } else if (jobContext.getRunType() == JobContext.SYSTEM_RUN) {
+            return "";
+        } else {
+            log("没有RunType=" + jobContext.getRunType() + " 的执行类别");
+        }
+        return null;
+    }
+
+
     protected String dosToUnix(String script) {
         return script.replace("\r\n", "\n");
     }
 
-
-    protected void dosToUnix(String filePath, List<String> commands) {
-        boolean isDocToUnix = checkDosToUnix(filePath);
-        if (isDocToUnix) {
-            commands.add("dos2unix " + filePath);
-            log("dos2unix file" + filePath);
-        } else {
-            log("file path :" + filePath);
-        }
-    }
-
-    private boolean checkDosToUnix(String filePath) {
-        if (HeraGlobalEnvironment.isEmrJob()) {
+    protected boolean checkDosToUnix(String filePath) {
+        if (HeraGlobalEnv.isEmrJob()) {
             return false;
         }
-        String[] excludeFile = HeraGlobalEnvironment.excludeFile.split(Constants.SEMICOLON);
+        String[] excludeFile = HeraGlobalEnv.excludeFile.split(Constants.SEMICOLON);
         if (!ArrayUtils.isEmpty(excludeFile)) {
             String lowCaseShellPath = filePath.toLowerCase();
             for (String exclude : excludeFile) {
@@ -140,27 +219,30 @@ public abstract class AbstractJob implements Job {
     protected void logConsole(String log) {
         if (jobContext.getHeraJobHistory() != null) {
             jobContext.getHeraJobHistory().getLog().appendConsole(log);
-        }
-        if (jobContext.getDebugHistory() != null) {
+        } else if (jobContext.getDebugHistory() != null) {
             jobContext.getDebugHistory().getLog().appendConsole(log);
+        } else {
+            HeraLog.info(log);
         }
     }
 
     protected void log(String log) {
         if (jobContext.getHeraJobHistory() != null) {
             jobContext.getHeraJobHistory().getLog().appendHera(log);
-        }
-        if (jobContext.getDebugHistory() != null) {
+        } else if (jobContext.getDebugHistory() != null) {
             jobContext.getDebugHistory().getLog().appendHera(log);
+        } else {
+            HeraLog.warn(log);
         }
     }
 
     protected void log(Exception e) {
         if (jobContext.getHeraJobHistory() != null) {
             jobContext.getHeraJobHistory().getLog().appendHeraException(e);
-        }
-        if (jobContext.getDebugHistory() != null) {
+        } else if (jobContext.getDebugHistory() != null) {
             jobContext.getDebugHistory().getLog().appendHeraException(e);
+        } else {
+            HeraLog.error(e.getMessage(), e);
         }
     }
 }
