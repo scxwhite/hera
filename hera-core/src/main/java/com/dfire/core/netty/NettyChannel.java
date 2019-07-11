@@ -1,6 +1,6 @@
 package com.dfire.core.netty;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.protocol.RpcSocketMessage;
 import io.netty.channel.Channel;
@@ -27,7 +27,7 @@ public class NettyChannel implements HeraChannel {
     public void writeAndFlush(RpcSocketMessage.SocketMessage message) throws RemotingException {
         ChannelFuture channelFuture = channel.writeAndFlush(message);
         boolean success;
-        long timeout = HeraGlobalEnvironment.getChannelTimeout();
+        long timeout = HeraGlobalEnv.getChannelTimeout();
         try {
             success = channelFuture.await(timeout);
             Throwable cause = channelFuture.cause();

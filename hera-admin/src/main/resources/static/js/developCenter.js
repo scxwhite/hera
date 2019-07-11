@@ -168,8 +168,13 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                         type: "get",
                         async: false,
                         data: parameter + "&hostGroupId=" + $('#hostGroupId').val(),
-                        success: function (data) {
+                        success: function (result) {
                             layer.close(index);
+                            if (result.success === false) {
+                                layer.msg(result.message);
+                                return;
+                            }
+                            var data = result.data;
                             if (treeNode) {
                                 treeNode = zTree.addNodes(treeNode, {
                                     id: data,
@@ -202,7 +207,12 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                 type: "get",
                 async: false,
                 data: parameter,
-                success: function (data) {
+                success: function (result) {
+                    if (result.success === false) {
+                        layer.msg(result.message);
+                        return;
+                    }
+                    var data = result.data;
                     if (treeNode) {
                         treeNode = zTree.addNodes(treeNode, {
                             id: data,
@@ -233,7 +243,10 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                 name: treeNode.name
             },
             success: function (res) {
-                layer.msg(res);
+                layer.msg(res.message);
+                if (res.success === false) {
+                    return;
+                }
                 //同步修改codemirror上的tab名
                 let id = treeNode.id;
                 let name = treeNode.name;
@@ -438,7 +451,13 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             data: {
                 fileId: actionRow.id
             },
-            success: function (data) {
+            success: function (result) {
+                if (result.success === false) {
+                    layer.msg(result.message);
+                    return ;
+                }
+                var data = result.data;
+
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
@@ -626,7 +645,12 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                 data: {
                     id: debugId
                 },
-                success: function (data) {
+                success: function (result) {
+                    if (result.success === false) {
+                        layer.msg(result.message);
+                        return ;
+                    }
+                    var data = result.data;
                     if (data.status !== 'running') {
                         clearInterval(timer);
                         set('log' + debugId, data.log, true);
@@ -694,7 +718,12 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             data: {
                 id: debugId,
             },
-            success: function (data) {
+            success: function (result) {
+                if (result.success === false) {
+                    layer.msg(result.message);
+                    return ;
+                }
+                var data = result.data;
                 if (data.status === 'running') {
                     $('#cancelSrueModal').modal('show');
                 } else {
@@ -1022,8 +1051,12 @@ let TableInit = function (targetId) {
             data: {
                 id: actionRow.id,
             },
-            success: function (data) {
-                console.log("data.status " + data.status)
+            success: function (result) {
+                if (result.success === false) {
+                    layer.msg(result.message);
+                    return ;
+                }
+                var data = result.data;
                 if (data.status != 'running') {
                     window.clearInterval(timerHandler);
                 }
@@ -1057,6 +1090,13 @@ let TableInit = function (targetId) {
             cache: false,
             pageNumber: 1,
             pageList: [10, 25, 40, 60],
+            onLoadSuccess: function (data) {
+                if (data.success === false) {
+                    layer.msg("加载日志失败");
+                    return;
+                }
+                table.bootstrapTable("load", data.data)
+            },
             columns: [
                 {
                     field: "id",

@@ -1,5 +1,7 @@
-package com.dfire.core.queue;
+package com.dfire.common.vo;
 
+import com.dfire.common.enums.JobStatus;
+import com.dfire.common.enums.TriggerTypeEnum;
 import lombok.Builder;
 import lombok.Data;
 
@@ -20,17 +22,20 @@ public class JobElement {
 
     private int hostGroupId;
 
-    private Integer priorityLevel;
-    /**
-     * 内存中的创建时间
-     */
-    private Long gmtCreated;
-    /**
-     * 内存中的修改时间
-     */
-    private Long gmtModified;
+    private boolean fixedEmr;
 
-    private Long triggerTime;
+    private Integer priorityLevel;
+
+    private String historyId;
+
+    private TriggerTypeEnum triggerType;
+
+    private JobStatus status;
+
+    private boolean isCancel;
+
+    private Integer costMinute;
+
 
 
     public boolean equals(JobElement jobElement) {
@@ -38,6 +43,11 @@ public class JobElement {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return jobId.hashCode();
     }
 
     @Override

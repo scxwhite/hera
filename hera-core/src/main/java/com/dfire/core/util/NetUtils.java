@@ -1,5 +1,7 @@
 package com.dfire.core.util;
 
+import com.dfire.logs.ErrorLog;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
@@ -32,15 +34,13 @@ public class NetUtils {
                     if (!inetAddress.isLoopbackAddress()) {
                         if (inetAddress.isSiteLocalAddress()) {
                             return inetAddress.getHostAddress();
-                        } else if (secondAddress == null) {
-                            secondAddress = inetAddress.getHostAddress();
                         }
                     }
                 }
             }
             return secondAddress;
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorLog.error("获取机器ip失败", e);
         }
         throw new NullPointerException("----------------- Not FOUND REAL IP -------------------");
     }

@@ -14,6 +14,8 @@ public class Constants {
 
     public final static String PUB_ENV = "public";
 
+    public final static String DAILY_ENV = "daily";
+
     public final static String WORK_PREFIX = "worker-";
 
     public final static String MASTER_PREFIX = "master-";
@@ -114,7 +116,47 @@ public class Constants {
 
     public final static String QUARTZ_DISPATCHER = "dispatcher";
 
+    /**
+     * 所有区域任务
+     */
+    public final static String ALL_AREA = "all";
 
-    
-    
+    public final static String SSH_PREFIX = "<< eeooff";
+
+    public final static String SSH_SUFFIX = "eeooff";
+
+    public final static String HERA_EMR_FIXED = "hera.emr.fixed";
+
+    public final static String HERA_EMR_FIXED_HOST = "hera.emr.fixed.host";
+
+    public final static String AREA_INDIA = "IND";
+
+    public final static String AREA_EUROPE = "EU";
+
+    public final static String AREA_US = "US";
+
+    public final static String AREA_CHINA = "AY";
+
+    public final static String HERA_SPARK_CONF = "hera.spark.conf";
+
+    public final static String EMR_SELECT_WORK = "emr.select.work";
+
+    public final static String TMP_PATH = "/tmp";
+
+
+    public final static String SESSION_USERNAME = "username";
+
+    public final static String SESSION_USER_ID = "userId";
+
+    public final static String SESSION_SSO_ID = "ssoId";
+
+    public final static String SESSION_SSO_NAME = "sso_name";
+
+    public final static String TOKEN_NAME = "HERA_Token";
+
+    public final static String DEFAULT_ID = "-1";
+
+    public final static String PASSWORD_WORD = "password";
+
+
 }

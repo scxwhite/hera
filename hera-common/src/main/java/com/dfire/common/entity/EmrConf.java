@@ -1,7 +1,9 @@
 package com.dfire.common.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * desc:
@@ -13,6 +15,8 @@ import lombok.Data;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmrConf {
     private String loginURl;
 
@@ -36,4 +40,7 @@ public class EmrConf {
 
     private String ec2SubnetId;
 
+    private String keyPairName;
+
 }
+

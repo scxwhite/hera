@@ -1,7 +1,5 @@
 package com.dfire.core.job;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +9,7 @@ import java.util.Map;
  * @time: Created in 上午12:25 2018/4/26
  * @desc
  */
-public class DownLoadJob extends AbstractJob{
+public class DownLoadJob extends AbstractJob {
 
     public DownLoadJob(JobContext jobContext) {
         super(jobContext);
@@ -20,20 +18,19 @@ public class DownLoadJob extends AbstractJob{
     @Override
     public int run() throws Exception {
         List<Job> jobList = new ArrayList<>();
-        for(Map<String, String> map : jobContext.getResources()) {
-            if(map.get("uri") != null) {
-                String name = map.get("name");
+        for (Map<String, String> map : jobContext.getResources()) {
+            if (map.get("uri") != null) {
                 String uri = map.get("uri");
-                if(uri.startsWith("hdfs://")) {
-                    String localPath = jobContext.getWorkDir() + File.separator + (name == null ? "" : name);
-                    String hadoopPath = uri.substring(7);
-                    jobList.add(new DownloadHadoopFileJob(jobContext, hadoopPath, localPath));
-                }
+                String name = map.get("name");
+                String localPath = name == null ? uri.substring(uri.lastIndexOf("/") + 1) : name;
+                jobList.add(new DownloadHadoopFileJob(jobContext, uri, localPath));
             }
         }
-        Integer exitCode = 0;
-        for(Job job : jobList) {
+        int exitCode = 0;
+        for (Job job : jobList) {
+            if (!canceled) {
                 exitCode = job.run();
+            }
         }
         return exitCode;
     }
@@ -42,4 +39,5 @@ public class DownLoadJob extends AbstractJob{
     public void cancel() {
         canceled = true;
     }
+
 }

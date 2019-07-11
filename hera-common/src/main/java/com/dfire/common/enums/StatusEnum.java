@@ -1,7 +1,6 @@
 package com.dfire.common.enums;
 
 
-
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
  * @time: Created in 22:41 2018/1/12
@@ -9,7 +8,22 @@ package com.dfire.common.enums;
  */
 public enum StatusEnum {
 
-    WAIT("wait"), RUNNING("running"), SUCCESS("success"), FAILED("failed");
+    /**
+     * 等待状态
+     */
+    WAIT("wait"),
+    /**
+     * 运行状态
+     */
+    RUNNING("running"),
+    /**
+     * 成功状态
+     */
+    SUCCESS("success"),
+    /**
+     * 失败状态
+     */
+    FAILED("failed");
 
     private String status;
 

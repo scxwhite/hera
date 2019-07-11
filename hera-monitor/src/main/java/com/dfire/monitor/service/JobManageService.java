@@ -16,9 +16,7 @@ public interface JobManageService {
      * @param status
      * @return
      */
-    JsonResponse findJobHistoryByStatus(String status,String dt);
-    
-    //JsonResponse findJobHistoryByStatus(String status);
+    JsonResponse findJobHistoryByStatus(String status, String dt);
 
     /**
      * 查询任务运行时长top10
@@ -37,6 +35,7 @@ public interface JobManageService {
 
     /**
      * 今日任务详情明细，初始化曲线图
+     *
      * @return
      */
 

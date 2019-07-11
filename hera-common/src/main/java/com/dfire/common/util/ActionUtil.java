@@ -1,6 +1,7 @@
 package com.dfire.common.util;
 
 import com.dfire.common.kv.Tuple;
+import com.dfire.logs.ErrorLog;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
@@ -60,7 +61,7 @@ public class ActionUtil {
     /**
      * 生成今天 Action版本的最早时间
      */
-    public static final int ACTION_CREATE_MIN_HOUR = 7;
+    public static final int ACTION_CREATE_MIN_HOUR = 6;
 
 
     public static String getTodayString() {
@@ -141,7 +142,7 @@ public class ActionUtil {
         try {
             result = simpleDateFormat.parse(tmp);
         } catch (ParseException e) {
-            e.printStackTrace();
+            ErrorLog.error("转换日期异常", e);
         }
         return result;
     }
@@ -150,7 +151,7 @@ public class ActionUtil {
         return ActionUtil.getCurrActionVersion().compareTo(actionId) <= 0;
     }
 
-    public static boolean isInitActionVersion(String actionId) {
+    public static boolean isTodayActionVersion(String actionId) {
         return ActionUtil.getInitActionVersion().compareTo(actionId) <= 0;
     }
 

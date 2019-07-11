@@ -1,4 +1,4 @@
-layui.use("layer",function(){
+layui.use("layer", function () {
 
     airBalloon('div.air-balloon');
 
@@ -8,19 +8,15 @@ layui.use("layer",function(){
         increaseArea: '20%' // optional
     });
 
+
     jQuery.validator.addMethod("phone", function (value, element) {
         var length = value.length;
-        var mobile = /^1[3|5|8]{1}[0-9]{9}$/;
-        return this.optional(element) || (length == 11 && mobile.test(value));
+        var mobile = /^1[0-9]{10}$/;
+        return this.optional(element) || (length === 11 && mobile.test(value));
     }, "请正确填写您的手机号码");
     var registerForm = $('#registerForm');
     registerForm.validate({
         rules: {
-            name: {
-                required: true,
-                minlength: 3,
-                maxlength: 18
-            },
             password: {
                 required: true,
                 minlength: 5,
@@ -50,12 +46,12 @@ layui.use("layer",function(){
             }
         },
         submitHandler: function () {
-            $.post($("#baseURl").attr("href") + "/register", {
-                name: $('#name').val(),
+            $.post($("#baseURl").attr("href") + "/sso/register", {
                 password: hex_md5($('#password').val()),
                 phone: $('#phone').val(),
                 email: $('#email').val(),
-                description: $('#description').val()
+                jobNumber: $('#jobNumber').val(),
+                gid: $('#ssoGroup').val()
             }, function (data) {
                 if (data.success === true) {
                     layer.open({
@@ -112,54 +108,82 @@ layui.use("layer",function(){
             element.parent('div').append(error);
         },
         submitHandler: function () {
-            $.post($("#baseURl").attr("href") + "/loginCheck", $("#loginForm").serialize(), function (data) {
+
+            $.post($("#baseURl").attr("href") + "/sso/login", $("#loginForm").serialize(), function (data) {
                 layer.msg(data.message);
                 if (data.success === true) {
-                    window.location.href =  base_url + "/home";;
+                    localStorage.setItem("ssoName", "用户:" + $("#loginForm [name='userName']").val());
+                    window.location.href = base_url + "/home";
                 }
             });
         }
     });
 });
 
+var isLoad = false;
+
+function loadGroups() {
+    if (!isLoad) {
+        $.ajax({
+            url: base_url + "/sso/groups",
+            type: "get",
+            async: false,
+            success: function (data) {
+                if (data.success === false) {
+                    return;
+                }
+                isLoad = true;
+                data.data.forEach(function (val) {
+                    $('#registerForm [name="ssoGroup"]').append('<option value="' + val.id + '">' + val.name + '</option>');
+                });
+            }
+        });
+
+    }
+}
 
 /*
 @function 热气球移动
 */
-function airBalloon(balloon){
-    var viewSize = [] , viewWidth = 0 , viewHeight = 0 ;
+function airBalloon(balloon) {
+    var viewSize = [], viewWidth = 0, viewHeight = 0;
     resize();
-    $(balloon).each(function(){
-        $(this).css({top: rand(40, viewHeight * 0.5 ) , left : rand( 10 , viewWidth - $(this).width() ) });
+    $(balloon).each(function () {
+        $(this).css({top: rand(40, viewHeight * 0.5), left: rand(10, viewWidth - $(this).width())});
         fly(this);
     });
-    $(window).resize(function(){
+    $(window).resize(function () {
         resize()
-        $(balloon).each(function(){
-            $(this).stop().animate({top: rand(40, viewHeight * 0.5 ) , left : rand( 10 , viewWidth - $(this).width() ) } ,1000 , function(){
+        $(balloon).each(function () {
+            $(this).stop().animate({
+                top: rand(40, viewHeight * 0.5),
+                left: rand(10, viewWidth - $(this).width())
+            }, 1000, function () {
                 fly(this);
             });
         });
     });
-    function resize(){
+
+    function resize() {
         viewSize = getViewSize();
-        viewWidth = $(document).width() ;
-        viewHeight = viewSize[1] ;
+        viewWidth = $(document).width();
+        viewHeight = viewSize[1];
     }
-    function fly(obj){
+
+    function fly(obj) {
         var $obj = $(obj);
         var currentTop = parseInt($obj.css('top'));
-        var currentLeft = parseInt($obj.css('left') );
-        var targetLeft = rand( 10 , viewWidth - $obj.width() );
-        var targetTop = rand(40, viewHeight /2 );
+        var currentLeft = parseInt($obj.css('left'));
+        var targetLeft = rand(10, viewWidth - $obj.width());
+        var targetTop = rand(40, viewHeight / 2);
         /*求两点之间的距离*/
-        var removing = Math.sqrt( Math.pow( targetLeft - currentLeft , 2 )  + Math.pow( targetTop - currentTop , 2 ) );
+        var removing = Math.sqrt(Math.pow(targetLeft - currentLeft, 2) + Math.pow(targetTop - currentTop, 2));
         /*每秒移动24px ，计算所需要的时间，从而保持 气球的速度恒定*/
         var moveTime = removing / 24;
-        $obj.animate({ top : targetTop , left : targetLeft} , moveTime * 1000 , function(){
-            setTimeout(function(){
+        $obj.animate({top: targetTop, left: targetLeft}, moveTime * 1000, function () {
+            setTimeout(function () {
                 fly(obj);
-            }, rand(1000, 3000) );
+            }, rand(1000, 3000));
         });
     }
 };

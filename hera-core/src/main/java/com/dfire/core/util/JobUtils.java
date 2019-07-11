@@ -9,6 +9,7 @@ import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.RenderHierarchyProperties;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.job.*;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.logs.HeraLog;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
  */
 public class JobUtils {
 
-    public static final Pattern pattern = Pattern.compile("download\\[(hdfs)://.+]");
+    public static final Pattern pattern = Pattern.compile("download\\[.*://.+]");
 
     public static Job createDebugJob(JobContext jobContext, HeraDebugHistory heraDebugHistory,
                                      String workDir, WorkContext workContext) {
@@ -38,7 +39,7 @@ public class JobUtils {
         HierarchyProperties hierarchyProperties = new HierarchyProperties(new HashMap<>());
         String script = heraDebugHistory.getScript();
         List<Map<String, String>> resources = new ArrayList<>();
-        script = resolveScriptResource(resources, script, workContext);
+        script = resolveScriptResource(resources, script);
         jobContext.setResources(resources);
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
 
@@ -53,9 +54,10 @@ public class JobUtils {
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
         hierarchyProperties.setProperty("hadoop.mappred.job.hera_id", "hera_debug_" + heraDebugHistory.getId());
 
-        List<Job> pres = new ArrayList<>(1);
-        pres.add(new DownLoadJob(jobContext));
+        List<Job> pres = buildPreJob(jobContext);
+
         Job core = null;
+
         if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Shell.toString())) {
             jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Shell.toString());
             core = new HadoopShellJob(jobContext);
@@ -72,18 +74,17 @@ public class JobUtils {
         return new ProcessJobContainer(jobContext, pres, new ArrayList<>(), core);
     }
 
+
     public static Job createScheduleJob(JobContext jobContext, HeraJobBean jobBean,
-                                        HeraJobHistoryVo history, String workDir, WorkContext workContext) {
+                                        HeraJobHistoryVo history, String workDir) {
         jobContext.setHeraJobHistory(history);
         jobContext.setWorkDir(workDir);
         jobContext.getProperties().setProperty("hera.encode", "utf-8");
         HierarchyProperties hierarchyProperties = jobBean.getHierarchyProperties();
         Map<String, String> configs = history.getProperties();
         if (configs != null && !configs.isEmpty()) {
-            history.getLog().appendHera("this job has configs");
             for (String key : configs.keySet()) {
                 hierarchyProperties.setProperty(key, configs.get(key));
-                history.getLog().appendHera(key + "=" + configs.get(key));
             }
         }
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
@@ -92,16 +93,13 @@ public class JobUtils {
         if (jobBean.getHeraJob().getRunType().equals(JobRunTypeEnum.Shell.toString())
                 || jobBean.getHeraJob().getRunType().equals(JobRunTypeEnum.Hive.toString())
                 || jobBean.getHeraJob().getRunType().equals(JobRunTypeEnum.Spark.toString())) {
-            script = resolveScriptResource(resource, script, workContext);
+            script = resolveScriptResource(resource, script);
         }
         jobContext.setResources(resource);
         script = replace(jobContext.getProperties().getAllProperties(), script);
         script = RenderHierarchyProperties.render(script, history.getActionId().substring(0, 12));
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
-        //TODO 可以加入 emr 动态集群创建
-        List<Job> pres = new ArrayList<>();
-        pres.add(new DownLoadJob(jobContext));
-        //TODO 可以加入 emr 集群延迟销毁
+        List<Job> pres = buildPreJob(jobContext);
         List<Job> posts = new ArrayList<>();
         Job core = null;
         JobRunTypeEnum runType = JobRunTypeEnum.parser(jobBean.getHeraJob().getRunType());
@@ -118,14 +116,25 @@ public class JobUtils {
 
     }
 
+    private static List<Job> buildPreJob(JobContext jobContext) {
+        List<Job> pres = new ArrayList<>(1);
+        pres.add(new DownLoadJob(jobContext));
+        return pres;
+    }
 
     public static String replace(Map<String, String> allProperties, String script) {
         if (script == null) {
             return null;
         }
         Map<String, String> varMap = new HashMap<>(allProperties.size());
+        String key;
+        String areaSuffix = HeraGlobalEnv.getArea() + ".";
         for (Map.Entry<String, String> entry : allProperties.entrySet()) {
-            varMap.put("${" + entry.getKey() + "}", entry.getValue());
+            key = entry.getKey();
+            varMap.put("${" + key + "}", entry.getValue());
+            if (key.startsWith(areaSuffix)) {
+                varMap.putIfAbsent("${" + key.replaceFirst(areaSuffix, "") + "}", entry.getValue());
+            }
         }
         String old;
         for (Map.Entry<String, String> entry : varMap.entrySet()) {
@@ -140,12 +149,11 @@ public class JobUtils {
     /**
      * 解析脚本中download开头的脚本，解析后存储在jobContext的resources中，在生成ProcessJobContainer时，根据属性生成preProcess,postProcess
      *
-     * @param resources   资源下载
-     * @param script        脚本内容
-     * @param workContext   工作路径
+     * @param resources 资源下载
+     * @param script    脚本内容
      * @return
      */
-    public static String resolveScriptResource(List<Map<String, String>> resources, String script, WorkContext workContext) {
+    private static String resolveScriptResource(List<Map<String, String>> resources, String script) {
         Matcher matcher = pattern.matcher(script);
         while (matcher.find()) {
             String group = matcher.group();

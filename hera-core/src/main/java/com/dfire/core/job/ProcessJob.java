@@ -2,8 +2,9 @@ package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
+import com.dfire.common.exception.HeraException;
 import com.dfire.common.util.HierarchyProperties;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.common.exception.HeraCaughtExceptionHandler;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
@@ -29,15 +30,16 @@ public abstract class ProcessJob extends AbstractJob implements Job {
 
     public ProcessJob(JobContext jobContext) {
         super(jobContext);
-        envMap = HeraGlobalEnvironment.userEnvMap;
+        envMap = HeraGlobalEnv.userEnvMap;
     }
 
     /**
-     * 组装脚本执行命令
+     * 组装命令
      *
-     * @return
+     * @return cmdList
+     * @throws HeraException 组装异常
      */
-    public abstract List<String> getCommandList();
+    public abstract List<String> getCommandList() throws HeraException;
 
 
     @Override
@@ -57,7 +59,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             try {
                 process = builder.start();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new HeraException("执行脚本" + command + "失败", e);
             }
             String threadName;
             if (jobContext.getHeraJobHistory() != null && jobContext.getHeraJobHistory().getJobId() != null) {
@@ -138,7 +140,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             commands.add(arg);
         }
         TaskLog.info("5.2 ProcessJob :组装后的命令为：{}", JSONObject.toJSONString(commands));
-        return commands.toArray(new String[commands.size()]);
+        return commands.toArray(new String[0]);
     }
 
     @Override
@@ -154,8 +156,13 @@ public abstract class ProcessJob extends AbstractJob implements Job {
             try {
                 process.destroy();
                 int pid = getProcessId();
-                String st = "sudo sh -c \"cd; pstree " + pid + " -p | grep -o '([0-9]*)' | awk -F'[()]' '{print \\$2}' | xargs kill -9\"";
-                String[] commands = {"sudo", "sh", "-c", st};
+                String st;
+                if (HeraGlobalEnv.isEmrJob()) {
+                    st = "kill -9 " + pid;
+                } else {
+                    st = "sudo sh -c \"cd; pstree " + pid + " -p | grep -o '([0-9]*)' | awk -F'[()]' '{print \\$2}' | xargs kill -9\"";
+                }
+                String[] commands = {"sh", "-c", st};
                 ProcessBuilder processBuilder = new ProcessBuilder(commands);
                 try {
                     process = processBuilder.start();

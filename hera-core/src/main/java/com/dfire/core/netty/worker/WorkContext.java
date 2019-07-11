@@ -2,11 +2,12 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.common.service.*;
 import com.dfire.common.util.NamedThreadFactory;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.job.Job;
 import com.dfire.core.netty.HeraChannel;
 import com.dfire.core.tool.RunShell;
 import com.dfire.core.util.NetUtils;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -73,14 +74,14 @@ public class WorkContext {
         host = NetUtils.getLocalAddress();
 
         HeraLog.info("-----------------------------当前机器的IP为:{}-----------------------------", host);
-        if (HeraGlobalEnvironment.isLinuxSystem()) {
+        if (HeraGlobalEnv.isLinuxSystem()) {
             RunShell shell = new RunShell(loadStr);
             Integer exitCode = shell.run();
             if (exitCode == 0) {
                 try {
                     cpuCoreNum = Integer.parseInt(shell.getResult());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    ErrorLog.error("获取cpu核数失败，使用默认配置", e);
                     cpuCoreNum = 4;
                 }
             }

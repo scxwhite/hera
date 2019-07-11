@@ -10,11 +10,11 @@ import com.dfire.common.mapper.HeraJobMapper;
 import com.dfire.common.service.HeraGroupService;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.service.HeraJobService;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.DagLoopUtil;
 import com.dfire.graph.DirectionGraph;
 import com.dfire.graph.Edge;
 import com.dfire.graph.GraphNode;
-import com.dfire.graph.JobRelation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,6 +66,16 @@ public class HeraJobServiceImpl implements HeraJobService {
     @Override
     public HeraJob findById(int id) {
         return heraJobMapper.findById(id);
+    }
+
+    @Override
+    public Integer findMustEndMinute(int id) {
+        return heraJobMapper.findMustEndMinute(id);
+    }
+
+    @Override
+    public HeraJob findMemById(int id) {
+        return this.findById(id);
     }
 
     @Override
@@ -222,21 +232,13 @@ public class HeraJobServiceImpl implements HeraJobService {
         Queue<GraphNode<Integer>> nodeQueue = new LinkedList<>();
         GraphNode<Integer> node = new GraphNode<>(jobId, "");
         nodeQueue.add(node);
-        Integer index;
-        ArrayList<Integer> graphNodes;
+        List<Integer> graphNodes;
         Map<Integer, GraphNode<Integer>> indexMap = graph.getIndexMap();
         GraphNode<Integer> graphNode;
+        Set<Integer> vis = new HashSet<>();
         while (!nodeQueue.isEmpty()) {
             node = nodeQueue.remove();
-            index = graph.getNodeIndex(node);
-            if (index == null) {
-                break;
-            }
-            if (type == 0) {
-                graphNodes = graph.getSrcEdge()[index];
-            } else {
-                graphNodes = graph.getTarEdge()[index];
-            }
+            graphNodes = getNodes(node, graph, vis, type);
             if (graphNodes == null) {
                 continue;
             }
@@ -254,43 +256,23 @@ public class HeraJobServiceImpl implements HeraJobService {
     }
 
 
-    @Override
-    public List<JobRelation> getJobRelations() {
-        List<HeraJob> list = this.getAllJobDependencies();
-        List<JobRelation> res = new ArrayList<>(list.size() * 3);
-        Map<Integer, String> map = new HashMap<>(list.size());
-        Map<Integer, Integer> parentAutoMap = new HashMap<>(list.size());
-        for (HeraJob job : list) {
-            map.put(job.getId(), job.getName());
-            parentAutoMap.put(job.getId(), job.getAuto());
+    private List<Integer> getNodes(GraphNode<Integer> node, DirectionGraph<Integer> graph, Set<Integer> vis, Integer type) {
+        Integer index = graph.getNodeIndex(node);
+        if (index == null) {
+            return null;
         }
-        Integer p, id;
-        String dependencies;
-        for (HeraJob job : list) {
-            id = job.getId();
-            dependencies = job.getDependencies();
-            if (StringUtils.isBlank(dependencies)) {
-                continue;
-            }
-            String[] parents = dependencies.split(Constants.COMMA);
-            for (String parent : parents) {
-                p = Integer.parseInt(parent);
-                if (map.get(p) == null) {
-                    continue;
-                }
-                JobRelation jr = new JobRelation();
-                jr.setAuto(job.getAuto());
-                jr.setId(id);
-                jr.setName(map.get(id));
-                jr.setPid(p);
-                jr.setPname(map.get(p));
-                jr.setPAuto(parentAutoMap.get(p));
-                res.add(jr);
-            }
+        if (vis.contains(index)) {
+            return null;
         }
-        return res;
+        vis.add(index);
+        ArrayList<Integer> graphNodes;
+        if (type == 0) {
+            graphNodes = graph.getSrcEdge()[index];
+        } else {
+            graphNodes = graph.getTarEdge()[index];
+        }
+        return graphNodes;
     }
-
 
     @Override
     public List<HeraJob> findDownStreamJob(Integer jobId) {
@@ -320,6 +302,11 @@ public class HeraJobServiceImpl implements HeraJobService {
         return repeat != null && repeat > 0;
     }
 
+    @Override
+    public Integer updateScript(Integer id, String script) {
+        return heraJobMapper.updateScript(id, script);
+    }
+
 
     /**
      * 建立今日任务执行 Map映射 便于获取
@@ -327,7 +314,6 @@ public class HeraJobServiceImpl implements HeraJobService {
      * @return Map
      */
     private Map<String, GraphNode> buildHistoryMap() {
-
         List<HeraJobHistory> actionHistories = heraJobHistoryService.findTodayJobHistory();
         Map<String, GraphNode> map = new HashMap<>(actionHistories.size());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -355,7 +341,7 @@ public class HeraJobServiceImpl implements HeraJobService {
     }
 
     private DirectionGraph<Integer> getDirectionGraph() {
-        return this.buildJobGraph(this.getJobRelations());
+        return this.buildJobGraph();
     }
 
 
@@ -379,8 +365,13 @@ public class HeraJobServiceImpl implements HeraJobService {
         ArrayList<Integer> graphNodes;
         Map<Integer, GraphNode<Integer>> indexMap = graph.getIndexMap();
         List<Integer> jobList = new ArrayList<>();
+        Set<Integer> vis = new HashSet<>();
         while (!nodeQueue.isEmpty()) {
             headIndex = nodeQueue.remove();
+            if (vis.contains(headIndex)) {
+                continue;
+            }
+            vis.add(headIndex);
             if (down) {
                 graphNodes = graph.getTarEdge()[headIndex];
             } else {
@@ -418,21 +409,13 @@ public class HeraJobServiceImpl implements HeraJobService {
         res.put("headNode", headNode);
         nodeQueue.add(node);
         edgeList.add(new Edge(headNode, node));
-        ArrayList<Integer> graphNodes;
+        List<Integer> graphNodes;
         Map<Integer, GraphNode<Integer>> indexMap = graph.getIndexMap();
         GraphNode graphNode;
-        Integer index;
+        Set<Integer> vis = new HashSet<>();
         while (!nodeQueue.isEmpty()) {
             node = nodeQueue.remove();
-            index = graph.getNodeIndex(node);
-            if (index == null) {
-                break;
-            }
-            if (type == 0) {
-                graphNodes = graph.getSrcEdge()[index];
-            } else {
-                graphNodes = graph.getTarEdge()[index];
-            }
+            graphNodes = getNodes(node, graph, vis, type);
             if (graphNodes == null) {
                 continue;
             }
@@ -456,19 +439,40 @@ public class HeraJobServiceImpl implements HeraJobService {
     /**
      * 定时调用的任务图
      *
-     * @param jobRelations 任务之间的关系
      * @return DirectionGraph
      */
 
-    public DirectionGraph<Integer> buildJobGraph(List<JobRelation> jobRelations) {
-        DirectionGraph<Integer> directionGraph = new DirectionGraph<>();
-        for (JobRelation jobRelation : jobRelations) {
-            GraphNode<Integer> graphNodeBegin = new GraphNode<>(jobRelation.getAuto(), jobRelation.getId(), "任务ID：" + jobRelation.getId() + "\n任务名称：" + jobRelation.getName() + "\n");
-            GraphNode<Integer> graphNodeEnd = new GraphNode<>(jobRelation.getPAuto(), jobRelation.getPid(), "任务ID：" + jobRelation.getPid() + "\n任务名称：" + jobRelation.getPname() + "\n");
-            directionGraph.addNode(graphNodeBegin);
-            directionGraph.addNode(graphNodeEnd);
-            directionGraph.addEdge(graphNodeBegin, graphNodeEnd);
+    public DirectionGraph<Integer> buildJobGraph() {
+        List<HeraJob> list = this.getAllJobDependencies();
+        Map<Integer, String> map = new HashMap<>(list.size());
+        Map<Integer, Integer> parentAutoMap = new HashMap<>(list.size());
+        for (HeraJob job : list) {
+            map.put(job.getId(), job.getName());
+            parentAutoMap.put(job.getId(), job.getAuto());
         }
+        int pid, id;
+        String dependencies;
+        DirectionGraph<Integer> directionGraph = new DirectionGraph<>();
+        for (HeraJob job : list) {
+            id = job.getId();
+            dependencies = job.getDependencies();
+            if (StringUtils.isBlank(dependencies)) {
+                continue;
+            }
+            String[] parents = dependencies.split(Constants.COMMA);
+            for (String parent : parents) {
+                pid = Integer.parseInt(parent);
+                if (map.get(pid) == null) {
+                    continue;
+                }
+                GraphNode<Integer> graphNodeBegin = new GraphNode<>(job.getAuto(), id, "任务ID：" + id + "\n任务名称：" + map.get(id) + "\n");
+                GraphNode<Integer> graphNodeEnd = new GraphNode<>(parentAutoMap.get(pid), pid, "任务ID：" + pid + "\n任务名称：" + map.get(pid) + "\n");
+                directionGraph.addNode(graphNodeBegin);
+                directionGraph.addNode(graphNodeEnd);
+                directionGraph.addEdge(graphNodeBegin, graphNodeEnd);
+            }
+        }
+
         return directionGraph;
     }
 

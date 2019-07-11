@@ -77,7 +77,7 @@
     </form>
 </script>
 
-<script src="${request.contextPath}/js/workManage.js"></script>
+<script src="${request.contextPath}/static/js/workManage.js"></script>
 
 </body>
 

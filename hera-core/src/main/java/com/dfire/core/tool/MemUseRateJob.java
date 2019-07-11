@@ -1,7 +1,7 @@
 package com.dfire.core.tool;
 
-import com.dfire.config.HeraGlobalEnvironment;
-import com.dfire.logs.SocketLog;
+import com.dfire.config.HeraGlobalEnv;
+import com.dfire.logs.ErrorLog;
 import lombok.Data;
 
 import java.io.*;
@@ -43,7 +43,7 @@ public class MemUseRateJob {
      * 在 /proc/meminfo 文件有系统内存的实时信息
      */
     public void readMemUsed() {
-        if (!HeraGlobalEnvironment.isLinuxSystem()) {
+        if (!HeraGlobalEnv.isLinuxSystem()) {
             rate = 0.1f;
             memTotal = 10240f;
             return;
@@ -53,8 +53,8 @@ public class MemUseRateJob {
         try {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
         } catch (FileNotFoundException e) {
-            SocketLog.info("文件不存在：{}", MEM_INFO_PATH);
-            e.printStackTrace();
+            ErrorLog.error("文件不存在：{}", MEM_INFO_PATH);
+            return;
         }
         String line;
         Float memFree = null, buffers = null, cached = null;
@@ -85,14 +85,12 @@ public class MemUseRateJob {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorLog.error("读取内存信息失败", e);
         } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                reader.close();
+            } catch (IOException e) {
+                ErrorLog.error("关闭/proc/meminfo文件失败", e);
             }
         }
         rate = (memTotal - memAvailable) / memTotal;

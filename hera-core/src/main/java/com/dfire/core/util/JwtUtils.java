@@ -5,9 +5,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.dfire.common.constants.Constants;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -31,11 +31,11 @@ public class JwtUtils {
         try {
             algorithm = Algorithm.HMAC256(secret);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            ErrorLog.error("不支持的编码方式", e);
         }
     }
 
-    public static String createToken(String username, String userId) {
+    public static String createToken(String username, String userId, String ssoId, String ssoName) {
         Map<String, Object> header = new HashMap<>(2);
         header.put("alg", "HS256");
         header.put("typ", "JWT");
@@ -46,8 +46,10 @@ public class JwtUtils {
         return JWT.create().withHeader(header)
                 .withClaim("iss", "hera")
                 .withClaim("aud", "2dfire")
-                .withClaim("username", username)
-                .withClaim("userId", userId)
+                .withClaim(Constants.SESSION_USERNAME, username)
+                .withClaim(Constants.SESSION_USER_ID, userId)
+                .withClaim(Constants.SESSION_SSO_ID, ssoId)
+                .withClaim(Constants.SESSION_SSO_NAME, ssoName)
                 .withIssuedAt(now)
                 .withExpiresAt(expireDate)
                 .sign(algorithm);
@@ -64,7 +66,7 @@ public class JwtUtils {
         try {
             jwt = verifier.verify(token);
         } catch (Exception e) {
-            ErrorLog.error("token 过期");
+            HeraLog.info("token 过期");
             return null;
         }
         return jwt.getClaims();
@@ -78,7 +80,7 @@ public class JwtUtils {
         return null;
     }
 
-    public static String getObjectFromToken(String tokenName,HttpServletRequest request, String key) {
+    public static String getObjectFromToken(String tokenName, HttpServletRequest request, String key) {
         String token = getValFromCookies(tokenName, request);
         return getObjectFromToken(token, key);
     }

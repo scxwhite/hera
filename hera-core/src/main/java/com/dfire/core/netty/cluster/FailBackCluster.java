@@ -51,11 +51,11 @@ public class FailBackCluster extends AbstractCluster {
             channel.writeAndFlush(msg);
         } catch (RemotingException e) {
             SocketLog.error("send netty msg cause exception, retry it", e);
-            addFaild(channel, msg);
+            addFailed(channel, msg);
         }
     }
 
-    private void addFaild(HeraChannel channel, SocketMessage msg) {
+    private void addFailed(HeraChannel channel, SocketMessage msg) {
         if (retryTimer == null) {
             synchronized (this) {
                 if (retryTimer == null) {

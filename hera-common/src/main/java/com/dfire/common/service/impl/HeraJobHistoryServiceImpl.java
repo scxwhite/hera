@@ -10,10 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -49,6 +46,11 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     @Override
     public int update(HeraJobHistory heraJobHistory) {
         return heraJobHistoryMapper.update(heraJobHistory);
+    }
+
+    @Override
+    public int updateStatusAndIllustrate(Integer id, String status, String illustrate, Date endTime) {
+        return heraJobHistoryMapper.updateStatusAndIllustrate(id, status, illustrate, endTime);
     }
 
     @Override
@@ -103,4 +105,11 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     public List<HeraJobHistory> findTodayJobHistory() {
         return heraJobHistoryMapper.findTodayJobHistory();
     }
+
+    @Override
+    public void deleteHistoryRecord(Integer beforeDay) {
+        heraJobHistoryMapper.deleteHistoryRecord(beforeDay);
+    }
+
+
 }

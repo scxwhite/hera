@@ -12,9 +12,17 @@ public class HeartLog {
         log.info(msg);
     }
 
+    public static void debug(String msg) {
+        log.debug(msg);
+    }
 
     public static void info(String format, Object... arguments) {
         log.info(format, arguments);
+
+    }
+
+    public static void debug(String format, Object... arguments) {
+        log.debug(format, arguments);
     }
 
     public static void error(String msg) {

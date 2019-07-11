@@ -1,13 +1,13 @@
 package com.dfire.core.route.loadbalance;
 
 import com.dfire.common.entity.vo.HeraHostGroupVo;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
-import com.dfire.core.queue.JobElement;
+import com.dfire.common.vo.JobElement;
 import com.dfire.core.route.check.ResultReason;
-import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
 import com.dfire.logs.MasterLog;
 
 /**
@@ -23,7 +23,7 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         if (masterContext.getHostGroupCache() != null) {
             HeraHostGroupVo hostGroup = masterContext.getHostGroupCache().get(jobElement.getHostGroupId());
             if (hostGroup == null || hostGroup.getHosts() == null || hostGroup.getHosts().size() == 0) {
-                ErrorLog.error("机器组:{},无可执行任务的机器,任务Id:{}", jobElement.getHostGroupId(), jobElement.getJobId());
+                HeraLog.warn("机器组:{},无可执行任务的机器,任务Id:{}", jobElement.getHostGroupId(), jobElement.getJobId());
                 return null;
             }
             return doSelect(hostGroup, masterContext);
@@ -42,17 +42,17 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         }
         HeartBeatInfo heartBeatInfo = worker.getHeartBeatInfo();
 
-        if (heartBeatInfo.getMemRate() == null || heartBeatInfo.getMemRate() > HeraGlobalEnvironment.getMaxMemRate()) {
+        if (heartBeatInfo.getMemRate() == null || heartBeatInfo.getMemRate() > HeraGlobalEnv.getMaxMemRate()) {
             MasterLog.warn(ResultReason.MEM_LIMIT.getMsg() + ":{}, host:{}", heartBeatInfo.getMemRate(), heartBeatInfo.getHost());
             return false;
         }
-        if (heartBeatInfo.getCpuLoadPerCore() == null || heartBeatInfo.getCpuLoadPerCore() > HeraGlobalEnvironment.getMaxCpuLoadPerCore()) {
+        if (heartBeatInfo.getCpuLoadPerCore() == null || heartBeatInfo.getCpuLoadPerCore() > HeraGlobalEnv.getMaxCpuLoadPerCore()) {
             MasterLog.warn(ResultReason.LOAD_LIMIT.getMsg() + ":{}, host:{}", heartBeatInfo.getCpuLoadPerCore(), heartBeatInfo.getHost());
             return false;
         }
 
         // 配置计算数量
-        Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnvironment.getSystemMemUsed()) / HeraGlobalEnvironment.getPerTaskUseMem();
+        Float assignTaskNum = (heartBeatInfo.getMemTotal() - HeraGlobalEnv.getSystemMemUsed()) / HeraGlobalEnv.getPerTaskUseMem();
         int sum = heartBeatInfo.getDebugRunning().size() + heartBeatInfo.getManualRunning().size() + heartBeatInfo.getRunning().size();
         if (sum > assignTaskNum.intValue()) {
             MasterLog.warn(ResultReason.TASK_LIMIT.getMsg() + ":{}, host:{}", sum, heartBeatInfo.getHost());

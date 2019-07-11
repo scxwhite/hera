@@ -19,13 +19,13 @@ import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.vo.JobStatus;
-import com.dfire.core.event.*;
-import com.dfire.event.*;
+import com.dfire.core.event.Dispatcher;
 import com.dfire.core.job.CancelHadoopJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.quartz.HeraQuartzJob;
+import com.dfire.event.*;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.ScheduleLog;
 import lombok.AllArgsConstructor;
@@ -34,6 +34,7 @@ import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.*;
 
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -110,7 +111,7 @@ public class JobHandler extends AbstractHandler {
         if (heraAction != null) {
             //对版本表中处于running状态的任务进行重试
             if (StatusEnum.RUNNING.toString().equals(heraAction.getStatus())) {
-                ErrorLog.error("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
+                ScheduleLog.warn("actionId = " + actionId + " 处于RUNNING状态，说明该job状态丢失，立即进行重试操作。。。");
                 //有历史版本
                 if (heraAction.getHistoryId() != null) {
                     HeraJobHistory jobHistory = jobHistoryService.findById(heraAction.getHistoryId());
@@ -125,9 +126,13 @@ public class JobHandler extends AbstractHandler {
                             new CancelHadoopJob(tmp).run();
                             startNewJob(BeanConvertUtils.transform(heraAction), LogConstant.SERVER_START_JOB_LOG);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            ErrorLog.error("取消任务异常", e);
                         }
                     }
+                    jobHistory.setStatus(StatusEnum.FAILED.toString());
+                    jobHistory.setIllustrate("任务历史丢失");
+                    jobHistory.setEndTime(new Date());
+                    jobHistoryService.update(jobHistory);
                 } else {
                     startNewJob(BeanConvertUtils.transform(heraAction), LogConstant.SERVER_START_JOB_LOG);
                 }
@@ -146,7 +151,7 @@ public class JobHandler extends AbstractHandler {
             } catch (Exception e) {
                 if (e instanceof SchedulerException) {
                     heraActionVo.setAuto(false);
-                    ErrorLog.error("create job quartz schedule error");
+                    ErrorLog.error("create job quartz schedule error", e);
                 }
                 throw new RuntimeException(e);
             }
@@ -225,10 +230,10 @@ public class JobHandler extends AbstractHandler {
         startNewJob(heraActionVo, "自动调度");
     }
 
+
     private void startNewJob(HeraActionVo heraActionVo, String illustrate) {
         HeraJob heraJob = masterContext.getHeraJobService().findById(heraActionVo.getJobId());
-        if (heraJob == null || heraJob.getAuto() == 0) {
-            ScheduleLog.warn("任务被删除或关闭，取消漏跑:" + heraActionVo.getJobId());
+        if (!master.checkJobRun(heraJob)) {
             return;
         }
         HeraJobHistory history = HeraJobHistory.builder().
@@ -241,7 +246,7 @@ public class JobHandler extends AbstractHandler {
                 build();
         masterContext.getHeraJobHistoryService().insert(history);
         HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
-        master.run(historyVo);
+        master.run(historyVo, heraJob);
     }
 
     private void autoRecovery() {
@@ -271,7 +276,7 @@ public class JobHandler extends AbstractHandler {
             try {
                 createScheduleJob(masterContext.getDispatcher(), heraActionVo);
             } catch (SchedulerException e) {
-                e.printStackTrace();
+                ErrorLog.error("创建调度任务异常", e);
             }
         }
     }
@@ -298,7 +303,6 @@ public class JobHandler extends AbstractHandler {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
                     if (Long.parseLong(actionId) < Long.parseLong(ActionUtil.getCurrActionVersion())) {
-
                         startNewJob(BeanConvertUtils.transform(heraAction), LogConstant.LOST_JOB_LOG);
                         ScheduleLog.info("lost job, start schedule :{}", actionId);
                     }

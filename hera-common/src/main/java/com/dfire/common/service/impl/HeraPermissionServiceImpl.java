@@ -67,7 +67,6 @@ public class HeraPermissionServiceImpl implements HeraPermissionService {
 
     @Override
     public Integer insertList(List<HeraPermission> permissions) {
-
         return permissionMapper.insertList(permissions);
     }
 

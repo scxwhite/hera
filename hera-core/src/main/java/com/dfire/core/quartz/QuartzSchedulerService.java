@@ -50,8 +50,7 @@ public class QuartzSchedulerService {
             scheduler.start();
             HeraLog.info("start init quartz scheduler");
         } catch (SchedulerException e) {
-            e.printStackTrace();
-            ErrorLog.error("failed init quartz scheduler");
+            ErrorLog.error("failed init quartz scheduler", e);
         }
     }
 
@@ -62,8 +61,7 @@ public class QuartzSchedulerService {
                 scheduler.shutdown();
                 HeraLog.info("worker shutdown quartz service");
             } catch (SchedulerException e) {
-                e.printStackTrace();
-                ErrorLog.error("failed shutdown quartz scheduler");
+                ErrorLog.error("failed shutdown quartz scheduler", e);
             }
         }
     }
@@ -81,7 +79,7 @@ public class QuartzSchedulerService {
                 HeraLog.warn("remove action {} from quartz", actionId);
             }
         } catch (SchedulerException e) {
-            ErrorLog.error("remove quartz schedule error : " + actionId);
+            ErrorLog.error("remove quartz schedule error : " + actionId, e);
         }
 
     }

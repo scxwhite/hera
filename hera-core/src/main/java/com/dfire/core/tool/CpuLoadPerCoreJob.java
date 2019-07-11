@@ -1,7 +1,8 @@
 package com.dfire.core.tool;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.ErrorLog;
 
 import java.io.IOException;
 
@@ -12,16 +13,13 @@ import java.io.IOException;
 public class CpuLoadPerCoreJob extends RunShell {
 
     private float loadPerCore = 1f;
-    private final String keys = "load average:";
-    private final Integer keysLen = keys.length();
-
     public CpuLoadPerCoreJob() {
-        super("uptime");
+        super("uptime | awk '{print $(NF-2)}'");
     }
 
     @Override
     public Integer run() {
-        if (!HeraGlobalEnvironment.isLinuxSystem()) {
+        if (!HeraGlobalEnv.isLinuxSystem()) {
             return -1;
         }
         Integer exitCode = super.run();
@@ -30,7 +28,7 @@ public class CpuLoadPerCoreJob extends RunShell {
                 String result = super.getResult();
                 loadPerCore = getCpuLoad(result) / WorkContext.cpuCoreNum;
             } catch (IOException e) {
-                e.printStackTrace();
+                ErrorLog.error("获取负载信息失败", e);
             }
         }
         return exitCode;
@@ -38,10 +36,7 @@ public class CpuLoadPerCoreJob extends RunShell {
 
 
     private Float getCpuLoad(String result) {
-        String loadStr = result.substring(result.indexOf(keys) + keysLen);
-        loadStr = loadStr.replace(",", " ").trim();
-        String[] split = loadStr.split(" ");
-        return Float.parseFloat(split[0]);
+        return Float.parseFloat(result.replace(",", ""));
     }
 
     public float getLoadPerCore() {

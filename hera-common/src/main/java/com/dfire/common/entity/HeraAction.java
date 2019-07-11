@@ -52,7 +52,7 @@ public class HeraAction {
 
     private String name;
 
-    private int offset;
+    private Integer offset;
 
     private String owner;
 

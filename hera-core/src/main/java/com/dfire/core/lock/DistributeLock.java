@@ -3,12 +3,13 @@ package com.dfire.core.lock;
 import com.dfire.common.entity.HeraLock;
 import com.dfire.common.service.HeraHostRelationService;
 import com.dfire.common.service.HeraLockService;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.worker.WorkClient;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.schedule.HeraSchedule;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,16 +42,13 @@ public class DistributeLock {
 
     private final String ON_LINE = "online";
 
+    @Getter
+    private static boolean isMaster = false;
+
     @PostConstruct
     public void init() {
 
-        workClient.workSchedule.scheduleAtFixedRate(() -> {
-            try {
-                checkLock();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }, 10, 60, TimeUnit.SECONDS);
+        workClient.workSchedule.scheduleAtFixedRate(this::checkLock, 10, 60, TimeUnit.SECONDS);
     }
 
     public void checkLock() {
@@ -71,7 +69,7 @@ public class DistributeLock {
             }
         }
 
-        if (WorkContext.host.equals(heraLock.getHost().trim())) {
+        if (isMaster = WorkContext.host.equals(heraLock.getHost().trim())) {
             heraLock.setServerUpdate(new Date());
             heraLockService.update(heraLock);
             HeraLog.info("hold lock and update time");
@@ -100,16 +98,17 @@ public class DistributeLock {
         try {
             workClient.connect(heraLock.getHost().trim());
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorLog.error("连接master失败", e);
         }
     }
 
     /**
      * 检测该ip是否具有抢占master的权限
+     *
      * @return 是/否
      */
     private boolean isPreemptionHost() {
-        List<String> preemptionHostList = hostGroupService.findPreemptionGroup(HeraGlobalEnvironment.preemptionMasterGroup);
+        List<String> preemptionHostList = hostGroupService.findPreemptionGroup(HeraGlobalEnv.preemptionMasterGroup);
         if (preemptionHostList.contains(WorkContext.host)) {
             return true;
         } else {

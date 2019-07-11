@@ -4,8 +4,8 @@
     <title>任务调度中心</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
-    <link rel="stylesheet" href="${request.contextPath}/plugins/easyPie/style.css">
-    <link href="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="${request.contextPath}/static/plugins/easyPie/style.css">
+    <link href="${request.contextPath}/static/adminlte/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
 
 
     <style>
@@ -141,11 +141,11 @@
 </div>
 <!-- ./wrapper -->
 <@netCommon.commonScript />
-<script src="${request.contextPath}/plugins/easyPie/jquery.easypiechart.min.js"></script>
-<script src="${request.contextPath}/js/machineInfo.js"></script>
-<script src="${request.contextPath}/plugins/echarts/echarts.min.js"></script>
-<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-<script src="${request.contextPath}/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
+<script src="${request.contextPath}/static/plugins/easyPie/jquery.easypiechart.min.js"></script>
+<script src="${request.contextPath}/static/js/machineInfo.js"></script>
+<script src="${request.contextPath}/static/plugins/echarts/echarts.min.js"></script>
+<script src="${request.contextPath}/static/adminlte/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="${request.contextPath}/static/adminlte/plugins/bootstrap-table/bootstrap-table-zh-CN.min.js"></script>
 
 
 </body>

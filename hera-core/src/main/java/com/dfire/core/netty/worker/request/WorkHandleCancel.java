@@ -6,6 +6,7 @@ import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.netty.worker.WorkContext;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -35,7 +36,7 @@ public class WorkHandleCancel {
                 return cancelManual(workContext, request, cancelMessage.getId());
             }
         } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
+            ErrorLog.error("解析异常", e);
         }
         return null;
     }
@@ -57,7 +58,7 @@ public class WorkHandleCancel {
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)
                     .setStatusEnum(ResponseStatus.Status.ERROR)
-                    .setErrorText("运行任务中查无此任务")
+                    .setErrorText("任务已经执行完成")
                     .build());
         }
         return workContext.getWorkExecuteThreadPool().submit(() -> {

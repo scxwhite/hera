@@ -25,14 +25,14 @@ public class HostGroupController {
 
     @RequestMapping(value = "list", method = RequestMethod.GET)
     @ResponseBody
-    public TableResponse<List<HeraHostGroup>> getAll() {
+    public TableResponse getAll() {
 
         List<HeraHostGroup> groupList = heraHostGroupService.getAll();
 
         if (groupList == null) {
-            return new TableResponse<>(-1, "查询失败");
+            return new TableResponse(-1, "查询失败");
         }
-        return new TableResponse<>(groupList.size(), 0, groupList);
+        return new TableResponse(groupList.size(), 0, groupList);
 
     }
 

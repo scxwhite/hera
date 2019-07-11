@@ -16,7 +16,7 @@ import java.util.*;
  * @date 2018/4/16
  */
 @Component
-public class HeraGlobalEnvironment {
+public class HeraGlobalEnv {
 
     @Getter
     public static String excludeFile;
@@ -39,6 +39,8 @@ public class HeraGlobalEnvironment {
 
     @Getter
     private static String env;
+    @Getter
+    private static boolean sudoUser;
 
     @Getter
     private static int warmUpCheck;
@@ -63,6 +65,8 @@ public class HeraGlobalEnvironment {
     private static Integer heartBeat;
     @Getter
     private static String admin;
+    @Getter
+    private static String area;
     @Getter
     private static Integer taskTimeout;
     @Getter
@@ -94,7 +98,20 @@ public class HeraGlobalEnvironment {
     @Getter
     private static boolean emrJob;
     @Getter
-    private static boolean sudoUser;
+    private static String emrCluster;
+    @Getter
+    private static String keyPath;
+
+
+    @Getter
+    private static String aliYunAccessKey;
+    @Getter
+    private static String indiaAccessKey;
+
+    @Getter
+    private static String aliYunAccessSecret;
+    @Getter
+    private static String indiaAccessSecret;
 
     @Getter
     private static String mailPort;
@@ -108,208 +125,262 @@ public class HeraGlobalEnvironment {
     private static String mailPassword;
     @Getter
     private static Set<String> alarmEnvSet;
+    @Getter
+    public static String emrFixedHost;
+    @Getter
+    public static String monitorUsers;
+    @Getter
+    public static String monitorEmails;
+
+    @Value("${hera.sudoUser}")
+    public void setSudoUser(boolean sudoUser) {
+        HeraGlobalEnv.sudoUser = sudoUser;
+    }
+
+    @Value("${hera.monitorUsers}")
+    public void setMonitorUsers(String monitorUsers) {
+        HeraGlobalEnv.monitorUsers = monitorUsers;
+    }
+
+    @Value("${hera.monitorEmails}")
+    public void setMonitorEmails(String monitorEmails) {
+        HeraGlobalEnv.monitorEmails = monitorEmails;
+    }
+
+    @Value("${india.accessKey}")
+    public void setIndiaAccessKey(String indiaAccessKey) {
+        HeraGlobalEnv.indiaAccessKey = indiaAccessKey;
+    }
+
+    @Value("${india.accessSecret}")
+    public void setIndiaAccessSecret(String indiaAccessSecret) {
+        HeraGlobalEnv.indiaAccessSecret = indiaAccessSecret;
+    }
+
+    @Value("${aliYun.accessKey}")
+    public void setAliYunAccessKey(String aliYunAccessKey) {
+        HeraGlobalEnv.aliYunAccessKey = aliYunAccessKey;
+    }
+
+    @Value("${aliYun.accessSecret}")
+    public void setAliYunAccessSecret(String aliYunAccessSecret) {
+        HeraGlobalEnv.aliYunAccessSecret = aliYunAccessSecret;
+    }
 
     @Value("${hera.excludeFile")
     public void setExcludeFile(String excludeFile) {
-        HeraGlobalEnvironment.excludeFile = excludeFile;
+        HeraGlobalEnv.excludeFile = excludeFile;
     }
 
     @Value("${hera.defaultWorkerGroup}")
     public void setDefaultWorkerGroup(int defaultWorkerGroup) {
-        HeraGlobalEnvironment.defaultWorkerGroup = defaultWorkerGroup;
+        HeraGlobalEnv.defaultWorkerGroup = defaultWorkerGroup;
     }
 
     @Value("${hera.preemptionMasterGroup}")
     public void setPreemptionMasterGroup(Integer preemptionMasterGroup) {
-        HeraGlobalEnvironment.preemptionMasterGroup = preemptionMasterGroup;
+        HeraGlobalEnv.preemptionMasterGroup = preemptionMasterGroup;
     }
 
     @Value("${hera.env}")
     public void setEnv(String env) {
-        HeraGlobalEnvironment.env = env;
+        if (env.contains("_")) {
+            HeraGlobalEnv.env = env.split("_")[0];
+        } else {
+            HeraGlobalEnv.env = env;
+        }
     }
 
     @Value("${hera.maxMemRate}")
     public void setMaxMemRate(Float maxMemRate) {
-        HeraGlobalEnvironment.maxMemRate = maxMemRate;
+        HeraGlobalEnv.maxMemRate = maxMemRate;
     }
 
     @Value("${hera.maxCpuLoadPerCore}")
     public void setCpuLoadPerCore(Float maxCpuLoadPerCore) {
-        HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+        HeraGlobalEnv.maxCpuLoadPerCore = maxCpuLoadPerCore;
     }
 
     @Value("${hera.hdfsUploadPath}")
     public void setHdfsUploadPath(String hdfsUploadPath) {
-        HeraGlobalEnvironment.hdfsUploadPath = hdfsUploadPath;
+        HeraGlobalEnv.hdfsUploadPath = hdfsUploadPath;
     }
 
     @Value("${hera.scanRate}")
     public void setScanRate(Integer scanRate) {
-        HeraGlobalEnvironment.scanRate = scanRate;
+        HeraGlobalEnv.scanRate = scanRate;
     }
 
     @Value("${hera.connectPort}")
     public void setConnectPort(Integer connectPort) {
-        HeraGlobalEnvironment.connectPort = connectPort;
+        HeraGlobalEnv.connectPort = connectPort;
     }
 
     @Value("${hera.workDir}")
     public void setWorkDir(String workDir) {
         File file = new File(workDir);
         if (!file.exists()) {
-            HeraGlobalEnvironment.workDir = System.getProperty("user.dir");
-            HeraLog.warn("配置的工作路径" + workDir + "不存在，将使用默认路径:" + HeraGlobalEnvironment.workDir);
+            HeraGlobalEnv.workDir = System.getProperty("user.dir");
+            HeraLog.warn("配置的工作路径" + workDir + "不存在，将使用默认路径:" + HeraGlobalEnv.workDir);
         } else {
-            HeraGlobalEnvironment.workDir = workDir;
+            HeraGlobalEnv.workDir = workDir;
         }
     }
 
     @Value("${hera.maxParallelNum}")
     public void setMaxParallelNum(Integer maxParallelNum) {
-        HeraGlobalEnvironment.maxParallelNum = maxParallelNum;
+        HeraGlobalEnv.maxParallelNum = maxParallelNum;
     }
 
     @Value("${hera.jobCacheDay}")
     public void setJobCacheDay(int jobCacheDay) {
-        HeraGlobalEnvironment.jobCacheDay = jobCacheDay;
+        HeraGlobalEnv.jobCacheDay = jobCacheDay;
     }
 
 
     @Value("${hera.admin}")
     public void setAdmin(String admin) {
-        HeraGlobalEnvironment.admin = admin;
+        HeraGlobalEnv.admin = admin;
     }
 
     @Value("${hera.taskTimeout}")
     public void setTaskTimeout(Integer taskTimeout) {
-        HeraGlobalEnvironment.taskTimeout = taskTimeout;
+        HeraGlobalEnv.taskTimeout = taskTimeout;
     }
 
     @Value("${hera.heartBeat}")
     public void setHeartBeat(Integer heartBeat) {
-        HeraGlobalEnvironment.heartBeat = heartBeat;
+        HeraGlobalEnv.heartBeat = heartBeat;
     }
 
     @Value("${hera.perTaskUseMem}")
     public void setPerTaskUseMem(Float perTaskUseMem) {
-        HeraGlobalEnvironment.perTaskUseMem = perTaskUseMem;
+        HeraGlobalEnv.perTaskUseMem = perTaskUseMem;
     }
 
     @Value("${hera.systemMemUsed}")
     public void setSystemMemUsed(Float systemMemUsed) {
-        HeraGlobalEnvironment.systemMemUsed = systemMemUsed;
+        HeraGlobalEnv.systemMemUsed = systemMemUsed;
     }
 
     @Value("${hera.maxCpuLoadPerCore}")
     public void setMaxCpuLoadPerCore(Float maxCpuLoadPerCore) {
-        HeraGlobalEnvironment.maxCpuLoadPerCore = maxCpuLoadPerCore;
+        HeraGlobalEnv.maxCpuLoadPerCore = maxCpuLoadPerCore;
     }
 
     @Value("${hera.loadBalance}")
     public void setLoadBalance(String loadBalance) {
-        HeraGlobalEnvironment.loadBalance = loadBalance;
+        HeraGlobalEnv.loadBalance = loadBalance;
     }
 
     @Value("${hera.warmUpCheck}")
     public void setWarmUpCheck(int warmUpCheck) {
-        HeraGlobalEnvironment.warmUpCheck = warmUpCheck;
+        HeraGlobalEnv.warmUpCheck = warmUpCheck;
     }
 
     @Value("${hera.requestTimeout}")
     public void setTimeout(Long requestTimeout) {
-        HeraGlobalEnvironment.requestTimeout = requestTimeout;
+        HeraGlobalEnv.requestTimeout = requestTimeout;
     }
 
     @Value("${hera.channelTimeout}")
     public void setChannelTimeout(Long channelTimeout) {
-        HeraGlobalEnvironment.channelTimeout = channelTimeout;
+        HeraGlobalEnv.channelTimeout = channelTimeout;
     }
 
     @Value("${spark.address}")
     public void setSparkAddress(String sparkAddress) {
-        HeraGlobalEnvironment.sparkAddress = sparkAddress;
+        HeraGlobalEnv.sparkAddress = sparkAddress;
     }
 
     @Value("${spark.driver}")
     public void setSparkDriver(String sparkDriver) {
-        HeraGlobalEnvironment.sparkDriver = sparkDriver;
+        HeraGlobalEnv.sparkDriver = sparkDriver;
     }
 
     @Value("${spark.username}")
     public void setSparkUser(String sparkUser) {
-        HeraGlobalEnvironment.sparkUser = sparkUser;
+        HeraGlobalEnv.sparkUser = sparkUser;
     }
 
     @Value("${spark.password}")
     public void setSparkPassword(String sparkPassword) {
-        HeraGlobalEnvironment.sparkPassword = sparkPassword;
+        HeraGlobalEnv.sparkPassword = sparkPassword;
     }
 
     @Value("${spark.master}")
     public void setSparkMaster(String sparkMaster) {
-        HeraGlobalEnvironment.sparkMaster = sparkMaster;
+        HeraGlobalEnv.sparkMaster = sparkMaster;
     }
 
     @Value("${spark.driver-memory}")
     public void setSparkDriverMemory(String sparkDriverMemory) {
-        HeraGlobalEnvironment.sparkDriverMemory = sparkDriverMemory;
+        HeraGlobalEnv.sparkDriverMemory = sparkDriverMemory;
     }
 
     @Value("${spark.driver-cores}")
     public void setSparkDriverCores(String sparkDriverCores) {
-        HeraGlobalEnvironment.sparkDriverCores = sparkDriverCores;
+        HeraGlobalEnv.sparkDriverCores = sparkDriverCores;
     }
 
     @Value("${spark.executor-memory}")
     public void setSparkExecutorMemory(String sparkExecutorMemory) {
-        HeraGlobalEnvironment.sparkExecutorMemory = sparkExecutorMemory;
+        HeraGlobalEnv.sparkExecutorMemory = sparkExecutorMemory;
     }
 
     @Value("${spark.executor-cores}")
     public void setSparkExecutorCores(String sparkExecutorCores) {
-        HeraGlobalEnvironment.sparkExecutorCores = sparkExecutorCores;
+        HeraGlobalEnv.sparkExecutorCores = sparkExecutorCores;
     }
 
     @Value("${hera.job.shell.bin}")
     public void setJobShellBin(String jobShellBin) {
-        HeraGlobalEnvironment.jobShellBin = jobShellBin + Constants.BLANK_SPACE;
+        HeraGlobalEnv.jobShellBin = jobShellBin + Constants.BLANK_SPACE;
     }
 
     @Value("${hera.job.hive.bin}")
     public void setJobHiveBin(String jobHiveBin) {
-        HeraGlobalEnvironment.jobHiveBin = jobHiveBin + Constants.BLANK_SPACE;
+        HeraGlobalEnv.jobHiveBin = jobHiveBin + Constants.BLANK_SPACE;
     }
 
     @Value("${hera.job.spark-sql.bin}")
     public void setJobSparkSqlBin(String jobSparkSqlBin) {
-        HeraGlobalEnvironment.jobSparkSqlBin = jobSparkSqlBin + Constants.BLANK_SPACE;
+        HeraGlobalEnv.jobSparkSqlBin = jobSparkSqlBin + Constants.BLANK_SPACE;
     }
 
 
+    @Value("${hera.area}")
+    public void setArea(String area) {
+        if (StringUtils.isBlank(area)) {
+            throw new RuntimeException("请设置hera要执行的任务区域:" + area);
+        } else {
+            HeraGlobalEnv.area = area.trim();
+        }
+    }
+
     @Value("${mail.port}")
     public void setMailPort(String mailPort) {
-        HeraGlobalEnvironment.mailPort = mailPort;
+        HeraGlobalEnv.mailPort = mailPort;
     }
 
     @Value("${mail.protocol}")
     public void setMailProtocol(String mailProtocol) {
-        HeraGlobalEnvironment.mailProtocol = mailProtocol;
+        HeraGlobalEnv.mailProtocol = mailProtocol;
     }
 
     @Value("${mail.host}")
     public void setMailHost(String mailHost) {
-        HeraGlobalEnvironment.mailHost = mailHost;
+        HeraGlobalEnv.mailHost = mailHost;
     }
 
     @Value("${mail.user}")
     public void setMailUser(String mailUser) {
-        HeraGlobalEnvironment.mailUser = mailUser;
+        HeraGlobalEnv.mailUser = mailUser;
     }
 
     @Value("${mail.password}")
     public void setMailPassword(String mailPassword) {
-        HeraGlobalEnvironment.mailPassword = mailPassword;
+        HeraGlobalEnv.mailPassword = mailPassword;
     }
 
     @Value("${hera.alarmEnv}")
@@ -317,22 +388,35 @@ public class HeraGlobalEnvironment {
         if (StringUtils.isBlank(mailEnv)) {
             mailEnv = Constants.PUB_ENV;
         }
-        HeraGlobalEnvironment.alarmEnvSet = new HashSet<>();
+        HeraGlobalEnv.alarmEnvSet = new HashSet<>();
         alarmEnvSet.addAll(Arrays.asList(mailEnv.split(Constants.COMMA)));
     }
 
+    @Value("${hera.emr_fixed_host}")
+    public void setEmrFixedHost(String emrFixedHost) {
+        HeraGlobalEnv.emrFixedHost = emrFixedHost;
+    }
+
     @Value("${hera.emrJob}")
-    public void setEmrJob(boolean emrJob) {
-        HeraGlobalEnvironment.emrJob = emrJob;
+    public void setEmrJob(String emrJob) {
+        if (Boolean.FALSE.toString().equals(emrJob)) {
+            HeraGlobalEnv.emrJob = false;
+        } else {
+            HeraGlobalEnv.emrJob = true;
+
+            String[] emrCluster = emrJob.split(":");
+            if (emrCluster.length == 0 || emrCluster.length == 1) {
+                throw new RuntimeException("emrJob参数设置错误:" + emrJob);
+            }
+            HeraGlobalEnv.emrCluster = emrCluster[1];
+        }
     }
-    @Value("${hera.sudoUser}")
-    public void setSudoUser(boolean sudoUser) {
-        HeraGlobalEnvironment.sudoUser = sudoUser;
+
+    @Value("${hera.keyPath}")
+    public void setKeyPath(String keyPath) {
+        HeraGlobalEnv.keyPath = keyPath;
     }
-    /**
-     * 判断是否是linux 环境，有些命令不一样
-     */
-    private static boolean linuxSystem = false;
+
 
     @Getter
     private static OperatorSystemEnum systemEnum;
@@ -351,7 +435,6 @@ public class HeraGlobalEnvironment {
                 systemEnum = OperatorSystemEnum.MAC;
             } else {
                 systemEnum = OperatorSystemEnum.LINUX;
-                linuxSystem = true;
             }
         }
         for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
@@ -363,7 +446,11 @@ public class HeraGlobalEnvironment {
     }
 
     public static boolean isLinuxSystem() {
-        return linuxSystem;
+        return OperatorSystemEnum.isLinux(systemEnum);
+    }
+
+    public static boolean isMacOS() {
+        return OperatorSystemEnum.isMac(systemEnum);
     }
 
 

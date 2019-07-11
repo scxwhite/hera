@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.omg.CORBA.INTERNAL;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -49,7 +47,7 @@ public class HeraJob {
 
     private String name;
 
-    private String offset;
+    private Integer offset;
 
     private String owner;
 
@@ -60,7 +58,6 @@ public class HeraJob {
     private String readyDependency;
 
     private String resources;
-
 
     private String runType;
 
@@ -84,7 +81,7 @@ public class HeraJob {
 
     private String areaId;
 
-    private Long mustEndMinute;
+    private int mustEndMinute;
 
     private short repeatRun;
 

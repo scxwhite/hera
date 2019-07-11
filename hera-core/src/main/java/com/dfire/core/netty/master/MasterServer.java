@@ -60,12 +60,12 @@ public class MasterServer {
         try {
             channelFuture = serverBootstrap.bind(port).sync();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            ErrorLog.error("InterruptedException", e);
         }
         if (channelFuture != null && channelFuture.isSuccess()) {
             HeraLog.info("start master server success");
         } else {
-            ErrorLog.error("start master server success");
+            ErrorLog.error("start master server failed");
         }
 
         return true;

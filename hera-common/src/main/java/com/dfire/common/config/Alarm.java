@@ -1,4 +1,4 @@
-package com.dfire.monitor.config;
+package com.dfire.common.config;
 
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Service;

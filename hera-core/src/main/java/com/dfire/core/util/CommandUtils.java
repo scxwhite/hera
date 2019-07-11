@@ -1,6 +1,6 @@
 package com.dfire.core.util;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 
 /**
  * @author xiaosuda
@@ -9,7 +9,7 @@ import com.dfire.config.HeraGlobalEnvironment;
 public class CommandUtils {
 
     public static final String CHANGE_AUTHORITY = "chmod -R 777 ";
-    public static final String RUN_SH_COMMAND = " " + HeraGlobalEnvironment.getJobShellBin() + " ";
+    public static final String RUN_SH_COMMAND = " " + HeraGlobalEnv.getJobShellBin() + " ";
 
     /**
      * 修改文件权限命令
@@ -24,13 +24,14 @@ public class CommandUtils {
     /**
      * 关闭终端不影响提交的程序
      *
+     * @param prefix        切换的用户命令
      * @param shellFilePath 脚本路径
      * @return 命令
      */
-    public static String getRunShCommand(String shellFilePath) {
-        if (HeraGlobalEnvironment.isLinuxSystem()) {
-            return "setsid "  + RUN_SH_COMMAND + shellFilePath;
+    public static String getRunShCommand(String prefix, String shellFilePath) {
+        if (HeraGlobalEnv.isLinuxSystem()) {
+            return "setsid " + prefix + RUN_SH_COMMAND + shellFilePath;
         }
-        return RUN_SH_COMMAND + shellFilePath;
+        return prefix + RUN_SH_COMMAND + shellFilePath;
     }
 }

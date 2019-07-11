@@ -46,9 +46,9 @@ public class BeanConvertUtils {
         HeraJobHistoryVo heraJobHistoryVo = HeraJobHistoryVo.builder().build();
         BeanUtils.copyProperties(heraJobHistory, heraJobHistoryVo);
         if (StringUtils.isBlank(heraJobHistory.getLog())) {
-            heraJobHistoryVo.setLog(LogContent.builder().build());
+            heraJobHistoryVo.setLog(new LogContent());
         } else {
-            heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraJobHistory.getLog())).build());
+            heraJobHistoryVo.setLog(new LogContent(new StringBuffer(heraJobHistory.getLog())));
         }
         heraJobHistoryVo.setProperties(StringUtil.convertStringToMap(heraJobHistory.getProperties()));
         heraJobHistoryVo.setStatusEnum(StatusEnum.parse(heraJobHistory.getStatus()));
@@ -88,9 +88,9 @@ public class BeanConvertUtils {
             heraJobHistoryVo.setGmtModified(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(heraDebugHistory.getGmtModified()));
         }
         if (StringUtils.isBlank(heraDebugHistory.getLog())) {
-            heraJobHistoryVo.setLog(LogContent.builder().build());
+            heraJobHistoryVo.setLog(new LogContent());
         } else {
-            heraJobHistoryVo.setLog(LogContent.builder().content(new StringBuffer(heraDebugHistory.getLog())).build());
+            heraJobHistoryVo.setLog(new LogContent(new StringBuffer(heraDebugHistory.getLog())));
         }
         return heraJobHistoryVo;
 
@@ -116,7 +116,7 @@ public class BeanConvertUtils {
                 jobHistory.setGmtModified(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(jobHistoryVo.getGmtModified()));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorLog.error("解析日期异常", e);
         }
         return jobHistory;
     }

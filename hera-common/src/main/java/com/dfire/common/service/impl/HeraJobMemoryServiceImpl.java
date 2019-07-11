@@ -22,7 +22,6 @@ public class HeraJobMemoryServiceImpl extends HeraJobServiceImpl {
 
     private Map<Integer, HeraJob> getMemoryJob() {
         Judge newJudge = heraJobMapper.selectTableInfo();
-
         if (newJudge.getMaxId() == null || newJudge.getLastModified() == null || newJudge.getCount() == null) {
             return new HashMap<>(0);
         }
@@ -48,6 +47,14 @@ public class HeraJobMemoryServiceImpl extends HeraJobServiceImpl {
         return new ArrayList<>(getMemoryJob().values());
     }
 
+
+    @Override
+    public HeraJob findMemById(int id) {
+        if (memoryJob == null) {
+            memoryJob = getMemoryJob();
+        }
+        return memoryJob.get(id);
+    }
 
     @Override
     public List<HeraJob> findByIds(List<Integer> list) {

@@ -102,7 +102,7 @@ public interface JobManagerMapper {
 
     @Select("select status, count(1) as num " +
             "from (" +
-            "select job_id, status  from hera_action where id >= #{startDate} and id < #{endDate} and status is not null group by job_id " +
+            "select job_id, status  from hera_action where id >= #{startDate} and id < #{endDate} and status is not null group by job_id ,status " +
             ") tmp group by status")
     List<JobStatusNum> findJobDetailByDate(@Param("startDate") long startDate, @Param("endDate") long endDate);
 

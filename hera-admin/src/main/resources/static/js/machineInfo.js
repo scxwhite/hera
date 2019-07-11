@@ -20,7 +20,12 @@ $(function () {
         $.ajax({
             url: base_url + '/homePage/getAllWorkInfo',
             type: 'get',
-            success: function (data) {
+            success: function (result) {
+                if (result.success === false) {
+                    alert(result.message);
+                    return;
+                }
+                let data = result.data;
                 //机器选择
                 for (var i in data) {
                     $('#machineList').append('<option value="' + i + '">' + i + '</option>');
@@ -35,7 +40,9 @@ $(function () {
     function initInfo(machine) {
         console.log(machine)
         //系统概况
-        ramOption.series[0].data[0].value = parseFloat(machine.osInfo.mem.toFixed(2));
+        if (machine.osInfo.mem != null) {
+            ramOption.series[0].data[0].value = parseFloat(machine.osInfo.mem.toFixed(2));
+        }
         var myChart = echarts.init(document.getElementById('ramGauge'));
         myChart.setOption(ramOption, true);
 
@@ -108,10 +115,6 @@ $(function () {
                     title: 'VIRI',
                     width: 150
                 }, {
-                    field: 'res',
-                    title: 'RES',
-                    width: 150
-                }, {
                     field: 'cpu',
                     title: 'CPU',
                     formatter: function (value, row, index) {
@@ -147,7 +150,7 @@ $(function () {
                 }, {
                     field: 'command',
                     title: 'COMMAND',
-                    width: 150
+                    width: 300
                 }],
                 data: machine.processMonitor
             });

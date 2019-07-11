@@ -1,7 +1,7 @@
 package com.dfire.core.tool.pool;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.logs.ErrorLog;
 
 import java.sql.Connection;
@@ -20,10 +20,10 @@ public abstract class AbstractDataSourcePool {
 
     public AbstractDataSourcePool() {
         dataSource = new DruidDataSource();
-        dataSource.setDriverClassName(HeraGlobalEnvironment.getSparkDriver());
-        dataSource.setUrl(HeraGlobalEnvironment.getSparkAddress());
-        dataSource.setUsername(HeraGlobalEnvironment.getSparkUser());
-        dataSource.setPassword(HeraGlobalEnvironment.getSparkPassword());
+        dataSource.setDriverClassName(HeraGlobalEnv.getSparkDriver());
+        dataSource.setUrl(HeraGlobalEnv.getSparkAddress());
+        dataSource.setUsername(HeraGlobalEnv.getSparkUser());
+        dataSource.setPassword(HeraGlobalEnv.getSparkPassword());
         dataSource.setInitialSize(1);
         dataSource.setMaxActive(20);
         dataSource.setMinIdle(1);
@@ -36,14 +36,12 @@ public abstract class AbstractDataSourcePool {
 
     public Connection getConnection() {
         if (isClose || dataSource == null) {
-            ErrorLog.error("空连接池或连接池已关闭");
             return null;
         }
         try {
             return dataSource.getConnection();
         } catch (Exception e) {
-            e.printStackTrace();
-            ErrorLog.error("获取连接失败");
+            ErrorLog.error("获取连接失败", e);
             return null;
         }
     }

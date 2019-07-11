@@ -1,24 +1,29 @@
 package com.dfire.controller;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraHostRelation;
+import com.dfire.common.entity.HeraJobMonitor;
 import com.dfire.common.entity.model.JsonResponse;
 import com.dfire.common.entity.model.TableResponse;
 import com.dfire.common.entity.vo.HeraActionVo;
+import com.dfire.common.entity.vo.HeraJobMonitorVo;
+import com.dfire.common.entity.vo.HeraSsoVo;
+import com.dfire.common.exception.NoPermissionException;
 import com.dfire.common.service.HeraHostRelationService;
 import com.dfire.common.service.HeraJobActionService;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.common.service.HeraJobMonitorService;
+import com.dfire.common.service.HeraSsoService;
+import com.dfire.config.AdminCheck;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.worker.WorkClient;
-import com.dfire.logs.ErrorLog;
 import com.dfire.monitor.service.JobManageService;
+import com.google.protobuf.InvalidProtocolBufferException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.async.WebAsyncTask;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -41,34 +46,41 @@ public class SystemManageController extends BaseHeraController {
     @Autowired
     private WorkClient workClient;
 
+    @Autowired
+    private HeraJobMonitorService heraJobMonitorService;
+
+    @Autowired
+    private HeraSsoService heraSsoService;
+
     @RequestMapping("/userManage")
-    public String userManage() {
-        if (checkAdmin()) {
-            return "systemManage/userManage.index";
-        }
-        return "home";
+    @AdminCheck
+    public String userManage() throws NoPermissionException {
+        return "systemManage/userManage.index";
     }
 
     @RequestMapping("/workManage")
-    public String workManage() {
-        if (checkAdmin()) {
-            return "systemManage/workManage.index";
-        }
-        return "home";
+    @AdminCheck
+    public String workManage() throws NoPermissionException {
+        return "systemManage/workManage.index";
     }
 
     @RequestMapping("/hostGroupManage")
-    public String hostGroupManage() {
-        if (checkAdmin()) {
-            return "systemManage/hostGroupManage.index";
-        }
-        return "home";
+    @AdminCheck
+    public String hostGroupManage() throws NoPermissionException {
+        return "systemManage/hostGroupManage.index";
+    }
+
+    @RequestMapping("/jobMonitor")
+    @AdminCheck
+    public String jobMonitor() throws NoPermissionException {
+        return "systemManage/jobMonitor.index";
     }
 
     @RequestMapping("/jobDetail")
     public String jobManage() {
         return "jobManage/jobDetail.index";
     }
+
 
     @RequestMapping("/jobDag")
     public String jobDag() {
@@ -82,12 +94,12 @@ public class SystemManageController extends BaseHeraController {
 
     @RequestMapping(value = "/workManage/list", method = RequestMethod.GET)
     @ResponseBody
-    public TableResponse<List<HeraHostRelation>> workManageList() {
+    public TableResponse workManageList() {
         List<HeraHostRelation> hostRelations = heraHostRelationService.getAll();
         if (hostRelations == null) {
-            return new TableResponse<>(-1, "查询失败");
+            return new TableResponse(-1, "查询失败");
         }
-        return new TableResponse<>(hostRelations.size(), 0, hostRelations);
+        return new TableResponse(hostRelations.size(), 0, hostRelations);
     }
 
     @RequestMapping(value = "/workManage/add", method = RequestMethod.POST)
@@ -109,7 +121,6 @@ public class SystemManageController extends BaseHeraController {
             return new JsonResponse(true, "删除成功");
         }
         return new JsonResponse(false, "删除失败");
-
     }
 
     @RequestMapping(value = "/workManage/update", method = RequestMethod.POST)
@@ -124,15 +135,66 @@ public class SystemManageController extends BaseHeraController {
     }
 
     /**
-     * 任务管理页面今日任务详情--> 今日 -->N天内
+     * 任务管理页面今日任务详情
      *
      * @param status
      * @return
      */
     @RequestMapping(value = "/jobManage/findJobHistoryByStatus", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse findJobHistoryByStatus(@RequestParam("status") String status,@RequestParam("dt") String dt) {
-        return jobManageService.findJobHistoryByStatus(status,dt);
+    public JsonResponse findJobHistoryByStatus(@RequestParam("status") String status, String dt) {
+        return jobManageService.findJobHistoryByStatus(status, dt);
+    }
+
+    @GetMapping(value = "/jobMonitor/list")
+    @ResponseBody
+    public TableResponse jobMonitorList() {
+        List<HeraJobMonitorVo> monitors = heraJobMonitorService.findAllVo();
+        if (monitors == null || monitors.size() == 0) {
+            return new TableResponse(-1, "无监控任务");
+        }
+        Map<String, HeraSsoVo> cacheSso = new HashMap<>();
+        monitors.forEach(monitor -> {
+            if (!StringUtils.isBlank(monitor.getUserIds())) {
+                List<HeraSsoVo> ssoVos = new ArrayList<>();
+                Arrays.stream(monitor.getUserIds().split(Constants.COMMA)).filter(StringUtils::isNotBlank).distinct().forEach(id -> {
+                    HeraSsoVo ssoVo = cacheSso.get(id);
+                    if (ssoVo == null) {
+                        ssoVo = heraSsoService.findSsoVoById(Integer.parseInt(id));
+                        cacheSso.put(id, ssoVo);
+                    }
+                    ssoVos.add(ssoVo);
+                });
+                monitor.setMonitors(ssoVos);
+            } else {
+                monitor.setMonitors(new ArrayList<>(0));
+            }
+            Optional.ofNullable(monitor.getUserIds()).ifPresent(userIds -> {
+                if (userIds.endsWith(Constants.COMMA)) {
+                    monitor.setUserIds(userIds.substring(0, userIds.length() - 1));
+                }
+            });
+        });
+        cacheSso.clear();
+        return new TableResponse(monitors.size(), 0, monitors);
+    }
+
+    @PostMapping(value = "/jobMonitor/add")
+    @ResponseBody
+    public JsonResponse jobMonitorAdd(Integer jobId, String monitors) {
+        HeraJobMonitor monitor = heraJobMonitorService.findByJobId(jobId);
+        if (monitor != null) {
+            return new JsonResponse(false, "该监控任务已经存在,请直接编辑该任务");
+        }
+        boolean res = heraJobMonitorService.addMonitor(monitors, jobId);
+        return new JsonResponse(res, res ? "添加监控成功" : "添加监控失败");
+    }
+
+    @PostMapping(value = "/jobMonitor/update")
+    @ResponseBody
+    public JsonResponse jobMonitorUpdate(Integer jobId, String monitors) {
+        boolean res = heraJobMonitorService.updateMonitor(monitors, jobId);
+        return new JsonResponse(res, res ? "添加监控成功" : "添加监控失败");
     }
 
     /**
@@ -177,16 +239,9 @@ public class SystemManageController extends BaseHeraController {
      */
     @RequestMapping(value = "/homePage/getJobQueueInfo", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask getJobQueueInfo() {
+    public JsonResponse getJobQueueInfo() throws InterruptedException, ExecutionException, InvalidProtocolBufferException {
+        return new JsonResponse(true, workClient.getJobQueueInfoFromWeb());
 
-        return new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> {
-            try {
-                return workClient.getJobQueueInfoFromWeb();
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        });
     }
 
     /**
@@ -215,27 +270,15 @@ public class SystemManageController extends BaseHeraController {
 
     @RequestMapping(value = "/homePage/getAllWorkInfo", method = RequestMethod.GET)
     @ResponseBody
-    public WebAsyncTask getAllWorkInfo() {
-
-        WebAsyncTask webAsyncTask = new WebAsyncTask<>(HeraGlobalEnvironment.getRequestTimeout(), () -> workClient.getAllWorkInfo());
-
-        webAsyncTask.onTimeout(() -> {
-            ErrorLog.error("获取work信息超时");
-            return null;
-        });
-        return webAsyncTask;
+    public JsonResponse getAllWorkInfo() throws InterruptedException, ExecutionException, InvalidProtocolBufferException {
+        return new JsonResponse(true, workClient.getAllWorkInfo());
     }
 
 
     @RequestMapping(value = "/isAdmin", method = RequestMethod.GET)
     @ResponseBody
     public JsonResponse isAdmin() {
-        boolean isAdmin = checkAdmin();
-        return new JsonResponse(true, isAdmin ? "是" : "否", isAdmin);
-    }
-
-    private boolean checkAdmin() {
-        return getOwner().equals(HeraGlobalEnvironment.getAdmin());
+        return new JsonResponse(true, getOwner().equals(HeraGlobalEnv.getAdmin()));
     }
 
 

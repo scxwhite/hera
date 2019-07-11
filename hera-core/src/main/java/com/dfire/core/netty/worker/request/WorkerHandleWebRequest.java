@@ -1,6 +1,6 @@
 package com.dfire.core.netty.worker.request;
 
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.WorkResponseListener;
 import com.dfire.core.netty.util.AtomicIncrease;
@@ -79,7 +79,7 @@ public class WorkerHandleWebRequest {
         WorkResponseListener responseListener = new WorkResponseListener(request, false, latch, null);
         workContext.getHandler().addListener(responseListener);
         Future<WebResponse> future = workContext.getWorkWebThreadPool().submit(() -> {
-            latch.await(HeraGlobalEnvironment.getRequestTimeout(), TimeUnit.SECONDS);
+            latch.await(HeraGlobalEnv.getRequestTimeout(), TimeUnit.SECONDS);
             if (!responseListener.getReceiveResult()) {
                 ErrorLog.error(errorMsg);
             }
@@ -93,9 +93,8 @@ public class WorkerHandleWebRequest {
                     .build());
             SocketLog.info("1.WorkerHandleWebRequest: send web request to master requestId ={}", request.getRid());
         } catch (RemotingException e) {
-            e.printStackTrace();
             workContext.getHandler().removeListener(responseListener);
-            ErrorLog.error("1.WorkerHandleWebRequest: send web request to master exception requestId ={}", request.getRid());
+            ErrorLog.error("1.WorkerHandleWebRequest: send web request to master exception requestId =" + request.getRid(), e);
         }
         return future;
 

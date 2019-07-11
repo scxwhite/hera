@@ -9,6 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -16,7 +18,6 @@ import java.util.LinkedList;
  * @desc 任务运行过程中的日志记录
  */
 @Data
-@Builder
 public class LogContent {
 
     private int lines;
@@ -25,11 +26,32 @@ public class LogContent {
     private final String HERA = "<b>HERA#</b> ";
     private StringBuffer content;
 
-    private static final int COUNT = 8000;
-    private static final int TAIL_PRINT_COUNT = 2000;
+    private static final int COUNT = 1000;
+
+    private static final int TAIL_PRINT_COUNT = 1000;
+
+    private boolean limit = true;
+
+    private final String limitLog = "控制台输出信息过多,停止记录,建议您优化自己的Job" + Constants.LOG_SPLIT;
+
+
     private static final String ERROR = "error";
 
     private LinkedList<String> tailLog;
+
+    private Lock lock;
+
+    public LogContent() {
+        this.tailLog = new LinkedList<>();
+        this.content = new StringBuffer();
+        this.lock = new ReentrantLock();
+    }
+
+    public LogContent(StringBuffer content) {
+        this.content = content;
+        this.tailLog = new LinkedList<>();
+        this.lock = new ReentrantLock();
+    }
 
 
     /**
@@ -38,19 +60,27 @@ public class LogContent {
      * @param log
      */
     private void queuePushLog(String log) {
-        if (tailLog == null) {
-            tailLog = new LinkedList<>();
-        }
-        tailLog.add(log);
-        if (tailLog.size() >= TAIL_PRINT_COUNT) {
-            tailLog.removeFirst();
+        try {
+            lock.lock();
+            tailLog.add(log);
+            if (tailLog.size() >= TAIL_PRINT_COUNT) {
+                tailLog.removeFirst();
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
     private String tailLog() {
         if (lines >= COUNT) {
             StringBuilder sb = new StringBuilder();
-            String[] tailLogs = tailLog.toArray(new String[0]);
+            String[] tailLogs;
+            try {
+                lock.lock();
+                tailLogs = tailLog.toArray(new String[0]);
+            } finally {
+                lock.unlock();
+            }
             for (String log : tailLogs) {
                 sb.append(log);
             }
@@ -66,42 +96,43 @@ public class LogContent {
         if (StringUtils.isBlank(log)) {
             return;
         }
-        lines++;
         if (lines < COUNT) {
             content.append(CONSOLE).append(redColorMsg(log)).append(Constants.LOG_SPLIT);
-            if (lines + 1 >= COUNT) {
-                content.append(HERA).append("控制台输出信息过多，停止记录，建议您优化自己的Job" + Constants.LOG_SPLIT);
-                content.append(HERA).append("..." + Constants.LOG_SPLIT);
-                content.append(HERA).append("..." + Constants.LOG_SPLIT);
-            }
+            appendLimitLog();
         } else {
             queuePushLog(CONSOLE + redColorMsg(log) + Constants.LOG_SPLIT);
         }
     }
 
+
     public void appendHera(String log) {
-        lines++;
-        if (content == null) {
-            content = new StringBuffer();
-        }
         if (lines < COUNT) {
             content.append(HERA).append(log).append(Constants.LOG_SPLIT);
+            appendLimitLog();
         } else {
             queuePushLog(HERA + log + Constants.LOG_SPLIT);
         }
     }
 
     public void append(String log) {
-        lines++;
-        if (content == null) {
-            content = new StringBuffer();
-        }
         if (lines < COUNT) {
             content.append(log).append(Constants.LOG_SPLIT);
+            appendLimitLog();
         } else {
             queuePushLog(log + Constants.LOG_SPLIT);
         }
     }
+
+
+    private void appendLimitLog() {
+        if (++lines == COUNT) {
+            content.append(HERA).append(limitLog);
+            content.append(HERA).append(limitLog);
+            content.append(HERA).append(limitLog);
+        }
+
+    }
+
 
     public void appendHeraException(Exception e) {
         if (e == null) {
@@ -118,7 +149,6 @@ public class LogContent {
 
     public String getContent() {
         return content.toString() + tailLog();
-
     }
 
 

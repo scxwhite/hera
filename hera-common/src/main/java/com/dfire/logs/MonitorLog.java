@@ -14,6 +14,9 @@ public class MonitorLog {
     }
 
 
+    public static void debug(String msg) {
+        log.debug(msg);
+    }
     public static void info(String format, Object... arguments) {
         log.info(format, arguments);
     }

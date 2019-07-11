@@ -1,6 +1,6 @@
 package com.dfire.controller;
 
-import com.dfire.config.WebSecurityConfig;
+import com.dfire.common.constants.Constants;
 import com.dfire.core.util.JwtUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -21,21 +21,27 @@ public abstract class BaseHeraController {
         requestThread.set(request);
     }
 
-    protected HttpServletRequest getRequest() {
-        return requestThread.get();
+    protected String getOwner() {
+        return JwtUtils.getObjectFromToken(Constants.TOKEN_NAME, requestThread.get(), Constants.SESSION_USERNAME);
     }
 
-
-    protected String getOwner() {
-        return JwtUtils.getObjectFromToken(WebSecurityConfig.TOKEN_NAME, requestThread.get(), WebSecurityConfig.SESSION_USERNAME);
+    protected String getSsoName() {
+        return JwtUtils.getObjectFromToken(Constants.TOKEN_NAME, requestThread.get(), Constants.SESSION_SSO_NAME);
     }
 
     protected String getOwnerId() {
-        return JwtUtils.getObjectFromToken(WebSecurityConfig.TOKEN_NAME, requestThread.get(), WebSecurityConfig.SESSION_USER_ID);
+        return JwtUtils.getObjectFromToken(Constants.TOKEN_NAME, requestThread.get(), Constants.SESSION_USER_ID);
     }
+
+    protected String getSsoId() {
+        return JwtUtils.getObjectFromToken(Constants.TOKEN_NAME, requestThread.get(), Constants.SESSION_SSO_ID);
+    }
+
 
     public static void remove() {
         requestThread.remove();
     }
+
+
 
 }

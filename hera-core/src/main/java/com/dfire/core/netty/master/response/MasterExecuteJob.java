@@ -2,7 +2,7 @@ package com.dfire.core.netty.master.response;
 
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.ActionUtil;
-import com.dfire.config.HeraGlobalEnvironment;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.MasterResponseListener;
 import com.dfire.core.netty.master.MasterContext;
@@ -127,9 +127,9 @@ public class MasterExecuteJob {
         context.getHandler().addListener(responseListener);
         Future<Response> future = context.getThreadPool().submit(() -> {
             try {
-                latch.await(HeraGlobalEnvironment.getTaskTimeout(), TimeUnit.HOURS);
+                latch.await(HeraGlobalEnv.getTaskTimeout(), TimeUnit.HOURS);
                 if (!responseListener.getReceiveResult()) {
-                    ErrorLog.error("任务({})信号丢失，3小时未收到work返回：{}", typeEnum.toName(), actionId);
+                    ErrorLog.error("任务({})信号丢失，{}小时未收到work返回：{}", typeEnum.toName(), HeraGlobalEnv.getTaskTimeout(), actionId);
                 }
             } finally {
                 context.getHandler().removeListener(responseListener);
@@ -147,7 +147,7 @@ public class MasterExecuteJob {
                         holder.getDebugRunning().remove(jobId);
                         break;
                     default:
-                        ErrorLog.error("未识别的任务执行类型{}", typeEnum);
+                        ErrorLog.warn("未识别的任务执行类型{}", typeEnum);
                 }
             }
             return responseListener.getResponse();
@@ -160,9 +160,8 @@ public class MasterExecuteJob {
                     .build());
             TaskLog.info("5.MasterExecuteJob:master send debug command to worker,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().getRemoteAddress());
         } catch (RemotingException e) {
-            e.printStackTrace();
             context.getHandler().removeListener(responseListener);
-            ErrorLog.error("5.MasterExecuteJob:master send debug command to worker exception,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().getRemoteAddress());
+            ErrorLog.error("5.MasterExecuteJob:master send debug command to worker exception,rid = " + request.getRid() + ",actionId = " + actionId + ",address " + holder.getChannel().getRemoteAddress(), e);
         }
         return future;
 

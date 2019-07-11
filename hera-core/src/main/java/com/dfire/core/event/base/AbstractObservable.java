@@ -30,7 +30,7 @@ public class AbstractObservable implements Observable {
             return;
         }
         if (listMap == null) {
-            listMap = new HashMap<>(1024);
+            listMap = new HashMap<>(8);
         }
         List<Listener<AbstractEvent>> listeners = listMap.get(eventType.getId());
         if (listeners == null) {

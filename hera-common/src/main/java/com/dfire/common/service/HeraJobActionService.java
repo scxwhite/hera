@@ -70,13 +70,14 @@ public interface HeraJobActionService {
      */
     List<String> getActionVersionByJobId(Long jobId);
 
-
     List<HeraActionVo> getNotRunScheduleJob();
 
     List<HeraActionVo> getFailedJob();
 
-
-
     List<GroupTaskVo> findByJobIds(List<Integer> idList, String startDate, String endDate, TablePageForm pageForm, String status);
+
+    void deleteHistoryRecord(Integer beforeDay);
+
+    void deleteAllHistoryRecord(Integer beforeDay);
 
 }

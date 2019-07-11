@@ -120,13 +120,18 @@ function isInArray(arr, value) {
  */
 
 function getDataByPost(url) {
-    var dataStore;
+    var dataStore = null;
     $.ajax({
         type: "post",
         url: url,
         async: false,
         success: function (data) {
-            dataStore = data;
+            if (data.success === true) {
+                dataStore = data.data;
+            } else {
+                alert(data.message);
+            }
+
         }
     });
     return dataStore;
@@ -146,7 +151,11 @@ function getDataByGet(url, parameter) {
         async: false,
         data: parameter,
         success: function (data) {
-            result = data;
+            if (data.success === true) {
+                result = data.data;
+            } else {
+                alert(data.message);
+            }
         }
     });
     return result;
@@ -170,8 +179,8 @@ function uploadFile() {
     $("#uploadFile").modal('show');
 
     $("#fileForm").fileinput({
-        uploadUrl: base_url + "/uploadResource/upload",
-        maxFileCount: 1,
+        uploadUrl: base_url + "/uploadResource/upload.do",
+        maxFileCount: 5,
         enctype: 'multipart/form-data',
         language: 'zh',
         allowedFileExtensions: ['py','jar','sql','hive','sh','js','txt','png','jpg','gif'],
@@ -179,13 +188,12 @@ function uploadFile() {
     }).on("fileuploaded", function (event, data) {
         var response = data.response;
         var message = response.message;
-        console.log(data)
-        var msg = "<b>" +"hadoop文件使用路径: "+ message + "</b>"
-        if (response.success == false) {
-            $("#responseResult").html(msg);
+        if (response.success === false) {
+            $("#responseResult").html('<span style="color: red; ">" + message + "</span>');
+            alert(message);
         }
-        if (response.success == true) {
-            $("#responseResult").html(msg);
+        if (response.success === true) {
+            $("#responseResult").html("<b>" +"hadoop文件使用路径: "+ message + "</b>");
         }
     }).on('filepredelete', function () {
             $("#responseResult").html("");
@@ -193,6 +201,7 @@ function uploadFile() {
 
     );
 }
+
 
 $("#logoutBtn").click(function () {
     var url = base_url;
