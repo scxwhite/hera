@@ -80,7 +80,7 @@ public abstract class AbstractJob implements Job {
         if (HeraGlobalEnv.isMacOS()) {
             return "sudo -u " + user;
         }
-        return "sudo -E -i -u " + user;
+        return "sudo -s -E -u " + user;
     }
 
     protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String prefix, String jobPath) throws Exception {
