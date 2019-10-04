@@ -16,7 +16,7 @@ public interface HeraUserService {
 
     int delete(Integer id);
 
-    int update(HeraUser heraUser);
+    boolean update(HeraUser heraUser);
 
     List<HeraUser> getAll();
 
@@ -29,4 +29,7 @@ public interface HeraUserService {
     int updateEffective(Integer id, String effective);
 
     List<HeraUser> findAllName();
+
+    List<HeraUser> getGroups();
+
 }

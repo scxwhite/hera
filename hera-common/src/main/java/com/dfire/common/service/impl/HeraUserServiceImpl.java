@@ -35,9 +35,8 @@ public class HeraUserServiceImpl implements HeraUserService {
     }
 
     @Override
-    public int update(HeraUser heraUser) {
-        heraUser.setIsEffective(1);
-        return heraUserMapper.update(heraUser);
+    public boolean update(HeraUser heraUser) {
+        return heraUserMapper.update(heraUser) > 0;
     }
 
     @Override
@@ -69,5 +68,10 @@ public class HeraUserServiceImpl implements HeraUserService {
     @Override
     public List<HeraUser> findAllName() {
         return heraUserMapper.getAllName();
+    }
+
+    @Override
+    public List<HeraUser> getGroups() {
+        return heraUserMapper.selectGroups();
     }
 }

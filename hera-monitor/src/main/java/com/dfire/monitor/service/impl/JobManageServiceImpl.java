@@ -32,7 +32,7 @@ public class JobManageServiceImpl implements JobManageService {
         if (failedJobs == null) {
             return new JsonResponse(false, "失败任务查询数据为空");
         }
-        List<JobHistoryVo> result = failedJobs.stream().filter(distinctByKey(h -> h.getJobId())).collect(Collectors.toList());
+        List<JobHistoryVo> result = failedJobs.stream().filter(distinctByKey(JobHistoryVo::getJobId)).collect(Collectors.toList());
         return new JsonResponse("查询成功", true, result);
     }
 

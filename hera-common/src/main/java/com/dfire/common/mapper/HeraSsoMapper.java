@@ -44,9 +44,10 @@ public interface HeraSsoMapper {
     @Select("select id,name,gid,job_number,email,phone,is_valid from hera_sso")
     List<HeraSso> selectAll();
 
-    @Update("update hera_sso set is_valid=#{is_valid} where id = #{id}")
+    @Update("update hera_sso set is_valid=#{is_valid},gmt_modified=#{op_time} where id = #{id}")
     Integer updateValid(@Param("id") Integer id,
-                        @Param("is_valid") Integer val);
+                        @Param("is_valid") Integer val,
+                        @Param("op_time") long opTime);
 
     @Select("select sso.id,sso.name,sso.email,user.name g_name from \n" +
             "(select id,name,email,gid from hera_sso where id = #{id} ) sso \n" +

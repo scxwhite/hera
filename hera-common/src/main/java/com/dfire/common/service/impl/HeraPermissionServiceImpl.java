@@ -21,48 +21,25 @@ public class HeraPermissionServiceImpl implements HeraPermissionService {
 
     @Override
     public int insert(HeraPermission heraPermission) {
+        heraPermission.setIsValid(1);
         permissionMapper.insert(heraPermission);
         return heraPermission.getId();
     }
 
+
     @Override
-    public int delete(String id) {
-        return permissionMapper.delete(id);
+    public List<HeraPermission> findByTargetId(Integer targetId, String type, Integer isValid) {
+        return permissionMapper.findByTargetId(targetId, type, isValid);
     }
 
     @Override
-    public int update(HeraPermission heraPermission) {
-        return permissionMapper.update(heraPermission);
+    public HeraPermission findByCond(Integer id, String owner, String type) {
+        return permissionMapper.findByCond(id, owner, type);
     }
 
     @Override
-    public List<HeraPermission> getAll() {
-        return permissionMapper.getAll();
-    }
-
-    @Override
-    public HeraPermission findById(HeraPermission heraPermission) {
-        return permissionMapper.findById(heraPermission);
-    }
-
-    @Override
-    public List<HeraPermission> findByIds(List<Integer> list) {
-        return permissionMapper.findByIds(list);
-    }
-
-    @Override
-    public List<HeraPermission> findByTargetId(Integer targetId) {
-        return permissionMapper.findByTargetId(targetId);
-    }
-
-    @Override
-    public HeraPermission findByCond(Integer id, String owner) {
-        return permissionMapper.findByCond(id, owner);
-    }
-
-    @Override
-    public Integer deleteByTargetId(Integer id) {
-        return permissionMapper.deleteByTargetId(id);
+    public Integer updateByUid(Integer id, String type, Integer isValid, String uId) {
+        return permissionMapper.updateByUid(id, type, isValid, uId);
     }
 
     @Override

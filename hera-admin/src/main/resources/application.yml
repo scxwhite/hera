@@ -78,7 +78,7 @@ hera:
   taskTimeout: 12  #单个任务执行的最大时间  单位：小时
   env: @env@
   alarmEnv: daily,dev,pre,publish # 设置允许哪些环境开启告警，多个用,分开，默认全部环境
-  sudoUser: true  #是否要使用sudo -u 切换账号
+  sudoUser: true  #是否要使用sudo -u 切换账号(即启动多租户功能)
   version: 2.3
   job:
     shell:
@@ -87,6 +87,7 @@ hera:
       bin: hive
     spark-sql:
       bin: spark-sql
+    script-echo: true
   emrJob: false  #是否为emr集群  false 表示为本地hadoop集群，true:amazon 亚马逊emr集群任务 true:aliYun 阿里云集群任务
   emr_fixed_host: #emr固定集群地址
   area: all

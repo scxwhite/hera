@@ -202,6 +202,7 @@ public class MasterRunJob implements RunJob {
             } catch (InterruptedException e) {
                 ErrorLog.error("sleep interrupted", e);
             }
+
         }
         HeraJobHistoryVo heraJobHistoryVo;
         HeraJobHistory heraJobHistory;
@@ -225,6 +226,16 @@ public class MasterRunJob implements RunJob {
                     .operator(heraAction.getOwner())
                     .hostGroupId(heraAction.getHostGroupId())
                     .build();
+
+            if (master.checkJobExists(HeraJobHistoryVo.builder()
+                            .actionId(String.valueOf(heraAction.getId()))
+                            .jobId(heraAction.getJobId())
+                            .triggerType(TriggerTypeEnum.SCHEDULE)
+                            .build()
+                    , true)) {
+                TaskLog.info("--------------------------{}正在执行，取消重试--------------------------", heraAction.getJobId());
+                return;
+            }
             masterContext.getHeraJobHistoryService().insert(heraJobHistory);
             heraAction.setHistoryId(heraJobHistory.getId());
             heraAction.setStatus(StatusEnum.RUNNING.toString());
@@ -285,12 +296,10 @@ public class MasterRunJob implements RunJob {
         heraAction.setStatisticEndTime(new Date());
         masterContext.getHeraJobActionService().update(heraAction);
         if (runCount < (retryCount + 1) && !success && !isCancelJob) {
-            if (master.checkJobExists(heraJobHistoryVo, true)) {
-                DebugLog.info("--------------------------任务在队列中，取消重试--------------------------");
-            } else {
-                DebugLog.info("--------------------------失败任务，准备重试--------------------------");
-                runScheduleJobContext(selectWork, actionId, runCount, retryCount, retryWaitTime);
-            }
+
+            DebugLog.info("--------------------------失败任务，准备重试--------------------------");
+            runScheduleJobContext(selectWork, actionId, runCount, retryCount, retryWaitTime);
+
         }
     }
 

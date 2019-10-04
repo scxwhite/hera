@@ -10,6 +10,8 @@ layui.use(['table', 'laytpl', 'form', 'element'], function () {
     var hasLoad = false;
     let table = layui.table, laytpl = layui.laytpl, form = layui.form;
 
+    let hostGroups;
+
     $('#userManage').addClass('active');
     $('#userManage').parent().addClass('menu-open');
     $('#userManage').parent().parent().addClass('menu-open');
@@ -123,22 +125,87 @@ layui.use(['table', 'laytpl', 'form', 'element'], function () {
                     refreshTable();
                 });
                 break;
+            case 'edit':
+                if (select === 1) {
+                    let layHtml = "初始化";
+                    if (hostGroups == null) {
+                        $.ajax({
+                            url: base_url + "/userManage/groups",
+                            type: "get",
+                            async: false,
+                            success: function (data) {
+                                if (data.success === false) {
+                                    layer.msg("查询用户组失败");
+                                    return;
+                                }
+                                hostGroups = data.data;
+                            }
+
+                        });
+                    }
+                    laytpl($('#editSso')[0].innerHTML).render(hostGroups, function (html) {
+                        layHtml = html;
+                    });
+                    showForm(layHtml, function (index, layero) {
+                        form.render();
+                        formDataLoad('editSsoForm', obj.data);
+                    });
+                } else {
+                    showForm($('#editUser')[0].innerHTML, function (index, layero) {
+                        form.render();
+                        formDataLoad('editUserForm', obj.data);
+                    });
+                }
+
+                break;
         }
+    }
+
+    function showForm(layHtml, callback) {
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-rim', //加上边框
+            area: ['650px', '500px'], //宽高
+            content: layHtml,  //调到新增页面
+            btn: ["确定", "取消"],
+            success: callback,
+            yes: function (index, layero) {
+                if (select === 1) {
+                    $.ajax({
+                        url: base_url + "/userManage/sso/update",
+                        data: $('#editSsoForm').serialize(),
+                        type: "post",
+                        success: function (data) {
+                            layer.msg(data.message);
+                            layer.close(index);
+                            refreshTable();
+                        }
+                    })
+                } else {
+                    $.ajax({
+                        url: base_url + "/userManage/user/update",
+                        data: $('#editUserForm').serialize(),
+                        type: "post",
+                        success: function (data) {
+                            layer.msg(data.message);
+                            layer.close(index);
+                            refreshTable();
+                        }
+                    })
+                }
+
+            },
+            btn2: function (index, layero) {
+                layer.close(index);
+            }
+        });
     }
 
     function refreshTable() {
         if (select === 0) {
-            userTable.reload({
-                page: {
-                    curr: 1
-                }
-            });
+            userTable.reload();
         } else if (select === 1) {
-            ssoTable.reload({
-                page: {
-                    curr: 1
-                }
-            });
+            ssoTable.reload();
         }
     }
 

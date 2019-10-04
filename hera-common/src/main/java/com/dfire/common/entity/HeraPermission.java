@@ -1,5 +1,6 @@
 package com.dfire.common.entity;
 
+import com.dfire.common.config.SkipColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,9 +28,11 @@ public class HeraPermission {
 
     private String uid;
 
+    @SkipColumn
     private Date gmtCreate;
 
+    @SkipColumn
     private Date gmtModified;
 
-
+    private int isValid;
 }

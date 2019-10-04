@@ -95,7 +95,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/init", method = RequestMethod.POST)
     @ResponseBody
     public JsonResponse initJobTree() {
-        return new JsonResponse(true, heraJobService.buildJobTree(getOwner()));
+        return new JsonResponse(true, Optional.of(heraJobService.buildJobTree(getOwner())).get());
     }
 
     @RequestMapping(value = "/getJobMessage", method = RequestMethod.GET)
@@ -123,7 +123,7 @@ public class ScheduleCenterController extends BaseHeraController {
         focusUsers.append(" ]");
         Optional.ofNullable(heraHostGroupService.findById(job.getHostGroupId()))
                 .ifPresent(group -> heraJobVo.setHostGroupName(group.getName()));
-        heraJobVo.setUIdS(getuIds(jobId));
+        heraJobVo.setUIdS(getuIds(jobId, RunAuthType.JOB));
         heraJobVo.setFocusUser(focusUsers.toString());
         heraJobVo.setAlarmLevel(AlarmLevel.getName(job.getOffset()));
         //如果无权限，进行变量加密
@@ -208,7 +208,7 @@ public class ScheduleCenterController extends BaseHeraController {
         HeraGroup group = heraGroupService.findById(id);
         HeraGroupVo groupVo = BeanConvertUtils.convert(group);
         groupVo.setInheritConfig(getInheritConfig(groupVo.getParent()));
-        groupVo.setUIdS(getuIds(id));
+        groupVo.setUIdS(getuIds(id, RunAuthType.GROUP));
         if (groupVo.getConfigs().keySet().stream().anyMatch(key -> key.toLowerCase().contains(Constants.PASSWORD_WORD))
                 || groupVo.getInheritConfig().keySet().stream().anyMatch(key -> key.toLowerCase().contains(Constants.PASSWORD_WORD))) {
             try {
@@ -229,32 +229,45 @@ public class ScheduleCenterController extends BaseHeraController {
     public JsonResponse updatePermission(@RequestParam("id") String id,
                                          @RequestParam("type") RunAuthType type,
                                          @RequestParam("uIdS") String names) {
-        Integer newId = StringUtil.getGroupId(id);
-        JSONArray uIdS = JSONArray.parseArray(names);
-        Integer integer = heraPermissionService.deleteByTargetId(newId);
-        if (integer == null) {
-            return new JsonResponse(false, "修改失败");
-        }
-        if (uIdS != null && uIdS.size() > 0) {
-            String typeStr = type.getName();
-            Long targetId = Long.parseLong(String.valueOf(newId));
-            List<HeraPermission> permissions = new ArrayList<>(uIdS.size());
-            Date date = new Date();
-            for (Object uId : uIdS) {
-                HeraPermission heraPermission = new HeraPermission();
-                heraPermission.setType(typeStr);
-                heraPermission.setGmtModified(date);
-                heraPermission.setGmtCreate(date);
-                heraPermission.setTargetId(targetId);
-                heraPermission.setUid((String) uId);
-                permissions.add(heraPermission);
-            }
-            Integer res = heraPermissionService.insertList(permissions);
-            if (res == null || res != uIdS.size()) {
-                return new JsonResponse(false, "修改失败");
-            }
-        }
 
+        Integer newId = StringUtil.getGroupId(id);
+        JSONArray parseId = JSONArray.parseArray(names);
+        Set<String> uIdS;
+        if (parseId == null) {
+            uIdS = new HashSet<>(0);
+        } else {
+            uIdS = parseId.stream().map(uid -> (String) uid).collect(Collectors.toSet());
+        }
+        String typeStr = type.getName();
+        Optional.ofNullable(heraPermissionService.findByTargetId(newId, typeStr, 1)).ifPresent(perms -> perms.forEach(perm -> {
+            if (!uIdS.contains(perm.getUid())) {
+                heraPermissionService.updateByUid(newId, typeStr, 0, perm.getUid());
+            } else {
+                uIdS.remove(perm.getUid());
+            }
+        }));
+        //经过第一轮的筛选后，如果还剩下，继续处理
+        if (uIdS.size() > 0) {
+            List<HeraPermission> perms = heraPermissionService.findByTargetId(newId, typeStr, 0);
+            //把以前设置为无效的、这次加入管理的重新设置为有效
+            if (perms != null) {
+                perms.stream().filter(perm -> uIdS.contains(perm.getUid())).forEach(perm -> {
+                    uIdS.remove(perm.getUid());
+                    heraPermissionService.updateByUid(newId, typeStr, 1, perm.getUid());
+                });
+            }
+            if (uIdS.size() > 0) {
+                //余下的都是需要新增的
+                Long targetId = Long.parseLong(String.valueOf(newId));
+                uIdS.forEach(uid -> heraPermissionService.insert(HeraPermission
+                        .builder()
+                        .type(typeStr)
+                        .targetId(targetId)
+                        .uid(uid)
+                        .build())
+                );
+            }
+        }
         return new JsonResponse(true, "修改成功");
     }
 
@@ -264,7 +277,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RunAuth(typeIndex = 1)
     public JsonResponse getJobOperator(String jobId, RunAuthType type) {
         Integer groupId = StringUtil.getGroupId(jobId);
-        List<HeraPermission> permissions = heraPermissionService.findByTargetId(groupId);
+        List<HeraPermission> permissions = heraPermissionService.findByTargetId(groupId, type.getName(), 1);
         List<HeraUser> all = heraUserService.findAllName();
         if (all == null || permissions == null) {
             return new JsonResponse(false, "发生错误，请联系管理员");
@@ -339,6 +352,7 @@ public class ScheduleCenterController extends BaseHeraController {
     public JsonResponse updateScript(Integer id, String script) {
         Integer update = heraJobService.updateScript(id, script);
         if (update != null && update > 0) {
+            MonitorLog.info("{}[{}]修改了任务id:{}的脚本内容", getSsoName(), getOwner(), id);
             return new JsonResponse(true, "更新脚本成功");
         }
         return new JsonResponse(false, "更新脚本失败");
@@ -400,6 +414,7 @@ public class ScheduleCenterController extends BaseHeraController {
         } else {
             return new JsonResponse(false, "无法识别的调度类型");
         }
+        MonitorLog.info("{}[{}]修改了任务id:{}的脚本内容", getSsoName(), getOwner(), heraJobVo.getId());
         return heraJobService.checkAndUpdate(BeanConvertUtils.convertToHeraJob(heraJobVo));
     }
 
@@ -445,7 +460,7 @@ public class ScheduleCenterController extends BaseHeraController {
         heraJob.setScheduleType(JobScheduleTypeEnum.Independent.getType());
         int insert = heraJobService.insert(heraJob);
         if (insert > 0) {
-            MonitorLog.info("{}【添加】任务{}成功", heraJob.getOwner(), heraJob.getId());
+            MonitorLog.info("{}[{}]【添加】任务{}成功", heraJob.getOwner(), getSsoName(), heraJob.getId());
             updateMonitor(heraJob.getId());
             return new JsonResponse(true, String.valueOf(heraJob.getId()));
         } else {
@@ -462,7 +477,7 @@ public class ScheduleCenterController extends BaseHeraController {
         }
         boolean res = heraJobMonitorService.addMonitor(ssoId, id);
         if (res) {
-            MonitorLog.info("{}【关注】任务{}成功", ssoId, id);
+            MonitorLog.info("{}【关注】任务{}成功", getSsoName(), id);
             return new JsonResponse(true, "关注成功");
         } else {
             return new JsonResponse(false, "系统异常，请联系管理员");
@@ -482,7 +497,7 @@ public class ScheduleCenterController extends BaseHeraController {
         }
         boolean res = heraJobMonitorService.removeMonitor(ssoId, id);
         if (res) {
-            MonitorLog.info("{}【取关】任务{}成功", ssoId, id);
+            MonitorLog.info("{}【取关】任务{}成功", getSsoName(), id);
             return new JsonResponse(true, "取关成功");
         } else {
             return new JsonResponse(false, "系统异常，请联系管理员");
@@ -498,7 +513,7 @@ public class ScheduleCenterController extends BaseHeraController {
         heraGroup.setExisted(1);
         int insert = heraGroupService.insert(heraGroup);
         if (insert > 0) {
-            MonitorLog.info("{}【添加】组{}成功", getOwner(), heraGroup.getId());
+            MonitorLog.info("{}【添加】组{}成功", getSsoName(), heraGroup.getId());
             return new JsonResponse(true, String.valueOf(heraGroup.getId()));
         } else {
             return new JsonResponse(false, String.valueOf(-1));
@@ -530,7 +545,7 @@ public class ScheduleCenterController extends BaseHeraController {
         boolean result = heraJobService.changeSwitch(id, status);
 
         if (result) {
-            MonitorLog.info("{}【切换】任务{}状态{}成功", id, status == 1 ? Constants.OPEN_STATUS : status == 0 ? "关闭" : "失效");
+            MonitorLog.info("{}【切换】任务{}状态{}成功", getSsoName(), status == 1 ? Constants.OPEN_STATUS : status == 0 ? "关闭" : "失效");
         }
         if (status == 1) {
             updateJobToMaster(result, id);
@@ -607,30 +622,39 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
     @ResponseBody
     @RunAuth(idIndex = 1)
-    public JsonResponse cancelJob(String historyId, String jobId) throws ExecutionException, InterruptedException {
+    public JsonResponse cancelJob(String historyId, String jobId) {
         if (cancelSet.contains(historyId)) {
             return new JsonResponse(true, "任务正在取消中，请稍后");
         }
-        String res;
-        try {
-            cancelSet.add(historyId);
-            HeraJobHistory history = heraJobHistoryService.findById(historyId);
-            JobExecuteKind.ExecuteKind kind;
-            if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
-                kind = JobExecuteKind.ExecuteKind.ManualKind;
-            } else {
-                kind = JobExecuteKind.ExecuteKind.ScheduleKind;
+        poolExecutor.execute(() -> {
+            String res = null;
+            try {
+                cancelSet.add(historyId);
+                HeraJobHistory history = heraJobHistoryService.findById(historyId);
+                JobExecuteKind.ExecuteKind kind;
+                if (TriggerTypeEnum.parser(history.getTriggerType()) == TriggerTypeEnum.MANUAL) {
+                    kind = JobExecuteKind.ExecuteKind.ManualKind;
+                } else {
+                    kind = JobExecuteKind.ExecuteKind.ScheduleKind;
+                }
+                try {
+                    res = workClient.cancelJobFromWeb(kind, historyId);
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                cancelSet.remove(historyId);
+                MonitorLog.info("取消任务{}结果为:{}", jobId, res);
             }
-            res = workClient.cancelJobFromWeb(kind, historyId);
-        } finally {
-            cancelSet.remove(historyId);
-        }
-        return new JsonResponse(true, res);
+        });
+
+        return new JsonResponse(true, "任务正在取消中，请稍后");
     }
 
     @RequestMapping(value = "getLog", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse getJobLog(Integer id) {
+    @RunAuth(idIndex = 1)
+    public JsonResponse getJobLog(Integer id, Integer jobId) {
         return new JsonResponse(true, heraJobHistoryService.findLogById(id));
     }
 
@@ -694,8 +718,8 @@ public class ScheduleCenterController extends BaseHeraController {
     }
 
 
-    private String getuIds(Integer id) {
-        List<HeraPermission> permissions = heraPermissionService.findByTargetId(id);
+    private String getuIds(Integer id, RunAuthType type) {
+        List<HeraPermission> permissions = heraPermissionService.findByTargetId(id, type.getName(), 1);
         StringBuilder uids = new StringBuilder("[ ");
         if (permissions != null && permissions.size() > 0) {
             permissions.forEach(x -> uids.append(x.getUid()).append(" "));
@@ -788,7 +812,7 @@ public class ScheduleCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/switchAll", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse getJobImpact(Integer jobId, Integer type, Integer auto) {
+    public JsonResponse getJobImpact(Integer jobId, Integer type, Integer auto) throws NoPermissionException {
         List<Integer> jobList = heraJobService.findJobImpact(jobId, type);
         if (jobList == null) {
             return new JsonResponse(false, "当前任务不存在");
@@ -830,11 +854,7 @@ public class ScheduleCenterController extends BaseHeraController {
     @RequestMapping(value = "/getAllArea", method = RequestMethod.GET)
     @ResponseBody
     public JsonResponse getAllArea() {
-        List<HeraArea> heraAreas = heraAreaService.findAll();
-        if (heraAreas == null) {
-            return new JsonResponse(false, "查询异常");
-        }
-        return new JsonResponse(true, "成功", heraAreas);
+        return new JsonResponse(true, "成功", Optional.of(heraAreaService.findAll()).get());
     }
 
 
@@ -880,7 +900,6 @@ public class ScheduleCenterController extends BaseHeraController {
             MonitorLog.info("任务{}:发生移动{}  --->  {}", newId, lastParent, newParent);
             return new JsonResponse(result, result ? "处理成功" : "移动失败");
         }
-
     }
 
 

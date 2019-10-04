@@ -143,9 +143,9 @@ public class HeraAspect {
         if (RunAuthType.JOB == runAuthType) {
             HeraJob job = heraJobService.findById(id);
             if (!(job != null && owner.equals(job.getOwner()))) {
-                HeraPermission permission = heraPermissionService.findByCond(id, owner);
+                HeraPermission permission = heraPermissionService.findByCond(id, owner, runAuthType.getName());
                 if (permission == null) {
-                    permission = heraPermissionService.findByCond(job.getGroupId(), owner);
+                    permission = heraPermissionService.findByCond(job.getGroupId(), owner, runAuthType.getName());
                     if (permission == null) {
                         throw new NoPermissionException(errorMsg);
                     }
@@ -154,7 +154,7 @@ public class HeraAspect {
         } else if (RunAuthType.GROUP == runAuthType) {
             HeraGroup group = heraGroupService.findById(id);
             if (!(group != null && owner.equals(group.getOwner()))) {
-                if (heraPermissionService.findByCond(id, owner) == null) {
+                if (heraPermissionService.findByCond(id, owner, runAuthType.getName()) == null) {
                     throw new NoPermissionException(errorMsg);
                 }
             }

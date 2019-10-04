@@ -1,7 +1,9 @@
 package com.dfire.core.job;
 
 import com.dfire.common.constants.Constants;
+import com.dfire.common.constants.RunningJobKeyConstant;
 import com.dfire.common.exception.HeraException;
+import com.dfire.config.HeraGlobalEnv;
 
 import java.util.List;
 
@@ -40,6 +42,12 @@ public class ProcessJobContainer extends AbstractJob {
     public int run() throws Exception {
         int exitCode = -1;
         try {
+            if (HeraGlobalEnv.isScriptEcho()) {
+                String echoLog = "==================开始输出脚本内容==================\n" +
+                        Constants.NEW_LINE + getProperty(RunningJobKeyConstant.JOB_SCRIPT).replaceAll("(?m)^\\s*$(\\n|\\r\\n)", "");
+                log(echoLog);
+                log("==================结束输出脚本内容==================");
+            }
             getProperties().setProperty(Constants.EMR_SELECT_WORK, getLoginCmd());
             for (Job job : pres) {
                 if (isCanceled()) {

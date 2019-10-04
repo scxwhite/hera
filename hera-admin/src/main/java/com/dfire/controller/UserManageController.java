@@ -1,5 +1,6 @@
 package com.dfire.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.HeraSso;
 import com.dfire.common.entity.HeraUser;
@@ -11,6 +12,7 @@ import com.dfire.common.service.HeraFileService;
 import com.dfire.common.service.HeraSsoService;
 import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.ActionUtil;
+import com.dfire.config.AdminCheck;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -29,7 +31,7 @@ import java.util.stream.Collectors;
  * @desc
  */
 @Controller
-@RequestMapping("/userManage")
+@RequestMapping("/userManage/")
 public class UserManageController {
 
     @Autowired
@@ -63,6 +65,36 @@ public class UserManageController {
         return new TableResponse(res.size(), 0, res);
     }
 
+    @RequestMapping(value = "/sso/update", method = RequestMethod.POST)
+    @ResponseBody
+    @AdminCheck
+    public JsonResponse ssoUpdate(HeraSso sso) {
+        boolean success = heraSsoService.updateHeraSsoById(sso);
+        return new JsonResponse(success, success ? "更新成功" : "更新失败");
+    }
+
+    @RequestMapping(value = "/user/update", method = RequestMethod.POST)
+    @ResponseBody
+    @AdminCheck
+    public JsonResponse userUpdate(HeraUser user) {
+        boolean success = heraUserService.update(user);
+        return new JsonResponse(success, success ? "更新成功" : "更新失败");
+    }
+
+    @RequestMapping(value = "/groups", method = RequestMethod.GET)
+    @ResponseBody
+    @AdminCheck
+    public JsonResponse ssoGroups() {
+        List<HeraUser> users = heraUserService.getGroups();
+        return new JsonResponse(true, users.stream()
+                .map(user -> {
+                    JSONObject userVo = new JSONObject();
+                    userVo.put("id", user.getId());
+                    userVo.put("name", user.getName());
+                    return userVo;
+                }).collect(Collectors.toList()));
+    }
+
     @RequestMapping(value = "/initSso", method = RequestMethod.GET)
     @ResponseBody
     public TableResponse initSso() {
@@ -86,10 +118,11 @@ public class UserManageController {
 
     @RequestMapping(value = "/editUser", method = RequestMethod.POST)
     @ResponseBody
+    @AdminCheck
     public JsonResponse editUser(@RequestBody HeraUser user) {
-        int result = heraUserService.update(user);
+        boolean success = heraUserService.update(user);
         JsonResponse jsonResponse = new JsonResponse(true, "更新成功");
-        if (result <= 0) {
+        if (!success) {
             jsonResponse.setMessage("更新失败");
             jsonResponse.setSuccess(false);
         }
@@ -104,6 +137,7 @@ public class UserManageController {
 
     @RequestMapping(value = "/operateUser", method = RequestMethod.POST)
     @ResponseBody
+    @AdminCheck
     public JsonResponse operateUser(Integer id, String operateType, Integer userType) {
         JsonResponse response = new JsonResponse(false, "更新失败");
         switch (UserType.parse(userType)) {

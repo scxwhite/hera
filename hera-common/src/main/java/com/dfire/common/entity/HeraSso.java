@@ -25,7 +25,7 @@ public class HeraSso {
 
     private String jobNumber;
 
-    private long gmtModified;
+    private Long gmtModified;
 
-    private int isValid;
+    private Integer isValid;
 }

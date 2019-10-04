@@ -91,8 +91,8 @@ public class HeraJobServiceImpl implements HeraJobService {
     @Override
     public Map<String, List<HeraJobTreeNodeVo>> buildJobTree(String owner) {
         Map<String, List<HeraJobTreeNodeVo>> treeMap = new HashMap<>(2);
-        List<HeraGroup> groups = groupService.getAll();
-        List<HeraJob> jobs = this.getAll();
+        List<HeraGroup> groups = Optional.of(groupService.getAll()).get();
+        List<HeraJob> jobs = Optional.of(this.getAll()).get();
         Map<String, HeraJobTreeNodeVo> groupMap = new HashMap<>(groups.size());
         List<HeraJobTreeNodeVo> myGroupList = new ArrayList<>();
         // 建立所有任务的树

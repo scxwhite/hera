@@ -98,6 +98,8 @@ public class HeraGlobalEnv {
     @Getter
     private static boolean emrJob;
     @Getter
+    private static boolean scriptEcho;
+    @Getter
     private static String emrCluster;
     @Getter
     private static String keyPath;
@@ -137,6 +139,11 @@ public class HeraGlobalEnv {
         HeraGlobalEnv.sudoUser = sudoUser;
     }
 
+    @Value("${hera.job.script-echo}")
+    public void setScriptEcho(boolean scriptEcho) {
+        HeraGlobalEnv.scriptEcho = scriptEcho;
+    }
+
     @Value("${hera.monitorUsers}")
     public void setMonitorUsers(String monitorUsers) {
         HeraGlobalEnv.monitorUsers = monitorUsers;
@@ -167,7 +174,7 @@ public class HeraGlobalEnv {
         HeraGlobalEnv.aliYunAccessSecret = aliYunAccessSecret;
     }
 
-    @Value("${hera.excludeFile")
+    @Value("${hera.excludeFile}")
     public void setExcludeFile(String excludeFile) {
         HeraGlobalEnv.excludeFile = excludeFile;
     }

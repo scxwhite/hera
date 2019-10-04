@@ -46,6 +46,109 @@
     <a class="layui-btn layui-btn-xs" lay-event="approve">审核通过</a>
     <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="refuse">审核拒绝</a>
     <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="edit">编辑</a>
+</script>
+<script type="text/html" id="editUser">
+    <form class="layui-form layui-form-pane" id="editUserForm">
+        <div class="layui-form-item" style="display: none">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block">
+                <input type="text" name="id"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" style="display: none">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block">
+                <input type="text" name="isEffective"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户</label>
+            <div class="layui-input-block">
+                <input type="text" name="name"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="email"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="editSso">
+    <form class="layui-form layui-form-pane" action="" id="editSsoForm">
+
+        <div class="layui-form-item"style="display: none">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-block">
+                <input type="text" name="id"
+                       autocomplete="off"
+                       lay-verify="required | ip"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户</label>
+            <div class="layui-input-block">
+                <input type="text" name="name"
+                       autocomplete="off"
+                       class="layui-input" readonly>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">工号</label>
+            <div class="layui-input-block">
+                <input type="text" name="jobNumber"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="email"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">电话</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone"
+                       autocomplete="off"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">所在组</label>
+            <div class="layui-input-block">
+                <select name="gid">
+                    {{# layui.each(d, function(index,item) { }}
+                    <option value="{{item.id}}">{{item.name}}</option>
+                    {{# }); }}
+                </select>
+            </div>
+        </div>
+    </form>
 </script>
 <@netCommon.commonScript />
 <script src="${request.contextPath}/static/js/userManage.js"></script>

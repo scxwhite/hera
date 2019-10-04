@@ -10,6 +10,7 @@ import com.dfire.common.service.JobFailAlarm;
 import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.event.HeraJobFailedEvent;
+import com.dfire.monitor.domain.AlarmInfo;
 import com.dfire.monitor.service.AlarmCenter;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,7 +22,7 @@ import java.util.Set;
  * @date 2019/2/25
  */
 @Alarm("emailJobFailAlarm")
-public class EmailJobFailAlarm implements JobFailAlarm {
+public class EmailJobFailAlarm extends AbstractJobFailAlarm {
 
 
     @Autowired
@@ -64,6 +65,6 @@ public class EmailJobFailAlarm implements JobFailAlarm {
 
     @Override
     public void alarm(JobElement element) {
-
+        alarmCenter.sendToEmail("[hera任务执行超时]", buildTimeoutMsg(element), "xx@xx.com;yy@yy.com");
     }
 }
