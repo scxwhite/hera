@@ -24,6 +24,13 @@ public class UploadLocalFileJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
+		//获取hdfs kerberos keytab
+		String keytab = HeraGlobalEnv.kerberosKeytabPath;
+		//获取hdfs kerberos principal
+        String principal = HeraGlobalEnv.kerberosPrincipal;
+        if(StringUtils.isNotBlank(keytab)&&StringUtils.isNotBlank(principal)){
+            commands.add("kinit -kt "+keytab.trim()+" "+principal.trim());
+        }
         commands.add("hadoop fs -copyFromLocal " + localPath + " " + hadoopPath);
         return commands;
     }
