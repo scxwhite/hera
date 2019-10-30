@@ -80,6 +80,9 @@ hera:
   alarmEnv: daily,dev,pre,publish # 设置允许哪些环境开启告警，多个用,分开，默认全部环境
   sudoUser: true  #是否要使用sudo -u 切换账号(即启动多租户功能)
   version: 2.3
+  kerberos:
+    keytabpath: hdfs.keytab   #kerberos认证keytab文件,如果hadoop 集群无需kerberos授权，则不填
+    principal: hdfsprincipal    #kerberos认证principal,如果hadoop 集群无需kerberos授权，则不填
   job:
     shell:
       bin: sh
