@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.logs.MonitorLog;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,6 +30,13 @@ public class DownloadHadoopFileJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
+        //获取hdfs kerberos keytab
+        String keytab = HeraGlobalEnv.kerberosKeytabPath;
+        //获取hdfs kerberos principal
+        String principal = HeraGlobalEnv.kerberosPrincipal;
+        if(StringUtils.isNotBlank(keytab)&&StringUtils.isNotBlank(principal)){
+            commands.add("kinit -kt "+keytab.trim()+" "+principal.trim());
+        }
         if (HeraGlobalEnv.isEmrJob()) {
             File file = new File(localPath);
             //创建文件  + copyToLocal 放在一行
