@@ -30,13 +30,7 @@ public class DownloadHadoopFileJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
-        //获取hdfs kerberos keytab
-        String keytab = HeraGlobalEnv.kerberosKeytabPath;
-        //获取hdfs kerberos principal
-        String principal = HeraGlobalEnv.kerberosPrincipal;
-        if(StringUtils.isNotBlank(keytab)&&StringUtils.isNotBlank(principal)){
-            commands.add("kinit -kt "+keytab.trim()+" "+principal.trim());
-        }
+
         if (HeraGlobalEnv.isEmrJob()) {
             File file = new File(localPath);
             //创建文件  + copyToLocal 放在一行
@@ -46,6 +40,9 @@ public class DownloadHadoopFileJob extends ProcessJob {
                     " & " + "hadoop fs -copyToLocal " + hadoopPath + " " + workDir + File.separator + file.getName() + "\"";
             commands.add(dirAndCopyToLocal);
         } else {
+            if (StringUtils.isNotBlank(HeraGlobalEnv.getKerberosKeytabPath()) && StringUtils.isNotBlank(HeraGlobalEnv.getKerberosPrincipal())) {
+                commands.add("kinit -kt " + HeraGlobalEnv.getKerberosKeytabPath() + " " + HeraGlobalEnv.getKerberosPrincipal());
+            }
             commands.add("hadoop fs -copyToLocal " + hadoopPath + " " + localPath);
         }
         MonitorLog.debug("组装后的命令为:" + JSONObject.toJSONString(commands));

@@ -104,6 +104,13 @@ public class HeraGlobalEnv {
     @Getter
     private static String keyPath;
 
+    @Getter
+    private static String kerberosKeytabPath;
+    @Getter
+    private static String kerberosPrincipal;
+
+
+
 
     @Getter
     private static String aliYunAccessKey;
@@ -187,6 +194,15 @@ public class HeraGlobalEnv {
     @Value("${hera.preemptionMasterGroup}")
     public void setPreemptionMasterGroup(Integer preemptionMasterGroup) {
         HeraGlobalEnv.preemptionMasterGroup = preemptionMasterGroup;
+    }
+
+    @Value("${hera.kerberos.keytabpath}")
+    public void setKerberosKeytabPath(String kerberosKeytabPath) {
+        HeraGlobalEnv.kerberosKeytabPath = kerberosKeytabPath.trim();
+    }
+    @Value("${hera.kerberos.principal}")
+    public void setKerberosPrincipal(String kerberosPrincipal) {
+        HeraGlobalEnv.kerberosPrincipal = kerberosPrincipal.trim();
     }
 
     @Value("${hera.env}")

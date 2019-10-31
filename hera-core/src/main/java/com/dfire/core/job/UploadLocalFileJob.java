@@ -1,8 +1,10 @@
 package com.dfire.core.job;
 
+import com.dfire.config.HeraGlobalEnv;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -15,7 +17,7 @@ public class UploadLocalFileJob extends ProcessJob {
     private String hadoopPath;
     private String localPath;
 
-    public UploadLocalFileJob(JobContext jobContext,  String localPath, String hadoopPath) {
+    public UploadLocalFileJob(JobContext jobContext, String localPath, String hadoopPath) {
         super(jobContext);
         this.hadoopPath = hadoopPath;
         this.localPath = localPath;
@@ -25,12 +27,8 @@ public class UploadLocalFileJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
-		    //获取hdfs kerberos keytab
-		    String keytab = HeraGlobalEnv.kerberosKeytabPath;
-		    //获取hdfs kerberos principal
-        String principal = HeraGlobalEnv.kerberosPrincipal;
-        if(StringUtils.isNotBlank(keytab)&&StringUtils.isNotBlank(principal)){
-            commands.add("kinit -kt "+keytab.trim()+" "+principal.trim());
+        if (StringUtils.isNotBlank(HeraGlobalEnv.getKerberosKeytabPath()) && StringUtils.isNotBlank(HeraGlobalEnv.getKerberosPrincipal())) {
+            commands.add("kinit -kt " + HeraGlobalEnv.getKerberosKeytabPath() + " " + HeraGlobalEnv.getKerberosPrincipal());
         }
         commands.add("hadoop fs -copyFromLocal " + localPath + " " + hadoopPath);
         return commands;
