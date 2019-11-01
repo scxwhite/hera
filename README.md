@@ -35,6 +35,9 @@ ps:
 
 
 # 介绍文章
+
+[赫拉(hera)分布式任务调度系统之操作文档](https://scx-white.blog.csdn.net/article/details/102571798)
+
 [赫拉(hera)分布式任务调度系统之架构，基本功能(一)](https://blog.csdn.net/su20145104009/article/details/85124746)
 
 [赫拉(hera)分布式任务调度系统之项目启动(二)](https://blog.csdn.net/su20145104009/article/details/85161711)
