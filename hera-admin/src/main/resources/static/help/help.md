@@ -2,7 +2,7 @@
 # 前言
 >最近发现我总是站在我的角度来使用hera,每个功能都很清楚，但是对于使用者，他们是不清楚的，所以提供一篇hera操作文档。有问题可以在下面回复
 
-[开源地址](https://github.com/scxwhite/hera)
+[开源地址,请点个start,谢谢](https://github.com/scxwhite/hera)
 # 操作文档
 
 ## 登录和注册
