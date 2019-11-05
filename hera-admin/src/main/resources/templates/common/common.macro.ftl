@@ -144,7 +144,9 @@
                 <li class="nav-click" id="advice"><a
                             href="${request.contextPath}/adviceController"><i class="fa fa-bug"></i> <span>建议&留言</span></a>
                 </li>
-
+                <li class="nav-click" id="advice"><a
+                            href="${request.contextPath}/help"><i class="fa fa-paper-plane"></i> <span>帮助文档</span></a>
+                </li>
 
             </ul>
         </section>
