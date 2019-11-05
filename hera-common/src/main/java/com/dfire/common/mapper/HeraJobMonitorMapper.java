@@ -20,11 +20,11 @@ public interface HeraJobMonitorMapper {
     Integer insert(HeraJobMonitor monitor);
 
 
-    @Update("update hera_job_monitor set user_ids = replace(user_ids, #{userIds},''),gmt_modified=#{gmtModified} where job_id = #{jobId}")
+    @Update("update hera_job_monitor set user_ids = replace(user_ids, #{userIds},'') where job_id = #{jobId}")
     Integer deleteMonitor(HeraJobMonitor monitor);
 
 
-    @Update("update hera_job_monitor set user_ids = concat(user_ids,#{userIds}),gmt_modified=#{gmtModified} where job_id = #{jobId}")
+    @Update("update hera_job_monitor set user_ids = concat(user_ids,#{userIds}) where job_id = #{jobId}")
     Integer insertUser(HeraJobMonitor monitor);
 
 
