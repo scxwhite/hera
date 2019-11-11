@@ -194,10 +194,8 @@ public class Master {
                 if (jobDependList.size() > 0) {
                     for (String jobDepend : jobDependList) {
                         heraAction = actionMapNew.get(Long.parseLong(jobDepend));
-                        if (heraAction != null) {
-                            if (!(isAllComplete = StatusEnum.SUCCESS.toString().equals(heraAction.getStatus()))) {
-                                break;
-                            }
+                        if (heraAction == null || !(isAllComplete = StatusEnum.SUCCESS.toString().equals(heraAction.getStatus()))) {
+                            break;
                         }
                     }
                 }
@@ -480,7 +478,6 @@ public class Master {
                 } else {
                     ErrorLog.error("任务{}未知的调度类型{}", heraJob.getId(), heraJob.getScheduleType());
                 }
-
             }
         }
         batchInsertList(insertActionList, actionMap, nowAction);
@@ -758,13 +755,15 @@ public class Master {
     }
 
     public void debug(HeraDebugHistoryVo debugHistory) {
+        //如果是emr集群,开发中心任务直接在固定集群跑
+        boolean fixedEmr = HeraGlobalEnv.isEmrJob();
         JobElement element = JobElement.builder()
                 .jobId(debugHistory.getId())
                 .hostGroupId(debugHistory.getHostGroupId())
                 .historyId(debugHistory.getId())
                 .triggerType(TriggerTypeEnum.DEBUG)
-                .fixedEmr(false)
-                .costMinute(-1)
+                .fixedEmr(fixedEmr)
+                .costMinute(0)
                 .build();
         debugHistory.setStatus(StatusEnum.RUNNING);
         debugHistory.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));

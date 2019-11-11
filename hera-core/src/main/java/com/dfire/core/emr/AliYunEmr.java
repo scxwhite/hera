@@ -236,6 +236,10 @@ public class AliYunEmr extends AbstractEmr {
             return false;
         }
         ClusterInfo clusterInfo = getClusterInfo(cacheClusterId);
+        if (clusterInfo == null) {
+            return false;
+        }
+        MonitorLog.info("{}集群状态为:{}", cacheClusterId, clusterInfo.getStatus());
         return aliveStatus.contains(clusterInfo.getStatus());
     }
 

@@ -64,7 +64,7 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     }
 
     @Override
-    public HeraJobHistory findByActionId(String actionId) {
+    public List<HeraJobHistory> findByActionId(String actionId) {
         return heraJobHistoryMapper.findByActionId(actionId);
     }
 
@@ -109,6 +109,11 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     @Override
     public void deleteHistoryRecord(Integer beforeDay) {
         heraJobHistoryMapper.deleteHistoryRecord(beforeDay);
+    }
+
+    @Override
+    public HeraJobHistory findNewest(String jobId) {
+        return heraJobHistoryMapper.findNewest(jobId);
     }
 
 

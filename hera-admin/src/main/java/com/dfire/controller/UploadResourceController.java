@@ -1,6 +1,8 @@
 package com.dfire.controller;
 
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.enums.LogTypeEnum;
+import com.dfire.common.enums.RecordTypeEnum;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.job.JobContext;
@@ -59,7 +61,7 @@ public class UploadResourceController extends BaseHeraController {
                 //如果是emr集群 先 scp 到emr固定机器上
                 if (HeraGlobalEnv.isEmrJob()) {
                     //默认都是hadoop用户
-                    uploadJob = new UploadEmrFileJob(jobContext, file.getAbsolutePath(), null, fileName, HeraGlobalEnv.emrFixedHost);
+                    uploadJob = new UploadEmrFileJob(jobContext, file.getAbsolutePath(), fileName, HeraGlobalEnv.emrFixedHost);
                     exitCode = uploadJob.run();
                 } else {
                     uploadJob = new UploadLocalFileJob(jobContext, file.getAbsolutePath(), HeraGlobalEnv.getHdfsUploadPath());
@@ -67,9 +69,11 @@ public class UploadResourceController extends BaseHeraController {
                 }
                 HeraLog.info("controller upload file command {}", uploadJob.getCommandList().toString());
                 if (exitCode == 0) {
+                    addRecord(LogTypeEnum.UPLOAD, 1, fileName, RecordTypeEnum.UPLOAD, getSsoName(), getOwnerId());
                     resMsg.append(fileName).append("[上传成功]: ").append(HeraGlobalEnv.getHdfsUploadPath()).append(fileName).append("<br>");
                 } else {
                     response.setSuccess(false);
+                    addRecord(LogTypeEnum.UPLOAD, 1, fileName + "上传失败", RecordTypeEnum.UPLOAD, getSsoName(), getOwnerId());
                     resMsg.append(fileName).append("[上传失败]: ").append(HeraGlobalEnv.getHdfsUploadPath()).append(fileName).append("<br>");
                 }
                 //删除临时文件

@@ -6,7 +6,7 @@ import com.dfire.logs.HeraLog;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.util.*;
@@ -15,7 +15,7 @@ import java.util.*;
  * @author xiaosuda
  * @date 2018/4/16
  */
-@Component
+@Configuration
 public class HeraGlobalEnv {
 
     @Getter

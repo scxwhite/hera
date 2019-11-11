@@ -1,12 +1,9 @@
 package com.dfire.core.event.listenter;
 
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.enums.TriggerTypeEnum;
-import com.dfire.common.service.HeraGroupService;
-import com.dfire.common.service.HeraJobHistoryService;
-import com.dfire.event.HeraJobSuccessEvent;
 import com.dfire.core.event.base.MvcEvent;
 import com.dfire.core.netty.master.MasterContext;
+import com.dfire.event.HeraJobSuccessEvent;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -15,14 +12,14 @@ import com.dfire.core.netty.master.MasterContext;
  */
 public class HeraJobSuccessListener extends AbstractListener {
 
-    private HeraGroupService heraGroupService;
-    private HeraJobHistoryService heraJobHistoryService;
 
     public HeraJobSuccessListener(MasterContext context) {
-        heraGroupService = context.getHeraGroupService();
-        heraJobHistoryService = context.getHeraJobHistoryService();
     }
 
+    /**
+     * 任务成功的前置操作，可以在这里处理任务成功单未通知下游任务的的前置操作，比如：通知数据质量平台某某任务成功，可以进行检测
+     * @param mvcEvent
+     */
     @Override
     public void beforeDispatch(MvcEvent mvcEvent) {
         if(mvcEvent.getApplicationEvent() instanceof HeraJobSuccessEvent) {
@@ -30,7 +27,6 @@ public class HeraJobSuccessListener extends AbstractListener {
             if(jobSuccessEvent.getTriggerType() == TriggerTypeEnum.SCHEDULE) {
                 return;
             }
-            HeraJobHistory heraJobHistory = heraJobHistoryService.findById(jobSuccessEvent.getHistoryId());
         }
     }
 }

@@ -135,6 +135,8 @@ public class Constants {
 
     public final static String AREA_US = "US";
 
+    public final static String AREA_UE = "UE";
+
     public final static String AREA_CHINA = "AY";
 
     public final static String HERA_SPARK_CONF = "hera.spark.conf";
@@ -157,6 +159,9 @@ public class Constants {
     public final static String DEFAULT_ID = "-1";
 
     public final static String PASSWORD_WORD = "password";
+
+    public final static String HERA_SCRIPT_ECHO = "hera.script.echo";
+
 
 
 }

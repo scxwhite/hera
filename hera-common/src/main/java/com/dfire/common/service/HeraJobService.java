@@ -42,7 +42,6 @@ public interface HeraJobService {
 
     boolean changeSwitch(Integer id, Integer status);
 
-    JsonResponse checkAndUpdate(HeraJob heraJob);
 
     Map<String, Object> findCurrentJobGraph(int jobId, Integer type);
 
@@ -63,4 +62,7 @@ public interface HeraJobService {
     boolean isRepeat(Integer jobId);
 
     Integer updateScript(Integer id, String script);
+
+    Integer selectMaxId();
+
 }

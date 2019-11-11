@@ -17,7 +17,7 @@ public class UploadLocalFileJob extends ProcessJob {
     private String hadoopPath;
     private String localPath;
 
-    public UploadLocalFileJob(JobContext jobContext, String localPath, String hadoopPath) {
+    public UploadLocalFileJob(JobContext jobContext,  String localPath, String hadoopPath) {
         super(jobContext);
         this.hadoopPath = hadoopPath;
         this.localPath = localPath;

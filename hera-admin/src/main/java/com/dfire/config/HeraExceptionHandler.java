@@ -6,6 +6,7 @@ import com.dfire.common.exception.NoPermissionException;
 import com.dfire.logs.ErrorLog;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.WebApplicationContext;
@@ -37,6 +38,11 @@ public class HeraExceptionHandler {
         return getReturn(getReturnType(request), HttpStatus.INTERNAL_SERVER_ERROR, "请求异常,请联系管理员", "当您看到这个页面,表示该应用出错,请联系管理员进行解决");
     }
 
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public Object handlerMissParameterException(HttpServletRequest request) {
+        return getReturn(getReturnType(request), HttpStatus.BAD_GATEWAY, "参数不完整,请核查", "当你看到这个页面，说明你请求的参数不正确，请核查");
+    }
 
     @ExceptionHandler(NoPermissionException.class)
     public ModelAndView handlerNoPermissionException(HttpServletRequest request) {

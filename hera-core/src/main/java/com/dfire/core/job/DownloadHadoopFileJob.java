@@ -30,7 +30,6 @@ public class DownloadHadoopFileJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
-
         if (HeraGlobalEnv.isEmrJob()) {
             File file = new File(localPath);
             //创建文件  + copyToLocal 放在一行

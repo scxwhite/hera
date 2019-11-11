@@ -86,7 +86,6 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
                 //使用异常来取消该任务的执行
                 throw new IllegalStateException("任务被手动取消:" + jobElement.getJobId());
             }
-
             if (!emrCluster) {
                 appendCreateLog(jobElement, "本地执行任务");
             } else {
@@ -110,13 +109,13 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
             //抛出异常打断任务的执行
             throw new IllegalStateException("任务被手动取消:" + jobElement.getJobId());
         }
-        doFilter(FilterType.execute, jobElement);
+         doFilter(FilterType.execute, jobElement);
 
     }
 
     private void doFilter(FilterType filterType, JobElement element) {
+        List<ExecuteFilter> filters = ServiceLoader.getFilters();
         try {
-            List<ExecuteFilter> filters = ServiceLoader.getFilters();
             switch (filterType) {
                 case execute:
                     for (ExecuteFilter filter : filters) {
@@ -178,11 +177,11 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
 
     @Override
     public List<Runnable> shutdownNow() {
-        List<Runnable> runnables = super.shutdownNow();
-        for (Runnable runnable : runnables) {
+        List<Runnable> alive = super.shutdownNow();
+        for (Runnable runnable : alive) {
             jobEmrType.remove(runnable);
         }
-        return runnables;
+        return alive;
     }
 
     /**

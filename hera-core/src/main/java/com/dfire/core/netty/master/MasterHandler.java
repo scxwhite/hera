@@ -40,6 +40,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
      */
     private MasterContext masterContext;
 
+    private volatile boolean shutdown = false;
 
     public MasterHandler(MasterContext masterContext) {
         this.masterContext = masterContext;
@@ -51,7 +52,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
         executor.execute(() -> {
                     Future<ChannelResponse> future;
                     ChannelResponse response;
-                    while (true) {
+                    while (!shutdown) {
                         try {
                             future = completionService.take();
                             response = future.get();
@@ -66,6 +67,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
                     }
                 }
         );
+        executor.shutdown();
     }
 
     @Override
@@ -170,6 +172,7 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
             SocketLog.info("worker client channel registered connect success : {}", remoteAddress.toString());
         });
     }
+
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         masterContext.getThreadPool().execute(() -> {
@@ -203,6 +206,10 @@ public class MasterHandler extends ChannelInboundHandlerAdapter {
 
     public void removeListener(ResponseListener listener) {
         listeners.remove(listener);
+    }
+
+    public void shutdown() {
+        shutdown = true;
     }
 
 

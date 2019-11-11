@@ -45,6 +45,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         heraJob.setGmtCreate(date);
         heraJob.setGmtModified(date);
         heraJob.setAuto(0);
+        heraJob.setIsValid(1);
         return heraJobMapper.insert(heraJob);
     }
 
@@ -118,7 +119,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         Set<HeraJobTreeNodeVo> myGroupSet = new HashSet<>();
         //建立我的任务的树
         List<HeraJobTreeNodeVo> myNodeVos = new ArrayList<>();
-        jobs.forEach(job -> {
+        jobs.stream().filter(job -> job.getIsValid() == 1).forEach(job -> {
             HeraJobTreeNodeVo build = HeraJobTreeNodeVo.builder()
                     .id(String.valueOf(job.getId()))
                     .parent(Constants.GROUP_PREFIX + job.getGroupId())
@@ -163,46 +164,6 @@ public class HeraJobServiceImpl implements HeraJobService {
     public boolean changeSwitch(Integer id, Integer status) {
         Integer res = heraJobMapper.updateSwitch(id, status);
         return res != null && res > 0;
-    }
-
-    @Override
-    public JsonResponse checkAndUpdate(HeraJob heraJob) {
-
-        if (StringUtils.isNotBlank(heraJob.getDependencies())) {
-            HeraJob job = this.findById(heraJob.getId());
-
-            if (!heraJob.getDependencies().equals(job.getDependencies())) {
-                List<HeraJob> relation = this.getAllJobDependencies();
-
-                DagLoopUtil dagLoopUtil = new DagLoopUtil(heraJobMapper.selectMaxId());
-                relation.forEach(x -> {
-                    String dependencies;
-                    if (x.getId() == heraJob.getId()) {
-                        dependencies = heraJob.getDependencies();
-                    } else {
-                        dependencies = x.getDependencies();
-                    }
-                    if (StringUtils.isNotBlank(dependencies)) {
-                        String[] split = dependencies.split(",");
-                        for (String s : split) {
-                            dagLoopUtil.addEdge(x.getId(), Integer.parseInt(s));
-                        }
-                    }
-                });
-
-                if (dagLoopUtil.isLoop()) {
-                    return new JsonResponse(false, "出现环形依赖，请检测依赖关系:" + dagLoopUtil.getLoop());
-                }
-            }
-        }
-
-        Integer line = this.update(heraJob);
-        if (line == null || line == 0) {
-            return new JsonResponse(false, "更新失败，请联系管理员");
-        }
-        return new JsonResponse(true, "更新成功");
-
-
     }
 
     @Override
@@ -305,6 +266,11 @@ public class HeraJobServiceImpl implements HeraJobService {
     @Override
     public Integer updateScript(Integer id, String script) {
         return heraJobMapper.updateScript(id, script);
+    }
+
+    @Override
+    public Integer selectMaxId() {
+        return heraJobMapper.selectMaxId();
     }
 
 

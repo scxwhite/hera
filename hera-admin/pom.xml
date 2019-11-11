@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>2.3</version>
+        <version>2.4.1</version>
     </parent>
 
     <artifactId>hera-admin</artifactId>
-    <version>2.3</version>
+    <version>${hera.admin.version}</version>
     <packaging>jar</packaging>
     <name>hera-admin</name>
     <description>hera任务调度系统</description>
@@ -23,8 +23,6 @@
         <springfox.swagger2.version>2.7.0</springfox.swagger2.version>
         <springfox.swagger.ui.version>2.7.0</springfox.swagger.ui.version>
         <main-class>com.dfire.AdminBootstrap</main-class>
-        <hera.core.version>2.3</hera.core.version>
-        <hera.monitor.version>2.3</hera.monitor.version>
     </properties>
 
     <dependencies>
@@ -49,10 +47,7 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
@@ -61,20 +56,20 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
             <version>5.1.2</version>
         </dependency>
+<!--
+        使用后会影响dubbo的初始化
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional><!-- optional=true,依赖不会传递，该项目依赖devtools；之后依赖myboot项目的项目如果想要使用devtools，需要重新引入 -->
-        </dependency>
+            <optional>true</optional>
+        </dependency>-->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -101,7 +96,6 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
@@ -117,7 +111,6 @@
         <dependency>
             <groupId>com.dfire.hera</groupId>
             <artifactId>hera-core</artifactId>
-            <version>${hera.core.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
         <dependency>

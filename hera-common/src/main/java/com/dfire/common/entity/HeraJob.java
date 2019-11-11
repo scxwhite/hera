@@ -85,4 +85,6 @@ public class HeraJob {
 
     private short repeatRun;
 
+    private Integer isValid;
+
 }

@@ -1,5 +1,6 @@
 package com.dfire.controller;
 
+import com.dfire.config.UnCheckLogin;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class HelpController {
 
     @RequestMapping
+    @UnCheckLogin
     public String index() {
         return "help";
     }

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>任务历史运行记录</title>
+    <title>任务历史详情</title>
     <#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
 
@@ -44,7 +44,7 @@
                             </select>
                             <label class="name input-group-addon">日期</label>
                             <input class="form_datetime form-control" id="jobDt" size="12" type="text" readonly placeholder="请选择日期"  onchange="updateTable()">
-                            
+
                         </div>
                         <table id="historyJobTable" class="table-striped" ></table>
                     </div>
@@ -91,8 +91,8 @@
  minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
 
 
- }); 
-</script> 
+ });
+</script>
 
 <script>
     $(document).ready(function () {
