@@ -145,7 +145,7 @@ CREATE TABLE `hera_group`
 (
   `id`           int(11)      NOT NULL AUTO_INCREMENT,
   `configs`      text,
-  `description`  varchar(500)          DEFAULT NULL,
+  `description`  varchar(256)          DEFAULT NULL,
   `directory`    int(11)      NOT NULL,
   `gmt_create`   datetime              DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -192,7 +192,7 @@ CREATE TABLE `hera_job`
   `cron_expression`      varchar(32)   DEFAULT NULL COMMENT 'cron表达式',
   `cycle`                varchar(16)   DEFAULT NULL COMMENT '是否是循环任务',
   `dependencies`         varchar(2000) DEFAULT NULL COMMENT '依赖的任务id,逗号分隔',
-  `description`          varchar(2000) DEFAULT NULL COMMENT '任务描述',
+  `description`          varchar(256) DEFAULT NULL COMMENT '任务描述',
   `gmt_create`           datetime      DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified`         datetime      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `group_id`             int(11)      NOT NULL COMMENT '所在的目录 id',
@@ -288,7 +288,7 @@ CREATE TABLE `hera_user`
   `password`     varchar(255)  DEFAULT NULL,
   `user_type`    int(11)       DEFAULT '0',
   `is_effective` int(11)       DEFAULT '0',
-  `description`  varchar(5000) DEFAULT NULL,
+  `description`  varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
