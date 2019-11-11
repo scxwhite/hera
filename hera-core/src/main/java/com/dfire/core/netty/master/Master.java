@@ -32,6 +32,7 @@ import com.dfire.event.HeraJobLostEvent;
 import com.dfire.event.HeraJobMaintenanceEvent;
 import com.dfire.event.HeraJobSuccessEvent;
 import com.dfire.logs.*;
+import com.dfire.monitor.domain.AlarmInfo;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
@@ -440,7 +441,7 @@ public class Master {
             }
         } catch (Exception e) {
             ErrorLog.error("生成版本异常", e);
-
+            notifyAdmin("版本生成异常警告", e.getMessage());
         } finally {
             isGenerateActioning = false;
         }
@@ -936,6 +937,18 @@ public class Master {
 
     }
 
+
+    private void notifyAdmin(String title, String content) {
+        HeraUser admin = masterContext.getHeraUserService().findByName(HeraGlobalEnv.getAdmin());
+        if (admin != null) {
+            masterContext.getAlarmCenter().sendToEmail(title, content, admin.getEmail());
+            masterContext.getAlarmCenter().sendToPhone(AlarmInfo.builder().message(title + "\n" + content).phone(admin.getPhone()).build());
+        } else {
+            ErrorLog.error("内部异常{}:{}，找不到{}管理员的联系方式", title, content, HeraGlobalEnv.getAdmin());
+        }
+
+    }
+
     /**
      * work断开的处理
      *
@@ -944,11 +957,7 @@ public class Master {
     public void workerDisconnectProcess(Channel channel) {
         String ip = getIpFromChannel(channel);
         ErrorLog.error("work:{}断线", ip);
-        HeraUser admin = masterContext.getHeraUserService().findByName(HeraGlobalEnv.getAdmin());
-
-        if (admin != null) {
-            masterContext.getAlarmCenter().sendToEmail("警告:work断线了", ip, admin.getEmail());
-        }
+        notifyAdmin("警告:work断线了", ip);
         MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);
         masterContext.getWorkMap().remove(channel);
         if (workHolder != null) {
