@@ -23,6 +23,7 @@
         <springfox.swagger2.version>2.7.0</springfox.swagger2.version>
         <springfox.swagger.ui.version>2.7.0</springfox.swagger.ui.version>
         <main-class>com.dfire.AdminBootstrap</main-class>
+        <final-name>hera-${env}</final-name>
     </properties>
 
     <dependencies>
@@ -134,7 +135,7 @@
 
 
     <build>
-        <finalName>hera</finalName>
+        <finalName>${final-name}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -170,19 +171,37 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
-
-
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>${main-class}</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                        <manifestEntries>
+                            <Class-Path>./</Class-Path>
+                        </manifestEntries>
+                    </archive>
+                    <excludes>
+                        <exclude>*.yml</exclude>
+                        <exclude>*.xml</exclude>
+                        <exclude>*.yaml</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
                     <descriptor>src/main/assembly/assembly.xml</descriptor>
-                    <finalName>hera</finalName>
+                    <finalName>${final-name}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <outputDirectory>../</outputDirectory>
                     <tarLongFileMode>posix</tarLongFileMode>
@@ -197,8 +216,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
         </plugins>
     </build>
 

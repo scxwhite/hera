@@ -18,10 +18,17 @@
     <formats>
         <format>tar.gz</format>
     </formats>
-
     <includeBaseDirectory>${assembly.include.base.directory}</includeBaseDirectory>
     <fileSets>
 
+        <fileSet>
+            <directory>${basedir}/../bin</directory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <fileMode>700</fileMode>
+            <outputDirectory>/bin</outputDirectory>
+        </fileSet>
         <!-- 文体文体jar包 -->
         <fileSet>
             <directory>${basedir}/${project.build.directory}</directory>
@@ -39,11 +46,10 @@
                 <include>*.yml</include>
                 <include>*.xml</include>
             </includes>
-            <outputDirectory>/conf</outputDirectory>
+            <outputDirectory>/</outputDirectory>
         </fileSet>
 
     </fileSets>
-
     <dependencySets>
         <dependencySet>
             <scope>runtime</scope>
