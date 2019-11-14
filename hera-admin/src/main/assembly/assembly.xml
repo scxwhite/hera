@@ -29,6 +29,15 @@
             <fileMode>700</fileMode>
             <outputDirectory>/bin</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>${basedir}/../plugins</directory>
+            <includes>
+                <include>*.rpm</include>
+                <include>*.txt</include>
+            </includes>
+            <fileMode>700</fileMode>
+            <outputDirectory>/plugins</outputDirectory>
+        </fileSet>
         <!-- 文体文体jar包 -->
         <fileSet>
             <directory>${basedir}/${project.build.directory}</directory>
@@ -46,6 +55,7 @@
                 <include>*.yml</include>
                 <include>*.xml</include>
             </includes>
+            <fileMode>600</fileMode>
             <outputDirectory>/config</outputDirectory>
         </fileSet>
 

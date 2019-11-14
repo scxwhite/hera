@@ -1,0 +1,12 @@
+
+hera系统依赖于dos2unix插件，你可以通过以下几种方式安装
+一、mac os
+brew install dos2unix
+
+二、linux
+
+yum install dos2unix
+
+三、离线安装
+plugins目录里有 dos2unix 的离线安装包，你可以通过以下命令离线安装
+sudo rpm -ivh dos2unix-6.0.3-7.el7.x86_64.rpm
