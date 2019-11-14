@@ -187,9 +187,9 @@
                         </manifestEntries>
                     </archive>
                     <excludes>
-                        <exclude>*.yml</exclude>
-                        <exclude>*.xml</exclude>
-                        <exclude>*.yaml</exclude>
+                        <exclude>config/*.yml</exclude>
+                        <exclude>config/*.xml</exclude>
+                        <exclude>config/*.yaml</exclude>
                     </excludes>
                 </configuration>
             </plugin>

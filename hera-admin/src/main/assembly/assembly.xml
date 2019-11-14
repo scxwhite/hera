@@ -40,13 +40,13 @@
 
         <!-- resources -->
         <fileSet>
-            <directory>${basedir}/${project.build.directory}/classes</directory>
+            <directory>${basedir}/${project.build.directory}/classes/config</directory>
             <includes>
                 <include>*.yaml</include>
                 <include>*.yml</include>
                 <include>*.xml</include>
             </includes>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/config</outputDirectory>
         </fileSet>
 
     </fileSets>

@@ -20,7 +20,7 @@ echo ${jar_file}
 if [[ -f "${jar_file}" ]]; then
     #启动jar包 错误输出的error 标准输出的log
     nohup java ${JAVA_OPTS} -jar ${jar_file} 1>"${log_file}" 2>"${log_dir}"/error.log &
-    echo "启动完成"
+    echo "启动完成,日志路径:${log_dir}"
     exit 0
 else
     echo -e "\033[31m启动失败！！！无法在${workDir}目录找不到hera启动jar文件！\033[0m"

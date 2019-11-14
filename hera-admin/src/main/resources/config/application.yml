@@ -107,7 +107,7 @@ india:
 
 
 logging:
-  config: classpath:logback-spring.xml
+  config: classpath:config/logback-spring.xml
   path: /opt/logs/spring-boot   # 日志路径
   level:
     root: INFO
