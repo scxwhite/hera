@@ -20,21 +20,18 @@
 - 浙江格家网络技术有限公司
 - 持续更新中。。欢迎大家自荐
 
-
-ps:
-组账户登录url:/login/admin
-个人账户登录url:/login
 # 交流群
-
 
 个人微信(已满99人，需要我拉你进去)
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190102190821351.png)
+# 赞助
+![开源不易，感谢支持](https://img-blog.csdnimg.cn/20191114120009558.png)
 
-
-
+开源不易，感谢支持
 
 # 介绍文章
+[操作文档](https://github.com/scxwhite/hera/blob/hera-master/hera-admin/src/main/resources/static/help/help.md)
 
 [赫拉(hera)分布式任务调度系统之操作文档](https://scx-white.blog.csdn.net/article/details/102571798)
 
@@ -58,13 +55,13 @@ ps:
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2018122016541045.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
 
-
 `hera`系统本身严格的遵从主从架构模式，由主节点充当着任务调度触发与任务分发器，从节点作为具体的任务执行器.架构图如下：
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220170832605.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-## 设计目标
+`hera` 在 `2.4` 版本以上也支持了`emr` 集群，即允许任务执行在阿里云、亚马逊的 `emr` 机器之上，架构图如下：
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20191114114902720.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zY3gtd2hpdGUuYmxvZy5jc2RuLm5ldA==,size_16,color_FFFFFF,t_70)
 
-`hera`分布式任务调度系统的设计目标首先是要完成`zeus`大部分核心功能，并能够根据自己公司的需求进行扩展。大致目标有以下几点
+## 功能
 
  - 支持任务的定时调度、依赖调度、手动调度、手动恢复
  - 支持丰富的任务类型：`shell,hive,python,spark-sql,java`
@@ -82,148 +79,20 @@ ps:
  - 对外提供`API`，开放系统任务调度触发接口，便于对接其它需要使用hera的系统
  - 组下任务总览、组下任务失败、组下任务正在运行
  - 支持`map-reduce`任务和`yarn`任务的实时取消。
+ - 支持任务超时提醒
+ - 支持用户与组的概念
+ - 支持任务操作历史记录查看与恢复
+ - 支持任务告警定位到个人
+ - 告警类型支持邮箱以及自定义的钉钉、企业微信、短信、电话等
+ - 支持任务各种条件的模糊搜索
+ - 支持阿里云emr的自动创建、销毁
+ - 支持亚马逊emr的自动创建、销毁、弹性伸缩
  - （还有更多，等待大家探索）
+# 安装部署与启动
 
-
-
-
-### 支持任务的定时调度、依赖调度、手动调度、手动恢复
-
- - 定时调度
- >主要是根据cron表达式来解析该任务的执行时间，在达到触发时间时将该任务加入任务队列
-
-为了进行测试我新建了一个`shell`任务 在`15:40`执行 ，在配置项里输入我们自己的配置，在脚本中使用`${}`进行替换，其中的继承配置项，即任务继承的所在组的配置信息，如果有重复以最近的为准
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2018122015395889.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-当任务达到时间开始执行，输出我们想要的结果：赫然分布式任务调度系统
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220154207797.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-
-- 依赖调度
->我们的任务大部分都有依赖关系，只有在上一个任务计算出结果后才能进行下一步的执行。我们的依赖任务会在所有的依赖任务都执行完成之后才会被触发加入任务队列
-
-贴一个已有的任务执行信息
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220155155544.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-- 手动调度
-> 手动调度即为手动执行的任务，手动执行后自动加入任务队列，请注意，手动任务执行成功后不会通知下游任务（即：依赖于该任务的任务）该任务已经执行完成
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220155310671.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-- 手动恢复
-> 手动恢复类似于手动调度，于手动调度的区别为此时如果该任务执行成功，会通知下游任务该任务已经执行完成
-
-### 支持丰富的任务类型：shell,hive,python,spark-sql,java
-
-`hera`分布式任务调度系统依赖于`jdk`原生的`ProcessBuilder` 通过该工具向`work/master`以`shell`命令的方式执行任务。
-
-比如`python`任务
-我们可以首先写一个`python`脚本`hello.py`（这里随便贴个图片），然后把该脚本上传到`hdfs`
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220155521132.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-在执行的时候我们可以通过
-
-```
-download[hdfs:///hera/hello.py hello.py];
-python hello.py;
-```
-来执行该脚本
-
-这样一个完整的`pyhton`脚本就能通过方式实现`shell`方式调用执行，通过`hera`内部实现的`job`执行封装，脚本的文法解析，实现`pyhton`任务执行。实际上，通过这种方式甚至可以实现`java,scala,hive-udf`等服务器端语言的脚本任务执行。
-
-- hive spark-sql 脚本的执行
->对于hive脚本和spark-sql脚本 都是通过-f 命令来执行一个文件
-
-### 可视化的任务DAG图展示，任务的执行严格按照任务的依赖关系执行& 某个任务的上、下游执行状况查看，通过任务依赖图可以清楚的判断当前任务为何还未执行，删除该任务会影响那些任务。
-当任务数量过多，依赖错综复杂时就需要一个`DAG`图来查看任务之间的关系。
-
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220160724127.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-黄色表示正在执行，灰色表示关闭的任务，红色表示失败的任务，绿色表示执行成功的任务。右侧会显示该任务的详细信息。
-当然在这里既支持全部查看也支持点击查看，当点击某个任务时会展示出依赖这个任务的所有任务。
-
-
-###  支持上传文件到hdfs，支持使用hdfs文件资源
-这个在上面 的 <a name="#支持丰富的任务类型：shell,hive,python,spark-sql,java">支持丰富的任务类型：shell,hive,python,spark-sql,java</a> 已经说过，不再赘述。
-
-
-### 支持日志的实时滚动
-当执行任务时，可以通过查看日志的方式查看实时滚动的日志
-
-### 支持任务失败自动恢复
-当然，某些情况下任务可能会失败，比如网络闪断，可能下一秒就好了。建议对于非常重要的任务一定要开启任务失败重试，设置自定义的重试次数于重试时间间隔，设置后`master`会根据配置进行失败任务重试调度。
-比如设置重试次数`3`，重试间隔`10`分钟
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220161654884.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-任务在执行失败后进行三次重试，可以看上次失败的结束时间与开始时间间隔为`10`分钟。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220161627460.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-### 实现集群HA，机器宕机环境实现机器断线重连与心跳恢复与hera集群HA，节点单点故障环境下任务自动恢复，master断开，work抢占master
-构建分布式系统，无法避免的就是需要做集群容灾。在出现服务器宕机与网络闪断的情况下要做到集群实现自动通信恢复，在此基础上，要做到实现任务在通信恢复后任务重新恢复执行等。 
-这个就无法展示了，等待大家以后去体验。
-
-### 支持master/work 负载，内存，进程，cpu信息的可视化查看
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220162146442.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-这里可以看机器的用户`cpu`占用百分比，系统`cpu`占用百分比，`cpu`空闲，进行信息 等等。。
-
-### 支持正在等待执行的任务，每个work上正在执行的任务信息的可视化查看
-
-首先上图
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220162523552.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-哈哈，有点简陋，只是提供了`api`接口，无奈没前端，现在就我一个人在开发。等吧。
-里面的信息有机器内存使用百分比，平均每个核的负载，机器总内存，统计的时间。其中有三个队列，分别是`running,manualRunning,debugRunning` 在master开头的机器上表示等待执行的任务，在`work`开头的机器上表示正在执行的任务。分别对应自动调度&依赖任务  、手动执行任务、开发任务（另外一个开发界面）
-
-
-
-### 支持实时运行的任务，失败任务，成功任务，任务耗时top10的可视化查看 &  支持历史执行任务信息的折线图查看 具体到某天的总运行次数，总失败次数，总成功次数，总任务数，总失败任务数，总成功任务数
-
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220163204975.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220163228148.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-
-其中饼图可以通过点击进去查看具体的详细任务信息
-
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2018122016342188.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-
-### 支持关注自己的任务，自动调度执行失败时会向负责人发送邮件
-
-当我们需要关注某些任务时可以通过关注任务来接收任务失败的信息
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220163757341.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-
-
- ### 组下任务总览、组下任务失败、组下任务正在运行
- 虽然在首页我们看到失败的任务，但是有时候我们并不想关注别人的任务。我们就可以通过创建属于我们自己的组，然后在组下创建任务。这时候就可以通过组下任务预览来查看任务状态
-比如点了任务总览
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220164201931.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-此时可以看到任务的所有信息，无论是执行，未执行，执行失败，执行成功还是运行中，如果任务未执行还会提示某些依赖任务未执行，如果依赖任务执行，
-会展示任务的执行时间等等。右侧还可以再对内容进行筛选，比如查看失败，运行的任务。
-
-#### 其它
-其实我们也做了许多其它功能，删除任务判断是否有任务依赖，关闭任务是否有任务依赖等。之外我们也做了`hive sql`血缘解析，字段解析，任务执行日志解析等等，由于在其它项目上面，后面会考虑继承到`hera`里面。
-## 关于hera开源
-准备在12月开源吧。最近把项目整理整理。
-
-附上凌霄的博客地址：https://blog.csdn.net/pengjx2014/article/details/81276874
-<font color="red" size="6">以上所有信息均为线下测试信息</font>
-
-
-
-## 克隆hera
-
-    ***项目地址：git@github.com:scxwhite/hera.git ***
 
 ## 创建表
-当使用`git`把`hera`克隆到本地之后，首先在`hera/hera-admin/resources`目录下找到`hera.sql`文件，在自己的数据库中新建这些必要的表，并插入初始化的数据。
+当使用`git`把`hera`克隆到本地之后，首先在`hera/hera-admin/resources`目录下找到`hera.sql`文件，在自己的数据库中新建这些必要的表，并插入初始化的数据（如果你目前使用的是低版本的hera，那么你可以到 [update](https://github.com/scxwhite/hera/tree/hera-master/update/sql) 目录查看是否有你的 `hera` 版本升级的 `ddl` ，如果有请根据你的版本依次执行 `ddl` 语句）
 
 此时可以在`hera/hera-admin/resources`目录下找到`application.yml`文件。在文件里修改数据源`hera`的数据源(修改`druid.datasource`下的配置)即可进行下面的操作。
 
@@ -292,7 +161,7 @@ hera:
 
    heartBeat : 3           # 心跳传递时间频率
    downloadDir : /opt/logs/spring-boot
-   hdfsLibPath : /hera/hdfs-upload-dir #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上
+   hdfsUploadPath : /hera/hdfs-upload-dir/ #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上.注意:必须保证启动hera项目的用户是此文件夹的所有者，否则会导致上传错误
    schedule-group : online
    maxParallelNum: 2000   #master 允许的最大并行任务 当大于此数值 将会放在阻塞队列中
    connectPort : 9887 #netty通信的端口
@@ -388,16 +257,18 @@ spark :
 当上面的操作完成后，即可使用`maven`的打包命令进行打包
 
 ```
-mvn clean package -Dmaven.test.skip -Pdev
+mvn clean package -Dmaven.test.skip=true -Pdev
 ```
-打包后可以进入`hera-admin/target`目录下查看打包后的`hera.jar` 。此时可以简单使用`java -server -Xms4G -Xmx4G -Xmn2G -jar hera.jar `启动项目，此时即可在浏览器中输入
+打包后可以进入`hera-admin/target`目录下查看打包后的`hera-dev.jar` 。此时可以简单使用`java -server -Xms4G -Xmx4G -Xmn2G -jar hera.jar `启动项目，此时即可在浏览器中输入
 
 ```
-localhost:8080/hera
+localhost:8080/hera/login/admin
 ```
 即进入登录界面，账号为`hera` 密码为`biadmin`,点击登录即进入系统。
 
-顺便附上我的启动脚本 
+><font color='red'>注：目前hera有用户账户和组账户之分，默认跳转的登录地址为用户账户，需要用户注册（用户需要归属于一个组账户），然后hera组账户在用户管理里页面审核通过后即可登录用户账户。</font>
+
+顺便附上我的启动脚本
 
 ```shell
 #!/bin/sh
@@ -428,6 +299,30 @@ else
     exit 1
 fi
 ```
+关闭的脚本
+
+```bash
+#!/bin/bash
+pid=`ps | grep java | grep hera | awk '{print $1}'`
+
+[ ! $pid ] && echo "找不到hera的进程,请确认hera已经启动" && exit 0
+
+res=`kill -9 $pid`
+
+echo 关闭hera成功，pid:$pid
+
+
+```
+ **[注：2.4.1及以上版本已经集成启动和关闭的sh]**
+ 
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2019111411090872.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zY3gtd2hpdGUuYmxvZy5jc2RuLm5ldA==,size_16,color_FFFFFF,t_70)
+
+如果你的 `hera` 使用的是 `2.4.1` 版本以上的，打包后在根目录会出现如图所示的压缩包
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20191114111031525.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zY3gtd2hpdGUuYmxvZy5jc2RuLm5ldA==,size_16,color_FFFFFF,t_70)
+
+你可以通过 `ssh` 把该包上传到服务器，然后修改 `config` 目录下的`application.yml` 配置文件，在 `bin` 目录里执行 `start.sh` 脚本即可成功启动`hera`。
+
+
 ## 测试
 此时就登录上了。下面需要做的是在`worker`管理这里添加执行任务的机器`IP`，然后选择一个机器组（组的概念：对于不同的`worker`而言环境可能不同，可能有的用来执行`spark`任务，有的用来执行`hadoop`任务，有的只是开发等等。当创建任务的时候根据任务类型选择一个组，要执行任务的时候会发送到相应的组的机器上执行任务）。
 对于执行`work`的机器`ip`调试时可以是`master`，生产环境建议不要让`master`执行任务。如果要执行`map-reduce`或者`spark`任务，要保证你的`work`具有这些集群的客户端。
@@ -436,20 +331,22 @@ fi
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20181225102855978.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
 
-此时有30分钟的缓冲时间，`master`才会检测到该`work`加入。为了测试，此时我们可以通过重启`master`来立刻使该`work`加入执行组（后面会增加一键刷新`work`信息）。
+此时有30分钟的缓冲时间，`master` 才会检测到该 `work` 加入。为了测试，此时我们可以通过重启 `master` 来立刻使该 work` 加入执行组（后面会增加一键刷新 `work` 信息）。
 
-重启后我们可以进入调度中心 ，在搜索栏里搜索`1`，然后按回车
+    此时要注意，我们的 work 也一定也要安装 hera 应用并启动。
+
+重启后我们可以进入调度中心 ，在搜索栏里搜索 `1` ，然后按回车
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20181225103951766.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
 
-会发现一个echoTest任务 ，此时我们还不能执行任务，因为我们的所有任务的执行者登录用户。比如此刻我使用`hera`登录的，那么此时一定要保证你的`work`机器上有`hera`这个用户。
-否则执行任务会出现`sudo: unknown user: hera` 异常。
+会发现一个 `echoTest` 任务 ，此时我们还不能执行任务，因为我们的所有任务的执行者登录用户。比如此刻我使用 `hera` 登录的，那么此时一定要保证你的 `work` 机器上有 `hera` 这个用户。
+否则执行任务会出现 `sudo: unknown user: hera` 异常。
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20181225104307920.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
 
-此时可以向我们填写的`work`机器上增加`hera`用户。
+此时可以向我们填写的 `work` 机器上增加 `hera` 用户。
 
     useradd hera
 
-如果是`mac`系统  那么可以使用以下命令创建`hera`用户
+如果是 `mac` 系统  那么可以使用以下命令创建 `hera` 用户
 
     sudo  dscl . -create /Users/hera
     sudo  dscl . -create /Users/hera UserShell /bin/bash
@@ -460,94 +357,41 @@ fi
 
 >此时点击手动执行->选择版本->执行。此时该任务会运行，点击右上角的查看日志，可以看到任务的执行记录。
 
-此时如果任务执行失败，error日志内容为
+此时如果任务执行失败，`error` 日志内容为
 
 ```
 sudo: no tty present and no askpass program specified
 ```
 
-那么此时要使你启动hera项目的用户具有`sudo -u hera`的权限(无须输入`root`密码，即可执行`sudo -u hera echo 1` ，具体可以在`sudo visudo`中配置)。
-比如我启动hera的用户是`wyr`
-那么首先在终端执行`sudo visudo`命令，此时会进入文本编辑
+那么此时要使你启动` hera` 项目的用户具有 `sudo -u hera` 的权限(无须输入`root`密码，即可执行 `sudo -u hera echo 1` ，具体可以在 `sudo visudo` 中配置)。
+比如我启动 `hera` 应用的用户是 `wyr`
+那么首先在终端执行 `sudo visudo`命令，此时会进入文本编辑
 然后在后面追加一行
 
     wyr             ALL=(ALL) NOPASSWD:ALL
 如下图：
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20181228103306280.png)
 这样就会在切换用户的时候无须输入密码。当然如果你使用的是`root`用户启动，即可跳过这段。
+
+由于在 `hera` 中还用到了 `dos2unix` ，需要在执行任务的`work`上安装 `dos2unix` 工具。
+
+```
+yum install dos2unix
+```
+
 如果一切配置完成，那么即可看到输出任务执行成功的日志。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20181228103625553.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
 至此 已经完成了 任务的手动执行。
 
-## 简介
->开发中心，顾名思义。我们进行开发的地方（当然我们也可以直接在调度中心加任务，建议任务首先在开发中心测试，通过之后再加到调度中心）。
-    
-```***项目地址：git@github.com:scxwhite/hera.git ***```
-## 目录介绍
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181229104039972.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-如图所示，开发中心有两个文件夹。分别是`个人文档`、`共享文档`。这两个文件夹不允许删除。
-- 个人文档
-提供给账户登录者使用的，私人目录可以在这里创建，执行任务时的用户，以创建者为准
-- 共享文档
-文件夹内的脚本对所有用户可见，执行时任务的用户以实际的登录者为准
 
-## 创建一个脚本
-鼠标放在个人中心，然后点击鼠标右键选择新建shell脚本。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181229105058686.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-然后在`编辑区`写入要执行的脚本内容`点击执行`即可
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2018122910533078.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-此时在`编辑区`下方会有当前`执行任务`的`日志信息`输出
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181229105450303.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-当然也可以通过点击下方`历史日志`看所有日志信息。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181229105726707.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-
-## 执行选中的代码
-我们可以通过在`编辑区`使用鼠标`选中`我们要`执行的代码`，然后点击`执行选中代码`即可
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181229110004778.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-
-## 上传资源
-当需要上传资源（`py, jar, sql, hive, sh, js, txt, png, jpg, gif`等等）时要注意，要保证我们的`master`和`work`有`hadoop`环境，能够执行`hadoop fs -copyFromLocal`命令。
-上传完资源后。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181229110507451.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
-
-最上方会返回该资源文件的使用地址。
-
-    /hera/hdfs-upload-dir/hera-20181229-110455.sql
-
-如果我们是使用`spark-submit` 或者`hive udf` 的 `add jar` 命令，直接加上`hadoop`路径即可。
-
-比如：
-
-```sql
-    add jar hdfs:///hera/hive_custom_udf/2dfire-hivemr-log.jar;
-```
-或者：
-```
-spark2-submit --class com.dfire.start.App \
---jars hdfs:///spark-jars/common/binlog-hbase-1.1.jar \
-```
-
-当然如果是一些python脚本，或者txt。我们需要下载下来执行的。就需要执行
+## TIPS
+当然在部署的时候可能会出现各种状况。
+比如：`work` 无法连接到 `master`，连接时抛出
 
 ```
-download[hdfs:///hera/hdfs-upload-dir/hera-20181229-110455.sql hera.sql]
+java.net.NoRouteToHostException: 没有到主机的路由
 ```
-启动`download`为`hera`的定制命令。`[]`分为两部分，使用`空格`分开。空格左部分为`hdfs文件的路径`，空格右部分为`重命名后的文件名`。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181229112629404.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
+这个时候请注意，我们的master使用的端口是：`9887`。需要在每台 `hera` 机器上的防火墙开启此端口（最好关闭防火墙 `sudo service iptables stop` ）。
 
-## 同步任务
-暂未开发
-## 脚本自动保存
-当在开发中心写脚本时，脚本会自动保存。当然也可以通过点击保存脚本进行手动保存。
-
-
-## Spark相关
-使用Spark需要自行选择Spark版本，并部署在worker上，具体部署方法和示例之后会整理给出。
+还有一种情况： `work` 可以连接上 `master` ，但是在`master`日志中发现 `work` 总是一段时间后断开。原因是：`hera` 各个机器的时间不一致，修改一下
