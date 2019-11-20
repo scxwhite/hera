@@ -393,6 +393,9 @@ public class Master {
                 } else { //单个任务生成版本
                     HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
                     jobList.add(heraJob);
+                    if (heraJob.getScheduleType() == 1) {
+                        jobList.addAll(getParentJob(heraJob.getDependencies()));
+                    }
                     actionMap = heraActionMap;
                     List<Long> shouldRemove = new ArrayList<>();
                     for (Long actionId : actionMap.keySet()) {
@@ -444,6 +447,25 @@ public class Master {
             isGenerateActioning = false;
         }
         return false;
+    }
+
+
+    /**
+     * 递归获取所有父级依赖任务
+     *
+     * @param dpIdStr
+     * @return
+     */
+    private List<HeraJob> getParentJob(String dpIdStr) {
+        List<HeraJob> jobList = new ArrayList<>();
+        Arrays.stream(dpIdStr.split(Constants.COMMA)).forEach(id -> {
+            HeraJob dpJob = masterContext.getHeraJobService().findById(Integer.parseInt(id));
+            if (dpJob.getScheduleType() == 1) {
+                jobList.addAll(getParentJob(dpJob.getDependencies()));
+            }
+            jobList.add(dpJob);
+        });
+        return jobList;
     }
 
     /**
