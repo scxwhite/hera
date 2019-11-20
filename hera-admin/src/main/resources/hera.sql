@@ -331,7 +331,7 @@ VALUES ('1', '0',
         '0 0 3 * * ?', null, '', '输出测试', '2018-12-22 11:14:55', '2019-01-04 11:14:09', '2', null, null, null, null,
         'echoTest', null, 'hera', null, null, null, null, 'shell', '0',
         'echo ${name}\n\necho \"当前时间戳\":${zdt.getTime()}\necho \"     明天\":${zdt.addDay(1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"上个月的今天\": ${zdt.add(2,-1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"真实的今天\":${zdt.getToday()}\n\n\necho \"如果需要更多时间查看HeraDateTool类,可以自定义时间\"\n\n\necho ${qqGroup}',
-        null, null, null, null, null, null, '1', null, '1', 0);
+        null, null, null, null, null, null, '1', null, '1', 0,1);
 INSERT INTO `hera_file`
 VALUES ('1', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '个人文档', 'hera', null, '1', '0');
 INSERT INTO `hera_file`
