@@ -408,6 +408,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://blog.csdn.net/su20145104009/"><img src="https://avatars2.githubusercontent.com/u/23207189?v=4" width="100px;" alt="苏承祥"/><br /><sub><b>苏承祥</b></sub></a><br /><a href="#design-scxwhite" title="Design">🎨</a></td>
+    <td align="center"><a href="https://github.com/jet2007"><img src="https://avatars3.githubusercontent.com/u/3906077?v=4" width="100px;" alt="jet2007"/><br /><sub><b>jet2007</b></sub></a><br /><a href="#design-jet2007" title="Design">🎨</a></td>
   </tr>
 </table>
 
