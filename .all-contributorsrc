@@ -6,20 +6,19 @@
   "commit": false,
   "contributors": [
     {
-
       "login": "jet2007",
       "name": "jet2007",
       "avatar_url": "https://avatars3.githubusercontent.com/u/3906077?v=4",
       "profile": "https://github.com/jet2007",
-"contributions": [
+      "contributions": [
         "design"
       ]
-      },{
+    },
+    {
       "login": "scxwhite",
       "name": "苏承祥",
       "avatar_url": "https://avatars2.githubusercontent.com/u/23207189?v=4",
       "profile": "https://blog.csdn.net/su20145104009/",
-
       "contributions": [
         "design"
       ]
