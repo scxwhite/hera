@@ -14,6 +14,15 @@
         "design"
       ]
     },
+      {
+      "login": "jiangeyu",
+      "name": "凌霄",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/34758993?v=4",
+      "profile": "https://blog.csdn.net/Pengjx2014",
+      "contributions": [
+        "design"
+      ]
+    },
     {
       "login": "jet2007",
       "name": "jet2007",
@@ -28,10 +37,10 @@
       "name": "akong0115",
       "avatar_url": "https://avatars3.githubusercontent.com/u/26199270?v=4",
       "profile": "https://github.com/akong0115",
-      "contributions": [
+       "contributions": [
         "design"
       ]
-    }
+      }
   ],
   "contributorsPerLine": 7,
   "projectName": "hera",
