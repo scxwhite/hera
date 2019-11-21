@@ -1,0 +1,23 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "scxwhite",
+      "name": "苏承祥",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/23207189?v=4",
+      "profile": "https://blog.csdn.net/su20145104009/",
+      "contributions": [
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "hera",
+  "projectOwner": "scxwhite",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}
