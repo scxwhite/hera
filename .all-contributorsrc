@@ -32,7 +32,7 @@
         "design"
       ]
     },
-    {
+        {
       "login": "akong0115",
       "name": "akong0115",
       "avatar_url": "https://avatars3.githubusercontent.com/u/26199270?v=4",
@@ -40,7 +40,17 @@
        "contributions": [
         "design"
       ]
-      }
+      },
+    {
+      "login": "Deegue",
+      "name": "Yizhong Zhang",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/25916266?v=4",
+      "profile": "https://github.com/Deegue",
+      "contributions": [
+        "design"
+      ]
+    }
+
   ],
   "contributorsPerLine": 7,
   "projectName": "hera",

@@ -411,7 +411,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
      <td align="center"><a href="https://blog.csdn.net/Pengjx2014"><img src="https://avatars2.githubusercontent.com/u/34758993?v=4" width="100px;" alt="凌霄"/><br /><sub><b>凌霄</b></sub></a><br /><a href="#design-jiangeyu" title="Design">🎨</a></td>
     <td align="center"><a href="https://github.com/jet2007"><img src="https://avatars3.githubusercontent.com/u/3906077?v=4" width="100px;" alt="jet2007"/><br /><sub><b>jet2007</b></sub></a><br /><a href="#design-jet2007" title="Design">🎨</a></td>
     <td align="center"><a href="https://github.com/akong0115"><img src="https://avatars3.githubusercontent.com/u/26199270?v=4" width="100px;" alt="akong0115"/><br /><sub><b>akong0115</b></sub></a><br /><a href="#design-akong0115" title="Design">🎨</a></td>
-  </tr>
+        <td align="center"><a href="https://github.com/Deegue"><img src="https://avatars3.githubusercontent.com/u/25916266?v=4" width="100px;" alt="Yizhong Zhang"/><br /><sub><b>Yizhong Zhang</b></sub></a><br /><a href="#design-Deegue" title="Design">🎨</a></td>
+
+ </tr>
 </table>
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
