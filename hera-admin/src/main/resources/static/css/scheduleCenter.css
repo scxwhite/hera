@@ -12,7 +12,9 @@ div#rMenu {
 .CodeMirror-selected {
     background-color: #bebebe !important;
 }
-
+.CodeMirror-merge, .CodeMirror-merge .CodeMirror {
+    height: 500px;
+}
 body .msg-class .layui-layer-title {
     background: #202c32;
     color: #fff;

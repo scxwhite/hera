@@ -1,8 +1,5 @@
 package com.dfire.core.emr;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient;
 import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClientBuilder;
 import com.amazonaws.services.elasticmapreduce.model.*;
@@ -27,6 +24,7 @@ import java.util.*;
 public class AmazonEmr extends AbstractEmr {
 
     public static final String NAME = "amazon";
+
 
     private final String[] APP_NAMES = {"hadoop", "spark", "hive", "livy", "zeppelin", "sqoop"};
 
@@ -118,12 +116,7 @@ public class AmazonEmr extends AbstractEmr {
                     } else if (EnvUtils.isUs()) {
                         regionName = "us-west-2";
                     }
-                    if (HeraGlobalEnv.getArea().equals(Constants.AREA_INDIA)) {
-                        AWSCredentials credentials = new BasicAWSCredentials(HeraGlobalEnv.getIndiaAccessKey(), HeraGlobalEnv.getIndiaAccessSecret());
-                        emr = (AmazonElasticMapReduceClient) AmazonElasticMapReduceClientBuilder.standard().withRegion(regionName).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-                    } else {
-                        emr = (AmazonElasticMapReduceClient) AmazonElasticMapReduceClientBuilder.standard().withRegion(regionName).build();
-                    }
+                    emr = (AmazonElasticMapReduceClient) AmazonElasticMapReduceClientBuilder.standard().withRegion(regionName).build();
                     isShutdown = false;
                 }
             }

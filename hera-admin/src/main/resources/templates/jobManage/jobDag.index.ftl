@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>任务历史运行记录</title>
+    <title>任务依赖</title>
     <#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
 

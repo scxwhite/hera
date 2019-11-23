@@ -47,7 +47,6 @@ public class DistributeLock {
 
     @PostConstruct
     public void init() {
-
         workClient.workSchedule.scheduleAtFixedRate(this::checkLock, 10, 60, TimeUnit.SECONDS);
     }
 

@@ -1,6 +1,11 @@
 package com.dfire.core.util;
 
+import com.dfire.common.exception.HeraException;
+import com.dfire.common.util.Pair;
 import com.dfire.config.HeraGlobalEnv;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author xiaosuda
@@ -8,8 +13,9 @@ import com.dfire.config.HeraGlobalEnv;
  */
 public class CommandUtils {
 
-    public static final String CHANGE_AUTHORITY = "chmod -R 777 ";
-    public static final String RUN_SH_COMMAND = " " + HeraGlobalEnv.getJobShellBin() + " ";
+    private static final String CHANGE_AUTHORITY = "chmod -R 777 ";
+    private static final String RUN_SH_COMMAND = " " + HeraGlobalEnv.getJobShellBin() + " ";
+    private static Pattern hostPattern = Pattern.compile("\\w+@[\\w\\.-]+\\s*");
 
     /**
      * 修改文件权限命令
@@ -33,5 +39,19 @@ public class CommandUtils {
             return "setsid " + prefix + RUN_SH_COMMAND + shellFilePath;
         }
         return prefix + RUN_SH_COMMAND + shellFilePath;
+    }
+
+    public static Pair<String, String> parseCmd(String loginCmd) throws HeraException {
+        String scpCmd = loginCmd.replace("ssh", "scp");
+        Matcher matcher = hostPattern.matcher(scpCmd);
+        String loginStr;
+        if (matcher.find()) {
+            loginStr = matcher.group(0);
+        } else {
+            throw new HeraException("查找ip失败" + scpCmd);
+        }
+        String prefix = scpCmd.replace(loginStr, "").replace("-p", "-P") + " -r ";
+
+        return Pair.of(prefix, loginStr);
     }
 }

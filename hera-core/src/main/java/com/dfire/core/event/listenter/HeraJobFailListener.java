@@ -11,7 +11,6 @@ import com.dfire.common.service.HeraJobService;
 import com.dfire.common.service.HeraSsoService;
 import com.dfire.common.service.JobFailAlarm;
 import com.dfire.common.util.ActionUtil;
-import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.event.base.MvcEvent;
 import com.dfire.core.netty.master.MasterContext;
@@ -21,10 +20,6 @@ import com.dfire.logs.MonitorLog;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
-import java.util.concurrent.Executor;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 任务失败的预处理
@@ -33,7 +28,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class HeraJobFailListener extends AbstractListener {
 
-    private volatile Executor executor;
 
     private List<JobFailAlarm> alarms;
 
@@ -62,15 +56,7 @@ public class HeraJobFailListener extends AbstractListener {
                 if (failedEvent.getRunCount() <= failedEvent.getRetryCount()) {
                     return;
                 }
-                if (executor == null) {
-                    synchronized (this) {
-                        if (executor == null) {
-                            executor = new ThreadPoolExecutor(
-                                    1, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("alarm-thread-pool", true), new ThreadPoolExecutor.AbortPolicy());
-                        }
-                    }
-                }
-                executor.execute(() -> {
+                super.getSinglePool().execute(() -> {
                     Integer jobId = ActionUtil.getJobId(failedEvent.getActionId());
                     if (jobId == null) {
                         return;

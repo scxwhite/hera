@@ -15,6 +15,22 @@ function successMsg(data) {
 
 }
 
+/**
+ * 把当前选中的节点存入localStorage
+ * 页面刷新后，会根据"defaultId"设置当前选中的节点
+ * 避免页面刷新丢失
+ * @param id    节点ID
+ */
+function setCurrentId(id) {
+
+    localStorage.setItem("defaultId", id);
+}
+
+function toJobPage(id) {
+    setCurrentId(id);
+    window.open(base_url + "/scheduleCenter");
+}
+
 function success(msg) {
     $('#alertSuccess').css({
         "width": 700,

@@ -24,14 +24,18 @@ import java.util.concurrent.locks.LockSupport;
 public abstract class AbstractEmr implements EmrJob, Emr {
 
     /**
+     * emr集群的前缀
+     */
+    protected final String clusterPrefix = "hera-schedule-" + HeraGlobalEnv.getEnv() + "-";
+    /**
      * 缓存的集群IP
      */
     protected volatile List<String> cacheIp = null;
+    protected String prefixKey = "ssh -o StrictHostKeyChecking=no -i ";
     /**
      * 任务数
      */
     private volatile AtomicInteger taskRunning;
-
     /**
      * 任务计数器
      */
@@ -40,35 +44,22 @@ public abstract class AbstractEmr implements EmrJob, Emr {
      * 缓存的集群Id
      */
     private volatile String cacheClusterId;
-
     /**
      * 关闭集群的调度池
      */
     private ScheduledExecutorService pool;
-
     /**
      * 上次的任务数
      */
     private long cacheTaskNum;
-
-    protected String prefixKey = "ssh -o StrictHostKeyChecking=no -i ";
-
     /**
      * 集群是否已经关闭字段
      */
     private volatile boolean clusterTerminate = true;
-
     /**
      * check 集群是否需要关闭返回的future
      */
     private ScheduledFuture<?> clusterWatchFuture;
-
-
-    /**
-     * emr集群的前缀
-     */
-    protected final String clusterPrefix = "hera-schedule-" + HeraGlobalEnv.getEnv() + "-";
-
     /**
      * 自动扩展冷却时间 单位：秒
      */
@@ -142,8 +133,12 @@ public abstract class AbstractEmr implements EmrJob, Emr {
             }
         } else {
             if (notAlive()) {
-                destroyCluster();
-                createCluster();
+                synchronized (this) {
+                    if (notAlive()) {
+                        destroyCluster();
+                        createCluster();
+                    }
+                }
             }
         }
     }
@@ -365,6 +360,8 @@ public abstract class AbstractEmr implements EmrJob, Emr {
             cacheIp = null;
             cacheClusterId = null;
             clusterWatchFuture = null;
+            taskNum = null;
+            taskRunning = null;
             pool.shutdown();
             pool = null;
             shutdown();

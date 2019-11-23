@@ -32,21 +32,25 @@ public class HeraRunListener implements SpringApplicationRunListener {
     @Override
     public void starting() {
         startTime = new Date();
-        MonitorLog.info("==========开始启动: " + ActionUtil.getDefaultFormatterDate(startTime));
+        MonitorLog.info("spring starting: " + ActionUtil.getDefaultFormatterDate(startTime));
     }
 
     @Override
     public void environmentPrepared(ConfigurableEnvironment environment) {
+        MonitorLog.info("spring environmentPrepared");
+
 
     }
 
     @Override
     public void contextPrepared(ConfigurableApplicationContext context) {
+        MonitorLog.info("spring contextPrepared");
 
     }
 
     @Override
     public void contextLoaded(ConfigurableApplicationContext context) {
+        MonitorLog.info("spring contextLoaded");
 
     }
 

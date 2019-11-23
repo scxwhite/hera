@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>任务调度中心</title>
+    <title>建议&留言</title>
   	<#import "/common/common.macro.ftl" as netCommon>
 	<@netCommon.commonStyle />
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">

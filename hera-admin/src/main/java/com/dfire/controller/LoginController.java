@@ -5,6 +5,7 @@ import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraSso;
 import com.dfire.common.entity.HeraUser;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.enums.RecordTypeEnum;
 import com.dfire.common.service.HeraSsoService;
 import com.dfire.common.service.HeraUserService;
 import com.dfire.common.util.StringUtil;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
  */
 
 @Controller
-public class LoginController {
+public class LoginController extends BaseHeraController {
 
     @Autowired
     private HeraUserService heraUserService;
@@ -82,6 +83,7 @@ public class LoginController {
                 cookie.setMaxAge(Constants.LOGIN_TIME_OUT);
                 cookie.setPath("/");
                 response.addCookie(cookie);
+                addUserRecord(user.getId(), "组账户", RecordTypeEnum.LOGIN, userName, String.valueOf(user.getId()));
                 return new JsonResponse(true, "登录成功");
             } else {
                 return new JsonResponse(false, "密码错误，请重新输入");
@@ -128,6 +130,7 @@ public class LoginController {
                 cookie.setMaxAge(Constants.LOGIN_TIME_OUT);
                 cookie.setPath("/");
                 response.addCookie(cookie);
+                addUserRecord(heraSso.getId(), "sso账户", RecordTypeEnum.LOGIN, userName, String.valueOf(heraSso.getGid()));
                 return new JsonResponse(true, "登录成功");
             } else {
                 return new JsonResponse(false, "密码错误，请重新输入");

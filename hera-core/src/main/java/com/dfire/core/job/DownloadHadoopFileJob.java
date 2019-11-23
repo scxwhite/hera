@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.logs.MonitorLog;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,6 +39,9 @@ public class DownloadHadoopFileJob extends ProcessJob {
                     " & " + "hadoop fs -copyToLocal " + hadoopPath + " " + workDir + File.separator + file.getName() + "\"";
             commands.add(dirAndCopyToLocal);
         } else {
+            if (StringUtils.isNotBlank(HeraGlobalEnv.getKerberosKeytabPath()) && StringUtils.isNotBlank(HeraGlobalEnv.getKerberosPrincipal())) {
+                commands.add("kinit -kt " + HeraGlobalEnv.getKerberosKeytabPath() + " " + HeraGlobalEnv.getKerberosPrincipal());
+            }
             commands.add("hadoop fs -copyToLocal " + hadoopPath + " " + localPath);
         }
         MonitorLog.debug("组装后的命令为:" + JSONObject.toJSONString(commands));

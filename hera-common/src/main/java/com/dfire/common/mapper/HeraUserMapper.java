@@ -41,7 +41,7 @@ public interface HeraUserMapper {
     @Lang(HeraSelectLangDriver.class)
     HeraUser findById(Integer id);
 
-    @Select("SELECT * FROM hera_user WHERE NAME = #{name}")
+    @Select("SELECT * FROM hera_user WHERE NAME = #{name} limit 1")
     @Lang(HeraUpdateLangDriver.class)
     HeraUser getByName(HeraUser heraUser);
 

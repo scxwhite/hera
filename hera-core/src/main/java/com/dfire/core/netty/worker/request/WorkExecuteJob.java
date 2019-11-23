@@ -84,17 +84,17 @@ public class WorkExecuteJob {
                     HeraLog.error("创建文件失败:" + directory.getAbsolutePath());
                 }
             }
-            HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
-            final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN),
-                    jobBean, history, directory.getAbsolutePath());
-            workContext.getManualRunning().put(actionId, job);
-
             int exitCode = -1;
             Exception exception = null;
             try {
+                HeraJobBean jobBean = workContext.getHeraGroupService().getUpstreamJobBean(history.getJobId());
+                final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN),
+                        jobBean, history, directory.getAbsolutePath());
+                workContext.getManualRunning().put(actionId, job);
                 exitCode = job.run();
             } catch (Exception e) {
                 exception = e;
+                history.getLog().appendHeraException(e);
             } finally {
                 StatusEnum statusEnum = getStatusFromCode(exitCode);
                 //更新状态和日志
@@ -162,14 +162,16 @@ public class WorkExecuteJob {
                     HeraLog.error("创建文件失败:" + directory.getAbsolutePath());
                 }
             }
-            final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath());
-            workContext.getRunning().put(jobId, job);
+
             int exitCode = -1;
             Exception exception = null;
             try {
+                final Job job = JobUtils.createScheduleJob(new JobContext(JobContext.SCHEDULE_RUN), jobBean, history, directory.getAbsolutePath());
+                workContext.getRunning().put(jobId, job);
                 exitCode = job.run();
             } catch (Exception e) {
                 exception = e;
+                history.getLog().appendHeraException(e);
             } finally {
                 StatusEnum statusEnum = getStatusFromCode(exitCode);
                 //更新状态和日志
@@ -223,15 +225,13 @@ public class WorkExecuteJob {
             int exitCode = -1;
             Exception exception = null;
             ResponseStatus.Status status;
+            history.setExecuteHost(WorkContext.host);
+            workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
+            String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
             try {
-
-                history.setExecuteHost(WorkContext.host);
-                workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
-
-                String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
                 File directory = new File(HeraGlobalEnv.getWorkDir() + File.separator + date + File.separator + "debug-" + debugId);
                 if (!directory.exists()) {
-                    if (directory.mkdirs()) {
+                    if (!directory.mkdirs()) {
                         HeraLog.error("创建文件失败:" + directory.getAbsolutePath());
                     }
                 }

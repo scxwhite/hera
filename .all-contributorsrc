@@ -1,0 +1,60 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "scxwhite",
+      "name": "苏承祥",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/23207189?v=4",
+      "profile": "https://blog.csdn.net/su20145104009/",
+      "contributions": [
+        "design"
+      ]
+    },
+      {
+      "login": "jiangeyu",
+      "name": "凌霄",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/34758993?v=4",
+      "profile": "https://blog.csdn.net/Pengjx2014",
+      "contributions": [
+        "design"
+      ]
+    },
+    {
+      "login": "jet2007",
+      "name": "jet2007",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/3906077?v=4",
+      "profile": "https://github.com/jet2007",
+      "contributions": [
+        "design"
+      ]
+    },
+        {
+      "login": "akong0115",
+      "name": "akong0115",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/26199270?v=4",
+      "profile": "https://github.com/akong0115",
+       "contributions": [
+        "design"
+      ]
+      },
+    {
+      "login": "Deegue",
+      "name": "Yizhong Zhang",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/25916266?v=4",
+      "profile": "https://github.com/Deegue",
+      "contributions": [
+        "design"
+      ]
+    }
+
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "hera",
+  "projectOwner": "scxwhite",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}

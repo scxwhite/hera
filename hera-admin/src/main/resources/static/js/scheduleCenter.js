@@ -50,16 +50,6 @@ layui.use(['table'], function () {
             inheritConfigCM.refresh();
         }
 
-        /**
-         * 把当前选中的节点存入localStorage
-         * 页面刷新后，会根据"defaultId"设置当前选中的节点
-         * 避免页面刷新丢失
-         * @param id    节点ID
-         */
-        function setCurrentId(id) {
-
-            localStorage.setItem("defaultId", id);
-        }
 
         /**
          * 设置当前默认选中的节点
@@ -145,6 +135,15 @@ layui.use(['table'], function () {
 
         });
 
+        /**
+         * 查看操作记录
+         */
+        $('#jobOperate [name="record"]').on('click', function () {
+            $('#recordTable').bootstrapTable("destroy");
+            new recordTable(focusId).init();
+            $('#recordModal').modal('show');
+
+        });
         $('#jobOperate [name="addAdmin"]').on('click', function () {
             addAdmin();
         });
@@ -173,7 +172,6 @@ layui.use(['table'], function () {
                         let admins = new Array();
                         data.data['admin'].forEach(function (val) {
                             admins.push(val.uid);
-
                         });
                         $('#userList').selectpicker('val', admins);
 
@@ -855,7 +853,6 @@ layui.use(['table'], function () {
                             focusItem = data;
                             formDataLoad("groupMessage form", data);
                             inheritConfigCM.setValue(parseJson(data.inheritConfig));
-
                             selfConfigCM.setValue(parseJson(data.configs));
                         }
 
@@ -1406,14 +1403,120 @@ function expandNextNode(nodeNum) {
     redraw();
 }
 
+let recordTable = function (jobId) {
+    let oTableInit = new Object();
+    let table = $('#recordTable');
+    oTableInit.init = function () {
+        table.bootstrapTable({
+            url: base_url + "/record/find",
+            pagination: true,
+            showPaginationSwitch: false,
+            search: false,
+            cache: false,
+            pageNumber: 1,
+            sidePagination: "server",
+            queryParamsType: "limit",
+            queryParams: function (params) {
+                return {
+                    pageSize: params.limit,
+                    offset: params.offset,
+                    jobId: jobId
+                };
+            },
+            onLoadSuccess: function (data) {
+                if (data.success === false) {
+                    layer.msg("加载操作日志失败");
+                    return;
+                }
+                console.log(data.data)
+                table.bootstrapTable("load", data.data)
+            },
+            pageList: [10, 25, 40, 60],
+            columns: [
+                {
+                    field: "type",
+                    title: "操作类型",
+                    align: 'center',
+                    halign: 'center'
+                }, {
+                    field: "logType",
+                    title: "日志类型",
+                    halign: 'center',
+                    align: 'center'
+                }, {
+                    field: "sso",
+                    title: "操作人",
+                    align: 'center',
+                    halign: 'center'
+                }, {
+                    field: "gname",
+                    title: "所在组",
+                    align: 'center',
+                    halign: 'center'
+                }, {
+                    field: "createTime",
+                    title: "操作时间",
+                    align: 'center',
+                    halign: 'center'
+                }
+            ],
+            detailView: true,
+            detailFormatter: function (index, row) {
+                return "<div id='compare'> </div>";
+            },
+            onExpandRow: function (index, row) {
+                var value = "", mode = "", highlight = true, connect = null, collapse = false;
+                $.ajax({
+                    url: base_url + "/record/now",
+                    data: {
+                        logId: row.logId,
+                        logType: row.logType,
+                        type: row.type
+                    },
+                    type: "get",
+                    async: false,
+                    success: function (res) {
+                        if (res.success == false) {
+                            layer.msg(res.message);
+                        }
+                        var data = res.data;
+                        if (data.runType === "Shell") {
+                            mode = "text/x-sh";
+                        } else {
+                            mode = "text/x-hive";
+                        }
+                        value = data.content;
+                    }
+                });
+                var target = document.getElementById("compare");
+                target.innerHTML = "";
+                CodeMirror.MergeView(target, {
+                    value: value,
+                    origLeft: row.content,
+                    orig: null,
+                    theme: 'eclipse',
+                    lineNumbers: true,
+                    mode: mode,
+                    matchBrackets: true,
+                    styleActiveLine: true,
+                    highlightDifferences: highlight,
+                    connect: connect,
+                    collapseIdentical: true,
+                    revertButtons: true
+                });
+            }
+        });
+    };
+    return oTableInit;
+}
+
 
 let JobLogTable = function (jobId) {
     let parameter = {jobId: jobId};
     let actionRow;
     let oTableInit = new Object();
-    let onExpand = -1;
     let table = $('#runningLogDetailTable');
-    let timerHandler = null;
+    let closeLog = false;
 
     function scheduleLog() {
 
@@ -1432,11 +1535,12 @@ let JobLogTable = function (jobId) {
                     return;
                 }
                 let data = result.data;
-                if (data.status != 'running') {
-                    window.clearInterval(timerHandler);
+                if (data.status === 'running' && !closeLog) {
+                    window.setTimeout(scheduleLog, 5000);
                 }
                 logArea[0].innerHTML = data.log;
                 logArea.scrollTop(logArea.prop("scrollHeight"), 200);
+
                 actionRow.log = data.log;
                 actionRow.status = data.status;
             }
@@ -1444,15 +1548,14 @@ let JobLogTable = function (jobId) {
     }
 
     $('#jobLog').on('hide.bs.modal', function () {
-        if (timerHandler != null) {
-            window.clearInterval(timerHandler)
-        }
+        closeLog = true;
     });
 
     $('#jobLog [name="refreshLog"]').on('click', function () {
         table.bootstrapTable('refresh');
-        table.bootstrapTable('expandRow', onExpand);
+        closeLog = true;
     });
+
 
     oTableInit.init = function () {
         table.bootstrapTable({
@@ -1463,7 +1566,6 @@ let JobLogTable = function (jobId) {
             search: false,
             cache: false,
             pageNumber: 1,
-            showRefresh: true,           //是否显示刷新按钮
             showPaginationSwitch: false,  //是否显示选择分页数按钮
             sidePagination: "server",
             queryParamsType: "limit",
@@ -1621,19 +1723,11 @@ let JobLogTable = function (jobId) {
             },
             onExpandRow: function (index, row) {
                 actionRow = row;
-                if (index != onExpand) {
-                    table.bootstrapTable("collapseRow", onExpand);
-                }
-                onExpand = index;
-                if (row.status == "running") {
-                    scheduleLog();
-                    timerHandler = window.setInterval(scheduleLog, 3000);
-                } else {
-                    scheduleLog();
-                }
+                closeLog = false;
+                scheduleLog();
             },
             onCollapseRow: function (index, row) {
-                window.clearInterval(timerHandler)
+                closeLog = true;
             }
         });
     };

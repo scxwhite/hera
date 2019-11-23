@@ -48,6 +48,8 @@ public class HeraJobHistory {
 
     private int hostGroupId;
 
+    private Date gmtCreate;
+
     String properties ;
 
 

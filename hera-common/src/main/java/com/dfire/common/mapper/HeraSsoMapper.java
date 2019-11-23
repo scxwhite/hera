@@ -35,7 +35,6 @@ public interface HeraSsoMapper {
     HeraSso findById(Integer id);
 
     @Select("SELECT * FROM hera_sso WHERE name = #{name}")
-    @Lang(HeraUpdateLangDriver.class)
     HeraSso findByName(String name);
 
     @Select("select count(1) from hera_sso where name = #{name}")

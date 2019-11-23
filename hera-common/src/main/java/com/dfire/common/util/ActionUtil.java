@@ -102,6 +102,12 @@ public class ActionUtil {
 
     }
 
+    public static long getMillis() {
+        return System.currentTimeMillis();
+
+    }
+
+
     public static String getActionVersionByDate(Date date) {
         return new DateTime(date).toString(ACTION_VERSION_INIT);
 

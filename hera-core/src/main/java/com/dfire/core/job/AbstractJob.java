@@ -2,19 +2,19 @@ package com.dfire.core.job;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.enums.JobRunTypeEnum;
+import com.dfire.common.enums.OperatorSystemEnum;
 import com.dfire.common.exception.HeraException;
 import com.dfire.common.util.HierarchyProperties;
+import com.dfire.common.util.Pair;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.emr.Emr;
 import com.dfire.core.emr.WrapEmr;
+import com.dfire.core.util.CommandUtils;
 import com.dfire.logs.HeraLog;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -26,9 +26,6 @@ public abstract class AbstractJob implements Job {
     protected JobContext jobContext;
 
     protected boolean canceled = false;
-
-
-    private static Pattern hostPattern = Pattern.compile("\\w+@[\\w\\.-]+\\s*");
 
     protected Emr emr;
 
@@ -66,12 +63,8 @@ public abstract class AbstractJob implements Job {
     }
 
     protected String getJobPrefix() {
-        return Optional.ofNullable(buildPrefix()).orElse(Constants.BLANK_SPACE);
-    }
-
-    private String buildPrefix() {
-        if (HeraGlobalEnv.isEmrJob() || !HeraGlobalEnv.isSudoUser()) {
-            return null;
+        if (HeraGlobalEnv.isEmrJob() || HeraGlobalEnv.getSystemEnum() == OperatorSystemEnum.MAC) {
+            return " ";
         }
         String user = getUser();
         if (StringUtils.isBlank(user)) {
@@ -140,17 +133,9 @@ public abstract class AbstractJob implements Job {
     }
 
     private void uploadFile(String loginCmd, String targetPath, String parentPath) throws Exception {
-        String scpCmd = loginCmd.replace("ssh", "scp");
-        Matcher matcher = hostPattern.matcher(scpCmd);
-        String loginStr;
-        if (matcher.find()) {
-            loginStr = matcher.group(0);
-        } else {
-            throw new HeraException("查找ip失败" + scpCmd);
-        }
-        String prefix = scpCmd.replace(loginStr, "").replace("-p", "-P") + " -r ";
-        UploadEmrFileJob uploadJob = new UploadEmrFileJob(prefix,
-                parentPath, targetPath, loginStr, jobContext);
+        Pair<String, String> pair = CommandUtils.parseCmd(loginCmd);
+        UploadEmrFileJob uploadJob = new UploadEmrFileJob(pair.fst(),
+                parentPath, targetPath, pair.snd(), jobContext);
         uploadJob.run();
     }
 
@@ -161,6 +146,10 @@ public abstract class AbstractJob implements Job {
      * @return boolean
      */
     protected boolean isFixedEmrJob() {
+        //如果是emr集群的debug任务直接在固定集群执行
+        if (jobContext.getRunType() == JobContext.DEBUG_RUN && HeraGlobalEnv.isEmrJob()) {
+            return true;
+        }
         return Boolean.valueOf(getProperty(HeraGlobalEnv.getArea() + Constants.POINT + Constants.HERA_EMR_FIXED, getProperty(Constants.HERA_EMR_FIXED, "false")).trim().toLowerCase());
     }
 

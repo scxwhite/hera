@@ -4,6 +4,7 @@ import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
 import com.dfire.common.entity.model.JsonResponse;
+import com.dfire.common.enums.RecordTypeEnum;
 import com.dfire.common.exception.HeraException;
 import com.dfire.common.service.HeraDebugHistoryService;
 import com.dfire.common.service.HeraFileService;
@@ -60,7 +61,10 @@ public class DevelopCenterController extends BaseHeraController {
         } else {
             heraFile.setOwner(getOwner());
         }
-        return new JsonResponse(true, heraFileService.insert(heraFile));
+        Integer id = heraFileService.insert(heraFile);
+
+        addDebugRecord(id, heraFile.getName(), RecordTypeEnum.Add, getSsoName(), getOwnerId());
+        return new JsonResponse(true, id);
     }
 
     @RequestMapping(value = "/find", method = RequestMethod.GET)
@@ -79,6 +83,7 @@ public class DevelopCenterController extends BaseHeraController {
             return new JsonResponse(false, "无法删除共享文档");
         }
         boolean res = heraFileService.delete(heraFile.getId()) > 0;
+        addDebugRecord(heraFile.getId(), heraFile.getName(), RecordTypeEnum.DELETE, getSsoName(), getOwnerId());
         return new JsonResponse(res, res ? "删除成功" : "删除失败");
     }
 
@@ -113,7 +118,7 @@ public class DevelopCenterController extends BaseHeraController {
                 .owner(Constants.FILE_ALL_NAME.equals(file.getOwner()) ? owner : file.getOwner())
                 .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnv.defaultWorkerGroup : file.getHostGroupId())
                 .build();
-        return executeJob(name, history);
+        return executeJob(name, history, getSsoName());
     }
 
     /**
@@ -137,10 +142,10 @@ public class DevelopCenterController extends BaseHeraController {
                 .hostGroupId(file.getHostGroupId() == 0 ? HeraGlobalEnv.defaultWorkerGroup : file.getHostGroupId())
                 .build();
 
-        return executeJob(name, history);
+        return executeJob(name, history, getSsoName());
     }
 
-    private JsonResponse executeJob(String name, HeraDebugHistory history) throws ExecutionException, InterruptedException {
+    private JsonResponse executeJob(String name, HeraDebugHistory history, String ssoName) throws ExecutionException, InterruptedException {
         int suffixIndex = name.lastIndexOf(Constants.POINT);
         if (suffixIndex == -1) {
             return new JsonResponse(false, "无后缀名,请设置支持的后缀名[.sh .hive .spark]");
@@ -158,6 +163,8 @@ public class DevelopCenterController extends BaseHeraController {
         }
         history.setRunType(runType);
         String newId = debugHistoryService.insert(history);
+        String ownerId = getOwnerId();
+        doAsync(() -> addDebugRecord(history.getFileId(), history.getId(), RecordTypeEnum.Execute, ssoName, ownerId));
         workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
         Map<String, Object> res = new HashMap<>(2);
         res.put("fileId", history.getFileId());
@@ -215,6 +222,7 @@ public class DevelopCenterController extends BaseHeraController {
         }
         boolean res = heraFileService.updateParentById(id, parent);
         if (res) {
+            addDebugRecord(id, lastParent + "=>" + parent, RecordTypeEnum.MOVE, getSsoName(), getOwnerId());
             MonitorLog.info("开发中心任务{}【移动】:{} ----> {}", id, lastParent, parent);
             return new JsonResponse(true, "移动成功");
         } else {

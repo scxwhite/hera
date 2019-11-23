@@ -31,7 +31,7 @@ public interface HeraJobHistoryService {
 
     HeraJobHistory findById(String id);
 
-    HeraJobHistory findByActionId(String actionId);
+    List<HeraJobHistory> findByActionId(String actionId);
 
     Integer updateHeraJobHistoryLogAndStatus(HeraJobHistory build);
 
@@ -51,4 +51,5 @@ public interface HeraJobHistoryService {
 
     void deleteHistoryRecord(Integer beforeDay);
 
+    HeraJobHistory findNewest(String jobId);
 }

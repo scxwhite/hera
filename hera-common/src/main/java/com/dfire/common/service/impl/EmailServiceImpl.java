@@ -3,7 +3,6 @@ package com.dfire.common.service.impl;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.service.EmailService;
 import com.dfire.config.HeraGlobalEnv;
-import com.dfire.logs.ErrorLog;
 import com.dfire.logs.MonitorLog;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -27,43 +26,37 @@ import java.util.stream.Collectors;
 public class EmailServiceImpl implements EmailService {
 
     @Override
-    public boolean sendEmail(String title, String content, String address) {
+    public void sendEmail(String title, String content, String address) throws MessagingException {
         if (StringUtils.isEmpty(address)) {
-            return false;
+            return;
         }
         List<String> userEmails = Arrays.stream(address.split(Constants.SEMICOLON)).distinct().collect(Collectors.toList());
         int len = userEmails.size();
         InternetAddress[] addresses = new InternetAddress[len];
-        try {
-            for (int i = 0; i < len; i++) {
-                addresses[i] = new InternetAddress(userEmails.get(i));
-            }
-            Properties properties = new Properties();
-            properties.put("mail.smtp.host", HeraGlobalEnv.getMailHost());
-            properties.put("mail.transport.protocol", HeraGlobalEnv.getMailProtocol());
-            properties.put("mail.smtp.auth", "true");
-            properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            properties.put("mail.smtp.socketFactory.fallback", "false");
-            properties.put("mail.smtp.port", HeraGlobalEnv.getMailPort());
-            properties.put("mail.smtp.socketFactory.port", HeraGlobalEnv.getMailPort());
-
-            Session session = Session.getInstance(properties);
-
-            session.setDebug(false);
-
-            Transport transport = session.getTransport();
-
-            transport.connect(HeraGlobalEnv.getMailHost(), HeraGlobalEnv.getMailUser(), HeraGlobalEnv.getMailPassword());
-
-            Message message = createSimpleMessage(session, title, content, addresses);
-            transport.sendMessage(message, message.getAllRecipients());
-            MonitorLog.info("发送邮件成功,Title:{}, 联系人:{}", title, address);
-            transport.close();
-        } catch (MessagingException e) {
-            ErrorLog.error("发送" + title + "邮件失败", e);
-            return false;
+        for (int i = 0; i < len; i++) {
+            addresses[i] = new InternetAddress(userEmails.get(i));
         }
-        return true;
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", HeraGlobalEnv.getMailHost());
+        properties.put("mail.transport.protocol", HeraGlobalEnv.getMailProtocol());
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        properties.put("mail.smtp.socketFactory.fallback", "false");
+        properties.put("mail.smtp.port", HeraGlobalEnv.getMailPort());
+        properties.put("mail.smtp.socketFactory.port", HeraGlobalEnv.getMailPort());
+
+        Session session = Session.getInstance(properties);
+
+        session.setDebug(false);
+
+        Transport transport = session.getTransport();
+
+        transport.connect(HeraGlobalEnv.getMailHost(), HeraGlobalEnv.getMailUser(), HeraGlobalEnv.getMailPassword());
+
+        Message message = createSimpleMessage(session, title, content, addresses);
+        transport.sendMessage(message, message.getAllRecipients());
+        MonitorLog.info("发送邮件成功,Title:{}, 联系人:{}", title, address);
+        transport.close();
     }
 
     private Message createSimpleMessage(Session session, String title, String content, InternetAddress[] addresses) throws MessagingException {

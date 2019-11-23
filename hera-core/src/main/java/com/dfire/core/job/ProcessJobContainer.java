@@ -29,7 +29,6 @@ public class ProcessJobContainer extends AbstractJob {
         this.pres = pres;
         this.job = core;
         this.posts = posts;
-
     }
 
 
@@ -42,9 +41,9 @@ public class ProcessJobContainer extends AbstractJob {
     public int run() throws Exception {
         int exitCode = -1;
         try {
-            if (HeraGlobalEnv.isScriptEcho()) {
+            if (HeraGlobalEnv.isScriptEcho() || Boolean.parseBoolean(getProperty(Constants.HERA_SCRIPT_ECHO, "false"))) {
                 String echoLog = "==================开始输出脚本内容==================\n" +
-                        Constants.NEW_LINE + getProperty(RunningJobKeyConstant.JOB_SCRIPT).replaceAll("(?m)^\\s*$(\\n|\\r\\n)", "");
+                        Constants.NEW_LINE + getProperty(RunningJobKeyConstant.JOB_SCRIPT);
                 log(echoLog);
                 log("==================结束输出脚本内容==================");
             }
@@ -98,5 +97,4 @@ public class ProcessJobContainer extends AbstractJob {
         }
         log("cancel job end");
     }
-
 }

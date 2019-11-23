@@ -6,6 +6,7 @@ import com.dfire.common.entity.model.HeraJobBean;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.entity.vo.HeraProfileVo;
 import com.dfire.common.enums.JobRunTypeEnum;
+import com.dfire.common.exception.HeraException;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.RenderHierarchyProperties;
@@ -29,10 +30,14 @@ import java.util.regex.Pattern;
  */
 public class JobUtils {
 
-    public static final Pattern pattern = Pattern.compile("download\\[.*://.+]");
+    private static final Pattern downloadPatt = Pattern.compile("download\\[.*://.+]");
+
+
+    private static final Pattern valPatt = Pattern.compile("\\$\\{([^}{$])*\\}");
+
 
     public static Job createDebugJob(JobContext jobContext, HeraDebugHistory heraDebugHistory,
-                                     String workDir, WorkContext workContext) {
+                                     String workDir, WorkContext workContext) throws HeraException {
         jobContext.setDebugHistory(BeanConvertUtils.convert(heraDebugHistory));
         jobContext.setWorkDir(workDir);
 
@@ -40,6 +45,8 @@ public class JobUtils {
         String script = heraDebugHistory.getScript();
         List<Map<String, String>> resources = new ArrayList<>();
         script = resolveScriptResource(resources, script);
+        script = replace(new HashMap<>(0), script);
+        script = RenderHierarchyProperties.render(script, null);
         jobContext.setResources(resources);
         hierarchyProperties.setProperty(RunningJobKeyConstant.JOB_SCRIPT, script);
 
@@ -76,17 +83,12 @@ public class JobUtils {
 
 
     public static Job createScheduleJob(JobContext jobContext, HeraJobBean jobBean,
-                                        HeraJobHistoryVo history, String workDir) {
+                                        HeraJobHistoryVo history, String workDir) throws HeraException {
         jobContext.setHeraJobHistory(history);
         jobContext.setWorkDir(workDir);
         jobContext.getProperties().setProperty("hera.encode", "utf-8");
         HierarchyProperties hierarchyProperties = jobBean.getHierarchyProperties();
-        Map<String, String> configs = history.getProperties();
-        if (configs != null && !configs.isEmpty()) {
-            for (String key : configs.keySet()) {
-                hierarchyProperties.setProperty(key, configs.get(key));
-            }
-        }
+
         jobContext.setProperties(new RenderHierarchyProperties(hierarchyProperties));
         List<Map<String, String>> resource = jobBean.getHierarchyResources();
         String script = jobBean.getHeraJob().getScript();
@@ -122,28 +124,24 @@ public class JobUtils {
         return pres;
     }
 
-    public static String replace(Map<String, String> allProperties, String script) {
+    private static String replace(Map<String, String> allProperties, String script) {
         if (script == null) {
             return null;
         }
         Map<String, String> varMap = new HashMap<>(allProperties.size());
+        if (WorkContext.cacheDBMap != null && WorkContext.cacheDBMap.size() != 0) {
+            varMap.putAll(WorkContext.cacheDBMap);
+        }
         String key;
         String areaSuffix = HeraGlobalEnv.getArea() + ".";
         for (Map.Entry<String, String> entry : allProperties.entrySet()) {
             key = entry.getKey();
-            varMap.put("${" + key + "}", entry.getValue());
+            varMap.put(key, entry.getValue());
             if (key.startsWith(areaSuffix)) {
-                varMap.putIfAbsent("${" + key.replaceFirst(areaSuffix, "") + "}", entry.getValue());
+                varMap.putIfAbsent(key.replaceFirst(areaSuffix, ""), entry.getValue());
             }
         }
-        String old;
-        for (Map.Entry<String, String> entry : varMap.entrySet()) {
-            do {
-                old = script;
-                script = script.replace(entry.getKey(), entry.getValue());
-            } while (!old.equals(script));
-        }
-        return script;
+        return replaceVal(script, varMap);
     }
 
     /**
@@ -154,7 +152,7 @@ public class JobUtils {
      * @return
      */
     private static String resolveScriptResource(List<Map<String, String>> resources, String script) {
-        Matcher matcher = pattern.matcher(script);
+        Matcher matcher = downloadPatt.matcher(script);
         while (matcher.find()) {
             String group = matcher.group();
             group = group.substring(group.indexOf("[") + 1, group.indexOf("]"));
@@ -187,5 +185,20 @@ public class JobUtils {
         return script;
     }
 
+    private static String replaceVal(String script, Map<String, String> confs) {
+        Matcher matcher = valPatt.matcher(script);
+        StringBuilder newScript = new StringBuilder();
+        int start = 0, end;
+
+        while (matcher.find()) {
+            String group = matcher.group();
+            end = matcher.start();
+            newScript.append(script, start, end);
+            newScript.append(confs.getOrDefault(group.substring(2, group.length() - 1), group));
+            start = matcher.end();
+        }
+        newScript.append(script, start, script.length());
+        return newScript.toString();
+    }
 
 }

@@ -64,6 +64,7 @@ public class SystemManageController extends BaseHeraController {
         return "systemManage/workManage.index";
     }
 
+
     @RequestMapping("/hostGroupManage")
     @AdminCheck
     public String hostGroupManage() throws NoPermissionException {
@@ -76,9 +77,16 @@ public class SystemManageController extends BaseHeraController {
         return "systemManage/jobMonitor.index";
     }
 
+
     @RequestMapping("/jobDetail")
     public String jobManage() {
         return "jobManage/jobDetail.index";
+    }
+
+
+    @RequestMapping("/jobSearch")
+    public String jobSearch() {
+        return "jobManage/jobSearch.index";
     }
 
 
@@ -138,17 +146,6 @@ public class SystemManageController extends BaseHeraController {
 
     }
 
-    /**
-     * 任务管理页面今日任务详情
-     *
-     * @param status
-     * @return
-     */
-    @RequestMapping(value = "/jobManage/findJobHistoryByStatus", method = RequestMethod.GET)
-    @ResponseBody
-    public JsonResponse findJobHistoryByStatus(@RequestParam("status") String status, String dt) {
-        return jobManageService.findJobHistoryByStatus(status, dt);
-    }
 
     @GetMapping(value = "/jobMonitor/list")
     @ResponseBody

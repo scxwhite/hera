@@ -25,7 +25,7 @@ layui.use(['table', 'laytpl', 'form', 'element'], function () {
         , defaultToolbar: ['filter', 'print', 'exports']
         , cols: [[ //表头
             {title: '序号', fixed: 'left', align: 'center', type: 'numbers'}
-            , {field: 'name', title: '用户', align: 'center', width: 100}
+            , {field: 'name', title: '组名称', align: 'center', width: 100}
             , {field: 'email', title: '邮箱', align: 'center', width: 180}
             , {field: 'phone', title: '手机号', align: 'center', width: 130}
             , {
