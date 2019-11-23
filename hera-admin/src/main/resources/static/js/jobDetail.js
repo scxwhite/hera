@@ -20,7 +20,7 @@ layui.use(['table'], function () {
         oTableInit.init = function () {
             var table = $('#historyJobTable');
             table.bootstrapTable({
-                url: base_url + '/jobManage/findJobHistoryByStatus',
+                url: base_url + '/job/history',
                 method: 'get',
                 pagination: true,
                 cache: false,
@@ -47,14 +47,6 @@ layui.use(['table'], function () {
                 },
                 columns: [
                     {
-                        field: '',
-                        title: '序号',
-                        halign: 'center',
-                        align: 'center',
-                        formatter: function (val, row, index) {
-                            return index + 1;
-                        }
-                    }, {
                         field: 'groupName',
                         title: '任务组',
                         halign: 'center',
@@ -64,7 +56,7 @@ layui.use(['table'], function () {
                             if (val == null) {
                                 return val;
                             }
-                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 6) + '</label>';
+                            return '<label class="label label-primary" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 20) + '</label>';
                         }
                     }, {
                         field: 'jobName',
@@ -73,7 +65,7 @@ layui.use(['table'], function () {
                         halign: 'center',
                         align: 'center',
                         formatter: function (val, row, index) {
-                            let val01 = '<a href = "#">' + val + '[' + row['jobId'] + ']' + '</a>';
+                            let val01 = '<a href = "#">' + val.slice(0, 50) + '[' + row['jobId'] + ']' + '</a>';
                             return val01;
                         }
                     }, {
@@ -85,7 +77,7 @@ layui.use(['table'], function () {
                             if (val == null) {
                                 return val;
                             }
-                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 6) + '</label>';
+                            return '<label class="label label-primary" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 6) + '</label>';
                         }
                     }, {
                         field: 'status',
@@ -158,10 +150,7 @@ layui.use(['table'], function () {
         var parameter = {jobId: jobId};
         var actionRow;
         var oTableInit = new Object();
-        var onExpand = -1;
         var table = $('#runningLogDetailTable');
-        var timerHandler = null;
-
 
         function scheduleLog() {
 
@@ -177,11 +166,11 @@ layui.use(['table'], function () {
                     if (result.success === false) {
                         layer.msg(result.message);
                         logArea[0].innerHTML = "无日志查看权限,请联系管理员进行配置";
-                        return ;
+                        return;
                     }
                     let data = result.data;
-                    if (data.status != 'running') {
-                        window.clearInterval(timerHandler);
+                    if (data.status === 'running') {
+                        window.setTimeout(scheduleLog, 5000);
                     }
                     logArea[0].innerHTML = data.log;
                     logArea.scrollTop(logArea.prop("scrollHeight"), 200);
@@ -191,15 +180,9 @@ layui.use(['table'], function () {
             })
         }
 
-        $('#jobLog').on('hide.bs.modal', function () {
-            if (timerHandler != null) {
-                window.clearInterval(timerHandler)
-            }
-        });
 
         $('#jobLog [name="refreshLog"]').on('click', function () {
             table.bootstrapTable('refresh');
-            table.bootstrapTable('expandRow', onExpand);
         });
 
 
@@ -371,19 +354,7 @@ layui.use(['table'], function () {
                 },
                 onExpandRow: function (index, row) {
                     actionRow = row;
-                    if (index != onExpand) {
-                        table.bootstrapTable("collapseRow", onExpand);
-                    }
-                    onExpand = index;
-                    if (row.status == "running") {
-                        scheduleLog();
-                        timerHandler = window.setInterval(scheduleLog, 3000);
-                    } else {
-                        scheduleLog();
-                    }
-                },
-                onCollapseRow: function (index, row) {
-                    window.clearInterval(timerHandler)
+                    scheduleLog();
                 }
             });
         };

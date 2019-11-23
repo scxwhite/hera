@@ -107,6 +107,7 @@ public class ShellJob extends ProcessJob {
         }
         list.add(CommandUtils.changeFileAuthority(jobContext.getWorkDir()));
         list.add(CommandUtils.getRunShCommand(shellPrefix, tmpFilePath));
+
         TaskLog.info("5.1 命令：{}", JSONObject.toJSONString(list));
         return list;
     }

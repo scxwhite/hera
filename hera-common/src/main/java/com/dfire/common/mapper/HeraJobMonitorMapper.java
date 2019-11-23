@@ -20,15 +20,15 @@ public interface HeraJobMonitorMapper {
     Integer insert(HeraJobMonitor monitor);
 
 
-    @Update("update hera_job_monitor set user_ids = replace(user_ids, #{userIds},''),gmt_modified=#{gmtModified} where job_id = #{jobId}")
+    @Update("update hera_job_monitor set user_ids = trim(leading ',' from replace(concat(',',user_ids,','), ',#{userIds},', '')) where job_id = #{jobId}")
     Integer deleteMonitor(HeraJobMonitor monitor);
 
 
-    @Update("update hera_job_monitor set user_ids = concat(user_ids,#{userIds}),gmt_modified=#{gmtModified} where job_id = #{jobId}")
+    @Update("update hera_job_monitor set user_ids = concat(user_ids,#{userIds}) where job_id = #{jobId}")
     Integer insertUser(HeraJobMonitor monitor);
 
 
-    @Select("select * from hera_job_monitor where job_id = #{jobId} and user_ids != '' and user_ids != ',' limit 1")
+    @Select("select * from hera_job_monitor where job_id = #{jobId} limit 1")
     HeraJobMonitor findByJobId(Integer jobId);
 
     @Select("select * from hera_job_monitor")

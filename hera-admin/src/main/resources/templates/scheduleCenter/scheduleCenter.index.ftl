@@ -21,6 +21,7 @@
     <link href="${request.contextPath}/static/plugins/codemirror/theme/duotone-dark.css" rel="stylesheet">
     <link href="${request.contextPath}/static/plugins/codemirror/theme/duotone-light.css" rel="stylesheet">
     <link href="${request.contextPath}/static/plugins/codemirror/theme/erlang-dark.css" rel="stylesheet">
+    <link href="${request.contextPath}/static/plugins/codemirror/addon/hint/merge.css" rel="stylesheet">
     <link href="${request.contextPath}/static/plugins/codemirror/theme/gruvbox-dark.css" rel="stylesheet">
     <link href="${request.contextPath}/static/plugins/codemirror/theme/mbo.css" rel="stylesheet">
     <link href="${request.contextPath}/static/plugins/codemirror/theme/material.css" rel="stylesheet">
@@ -200,13 +201,13 @@
                                                 <input class="form-control" type="text" name="dependencies" readonly>
                                             </div>
                                         </div>
-                                        <div class="form-group" id="heraDependencyCycle">
+                             <#--           <div class="form-group" id="heraDependencyCycle">
                                             <label class="control-label input-sm col-sm-3">依赖周期:</label>
                                             <div class="col-sm-8">
                                                 <input class="form-control" type="text" name="heraDependencyCycle"
                                                        readonly>
                                             </div>
-                                        </div>
+                                        </div>-->
                                         <div class="form-group" id="cronExpression">
                                             <label class="control-label input-sm col-sm-3">定时表达式:</label>
                                             <div class="col-sm-8">
@@ -413,13 +414,13 @@
 
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                <#--        <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">依赖周期:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                 <input class="form-control" type="text" name="heraDependencyCycle">
 
                                             </div>
-                                        </div>
+                                        </div>-->
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">机器组:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
@@ -532,7 +533,6 @@
                                         </button>
                                     </li>
                                     <br>
-                                 <!--  
                                     <li>
                                         <button class="btn btn-xs  btn-primary btn-block" type="button"
                                                 name="showRunning">正在运行
@@ -545,7 +545,6 @@
                                         </button>
                                     </li>
                                     <br>
-                                     -->
                                     <li>
                                         <button class="btn  btn-xs btn-primary btn-block" type="button" name="addGroup">
                                             添加组
@@ -594,7 +593,12 @@
                                     </button>
                                 </li>
                                 <br>
-
+                                <li>
+                                    <button class="btn btn-xs btn-primary btn-block" type="button" name="record">
+                                        操作记录
+                                    </button>
+                                </li>
+                                <br>
                                 <li>
                                     <button class="btn btn-xs btn-primary btn-block" type="button" name="version">版本生成
                                     </button>
@@ -683,27 +687,12 @@
 
                     <div id="overviewOperator" class="btn-con" style="display: none">
                         <div class="box-body">
-                        	   
                             <ul class="list-unstyled">
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="back">返回
                                     </button>
                                 </li>
                                 <br>
-                                
-                                <li>
-                                <input class="form_datetime form-control" id="jobDt"  type="text" data-date-format="yymmdd" readonly placeholder="请选择日期"  ">
-                                
-                                </li>
-                                <br>
-                                
-                                <li>
-                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showAll">
-                                        全部记录
-                                    </button>
-                                </li>
-                                <br>
-                                
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="showRunning">
                                         正在运行
@@ -715,14 +704,6 @@
                                         失败记录
                                     </button>
                                 </li>
-                                <br>
-                            	<li>
-                                    <button class="btn btn-xs  btn-primary btn-block" type="button" name="showSucc">
-                                        成功记录
-                                    </button>
-                                </li>
-                                <br>
-                                
                             </ul>
                         </div>
                     </div>
@@ -863,6 +844,25 @@
     </div>
 </div>
 
+
+
+<div class="modal fade" id="recordModal" tabindex="-1" role="dialog" aria-labelledby="recordModal" aria-hidden="true">
+    <div class="modal-dialog" style="width: 90%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">操作记录</h4>
+            </div>
+
+            <div class="modal-body">
+                <table class="table " id="recordTable"></table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+                <button type="button" class="btn btn-info add-btn" name="refreshLog">刷新</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal" id="uploadFile" tabindex="-1" role="dialog" aria-labelledby="title">
     <div class="modal-dialog" style="width: 600px">
         <div class="modal-content">
@@ -1046,6 +1046,8 @@
 <script src="${request.contextPath}/static/js/common.js"></script>
 <script src="${request.contextPath}/static/adminlte/bootstrap/js/bootstrap-datetimepicker.min.js"></script>
 <script src="${request.contextPath}/static/adminlte/bootstrap/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/addon/hint/merge.js"></script>
+<script src="${request.contextPath}/static/plugins/codemirror/addon/hint/diff_match_patch.js"></script>
 
 <script type="text/javascript">
  $(".form_datetime").datetimepicker({
@@ -1057,8 +1059,11 @@
  startView: 2,//月视图
  minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
  forceParse:false,
- }); 
-</script> 
+ });
+</script>
+<script type="text/html" id="content">
+    <div id="view"></div>
+</script>
 
 <script>
     $(document).ready(function () {

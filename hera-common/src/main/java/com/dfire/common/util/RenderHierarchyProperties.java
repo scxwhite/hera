@@ -1,15 +1,17 @@
 package com.dfire.common.util;
 
-import com.dfire.common.constants.TimeFormatConstant;
+import com.dfire.common.exception.HeraException;
 import com.dfire.logs.ErrorLog;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
 import java.io.StringWriter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 
 /**
@@ -42,7 +44,7 @@ public class RenderHierarchyProperties extends HierarchyProperties {
      * @param dateStr
      * @return hera配置日期变量替换,"${yesterday}"为系统变量
      */
-    public static String render(String template, String dateStr) {
+    public static String render(String template, String dateStr) throws HeraException {
         if (template == null) {
             return null;
         }
@@ -52,20 +54,26 @@ public class RenderHierarchyProperties extends HierarchyProperties {
             StringWriter sw = new StringWriter();
             try {
                 VelocityContext context = new VelocityContext();
-                context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, ActionUtil.ACTION_MIN)));
+                if (dateStr == null) {
+                    context.put("zdt", new HeraDateTool());
+                } else {
+                    context.put("zdt", new HeraDateTool(HeraDateTool.StringToDate(dateStr, ActionUtil.ACTION_MIN)));
+                }
                 Velocity.evaluate(context, sw, "", m);
                 if (m.equals(sw.toString())) {
-                    ErrorLog.error("render fail with target:" + m);
-                    break;
+                    throw new HeraException("渲染日期失败:" + m);
                 }
             } catch (Exception e) {
-                ErrorLog.error("zdt render error", e);
-                break;
+                throw new HeraException(e);
             }
             template = template.replace(m, sw.toString());
             matcher = pt.matcher(template);
         }
-        template = template.replace("${yesterday}", new HeraDateTool(HeraDateTool.StringToDate(dateStr, ActionUtil.ACTION_MIN)).addDay(-1).format("yyyyMMdd"));
+        if (dateStr == null) {
+            template = template.replace("${yesterday}", new HeraDateTool().addDay(-1).format("yyyyMMdd"));
+        } else {
+            template = template.replace("${yesterday}", new HeraDateTool(HeraDateTool.StringToDate(dateStr, ActionUtil.ACTION_MIN)).addDay(-1).format("yyyyMMdd"));
+        }
         return template;
     }
 

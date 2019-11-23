@@ -3,9 +3,6 @@ package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraPermission;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraListInLangDriver;
-import com.dfire.common.mybatis.HeraSelectLangDriver;
-import com.dfire.common.mybatis.HeraUpdateLangDriver;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -40,10 +37,10 @@ public interface HeraPermissionMapper {
                         @Param("uid") String uId);
 
     @Insert({"<script> " +
-            " insert into hera_permission (gmt_create,gmt_modified,target_id,type,uid) " +
+            " insert into hera_permission (gmt_modified,target_id,type,uid) " +
             "values " +
             "<foreach collection=\"list\"  separator=\",\" item=\"item\" > " +
-            " (#{item.gmtCreate},#{item.gmtModified},#{item.targetId},#{item.type},#{item.uid}) " +
+            " (#{item.gmtModified},#{item.targetId},#{item.type},#{item.uid}) " +
             " </foreach>" +
             " </script>"})
     Integer insertList(@Param("list") List<HeraPermission> permissions);

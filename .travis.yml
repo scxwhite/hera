@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - oraclejdk8
-install: mvn install -Dmaven.test.skip -Dmaven.javadoc.skip=true
+  - openjdk8
+install: mvn install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true
 #script: mvn test
-script: mvn -Dmaven.test.skip  clean package
+script: mvn clean package -Pdev

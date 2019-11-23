@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -29,6 +30,32 @@ import java.util.concurrent.*;
 @Component
 public class WorkContext {
 
+    private static final String loadStr = "cat /proc/cpuinfo |grep processor | wc -l";
+    public static String host;
+    public static Integer cpuCoreNum;
+
+    public static Map<String, String> cacheDBMap;
+
+    static {
+        host = NetUtils.getLocalAddress();
+        HeraLog.info("-----------------------------当前机器的IP为:{}-----------------------------", host);
+        if (HeraGlobalEnv.isLinuxSystem()) {
+            RunShell shell = new RunShell(loadStr);
+            Integer exitCode = shell.run();
+            if (exitCode == 0) {
+                try {
+                    cpuCoreNum = Integer.parseInt(shell.getResult());
+                } catch (IOException e) {
+                    ErrorLog.error("获取cpu核数失败，使用默认配置", e);
+                    cpuCoreNum = 4;
+                }
+            }
+        } else {
+            cpuCoreNum = 4;
+        }
+    }
+
+    public String serverHost;
     @Autowired
     private HeraDebugHistoryService heraDebugHistoryService;
     @Autowired
@@ -46,9 +73,6 @@ public class WorkContext {
     @Autowired
     @Qualifier("heraJobMemoryService")
     private HeraJobService heraJobService;
-    public static String host;
-    public static Integer cpuCoreNum;
-    public String serverHost;
     private HeraChannel serverChannel;
     private Map<String, Job> running = new ConcurrentHashMap<>();
     private Map<String, Job> manualRunning = new ConcurrentHashMap<>();
@@ -60,35 +84,15 @@ public class WorkContext {
      */
     private ExecutorService workWebThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 1L, TimeUnit.MINUTES,
             new SynchronousQueue<>(), new NamedThreadFactory("worker-web"), new ThreadPoolExecutor.AbortPolicy());
-
     /**
      * 执行任务
      */
     private ExecutorService workExecuteThreadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 1L, TimeUnit.MINUTES,
             new SynchronousQueue<>(), new NamedThreadFactory("worker-execute"), new ThreadPoolExecutor.AbortPolicy());
 
-
-    private static final String loadStr = "cat /proc/cpuinfo |grep processor | wc -l";
-
-    static {
-        host = NetUtils.getLocalAddress();
-
-        HeraLog.info("-----------------------------当前机器的IP为:{}-----------------------------", host);
-        if (HeraGlobalEnv.isLinuxSystem()) {
-            RunShell shell = new RunShell(loadStr);
-            Integer exitCode = shell.run();
-            if (exitCode == 0) {
-                try {
-                    cpuCoreNum = Integer.parseInt(shell.getResult());
-                } catch (IOException e) {
-                    ErrorLog.error("获取cpu核数失败，使用默认配置", e);
-                    cpuCoreNum = 4;
-                }
-            }
-        } else {
-            cpuCoreNum = 4;
-        }
-
+    public void init() {
+        //TODO 可以在这里接入统一数据源或者全局的自定义配置。
+        cacheDBMap = new HashMap<>(0);
     }
 
 

@@ -27,7 +27,11 @@ public class EmailTest {
 
     @Test
     public void sendEmail() {
-        emailService.sendEmail("test1", "content1", "xiaosuda@2dfire.com");
+        try {
+            emailService.sendEmail("test1", "content1", "xiaosuda@2dfire.com");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 
 }

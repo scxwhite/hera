@@ -6,7 +6,7 @@ import com.dfire.logs.HeraLog;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.util.*;
@@ -15,7 +15,7 @@ import java.util.*;
  * @author xiaosuda
  * @date 2018/4/16
  */
-@Component
+@Configuration
 public class HeraGlobalEnv {
 
     @Getter
@@ -104,6 +104,13 @@ public class HeraGlobalEnv {
     @Getter
     private static String keyPath;
 
+    @Getter
+    private static String kerberosKeytabPath;
+    @Getter
+    private static String kerberosPrincipal;
+
+
+
 
     @Getter
     private static String aliYunAccessKey;
@@ -187,6 +194,15 @@ public class HeraGlobalEnv {
     @Value("${hera.preemptionMasterGroup}")
     public void setPreemptionMasterGroup(Integer preemptionMasterGroup) {
         HeraGlobalEnv.preemptionMasterGroup = preemptionMasterGroup;
+    }
+
+    @Value("${hera.kerberos.keytabpath}")
+    public void setKerberosKeytabPath(String kerberosKeytabPath) {
+        HeraGlobalEnv.kerberosKeytabPath = kerberosKeytabPath.trim();
+    }
+    @Value("${hera.kerberos.principal}")
+    public void setKerberosPrincipal(String kerberosPrincipal) {
+        HeraGlobalEnv.kerberosPrincipal = kerberosPrincipal.trim();
     }
 
     @Value("${hera.env}")

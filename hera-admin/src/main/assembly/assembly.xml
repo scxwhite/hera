@@ -18,10 +18,26 @@
     <formats>
         <format>tar.gz</format>
     </formats>
-
     <includeBaseDirectory>${assembly.include.base.directory}</includeBaseDirectory>
     <fileSets>
 
+        <fileSet>
+            <directory>${basedir}/../bin</directory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <fileMode>700</fileMode>
+            <outputDirectory>/bin</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../plugins</directory>
+            <includes>
+                <include>*.rpm</include>
+                <include>*.txt</include>
+            </includes>
+            <fileMode>700</fileMode>
+            <outputDirectory>/plugins</outputDirectory>
+        </fileSet>
         <!-- 文体文体jar包 -->
         <fileSet>
             <directory>${basedir}/${project.build.directory}</directory>
@@ -33,17 +49,17 @@
 
         <!-- resources -->
         <fileSet>
-            <directory>${basedir}/${project.build.directory}/classes</directory>
+            <directory>${basedir}/${project.build.directory}/classes/config</directory>
             <includes>
                 <include>*.yaml</include>
                 <include>*.yml</include>
                 <include>*.xml</include>
             </includes>
-            <outputDirectory>/conf</outputDirectory>
+            <fileMode>600</fileMode>
+            <outputDirectory>/config</outputDirectory>
         </fileSet>
 
     </fileSets>
-
     <dependencySets>
         <dependencySet>
             <scope>runtime</scope>

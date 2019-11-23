@@ -1,13 +1,9 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-drop database if exists hera;
-create database hera CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-
 
 use hera;
 
-DROP TABLE IF EXISTS `hera_action`;
-CREATE TABLE `hera_action`
+CREATE TABLE IF NOT EXISTS `hera_action`
 (
   `id`                   bigint(20)   NOT NULL COMMENT '任务对应的唯一18位数字版本号',
   `job_id`               bigint(20)   NOT NULL COMMENT '版本对应的任务id',
@@ -49,8 +45,7 @@ CREATE TABLE `hera_action`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='job版本记录表';
 
-DROP TABLE IF EXISTS `hera_action_history`;
-CREATE TABLE `hera_action_history`
+CREATE TABLE IF NOT EXISTS `hera_action_history`
 (
   `id`                 bigint(20) NOT NULL AUTO_INCREMENT,
   `job_id`             bigint(20)    DEFAULT NULL COMMENT 'hera任务id',
@@ -77,8 +72,7 @@ CREATE TABLE `hera_action_history`
   KEY `ind_end_time` (`end_time`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='Job运行日志表';
-DROP TABLE IF EXISTS `hera_advice`;
-CREATE TABLE `hera_advice`
+CREATE TABLE IF NOT EXISTS `hera_advice`
 (
   `id`          bigint(20) NOT NULL AUTO_INCREMENT,
   `msg`         varchar(256) DEFAULT NULL COMMENT '消息',
@@ -89,9 +83,8 @@ CREATE TABLE `hera_advice`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='hera建议表';
 
-DROP TABLE IF EXISTS `hera_area`;
 
-CREATE TABLE `hera_area`
+CREATE TABLE IF NOT EXISTS `hera_area`
 (
   `id`           int(11) NOT NULL AUTO_INCREMENT COMMENT '区域id',
   `name`         varchar(50) DEFAULT NULL COMMENT '区域名',
@@ -102,8 +95,7 @@ CREATE TABLE `hera_area`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='hera任务区域表';
 
-DROP TABLE IF EXISTS `hera_debug_history`;
-CREATE TABLE `hera_debug_history`
+CREATE TABLE IF NOT EXISTS `hera_debug_history`
 (
   `id`            bigint(20) NOT NULL AUTO_INCREMENT,
   `end_time`      datetime     DEFAULT NULL COMMENT '运行结束时间',
@@ -124,8 +116,7 @@ CREATE TABLE `hera_debug_history`
   DEFAULT CHARSET = utf8mb4
   ROW_FORMAT = COMPACT COMMENT ='开发中心脚本运行日志表';
 
-DROP TABLE IF EXISTS `hera_file`;
-CREATE TABLE `hera_file`
+CREATE TABLE IF NOT EXISTS `hera_file`
 (
   `id`            bigint(20)   NOT NULL AUTO_INCREMENT,
   `content`       mediumtext COMMENT '脚本文件内容',
@@ -140,12 +131,11 @@ CREATE TABLE `hera_file`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='开发中心脚本记录表';
 
-DROP TABLE IF EXISTS `hera_group`;
-CREATE TABLE `hera_group`
+CREATE TABLE IF NOT EXISTS `hera_group`
 (
   `id`           int(11)      NOT NULL AUTO_INCREMENT,
   `configs`      text,
-  `description`  varchar(500)          DEFAULT NULL,
+  `description`  varchar(256)          DEFAULT NULL,
   `directory`    int(11)      NOT NULL,
   `gmt_create`   datetime              DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime              DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -159,8 +149,7 @@ CREATE TABLE `hera_group`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
-DROP TABLE IF EXISTS `hera_host_group`;
-CREATE TABLE `hera_host_group`
+CREATE TABLE IF NOT EXISTS `hera_host_group`
 (
   `id`           int(11) NOT NULL AUTO_INCREMENT,
   `name`         varchar(128) DEFAULT NULL COMMENT '组描述',
@@ -172,8 +161,7 @@ CREATE TABLE `hera_host_group`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='机器组记录表';
 
-DROP TABLE IF EXISTS `hera_host_relation`;
-CREATE TABLE `hera_host_relation`
+CREATE TABLE IF NOT EXISTS `hera_host_relation`
 (
   `id`            int(11) NOT NULL AUTO_INCREMENT,
   `host`          varchar(32) DEFAULT NULL COMMENT '机器ip',
@@ -183,8 +171,8 @@ CREATE TABLE `hera_host_relation`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='机器与机器组关联表';
 
-DROP TABLE IF EXISTS `hera_job`;
-CREATE TABLE `hera_job`
+
+CREATE TABLE IF NOT EXISTS `hera_job`
 (
   `id`                   bigint(30)   NOT NULL AUTO_INCREMENT COMMENT '任务id',
   `auto`                 tinyint(2)    DEFAULT '0' COMMENT '自动调度是否开启',
@@ -192,7 +180,7 @@ CREATE TABLE `hera_job`
   `cron_expression`      varchar(32)   DEFAULT NULL COMMENT 'cron表达式',
   `cycle`                varchar(16)   DEFAULT NULL COMMENT '是否是循环任务',
   `dependencies`         varchar(2000) DEFAULT NULL COMMENT '依赖的任务id,逗号分隔',
-  `description`          varchar(2000) DEFAULT NULL COMMENT '任务描述',
+  `description`          varchar(256)  DEFAULT NULL COMMENT '任务描述',
   `gmt_create`           datetime      DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `gmt_modified`         datetime      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `group_id`             int(11)      NOT NULL COMMENT '所在的目录 id',
@@ -220,13 +208,13 @@ CREATE TABLE `hera_job`
   `must_end_minute`      int(2)        DEFAULT '0',
   `area_id`              varchar(50)   DEFAULT '1' COMMENT '区域ID,多个用,分割',
   `repeat_run`           tinyint(2)    DEFAULT '0' COMMENT '是否允许任务重复执行',
+  `is_valid` tinyint(1) DEFAULT '1' COMMENT '任务是否删除',
   PRIMARY KEY (`id`),
   KEY `ind_zeusjobgroupid` (`group_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='hera的job 记录表';
 
-DROP TABLE IF EXISTS `hera_job_monitor`;
-CREATE TABLE `hera_job_monitor`
+CREATE TABLE IF NOT EXISTS `hera_job_monitor`
 (
   `job_id`   bigint(20)   NOT NULL,
   `user_ids` varchar(100) NOT NULL,
@@ -234,8 +222,7 @@ CREATE TABLE `hera_job_monitor`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
-DROP TABLE IF EXISTS `hera_lock`;
-CREATE TABLE `hera_lock`
+CREATE TABLE IF NOT EXISTS `hera_lock`
 (
   `id`            int(11) NOT NULL AUTO_INCREMENT,
   `gmt_create`    datetime    DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -247,22 +234,20 @@ CREATE TABLE `hera_lock`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='分布式锁记录表';
 
-DROP TABLE IF EXISTS `hera_permission`;
-CREATE TABLE `hera_permission`
+CREATE TABLE IF NOT EXISTS `hera_permission`
 (
   `id`           bigint(20) NOT NULL AUTO_INCREMENT,
-  `gmt_create`   datetime    DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `gmt_modified` datetime    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  `target_id`    bigint(20)  DEFAULT NULL COMMENT '授权的任务或者组id',
-  `type`         varchar(32) DEFAULT NULL COMMENT '授权类型(job或者group)',
-  `uid`          varchar(32) DEFAULT NULL COMMENT '被授权着名称',
-  `is_valid` tinyint(1) NOT NULL DEFAULT '1',
+  `gmt_create`   datetime            DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `gmt_modified` datetime            DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `target_id`    bigint(20)          DEFAULT NULL COMMENT '授权的任务或者组id',
+  `type`         varchar(32)         DEFAULT NULL COMMENT '授权类型(job或者group)',
+  `uid`          varchar(32)         DEFAULT NULL COMMENT '被授权着名称',
+  `is_valid`     tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='任务授权记录表';
 
-DROP TABLE IF EXISTS `hera_profile`;
-CREATE TABLE `hera_profile`
+CREATE TABLE IF NOT EXISTS `hera_profile`
 (
   `id`           bigint(20) NOT NULL AUTO_INCREMENT,
   `gmt_create`   datetime      DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -273,9 +258,8 @@ CREATE TABLE `hera_profile`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='用户配置表';
 
-DROP TABLE IF EXISTS `hera_user`;
 
-CREATE TABLE `hera_user`
+CREATE TABLE IF NOT EXISTS `hera_user`
 (
   `id`           bigint(20) NOT NULL AUTO_INCREMENT,
   `email`        varchar(255)  DEFAULT NULL,
@@ -288,13 +272,13 @@ CREATE TABLE `hera_user`
   `password`     varchar(255)  DEFAULT NULL,
   `user_type`    int(11)       DEFAULT '0',
   `is_effective` int(11)       DEFAULT '0',
-  `description`  varchar(5000) DEFAULT NULL,
+  `description`  varchar(256)  DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 
 
-CREATE TABLE `hera_sso`
+CREATE TABLE IF NOT EXISTS `hera_sso`
 (
   `id`           int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
   `name`         varchar(16)      NOT NULL DEFAULT '' COMMENT '用户名',
@@ -310,6 +294,23 @@ CREATE TABLE `hera_sso`
   UNIQUE KEY `unq_name` (`name`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='sso用户表';
+
+CREATE TABLE IF NOT EXISTS `hera_record`
+(
+  `id`           int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `type`         tinyint(4)       NOT NULL DEFAULT '0' COMMENT '日志类型：比如编辑、更新',
+  `content`      mediumtext COMMENT '脚本的变更前的内容',
+  `log_type`     varchar(15)      NOT NULL DEFAULT '-1' COMMENT '记录的日志的类型 比如：任务/组',
+  `log_id`       int(11)          NOT NULL DEFAULT '-1' COMMENT '任务id/组id',
+  `gmt_create`   bigint(13)       NOT NULL DEFAULT '1557814087800' COMMENT '创建时间',
+  `gmt_modified` bigint(13)       NOT NULL DEFAULT '1557814087800' COMMENT '同步专用字段',
+  `sso`          varchar(32)      NOT NULL DEFAULT 'hera' COMMENT '用户名称',
+  `gId`          int(11)          NOT NULL DEFAULT '-1' COMMENT '组id',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 37
+  DEFAULT CHARSET = utf8mb4 COMMENT ='日志记录表';
+
 BEGIN;
 insert into hera_user (email, name, uid, password, user_type, is_effective)
 values ('1142819049@qq.com', 'hera', 'hera', 'd3886bd3bcba3d88e2ab14ba8c9326da', 0, 1);
@@ -330,7 +331,7 @@ VALUES ('1', '0',
         '0 0 3 * * ?', null, '', '输出测试', '2018-12-22 11:14:55', '2019-01-04 11:14:09', '2', null, null, null, null,
         'echoTest', null, 'hera', null, null, null, null, 'shell', '0',
         'echo ${name}\n\necho \"当前时间戳\":${zdt.getTime()}\necho \"     明天\":${zdt.addDay(1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"上个月的今天\": ${zdt.add(2,-1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"真实的今天\":${zdt.getToday()}\n\n\necho \"如果需要更多时间查看HeraDateTool类,可以自定义时间\"\n\n\necho ${qqGroup}',
-        null, null, null, null, null, null, '1', null, '1', 0);
+        null, null, null, null, null, null, '1', null, '1', 0,1);
 INSERT INTO `hera_file`
 VALUES ('1', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '个人文档', 'hera', null, '1', '0');
 INSERT INTO `hera_file`

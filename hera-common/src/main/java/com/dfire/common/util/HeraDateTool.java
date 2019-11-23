@@ -37,8 +37,22 @@ public class HeraDateTool {
         return this;
     }
 
+    public HeraDateTool set(int field, int amount) {
+        calendar.set(field, amount);
+        return this;
+    }
+
     public long getTime() {
         return calendar.getTime().getTime() / 1000;
+    }
+
+    public long getMillis() {
+        return calendar.getTime().getTime();
+    }
+
+
+    public long getNowMillis() {
+        return System.currentTimeMillis();
     }
 
 
@@ -51,10 +65,6 @@ public class HeraDateTool {
         return format.format(calendar.getTime());
     }
 
-    public static void main(String[] args) {
-        System.out.println(new HeraDateTool(new Date()).addDay(-1).format(TimeFormatConstant.YYYYMMDD));
-
-    }
 
     /**
      * @param dateStr   需要转换的字符串

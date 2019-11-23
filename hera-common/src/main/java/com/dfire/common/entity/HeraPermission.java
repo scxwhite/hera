@@ -34,5 +34,7 @@ public class HeraPermission {
     @SkipColumn
     private Date gmtModified;
 
-    private int isValid;
+    private Integer isValid;
+
+
 }

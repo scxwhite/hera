@@ -19,7 +19,6 @@ public enum OperatorSystemEnum {
      */
     WIN;
 
-
     public static boolean isLinux(OperatorSystemEnum systemEnum) {
         return systemEnum == LINUX;
     }

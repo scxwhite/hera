@@ -1,11 +1,14 @@
 package com.dfire.monitor.service.impl;
 
 import com.dfire.common.service.EmailService;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.MonitorLog;
 import com.dfire.monitor.domain.AlarmInfo;
 import com.dfire.monitor.service.AlarmCenter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
 
 
 /**
@@ -37,7 +40,13 @@ public class AlarmCenterImpl implements AlarmCenter {
 
     @Override
     public boolean sendToEmail(String title, String content, String address) {
-        emailService.sendEmail(title, content, address);
+        try {
+            emailService.sendEmail(title, content, address);
+            return true;
+        } catch (MessagingException e) {
+            ErrorLog.error("发送邮件[title:" + title + ",content:" + content + "]失败", e);
+
+        }
         return false;
     }
 }

@@ -25,6 +25,7 @@
                 <li><a href='${request.contextPath}/developCenter' title='开发中心'>开发中心</a></li>
                 <li><a href='${request.contextPath}/jobDetail' title='今日任务详情'>今日任务详情</a></li>
                 <li><a href='${request.contextPath}/adviceController' title='建议&留言'>建议&留言</a></li>
+                <li><a href='${request.contextPath}/help' title='帮助文档'>帮助文档</a></li>
             </ul>
         </div>
     </div>

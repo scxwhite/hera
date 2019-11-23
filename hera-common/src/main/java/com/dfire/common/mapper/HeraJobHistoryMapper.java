@@ -36,8 +36,8 @@ public interface HeraJobHistoryMapper {
     @Select("select * from hera_action_history where id = #{id}")
     HeraJobHistory findById(@Param("id") String id);
 
-    @Select("select * from hera_action_history where action_id = #{id} limit 1")
-    HeraJobHistory findByActionId(@Param("id") String id);
+    @Select("select * from hera_action_history where action_id = #{actionId}")
+    List<HeraJobHistory> findByActionId(@Param("actionId") String actionId);
 
     /**
      * 更新日志
@@ -102,4 +102,7 @@ public interface HeraJobHistoryMapper {
 
     @Delete("delete from hera_action_history where action_id < DATE_SUB(CURRENT_DATE(),INTERVAL #{beforeDay} DAY) * 10000000000;")
     Integer deleteHistoryRecord(Integer beforeDay);
+
+    @Select("select * from hera_action_history where job_id = #{jobId} order by id desc limit 1")
+    HeraJobHistory findNewest(String jobId);
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>任务调度中心</title>
+    <title>开发中心</title>
     <#import "/common/common.macro.ftl" as netCommon>
     <@netCommon.commonStyle />
     <link href="${request.contextPath}/static/plugins/ztree/css/metroStyle/metroStyle.css" rel="stylesheet">

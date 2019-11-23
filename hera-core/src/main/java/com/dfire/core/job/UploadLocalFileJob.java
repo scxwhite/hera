@@ -1,5 +1,8 @@
 package com.dfire.core.job;
 
+import com.dfire.config.HeraGlobalEnv;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +27,9 @@ public class UploadLocalFileJob extends ProcessJob {
     @Override
     public List<String> getCommandList() {
         List<String> commands = new ArrayList<>();
+        if (StringUtils.isNotBlank(HeraGlobalEnv.getKerberosKeytabPath()) && StringUtils.isNotBlank(HeraGlobalEnv.getKerberosPrincipal())) {
+            commands.add("kinit -kt " + HeraGlobalEnv.getKerberosKeytabPath() + " " + HeraGlobalEnv.getKerberosPrincipal());
+        }
         commands.add("hadoop fs -copyFromLocal " + localPath + " " + hadoopPath);
         return commands;
     }

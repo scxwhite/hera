@@ -2,10 +2,11 @@ package com.dfire.core.job;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dfire.common.constants.Constants;
+import com.dfire.common.exception.HeraCaughtExceptionHandler;
 import com.dfire.common.exception.HeraException;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.config.HeraGlobalEnv;
-import com.dfire.common.exception.HeraCaughtExceptionHandler;
+import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
 
@@ -21,7 +22,7 @@ import java.util.concurrent.CountDownLatch;
  * @time: Created in 11:01 2018/3/23
  * @desc 通过操作系统创建进程Process的Job任务
  */
-public abstract class ProcessJob extends AbstractJob implements Job {
+public abstract class ProcessJob extends AbstractJob {
 
     protected volatile Process process;
     protected final Map<String, String> envMap;
@@ -190,24 +191,7 @@ public abstract class ProcessJob extends AbstractJob implements Job {
         return processId;
     }
 
-    @Override
-    protected String getProperty(String key, String defaultValue) {
-        String value = jobContext.getProperties().getProperty(key);
-        if (value == null) {
-            value = defaultValue;
-        }
-        return value;
-    }
 
-    @Override
-    public HierarchyProperties getProperties() {
-        return jobContext.getProperties();
-    }
-
-    @Override
-    public JobContext getJobContext() {
-        return jobContext;
-    }
 
     /**
      * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>

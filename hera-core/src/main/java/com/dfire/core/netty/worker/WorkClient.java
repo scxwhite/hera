@@ -62,13 +62,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 public class WorkClient {
 
+    public ScheduledThreadPoolExecutor workSchedule;
     private Bootstrap bootstrap;
     private EventLoopGroup eventLoopGroup;
     @Autowired
     private WorkContext workContext;
     private ScheduledExecutorService service;
     private AtomicBoolean clientSwitch = new AtomicBoolean(false);
-    public ScheduledThreadPoolExecutor workSchedule;
 
     {
         workSchedule = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory("work-schedule", false));
@@ -101,6 +101,7 @@ public class WorkClient {
         }
 
         workContext.setWorkClient(this);
+        workContext.init();
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(eventLoopGroup)

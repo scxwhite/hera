@@ -32,6 +32,7 @@ import com.dfire.event.HeraJobLostEvent;
 import com.dfire.event.HeraJobMaintenanceEvent;
 import com.dfire.event.HeraJobSuccessEvent;
 import com.dfire.logs.*;
+import com.dfire.monitor.domain.AlarmInfo;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
@@ -193,10 +194,8 @@ public class Master {
                 if (jobDependList.size() > 0) {
                     for (String jobDepend : jobDependList) {
                         heraAction = actionMapNew.get(Long.parseLong(jobDepend));
-                        if (heraAction != null) {
-                            if (!(isAllComplete = StatusEnum.SUCCESS.toString().equals(heraAction.getStatus()))) {
-                                break;
-                            }
+                        if (heraAction == null || !(isAllComplete = StatusEnum.SUCCESS.toString().equals(heraAction.getStatus()))) {
+                            break;
                         }
                     }
                 }
@@ -394,6 +393,9 @@ public class Master {
                 } else { //单个任务生成版本
                     HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
                     jobList.add(heraJob);
+                    if (heraJob.getScheduleType() == 1) {
+                        jobList.addAll(getParentJob(heraJob.getDependencies()));
+                    }
                     actionMap = heraActionMap;
                     List<Long> shouldRemove = new ArrayList<>();
                     for (Long actionId : actionMap.keySet()) {
@@ -440,11 +442,30 @@ public class Master {
             }
         } catch (Exception e) {
             ErrorLog.error("生成版本异常", e);
-
+            notifyAdmin("版本生成异常警告", e.getMessage());
         } finally {
             isGenerateActioning = false;
         }
         return false;
+    }
+
+
+    /**
+     * 递归获取所有父级依赖任务
+     *
+     * @param dpIdStr
+     * @return
+     */
+    private List<HeraJob> getParentJob(String dpIdStr) {
+        List<HeraJob> jobList = new ArrayList<>();
+        Arrays.stream(dpIdStr.split(Constants.COMMA)).forEach(id -> {
+            HeraJob dpJob = masterContext.getHeraJobService().findById(Integer.parseInt(id));
+            if (dpJob.getScheduleType() == 1) {
+                jobList.addAll(getParentJob(dpJob.getDependencies()));
+            }
+            jobList.add(dpJob);
+        });
+        return jobList;
     }
 
     /**
@@ -479,7 +500,6 @@ public class Master {
                 } else {
                     ErrorLog.error("任务{}未知的调度类型{}", heraJob.getId(), heraJob.getScheduleType());
                 }
-
             }
         }
         batchInsertList(insertActionList, actionMap, nowAction);
@@ -757,13 +777,15 @@ public class Master {
     }
 
     public void debug(HeraDebugHistoryVo debugHistory) {
+        //如果是emr集群,开发中心任务直接在固定集群跑
+        boolean fixedEmr = HeraGlobalEnv.isEmrJob();
         JobElement element = JobElement.builder()
                 .jobId(debugHistory.getId())
                 .hostGroupId(debugHistory.getHostGroupId())
                 .historyId(debugHistory.getId())
                 .triggerType(TriggerTypeEnum.DEBUG)
-                .fixedEmr(false)
-                .costMinute(-1)
+                .fixedEmr(fixedEmr)
+                .costMinute(0)
                 .build();
         debugHistory.setStatus(StatusEnum.RUNNING);
         debugHistory.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -936,6 +958,18 @@ public class Master {
 
     }
 
+
+    private void notifyAdmin(String title, String content) {
+        HeraUser admin = masterContext.getHeraUserService().findByName(HeraGlobalEnv.getAdmin());
+        if (admin != null) {
+            masterContext.getAlarmCenter().sendToEmail(title, content, admin.getEmail());
+            masterContext.getAlarmCenter().sendToPhone(AlarmInfo.builder().message(title + "\n" + content).phone(admin.getPhone()).build());
+        } else {
+            ErrorLog.error("内部异常{}:{}，找不到{}管理员的联系方式", title, content, HeraGlobalEnv.getAdmin());
+        }
+
+    }
+
     /**
      * work断开的处理
      *
@@ -944,11 +978,7 @@ public class Master {
     public void workerDisconnectProcess(Channel channel) {
         String ip = getIpFromChannel(channel);
         ErrorLog.error("work:{}断线", ip);
-        HeraUser admin = masterContext.getHeraUserService().findByName(HeraGlobalEnv.getAdmin());
-
-        if (admin != null) {
-            masterContext.getAlarmCenter().sendToEmail("警告:work断线了", ip, admin.getEmail());
-        }
+        notifyAdmin("警告:work断线了", ip);
         MasterWorkHolder workHolder = masterContext.getWorkMap().get(channel);
         masterContext.getWorkMap().remove(channel);
         if (workHolder != null) {

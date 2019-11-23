@@ -76,10 +76,13 @@ hera:
   connectPort: 9887 #netty通信的端口
   admin: hera         # admin用户
   taskTimeout: 12  #单个任务执行的最大时间  单位：小时
-  env: @env@
+  env: ${spring.profiles.active}
   alarmEnv: daily,dev,pre,publish # 设置允许哪些环境开启告警，多个用,分开，默认全部环境
   sudoUser: true  #是否要使用sudo -u 切换账号(即启动多租户功能)
-  version: 2.3
+  version: 2.4.1
+  kerberos:
+    keytabpath:    #kerberos认证keytab文件,如果hadoop 集群无需kerberos授权，则不填
+    principal:     #kerberos认证principal,如果hadoop 集群无需kerberos授权，则不填
   job:
     shell:
       bin: sh
@@ -104,7 +107,7 @@ india:
 
 
 logging:
-  config: classpath:logback-spring.xml
+  config: classpath:config/logback-spring.xml
   path: /opt/logs/spring-boot   # 日志路径
   level:
     root: INFO
@@ -157,10 +160,8 @@ druid:
     password: root
 hera:
   area: CN
-  workDir: /home/docker/logs
   emrJob: true:aliYun
-logging:
-  path: /home/docker/logs
+
 server:
   port: 8121
   context-path: /
@@ -174,15 +175,14 @@ druid:
     username: xx
     password: xx
 hera:
-  workDir: /home/docker/logs
+
   area: CN
   emrJob: true:aliYun
   maxParallelNum: 2
 server:
   port: 8121
   context-path: /
-logging:
-  path: /home/docker/logs
+
 
 ---
 ## 中国预发环境
@@ -194,7 +194,7 @@ druid:
     username: xx
     password: xx
 hera:
-  workDir: /home/docker/logs
+
   area: CN
   emrJob: true:aliYun
   emr_fixed_host: xx.xx.xx.xx
@@ -202,8 +202,7 @@ hera:
 server:
   port: 8121
   context-path: /
-logging:
-  path: /home/docker/logs
+
 
 ---
 ## 中国线上环境
@@ -215,7 +214,6 @@ druid:
     username: xx
     password: xx
 hera:
-  workDir: /home/docker/logs
   area: CN
   emrJob: true:aliYun
   emr_fixed_host: xx.xx.xx.xx
@@ -223,8 +221,6 @@ hera:
 server:
   port: 8121
   context-path: /
-logging:
-  path: /home/docker/logs
 
 ---
 ##############################################################################################################################
@@ -249,15 +245,12 @@ logging:
 spring:
   profiles: pre_ind
 hera:
-  workDir: /home/docker/logs
   emrJob: true:amazon
   area: IND
   maxParallelNum: 40
 server:
   port: 8121
   context-path: /
-logging:
-  path: /home/docker/logs
 druid:
   datasource:
     username: xx
@@ -270,7 +263,6 @@ druid:
 spring:
   profiles: pre_eu
 hera:
-  workDir: /home/docker/logs
   emrJob: true:amazon
   area: EU
   maxParallelNum: 40
@@ -280,8 +272,6 @@ hera:
 server:
   port: 8121
   context-path: /
-logging:
-  path: /home/docker/logs
 druid:
   datasource:
     username: xx
@@ -292,7 +282,6 @@ druid:
 spring:
   profiles: prod_eu
 hera:
-  workDir: /home/docker/logs
   emrJob: true:amazon
   area: EU
   maxParallelNum: 40
@@ -302,8 +291,6 @@ hera:
 server:
   port: 8121
   context-path: /
-logging:
-  path: /home/docker/logs
 druid:
   datasource:
     username: xx
@@ -314,7 +301,6 @@ druid:
 spring:
   profiles: pre_us
 hera:
-  workDir: /home/docker/logs
   emrJob: true:amazon
   area: US
   maxParallelNum: 40
@@ -324,8 +310,6 @@ hera:
 server:
   port: 8121
   context-path: /
-logging:
-  path: /home/docker/logs
 druid:
   datasource:
     username: xx
@@ -337,7 +321,6 @@ druid:
 spring:
   profiles: prod_us
 hera:
-  workDir: /home/docker/logs
   emrJob: true:amazon
   area: US
   maxParallelNum: 40
@@ -346,8 +329,6 @@ hera:
 server:
   port: 8121
   context-path: /
-logging:
-  path: /home/docker/logs
 druid:
   datasource:
     username: xx
