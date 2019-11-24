@@ -1,0 +1,33 @@
+##<!DOCTYPE html>
+##<html>
+##<body>
+##    <h1>It works.</h1>
+##    <br/>
+##    <pre>
+##    Locale :  $!{text.getLocale()}
+##    Date   :  $!{dateTool.now()}
+##    </pre>
+##    <hr/>
+##    $!{screen_content}
+##	<hr/>
+##</body>
+##</html>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width"/>
+    <title>赫拉调度系统</title>
+    <link rel="stylesheet" type="text/css"
+          href="$!index_css">
+
+</head>
+
+<body>
+<div id="ice-container"></div>
+<script type="text/javascript" charset="utf-8"
+        src="$!index_js"></script>
+</body>
+</html>

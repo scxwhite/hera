@@ -108,7 +108,7 @@ public class ScheduleCenterController extends BaseHeraController {
         StringBuilder focusUsers = new StringBuilder("[ ");
         Optional.ofNullable(monitor).ifPresent(m -> {
             if (StringUtils.isNotBlank(m.getUserIds())) {
-                String ssoId = getSsoId();
+                String ssoId = "hera";
                 Arrays.stream(monitor.getUserIds().split(Constants.COMMA)).filter(StringUtils::isNotBlank).distinct().forEach(id -> {
                     if (ssoId.equals(id)) {
                         heraJobVo.setFocus(true);
@@ -222,13 +222,11 @@ public class ScheduleCenterController extends BaseHeraController {
     }
 
 
-    @RequestMapping(value = "/updatePermission", method = RequestMethod.POST)
+    @GetMapping(value = "/updatePermission")
     @ResponseBody
     @Transactional(rollbackFor = Exception.class)
-    @RunAuth(typeIndex = 1)
-    public JsonResponse updatePermission(@RequestParam("id") String id,
-                                         @RequestParam("type") RunAuthType type,
-                                         @RequestParam("uIdS") String names) {
+//    @RunAuth(typeIndex = 1)
+    public JsonResponse updatePermission(String id, RunAuthType type, String names) {
 
         Integer newId = StringUtil.getGroupId(id);
         JSONArray parseId = JSONArray.parseArray(names);
@@ -272,9 +270,9 @@ public class ScheduleCenterController extends BaseHeraController {
     }
 
 
-    @RequestMapping(value = "/getJobOperator", method = RequestMethod.GET)
+    @GetMapping(value = "/getJobOperator")
     @ResponseBody
-    @RunAuth(typeIndex = 1)
+//    @RunAuth(typeIndex = 1)
     public JsonResponse getJobOperator(String jobId, RunAuthType type) {
         Integer groupId = StringUtil.getGroupId(jobId);
         List<HeraPermission> permissions = heraPermissionService.findByTargetId(groupId, type.getName(), 1);
@@ -294,7 +292,7 @@ public class ScheduleCenterController extends BaseHeraController {
      * @param actionId
      * @return
      */
-    @RequestMapping(value = "/manual", method = RequestMethod.GET)
+    @GetMapping(value = "/manual")
     @ResponseBody
     public JsonResponse execute(String actionId, Integer triggerType, @RequestParam(required = false) String execUser) throws InterruptedException, ExecutionException {
         if (execUser == null) {
@@ -337,7 +335,7 @@ public class ScheduleCenterController extends BaseHeraController {
         return new JsonResponse(true, actionId);
     }
 
-    @RequestMapping(value = "/getJobVersion", method = RequestMethod.GET)
+    @GetMapping(value = "/getJobVersion")
     @ResponseBody
     public JsonResponse getJobVersion(String jobId) {
         return new JsonResponse(true, heraJobActionService.getActionVersionByJobId(Long.parseLong(jobId))
@@ -358,9 +356,9 @@ public class ScheduleCenterController extends BaseHeraController {
         return new JsonResponse(false, "更新脚本失败");
     }
 
-    @RequestMapping(value = "/updateJobMessage", method = RequestMethod.POST)
+    @GetMapping(value = "/updateJobMessage")
     @ResponseBody
-    @RunAuth(idIndex = -1)
+//    @RunAuth(idIndex = -1)
     public JsonResponse updateJobMessage(HeraJobVo heraJobVo) {
         if (StringUtils.isBlank(heraJobVo.getDescription())) {
             return new JsonResponse(false, "描述不能为空");
@@ -428,7 +426,7 @@ public class ScheduleCenterController extends BaseHeraController {
         return new JsonResponse(res, res ? "更新成功" : "系统异常,请联系管理员");
     }
 
-    @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
+    @GetMapping(value = "/deleteJob")
     @ResponseBody
     @RunAuth(typeIndex = 1)
     public JsonResponse deleteJob(String id, RunAuthType type) throws NoPermissionException {
@@ -468,7 +466,7 @@ public class ScheduleCenterController extends BaseHeraController {
         }
     }
 
-    @RequestMapping(value = "/addMonitor", method = RequestMethod.POST)
+    @GetMapping(value = "/addMonitor")
     @ResponseBody
     public JsonResponse updateMonitor(Integer id) {
         String ssoId = getSsoId();
@@ -506,7 +504,7 @@ public class ScheduleCenterController extends BaseHeraController {
 
     @RequestMapping(value = "/addGroup", method = RequestMethod.POST)
     @ResponseBody
-    @RunAuth(authType = RunAuthType.GROUP, idIndex = 1)
+//    @RunAuth(authType = RunAuthType.GROUP, idIndex = 1)
     public JsonResponse addJob(HeraGroup heraGroup, String parentId) {
         heraGroup.setParent(StringUtil.getGroupId(parentId));
         heraGroup.setOwner(getOwner());
@@ -521,7 +519,7 @@ public class ScheduleCenterController extends BaseHeraController {
         }
     }
 
-    @RequestMapping(value = "/updateSwitch", method = RequestMethod.POST)
+    @GetMapping(value = "/updateSwitch")
     @ResponseBody
     @RunAuth
     public JsonResponse updateSwitch(Integer id, Integer status) {
@@ -579,9 +577,9 @@ public class ScheduleCenterController extends BaseHeraController {
         return null;
     }
 
-    @RequestMapping(value = "/generateVersion", method = RequestMethod.POST)
+    @GetMapping(value = "/generateVersion")
     @ResponseBody
-    @RunAuth
+//    @RunAuth
     public JsonResponse generateVersion(String jobId) throws ExecutionException, InterruptedException {
         return new JsonResponse(true, workClient.generateActionFromWeb(JobExecuteKind.ExecuteKind.ManualKind, jobId));
     }

@@ -48,8 +48,8 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     }
 
     @Override
-    public List<HeraDebugHistory> findByFileId(Integer fileId) {
-        return  heraDebugHistoryMapper.findByFileId(fileId);
+    public List<HeraDebugHistory> findByFileId(Integer fileId,Integer pageSize, Integer pageNo) {
+        return  heraDebugHistoryMapper.findByFileId(fileId,pageSize,pageNo);
     }
 
     @Override

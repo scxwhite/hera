@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -39,24 +40,24 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
 
         @Override
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-            if (!(handler instanceof HandlerMethod)) {
-                return true;
-            }
-            HandlerMethod method = (HandlerMethod) handler;
-            UnCheckLogin methodAnnotation = method.getMethodAnnotation(UnCheckLogin.class);
-            if (methodAnnotation != null) {
-                return true;
-            }
-            UnCheckLogin declaredAnnotation = method.getBeanType().getDeclaredAnnotation(UnCheckLogin.class);
-            if (declaredAnnotation != null) {
-                return true;
-            }
-            String heraToken = JwtUtils.getValFromCookies(Constants.TOKEN_NAME, request);
-            if (StringUtils.isNotBlank(heraToken) && JwtUtils.verifyToken(heraToken)) {
-                return true;
-            }
-            request.getRequestDispatcher("/login").forward(request, response);
-            return false;
+//            if (!(handler instanceof HandlerMethod)) {
+//                return true;
+//            }
+//            HandlerMethod method = (HandlerMethod) handler;
+//            UnCheckLogin methodAnnotation = method.getMethodAnnotation(UnCheckLogin.class);
+//            if (methodAnnotation != null) {
+//                return true;
+//            }
+//            UnCheckLogin declaredAnnotation = method.getBeanType().getDeclaredAnnotation(UnCheckLogin.class);
+//            if (declaredAnnotation != null) {
+//                return true;
+//            }
+//            String heraToken = JwtUtils.getValFromCookies(Constants.TOKEN_NAME, request);
+//            if (StringUtils.isNotBlank(heraToken) && JwtUtils.verifyToken(heraToken)) {
+//                return true;
+//            }
+//            request.getRequestDispatcher("/login").forward(request, response);
+            return true;
         }
 
 
@@ -65,6 +66,17 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
             BaseHeraController.remove();
             super.postHandle(request, response, handler, modelAndView);
         }
+    }
+
+    /**
+     * 前后端分离，添加允许跨域请求
+     *
+     * @param registry
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        //允许全部请求跨域
+        registry.addMapping("/**");
     }
 
 

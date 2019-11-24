@@ -22,7 +22,8 @@ public abstract class BaseHeraController {
     }
 
     protected String getOwner() {
-        return JwtUtils.getObjectFromToken(Constants.TOKEN_NAME, requestThread.get(), Constants.SESSION_USERNAME);
+        return "hera";
+//        return JwtUtils.getObjectFromToken(Constants.TOKEN_NAME, requestThread.get(), Constants.SESSION_USERNAME);
     }
 
     protected String getSsoName() {

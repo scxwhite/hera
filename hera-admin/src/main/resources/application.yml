@@ -19,6 +19,15 @@ spring:
     suffix: .ftl
     template-loader-path: classpath:/templates/
     request-context-attribute: request
+  velocity:
+    cache: false
+    scharset: UTF-8
+    check-template-location: true
+    content-type: text/html
+    enabled: true
+    resource-loader-path: /velocity/layout
+#    prefix: /templates/
+    suffix: .vm
   mvc:
     throw-exception-if-no-handler-found: true
     static-path-pattern: /static/**
@@ -26,7 +35,7 @@ spring:
 druid:
   datasource:
     username: root  #数据库用户名
-    password: moye      #数据库密码
+    password: 123456      #数据库密码
     driver-class-name: com.mysql.jdbc.Driver  #数据库驱动
     url: jdbc:mysql://localhost:3306/hera?characterEncoding=utf-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
     initial-size: 5    #初始化连接池数量

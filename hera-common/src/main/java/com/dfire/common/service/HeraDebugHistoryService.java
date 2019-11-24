@@ -27,7 +27,7 @@ public interface HeraDebugHistoryService {
 
     HeraDebugHistoryVo findById(Integer id);
 
-    List<HeraDebugHistory> findByFileId(Integer fileId);
+    List<HeraDebugHistory> findByFileId(Integer fileId, Integer pageSize, Integer pageNo);
 
     int updateStatus(HeraDebugHistory heraDebugHistory);
 

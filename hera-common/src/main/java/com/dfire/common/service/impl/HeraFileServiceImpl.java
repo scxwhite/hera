@@ -74,11 +74,11 @@ public class HeraFileServiceImpl implements HeraFileService {
         List<HeraFile> fileVoList = this.findByOwner(user);
         fileVoList.addAll(this.findByOwner(Constants.FILE_ALL_NAME));
         return fileVoList.parallelStream().map(file -> {
-            HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(file.getId()).name(file.getName()).build();
+            HeraFileTreeNodeVo vo = HeraFileTreeNodeVo.builder().id(String.valueOf(file.getId())).name(file.getName()).build();
             if (file.getParent() == null) {
-                vo.setParent(-1);
+                vo.setParent("-1");
             } else {
-                vo.setParent(file.getParent());
+                vo.setParent(String.valueOf(file.getParent()));
             }
             if (file.getType() == 1) {
                 vo.setIsParent(true);

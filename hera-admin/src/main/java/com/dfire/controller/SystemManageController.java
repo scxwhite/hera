@@ -245,7 +245,7 @@ public class SystemManageController extends BaseHeraController {
      */
     @RequestMapping(value = "/homePage/getJobQueueInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse getJobQueueInfo() throws InterruptedException, ExecutionException, InvalidProtocolBufferException {
+    public JsonResponse getJobQueueInfo() throws Exception {
         return new JsonResponse(true, workClient.getJobQueueInfoFromWeb());
 
     }
@@ -276,7 +276,7 @@ public class SystemManageController extends BaseHeraController {
 
     @RequestMapping(value = "/homePage/getAllWorkInfo", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse getAllWorkInfo() throws InterruptedException, ExecutionException, InvalidProtocolBufferException {
+    public JsonResponse getAllWorkInfo() throws Exception {
         return new JsonResponse(true, workClient.getAllWorkInfo());
     }
 

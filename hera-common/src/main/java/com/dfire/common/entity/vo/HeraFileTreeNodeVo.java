@@ -13,8 +13,8 @@ import lombok.Data;
 @Builder
 public class HeraFileTreeNodeVo {
 
-    Integer id;
-    Integer parent;
+    String id;
+    String parent;
     String name;
     boolean isParent;
 

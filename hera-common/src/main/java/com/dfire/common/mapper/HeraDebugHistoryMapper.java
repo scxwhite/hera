@@ -41,9 +41,9 @@ public interface HeraDebugHistoryMapper {
     @Lang(HeraListInLangDriver.class)
     List<HeraDebugHistory> findByIds(@Param("list") List<Integer> list);
 
-    @Select("select * from hera_debug_history where file_id = #{fileId} order by id desc ")
+    @Select("select * from hera_debug_history where file_id = #{fileId} order by id desc limit #{pageNo} , #{pageSize}  ")
     @Lang(HeraSelectLangDriver.class)
-    List<HeraDebugHistory> findByFileId(Integer fileId);
+    List<HeraDebugHistory> findByFileId(@Param("fileId")Integer fileId,@Param("pageSize")Integer pageSize, @Param("pageNo")Integer pageNo);
 
     @Update("update hera_debug_history set status = #{status}, end_time = #{endTime} where id = #{id}")
     int updateStatus(HeraDebugHistory heraDebugHistory);
@@ -51,6 +51,6 @@ public interface HeraDebugHistoryMapper {
     @Update("update hera_debug_history set log = #{log}  where id = #{id}")
     int updateLog(HeraDebugHistory heraDebugHistory);
 
-    @Select("select * from hera_debug_history where id = #{id}")
+    @Select("select * from hera_debug_history where id = #{id} ")
     HeraDebugHistory findLogById(Integer id);
 }

@@ -1,5 +1,6 @@
 package com.dfire.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.HeraFile;
@@ -173,8 +174,8 @@ public class DevelopCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "findDebugHistory", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse findDebugHistory(Integer fileId) {
-        return new JsonResponse(true, debugHistoryService.findByFileId(fileId));
+    public JsonResponse findDebugHistory(Integer fileId,Integer pageSize, Integer pageNo) {
+        return new JsonResponse(true, debugHistoryService.findByFileId(fileId,pageSize,  pageNo));
     }
 
     /**
