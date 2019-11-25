@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -40,10 +41,14 @@ public class HeraJobMonitorServiceImpl implements HeraJobMonitorService {
 
     @Override
     public boolean removeMonitor(String userId, Integer jobId) {
-        HeraJobMonitor monitor = new HeraJobMonitor();
-        monitor.setUserIds(userId.endsWith(",") ? userId : userId + ",");
-        monitor.setJobId(jobId);
-        Integer res = heraJobMonitorMapper.deleteMonitor(monitor);
+        HeraJobMonitor oldMonitor = heraJobMonitorMapper.findByJobId(jobId);
+        StringBuilder newMonitor = new StringBuilder();
+        Arrays.stream(oldMonitor.getUserIds().split(Constants.COMMA)).forEach(id -> {
+            if (!id.equals(userId)) {
+                newMonitor.append(id).append(Constants.COMMA);
+            }
+        });
+        Integer res = heraJobMonitorMapper.update(jobId, newMonitor.toString());
         return res != null && res > 0;
     }
 

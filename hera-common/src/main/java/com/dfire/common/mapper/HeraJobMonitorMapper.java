@@ -20,10 +20,6 @@ public interface HeraJobMonitorMapper {
     Integer insert(HeraJobMonitor monitor);
 
 
-    @Update("update hera_job_monitor set user_ids = trim(leading ',' from replace(concat(',',user_ids,','), ',#{userIds},', '')) where job_id = #{jobId}")
-    Integer deleteMonitor(HeraJobMonitor monitor);
-
-
     @Update("update hera_job_monitor set user_ids = concat(user_ids,#{userIds}) where job_id = #{jobId}")
     Integer insertUser(HeraJobMonitor monitor);
 
