@@ -1,0 +1,66 @@
+[TOC]
+
+## 说明
+作业实例的批次号信息，对于业务来说，太技术了，不容易理解。
+提示批次号
+
+
+## 功能
+
+批次号,调度周期,时间间隔
+标签(逗号分隔)
+
+
+### hera meta 改动
+
+表hera_job，增加2个字段
+
+cron_period,cron_interval两个字段；不改变原hera的调用逻辑；只是会结合版本号，得到作业实例的批次号信息。
+
+```
+cron_period varchar(50) DEFAULT 'other' COMMENT '调度周期(year,month,day,hour,minute,second,other)',
+cron_interval int  DEFAULT 0 COMMENT '调度间隔，业务定义的日期与调度日期的间隔'
+```
+
+表hera_action，增加3个字段
+如jobA定义的cron_period=day,cron_interval=-1时，则版本号(id)=20191203010203xxxx的批次号=20190102
+
+cron_period varchar(50) DEFAULT 'other' COMMENT '调度周期(year,month,day,hour,minute,second,other)',
+cron_interval int  DEFAULT 0 COMMENT '调度间隔，业务定义的日期与调度日期的间隔',
+batch_id varchar(20) COMMENT '批次号'
+
+
+### hera脚本改动
+
+#### entity
+1. common-com.dfire.common.entity.HeraJob
+```
+    private String cronPeriod;
+
+    private int cronInterval;
+```
+
+1. common-com.dfire.common.entity.HeraAction
+```
+    private String cronPeriod;
+
+    private int cronInterval;
+
+    private String batchId;
+```
+
+1. common-com.dfire.common.entity.vo.HeraJobVo
+```
+    private String cronPeriod;
+
+    private int cronInterval;
+```
+
+1. common-com.dfire.common.entity.vo.HeraActionVo
+```
+    private String cronPeriod;
+
+    private int cronInterval;
+
+    private String batchId;
+```
