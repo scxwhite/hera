@@ -165,7 +165,7 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">所有人:</label>
+                                            <label class="control-label input-sm col-sm-3">所有者:</label>
                                             <div class="col-sm-8">
                                                 <input class="form-control" type="text" name="owner" readonly>
                                             </div>
@@ -187,10 +187,9 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">标签:</label>
+                                            <label class="control-label input-sm col-sm-3">关注者:</label>
                                             <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="bizLabel"
-                                                       readonly>
+                                                <input class="form-control" type="text" name="focusUser" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -204,9 +203,10 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">关注人员:</label>
+                                            <label class="control-label input-sm col-sm-3">标签:</label>
                                             <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="focusUser" readonly>
+                                                <input class="form-control" type="text" name="bizLabel"
+                                                       readonly>
                                             </div>
                                         </div>
                                         <div class="form-group ">
@@ -217,6 +217,94 @@
                                         </div>
                                     </div>
                                 </div>
+
+
+                                <label class="info-title">调度信息</label>
+                                <div class="row">
+                                    <!-- 第1列 -->
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">自动调度:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="auto" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">重试次数:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="rollBackTimes" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">调度周期:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="cronPeriod" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">预计时长:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="mustEndMinute" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <!-- 第2列 -->
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">调度类型:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="scheduleType" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">重试间隔:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="rollBackWaitTime"
+                                                       readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">参数间隔:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="cronInterval"
+                                                       readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-4 col-sm-4">
+                                        <!-- 第3列 -->
+                                        <div class="form-group" id="cronExpression">
+                                            <label class="control-label input-sm col-sm-3">定时表达式:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="cronExpression" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">重复执行:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="repeatRun" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group ">
+                                            <label class="control-label input-sm col-sm-3">机器组:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="hostGroupName" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
 
 
                                 <label class="info-title">调度信息</label>
