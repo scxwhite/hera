@@ -19,7 +19,8 @@ cron_period,cron_interval两个字段；不改变原hera的调用逻辑；只是
 
 ```
 cron_period varchar(50) DEFAULT 'other' COMMENT '调度周期(year,month,day,hour,minute,second,other)',
-cron_interval int  DEFAULT 0 COMMENT '调度间隔，业务定义的日期与调度日期的间隔'
+cron_interval int  DEFAULT 0 COMMENT '调度间隔，业务定义的日期与调度日期的间隔',
+biz_label varchar(500) not null DEFAULT '' COMMENT '业务标签,逗号分隔'
 ```
 
 表hera_action，增加3个字段
@@ -27,7 +28,8 @@ cron_interval int  DEFAULT 0 COMMENT '调度间隔，业务定义的日期与调
 
 cron_period varchar(50) DEFAULT 'other' COMMENT '调度周期(year,month,day,hour,minute,second,other)',
 cron_interval int  DEFAULT 0 COMMENT '调度间隔，业务定义的日期与调度日期的间隔',
-batch_id varchar(20) COMMENT '批次号'
+batch_id varchar(20) COMMENT '批次号',
+biz_label varchar(500) not null DEFAULT '' COMMENT '业务标签,逗号分隔'
 
 
 ### hera脚本改动
@@ -64,3 +66,11 @@ batch_id varchar(20) COMMENT '批次号'
 
     private String batchId;
 ```
+
+
+
+1.第一步，先动job表
+entity.HeraJob
+entity.vo.HeraJobVo
+
+2.第二步，再动jobAction表
