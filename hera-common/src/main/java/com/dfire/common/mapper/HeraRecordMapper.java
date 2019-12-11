@@ -28,7 +28,7 @@ public interface HeraRecordMapper {
     @Select("select * from hera_record where gid = #{gid} order by id desc limit #{startPos},#{limit}")
     List<HeraRecord> selectByGid(@Param("startPos") Integer startPos,
                                  @Param("limit") Integer limit,
-                                 @Param("#{gid}") Integer gid);
+                                 @Param("gid") Integer gid);
 
 
     @Select("select count(1) from hera_record where log_id = #{logId}")
