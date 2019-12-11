@@ -197,7 +197,7 @@
                                     <!-- 第3列 -->
                                     <div class="col-lg-4 col-md-4 col-sm-4">
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3"><label class="tip">*</label>描述:</label>
+                                            <label class="control-label input-sm col-sm-3">描述:</label>
                                             <div class="col-sm-8">
                                                 <input class="form-control" type="text" name="description" readonly>
                                             </div>
@@ -389,7 +389,7 @@
                                     <div class="col-sm-6 col-md-6 col-lg-6">
 
                                         <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">描述:</label>
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4"><label class="tip">*</label>描述:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                 <input class="form-control" type="text" name="description">
 
