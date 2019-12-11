@@ -148,7 +148,7 @@
 
                             <form class="form-group-sm form-horizontal">
                             
-                                <label class="info-title">基本信息</label>
+                                <label class="info-title" vertical-align="left">基本信息</label>
                                 <div class="row">
                                     <!-- 第1列 -->
                                     <div class="col-lg-4 col-md-4 col-sm-4">
@@ -219,7 +219,7 @@
                                 </div>
 
 
-                                <label class="info-title">调度信息</label>
+                                <label class="info-title" vertical-align="left">调度信息</label>
                                 <div class="row">
                                     <!-- 第1列 -->
                                     <div class="col-lg-4 col-md-4 col-sm-4">
@@ -245,12 +245,13 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">预计时长:</label>
+                                        <div class="form-group ">
+                                            <label class="control-label input-sm col-sm-3">机器组:</label>
                                             <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="mustEndMinute" readonly>
+                                                <input class="form-control" type="text" name="hostGroupName" readonly>
                                             </div>
                                         </div>
+
                                     </div>
 
                                     <div class="col-lg-4 col-md-4 col-sm-4">
@@ -271,10 +272,17 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">参数间隔:</label>
+                                            <label class="control-label input-sm col-sm-3">参数基准间隔:</label>
                                             <div class="col-sm-8">
                                                 <input class="form-control" type="text" name="cronInterval"
                                                        readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">预计时长:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="mustEndMinute" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -289,108 +297,9 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">重复执行:</label>
+                                            <label class="control-label input-sm col-sm-3">可重复执行:</label>
                                             <div class="col-sm-8">
                                                 <input class="form-control" type="text" name="repeatRun" readonly>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group ">
-                                            <label class="control-label input-sm col-sm-3">机器组:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="hostGroupName" readonly>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-
-                                <label class="info-title">调度信息</label>
-                                <div class="row">
-                                    <div class="col-lg-4 col-md-4 col-sm-4">
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">任务id:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="id" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">名称:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="name" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">任务类型:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="runType" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3"> 自动调度:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="auto" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">任务优先级:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="runPriorityLevel"
-                                                       readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3"><label class="tip">*</label>描述:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="description" readonly>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-4">
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">调度类型:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="scheduleType" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group" id="dependencies">
-                                            <label class="control-label input-sm col-sm-3">依赖任务:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="dependencies" readonly>
-                                            </div>
-                                        </div>
-                             <#--           <div class="form-group" id="heraDependencyCycle">
-                                            <label class="control-label input-sm col-sm-3">依赖周期:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="heraDependencyCycle"
-                                                       readonly>
-                                            </div>
-                                        </div>-->
-                                        <div class="form-group" id="cronExpression">
-                                            <label class="control-label input-sm col-sm-3">定时表达式:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="cronExpression" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">重试次数:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="rollBackTimes" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">重试间隔:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="rollBackWaitTime"
-                                                       readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">预计时长:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="mustEndMinute" readonly>
                                             </div>
                                         </div>
 
@@ -402,46 +311,9 @@
                                         </div>
 
                                     </div>
-                                    <div class="col-lg-4 col-md-4 col-sm-4">
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">所有人:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="owner" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">关注人员:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="focusUser" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group ">
-                                            <label class="control-label input-sm col-sm-3">管理员:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="uidS" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">重复执行:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="repeatRun" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="form-group ">
-                                            <label class="control-label input-sm col-sm-3">机器组:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="hostGroupName" readonly>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group ">
-                                            <label class="control-label input-sm col-sm-3">区域:</label>
-                                            <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="area" readonly>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
+
+
                             </form>
 
                         </div>
@@ -470,10 +342,18 @@
 
                             </form>
                         </div>
+
+
+
+
+
                         <div id="jobMessageEdit" class="box-body" style="display: none;">
                             <form class="form-horizontal form-group-sm" role="form" id="jobMsgEditForm">
 
+                                <label class="info-title" vertical-align="left">基本信息</label>
+                                
                                 <div class="row">
+                                    <!-- 第1列 -->
                                     <div class="col-sm-6 col-md-6 col-lg-6">
 
                                         <div class="form-group">
@@ -483,6 +363,97 @@
 
                                             </div>
                                         </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">任务类型:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select class="form-control" name="runType">
+                                                    <option value="Shell" selected="selected">Shell</option>
+                                                    <option value="Hive">Hive</option>
+                                                    <option value="Spark">Spark</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">标签:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <input class="form-control" type="text" name="bizLabel">
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- 第2列 -->
+                                    <div class="col-sm-6 col-md-6 col-lg-6">
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">描述:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <input class="form-control" type="text" name="description">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">优先级:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select class="form-control" name="runPriorityLevel">
+                                                    <option value="3">high</option>
+                                                    <option value="2">medium</option>
+                                                    <option value="1" selected="selected">low</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">区域:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select name="areaId" class="selectpicker form-control"
+                                                        data-live-search="true" multiple data-done-button="true">
+
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+
+
+                                <label class="info-title" vertical-align="left">调度信息</label>
+                                
+                                <div class="row">
+                                    <!-- 第1列 -->
+                                    <div class="col-sm-6 col-md-6 col-lg-6">
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">调度类型:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select class="form-control" name="scheduleType">
+                                                    <option value="0">定时调度</option>
+                                                    <option value="1">依赖调度</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">调度周期:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select class="form-control" name="cronPeriod">
+                                                    <option value="year">年</option>
+                                                    <option value="month">月</option>
+                                                    <option value="day" selected="selected">天</option>
+                                                    <option value="hour">小时</option>
+                                                    <option value="minute">分</option>
+                                                    <option value="second">秒</option>
+                                                    <option value="other">其他</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">重试次数:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
@@ -496,35 +467,13 @@
 
                                             </div>
                                         </div>
+
                                         <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">重试间隔(分):</label>
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">可重复执行:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <select class="form-control" name="rollBackWaitTime">
-                                                    <option value="1" selected="selected">1</option>
-                                                    <option value="10">10</option>
-                                                    <option value="30">30</option>
-                                                    <option value="60">60</option>
-                                                    <option value="120">120</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">任务类型:</label>
-                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <select class="form-control" name="runType">
-                                                    <option value="Shell" selected="selected">Shell</option>
-                                                    <option value="Hive">Hive</option>
-                                                    <option value="Spark">Spark</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">任务优先级:</label>
-                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <select class="form-control" name="runPriorityLevel">
-                                                    <option value="3">high</option>
-                                                    <option value="2">medium</option>
-                                                    <option value="1" selected="selected">low</option>
+                                                <select name="repeatRun" class="form-control">
+                                                    <option value="1" selected>是</option>
+                                                    <option value="0">否</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -539,48 +488,41 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">描述:</label>
-                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" name="description">
-
-                                            </div>
-                                        </div>
                                     </div>
+
+
+                                    <!-- 第2列 -->
                                     <div class="col-sm-6 col-md-6 col-lg-6">
 
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">调度类型:</label>
-                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <select class="form-control" name="scheduleType">
-                                                    <option value="0">定时调度</option>
-                                                    <option value="1">依赖调度</option>
-                                                </select>
-                                            </div>
-                                        </div>
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">定时表达式:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                 <input class="form-control" type="text" name="cronExpression"
                                                        id="timeChange">
-
                                             </div>
                                         </div>
+
                                         <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">依赖任务:</label>
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">参数基准间隔:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" id="dependJob"
-                                                       name="dependencies">
-
+                                                <input class="form-control" type="text" name="cronInterval">
                                             </div>
                                         </div>
-                                <#--        <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">依赖周期:</label>
-                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <input class="form-control" type="text" name="heraDependencyCycle">
 
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">重试间隔(分):</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <select class="form-control" name="rollBackWaitTime">
+                                                    <option value="1" selected="selected">1</option>
+                                                    <option value="5">5</option>
+                                                    <option value="10">10</option>
+                                                    <option value="30">30</option>
+                                                    <option value="60">60</option>
+                                                    <option value="120">120</option>
+                                                </select>
                                             </div>
-                                        </div>-->
+                                        </div>
+
                                         <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">机器组:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
@@ -597,32 +539,10 @@
 
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">区域:</label>
-                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <select name="areaId" class="selectpicker form-control"
-                                                        data-live-search="true" multiple data-done-button="true">
 
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">重复执行:</label>
-                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
-                                                <select name="repeatRun" class="form-control">
-                                                    <option value="1" selected>是</option>
-                                                    <option value="0">否</option>
-                                                </select>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
-
-
                             </form>
-
-
                         </div>
 
                     </div>
