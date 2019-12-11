@@ -143,12 +143,12 @@
 
                         </div>
 
-                        <div id="jobMessage" class="box-body text-center" style="display: none">
-                            <label class="info-title">作业信息</label>
+                        <div id="jobMessage" class="box-body" style="display: none">
+                            <!-- <label class="info-title">作业信息</label> -->
 
                             <form class="form-group-sm form-horizontal">
                             
-                                <label class="info-title" vertical-align="left">基本信息</label>
+                                <label class="info-title">基本信息</label>
                                 <div class="row">
                                     <!-- 第1列 -->
                                     <div class="col-lg-4 col-md-4 col-sm-4">
@@ -197,9 +197,9 @@
                                     <!-- 第3列 -->
                                     <div class="col-lg-4 col-md-4 col-sm-4">
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">任务类型:</label>
+                                            <label class="control-label input-sm col-sm-3"><label class="tip">*</label>描述:</label>
                                             <div class="col-sm-8">
-                                                <input class="form-control" type="text" name="runType" readonly>
+                                                <input class="form-control" type="text" name="description" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -219,7 +219,7 @@
                                 </div>
 
 
-                                <label class="info-title" vertical-align="left">调度信息</label>
+                                <label class="info-title" >调度信息</label>
                                 <div class="row">
                                     <!-- 第1列 -->
                                     <div class="col-lg-4 col-md-4 col-sm-4">
@@ -264,7 +264,7 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label class="control-label input-sm col-sm-3">重试间隔:</label>
+                                            <label class="control-label input-sm col-sm-3">重试间隔(分):</label>
                                             <div class="col-sm-8">
                                                 <input class="form-control" type="text" name="rollBackWaitTime"
                                                        readonly>
@@ -350,7 +350,7 @@
                         <div id="jobMessageEdit" class="box-body" style="display: none;">
                             <form class="form-horizontal form-group-sm" role="form" id="jobMsgEditForm">
 
-                                <label class="info-title" vertical-align="left">基本信息</label>
+                                <label class="info-title">基本信息</label>
                                 
                                 <div class="row">
                                     <!-- 第1列 -->
@@ -423,7 +423,7 @@
 
 
 
-                                <label class="info-title" vertical-align="left">调度信息</label>
+                                <label class="info-title" >调度信息</label>
                                 
                                 <div class="row">
                                     <!-- 第1列 -->
