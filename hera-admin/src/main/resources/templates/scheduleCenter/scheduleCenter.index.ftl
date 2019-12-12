@@ -296,6 +296,13 @@
                                             </div>
                                         </div>
 
+                                        <div class="form-group" id="dependencies">
+                                            <label class="control-label input-sm col-sm-3">依赖任务:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="dependencies" readonly>
+                                            </div>
+                                        </div>
+
                                         <div class="form-group">
                                             <label class="control-label input-sm col-sm-3">可重复执行:</label>
                                             <div class="col-sm-8">
