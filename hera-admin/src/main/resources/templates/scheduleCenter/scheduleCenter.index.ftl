@@ -503,6 +503,15 @@
                                         </div>
 
                                         <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">依赖任务:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <input class="form-control" type="text" id="dependJob"
+                                                       name="dependencies">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">参数基准间隔:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                 <input class="form-control" type="text" name="cronInterval">
