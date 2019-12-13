@@ -29,5 +29,9 @@ public class JobLogHistory {
     private String illustrate;
 
     private int triggerType;
+    
+    private String batchId;
+
+    private String bizLabel;
 
 }

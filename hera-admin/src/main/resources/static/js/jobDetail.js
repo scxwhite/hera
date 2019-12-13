@@ -323,7 +323,7 @@ layui.use(['table'], function () {
                     {
                         field: "executeHost",
                         title: "机器|执行人",
-                        width: "12%",
+                        width: "14%",
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
