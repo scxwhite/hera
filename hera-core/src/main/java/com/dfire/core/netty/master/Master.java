@@ -1091,6 +1091,8 @@ public class Master {
                 triggerType(heraJobHistory.getTriggerType()).
                 operator(heraJobHistory.getOperator()).
                 hostGroupId(heraJobHistory.getHostGroupId()).
+                batchId(heraJobHistory.getBatchId()).
+                bizLabel(heraJobHistory.getBizLabel()).
                 log(heraJobHistory.getIllustrate()).build();
         masterContext.getHeraJobHistoryService().insert(newHistory);
         this.run(BeanConvertUtils.convert(newHistory), heraJob);
