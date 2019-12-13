@@ -3,6 +3,7 @@ package com.dfire.core.netty.master;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
+import com.dfire.common.constants.TimeFormatConstant;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
@@ -563,6 +564,7 @@ public class Master {
             heraAction.setDependencies(null);
             heraAction.setReadyDependency(null);
             heraAction.setHostGroupId(heraJob.getHostGroupId());
+            heraAction.setBatchId(getBatchIdFromActionIdPeriod(actionId,heraJob.getCronPeriod(),heraJob.getCronInterval())); //批次号
             heraActionList.add(heraAction);
         }
         return heraActionList;
@@ -687,6 +689,7 @@ public class Master {
                         actionNew.setJobId(heraJob.getId());
                         actionNew.setAuto(heraJob.getAuto());
                         actionNew.setHostGroupId(heraJob.getHostGroupId());
+                        actionNew.setBatchId(getBatchIdFromActionIdPeriod(actionId,heraJob.getCronPeriod(),heraJob.getCronInterval()));//批次号
                         masterContext.getHeraJobActionService().insert(actionNew, nowAction);
                         actionMap.put(actionNew.getId(), actionNew);
                         insertList.add(actionNew);
@@ -1100,4 +1103,56 @@ public class Master {
     public void printThreadPoolLog() {
         masterRunJob.printThreadPoolLog();
     }
+    
+    /**
+     * 输出批次号
+     * @param actionId
+     * @param cronPeriod 周期
+     * @param cronInterval 间隔
+     * @return 批次号；示例actionId=20190102112233,cronPeriod=day,cronInterval=-1,则批次号=2019-01-01
+     */
+    public String getBatchIdFromActionIdPeriod(Long actionId,String cronPeriod,int cronInterval) {
+    	cronPeriod=cronPeriod.toLowerCase();
+    	if(cronPeriod.equals("other")){
+    		return actionId.toString();
+    	}else{
+    		String dmStr=actionId.toString().substring(0, 14);
+    		Date currDate = HeraDateTool.StringToDate(dmStr, "yyyyMMddHHmmss");
+    		Calendar cal=Calendar.getInstance();
+    		cal.setTime(currDate);
+    		String outDateStr;
+    		SimpleDateFormat outDateFormat = new SimpleDateFormat(TimeFormatConstant.YYYY_MM_DD_HH_MM_SS);
+    		if(cronPeriod.equals("year")){
+    			cal.add(Calendar.YEAR, cronInterval);    			
+    			outDateStr = outDateFormat.format(cal.getTime());
+    			return outDateStr.substring(0,4);
+    		}else if(cronPeriod.equals("month")){
+    			cal.add(Calendar.MONTH, cronInterval);    			
+    			outDateStr = outDateFormat.format(cal.getTime());
+    			return outDateStr.substring(0,7);
+    		}else if(cronPeriod.equals("day")){
+    			cal.add(Calendar.DATE, cronInterval);    			
+    			outDateStr = outDateFormat.format(cal.getTime());
+    			return outDateStr.substring(0,10);
+    		}else if(cronPeriod.equals("hour")){
+    			cal.add(Calendar.HOUR, cronInterval);    			
+    			outDateStr = outDateFormat.format(cal.getTime());
+    			return outDateStr.substring(0,13);
+    		}else if(cronPeriod.equals("minute")){
+    			cal.add(Calendar.MINUTE, cronInterval);    			
+    			outDateStr = outDateFormat.format(cal.getTime());
+    			return outDateStr.substring(0,16);
+    		}else if(cronPeriod.equals("second")){
+    			cal.add(Calendar.SECOND, cronInterval);    			
+    			outDateStr = outDateFormat.format(cal.getTime());
+    			return outDateStr.substring(0,19);
+    		}else{//未知，使用秒方案
+    			cal.add(Calendar.SECOND, cronInterval);    			
+    			outDateStr = outDateFormat.format(cal.getTime());
+    			return outDateStr.substring(0,19);
+    		}
+    	}
+    }
+    
+    
 }

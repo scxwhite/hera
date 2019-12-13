@@ -89,12 +89,12 @@ public class HeraActionVo {
 
     private int hostGroupId;
 
-    private String cronPeriod;
+    //private String cronPeriod;
 
-    private int cronInterval;
+    //private int cronInterval;
 
     private String batchId;
     
-    private String bizLabel;
+    //private String bizLabel;
 
 }
