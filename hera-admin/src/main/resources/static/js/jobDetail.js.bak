@@ -218,21 +218,29 @@ layui.use(['table'], function () {
                 columns: [
                     {
                         field: "id",
-                        title: "ID",
+                        title: "id",
                         width: "4%",
                         align: 'center',
                         halign: 'center'
                     }, {
-                        field: "batchId",
-                        title: "批次号",
-                        width: "6%",
+                        field: "actionId",
+                        title: "版本号",
+                        width: "11%",
                         halign: 'center',
                         align: 'center',
-                        formatter: function (index, row) {
-                        	let backInfo = "任务ID=" +row['jobId'] + ",版本号=" + row['actionId'] ;
-                            return '<label class="label label-info" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['batchId'] + '</label>';
-
+                        formatter: function (val) {
+                            let val01 = val.substring(0, 8);
+                            let val02 = val.substring(8, 14);
+                            let val03 = val.substring(14);
+                            let re = '<a class="text-primary" >' + val01 + '</a>' + '<a class="text-warning" >' + val02 + '</a>' + '<a class="text-success" >' + val03 + '</a>';
+                            return re;
                         }
+                    }, {
+                        field: "jobId",
+                        title: "任务ID",
+                        width: "5%",
+                        align: 'center',
+                        halign: 'center'
                     }, {
                         field: "status",
                         title: "执行状态",
@@ -281,12 +289,6 @@ layui.use(['table'], function () {
                                 return (parseInt(ed - st) / 1000.0 / 60.0).toFixed(1);
                             }
                         }
-                    }, {
-                        field: "bizLabel",
-                        title: "标签",
-                        width: "8%",
-                        align: 'center',
-                        halign: 'center'
                     }
                     , {
                         field: "illustrate",
