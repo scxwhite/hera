@@ -56,11 +56,11 @@
 ## 架构
 `hera`系统只是负责调度以及辅助的系统，具体的计算还是要落在`hadoop、hive、yarn、spark`等集群中去。所以此时又一个硬性要求，如果要执行`hadoop，hive，spark`等任务，我们的`hera`系统的`worker`一定要部署在这些集群某些机器之上。如果仅仅是`shell`,那么也至少需要`linux`系统。对于`windows`系统，可以把自己作为`master`进行调试。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2018122016541045.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20191213100911982.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zY3gtd2hpdGUuYmxvZy5jc2RuLm5ldA==,size_16,color_FFFFFF,t_70)
 
 `hera`系统本身严格的遵从主从架构模式，由主节点充当着任务调度触发与任务分发器，从节点作为具体的任务执行器.架构图如下：
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220170832605.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20191213100937780.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zY3gtd2hpdGUuYmxvZy5jc2RuLm5ldA==,size_16,color_FFFFFF,t_70)
 `hera` 在 `2.4` 版本以上也支持了`emr` 集群，即允许任务执行在阿里云、亚马逊的 `emr` 机器之上，架构图如下：
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20191114114902720.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9zY3gtd2hpdGUuYmxvZy5jc2RuLm5ldA==,size_16,color_FFFFFF,t_70)
 
