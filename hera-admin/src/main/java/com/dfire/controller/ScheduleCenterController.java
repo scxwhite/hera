@@ -315,6 +315,8 @@ public class ScheduleCenterController extends BaseHeraController {
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
         actionHistory.setHostGroupId(heraAction.getHostGroupId());
         actionHistory.setProperties(configs);
+        actionHistory.setBatchId(heraAction.getBatchId());
+        actionHistory.setBizLabel(heraJob.getBizLabel());
         heraJobHistoryService.insert(actionHistory);
         heraAction.setScript(heraJob.getScript());
         heraAction.setHistoryId(actionHistory.getId());

@@ -32,4 +32,6 @@ public class JobHistoryVo {
     private String groupName;
 
     private Integer times;
+    
+    private String bizLabel;
 }
