@@ -117,6 +117,11 @@ layui.use(['table'], function () {
                         align: 'center',
                         title: '次数'
                     }, {
+                        field: 'bizLabel',
+                        halign: 'center',
+                        align: 'center',
+                        title: '标签'
+                    }, {
                         field: "executeHost",
                         title: "机器|执行人",
                         halign: 'center',

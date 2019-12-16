@@ -47,13 +47,16 @@ public class HeraJobHistory {
     private String cycle;
 
     private int hostGroupId;
+    
+    private String batchId;
+    
+    private String bizLabel;
 
     private Date gmtCreate;
 
     String properties ;
     
-    private String batchId;
-    private String bizLabel;
+
 
 
 }

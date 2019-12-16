@@ -34,7 +34,7 @@ public interface JobManagerMapper {
 
     @Select(
     		"select his.job_id,job.name as job_name,job.description,his.start_time,his.end_time "
-    		+ " ,his.execute_host, his.status ,his.operator "
+    		+ " ,his.execute_host, his.status ,his.operator ,his.biz_label  "
     		+ " ,j.times  "
     		+ " ,CAST(timestampdiff(SECOND, his.start_time,CASE WHEN his.end_time IS NOT NULL THEN his.end_time WHEN his.status='running' THEN NOW() END)/60.0 AS decimal(10,1))  AS durations  "
     		+ " ,job.group_id as groupId,grp.name as groupName"
