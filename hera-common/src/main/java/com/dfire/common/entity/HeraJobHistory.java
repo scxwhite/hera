@@ -52,8 +52,6 @@ public class HeraJobHistory {
     
     private String bizLabel;
     
-    private String description;
-
     private Date gmtCreate;
 
     String properties ;

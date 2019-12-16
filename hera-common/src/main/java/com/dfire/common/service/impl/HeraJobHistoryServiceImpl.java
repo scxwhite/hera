@@ -1,6 +1,7 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraJobHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.entity.vo.JobLogHistory;
 import com.dfire.common.entity.vo.PageHelper;
 import com.dfire.common.mapper.HeraJobHistoryMapper;
@@ -87,16 +88,17 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     public Map<String, Object> findLogByPage(PageHelper pageHelper) {
         Map<String, Object> res = new HashMap<>(2);
         Integer size = heraJobHistoryMapper.selectCountById(pageHelper.getJobId());
-        List<HeraJobHistory> histories = heraJobHistoryMapper.selectByPage(pageHelper);
-        List<JobLogHistory> jobLogHistories = new ArrayList<>();
-        for (HeraJobHistory history : histories) {
-            JobLogHistory logHistory = new JobLogHistory();
-            BeanUtils.copyProperties(history, logHistory);
-            logHistory.setStartTime(ActionUtil.getDefaultFormatterDate(history.getStartTime()));
-            logHistory.setEndTime(ActionUtil.getDefaultFormatterDate(history.getEndTime()));
-            jobLogHistories.add(logHistory);
-        }
-        res.put("rows", jobLogHistories);
+        List<JobLogHistory> histories = heraJobHistoryMapper.selectByPage(pageHelper);
+//        List<JobLogHistory> jobLogHistories = new ArrayList<>();
+//        for (HeraJobHistoryVo history : histories) {
+//            JobLogHistory logHistory = new JobLogHistory();
+//            BeanUtils.copyProperties(history, logHistory);
+//            logHistory.setStartTime(ActionUtil.getDefaultFormatterDate(history.getStartTime()));
+//            logHistory.setEndTime(ActionUtil.getDefaultFormatterDate(history.getEndTime()));
+//            jobLogHistories.add(logHistory);
+//        }
+//        res.put("rows", jobLogHistories);
+        res.put("rows", histories);
         res.put("total", size);
         return res;
     }
