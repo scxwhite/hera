@@ -33,5 +33,5 @@ public class JobHistoryVo {
 
     private Integer times;
     
-    private Integer bizLabel;
+    private String bizLabel;
 }
