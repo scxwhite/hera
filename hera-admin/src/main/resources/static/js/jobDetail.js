@@ -234,7 +234,7 @@ layui.use(['table'], function () {
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
-                        	let backInfo = "任务ID=" +row['jobId'] +"<br>任务名称=" +row['description'] + "<br>版本号=" + row['actionId'] + ;
+                        	let backInfo = "任务ID=" +row['jobId'] +"<br>任务名称=" +row['description'] + "<br>版本号=" + row['actionId'] ;
                             return '<label class="label label-info" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['batchId'] + '</label>';
 
                         }
