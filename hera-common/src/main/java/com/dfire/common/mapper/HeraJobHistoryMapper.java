@@ -89,7 +89,7 @@ public interface HeraJobHistoryMapper {
 
     @Select("select a.id,a.action_id,a.job_id,a.start_time,a.end_time,a.execute_host,a.operator,a.status,a.trigger_type,a.illustrate,a.host_group_id,a.batch_id,a.biz_label,b.description "
     		+ "from hera_action_history a "
-    		+ "left join hera_job b on a.job_id=b.id"
+    		+ "left join hera_job b on a.job_id=b.id and b.id=#{jobId}  "
     		+ "where a.job_id = #{jobId} "
     		+ "order by a.id desc "
     		+ "limit #{offset,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER} ")
