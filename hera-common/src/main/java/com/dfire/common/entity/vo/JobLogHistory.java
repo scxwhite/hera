@@ -33,5 +33,7 @@ public class JobLogHistory {
     private String batchId;
 
     private String bizLabel;
+    
+    private String description;
 
 }
