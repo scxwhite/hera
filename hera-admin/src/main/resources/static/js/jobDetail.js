@@ -14,6 +14,31 @@ layui.use(['table'], function () {
             $('#jobLog [name="refreshLog"]').trigger('click');
         });
     }
+    
+    //重做作业
+    function manualRecoveryJob(actionId, triggerType) {        
+        $.ajax({
+            url: base_url + "/scheduleCenter/manual.do",
+            type: "get",
+            data: {
+                actionId: actionId,
+                triggerType: triggerType
+            },
+            success: function (res) {
+                if (res.success === true) {
+                    layer.msg('执行成功');
+                } else {
+                    layer.msg(res.message)
+                }
+            },
+            error: function (err) {
+                layer.msg(err);
+            }
+        });
+        $('#jobLog [name="refreshLog"]').trigger('click');
+        
+        
+    }
 
     var TableInit = function () {
         var oTableInit = new Object();
@@ -341,9 +366,23 @@ layui.use(['table'], function () {
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
-                            let html = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消任务</a>';
+                        	
+                            let html_cancelJob_click = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消</a>';
+                            let html_cancelJob_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >取消</a>';
+                            
+                            let html_manualCurr_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 2 + '\')  " style="opacity: 0.2" >重做当前</a>';
+                            let html_manualCurr_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >重做当前</a>';
+                            
+                            let html_manualNexts_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 2 + '\')  " style="opacity: 0.2" >重做后续</a>';
+                            let html_manualNexts_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >重做后续</a>';
+                            
+                            let html_forceOk_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 2 + '\')  " style="opacity: 0.2" >强制成功</a>';
+                            let html_forceOk_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >强制成功</a>';
+                            
                             if (row['status'] === 'running') {
-                                return html;
+                                return html_cancelJob_click + html_manualCurr_click + html_manualNexts_click+ html_forceOk_nonclick;
+                            }else{
+                            	return html_cancelJob_nonclick + html_manualCurr_click + html_manualNexts_click+ html_forceOk_nonclick;
                             }
                         }
                     }
