@@ -6,39 +6,7 @@ layui.use(['table'], function () {
     $('#jobDetailMenu').parent().parent().addClass('menu-open');
     $('#jobManage').addClass('active');
 
-    function cancelJob(historyId, jobId) {
-        var url = base_url + "/scheduleCenter/cancelJob.do";
-        var parameter = {historyId: historyId, jobId: jobId};
-        $.get(url, parameter, function (data) {
-            layer.msg(data);
-            $('#jobLog [name="refreshLog"]').trigger('click');
-        });
-    }
-    
-    //重做作业
-    function manualRecoveryJob(actionId, triggerType) {        
-        $.ajax({
-            url: base_url + "/scheduleCenter/manual.do",
-            type: "get",
-            data: {
-                actionId: actionId,
-                triggerType: triggerType
-            },
-            success: function (res) {
-                if (res.success === true) {
-                    layer.msg('执行成功');
-                } else {
-                    layer.msg(res.message)
-                }
-            },
-            error: function (err) {
-                layer.msg(err);
-            }
-        });
-        $('#jobLog [name="refreshLog"]').trigger('click');
-        
-        
-    }
+
 
     var TableInit = function () {
         var oTableInit = new Object();
@@ -284,21 +252,21 @@ layui.use(['table'], function () {
                     }, {
                         field: "startTime",
                         title: "开始时间",
-                        width: "16%",
+                        width: "14%",
                         align: 'center',
                         halign: 'center'
 
                     }, {
                         field: "endTime",
                         title: "结束时间",
-                        width: "16%",
+                        width: "14%",
                         align: 'center',
                         halign: 'center'
 
                     }, {
                         field: "durations",
                         title: "时长(分)",
-                        width: "5%",
+                        width: "4%",
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
@@ -362,7 +330,7 @@ layui.use(['table'], function () {
                     }, {
                         field: "status",
                         title: "操作",
-                        width: "5%",
+                        width: "17%",
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
@@ -370,19 +338,19 @@ layui.use(['table'], function () {
                             let html_cancelJob_click = '<a href="javascript:cancelJob(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消</a>';
                             let html_cancelJob_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >取消</a>';
                             
-                            let html_manualCurr_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 2 + '\')  " style="opacity: 0.2" >重做当前</a>';
+                            let html_manualCurr_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 2 + '\')" >重做当前</a>';
                             let html_manualCurr_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >重做当前</a>';
                             
-                            let html_manualNexts_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 2 + '\')  " style="opacity: 0.2" >重做后续</a>';
+                            let html_manualNexts_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 3 + '\')" >重做后续</a>';
                             let html_manualNexts_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >重做后续</a>';
                             
-                            let html_forceOk_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 2 + '\')  " style="opacity: 0.2" >强制成功</a>';
+                            let html_forceOk_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 2 + '\')  "" >强制成功</a>';
                             let html_forceOk_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >强制成功</a>';
                             
                             if (row['status'] === 'running') {
-                                return html_cancelJob_click + html_manualCurr_click + html_manualNexts_click+ html_forceOk_nonclick;
+                                return html_cancelJob_click +"&nbsp"+ html_manualCurr_click +"&nbsp"+ html_manualNexts_click+"&nbsp"+ html_forceOk_nonclick;
                             }else{
-                            	return html_cancelJob_nonclick + html_manualCurr_click + html_manualNexts_click+ html_forceOk_nonclick;
+                            	return html_cancelJob_nonclick +"&nbsp"+ html_manualCurr_click +"&nbsp"+ html_manualNexts_click+"&nbsp"+ html_forceOk_nonclick;
                             }
                         }
                     }
@@ -408,3 +376,63 @@ layui.use(['table'], function () {
 function updateTable() {
     $('#historyJobTable').bootstrapTable('refresh');
 }
+
+
+//function cancelJob(historyId, jobId) {
+//    var url = base_url + "/scheduleCenter/cancelJob.do";
+//    var parameter = {historyId: historyId, jobId: jobId};
+//    $.get(url, parameter, function (data) {
+//        layer.msg(data);
+//        $('#jobLog [name="refreshLog"]').trigger('click');
+//    });
+//}
+
+
+function cancelJob(historyId, jobId) {
+    $.ajax({
+        url: base_url + "/scheduleCenter/cancelJob.do",
+        type: "get",
+        data: {
+        	historyId: historyId,
+        	jobId: jobId
+        },
+        success: function (res) {
+            if (res.success === true) {
+                layer.msg('取消任务完成');
+            } else {
+                layer.msg(res.message)
+            }
+        },
+        error: function (err) {
+            layer.msg(err);
+        }
+    });
+    $('#jobLog [name="refreshLog"]').trigger('click');
+	
+}
+
+
+//重做作业
+function manualRecoveryJob(actionId, triggerType) {        
+    $.ajax({
+        url: base_url + "/scheduleCenter/manual.do",
+        type: "get",
+        data: {
+            actionId: actionId,
+            triggerType: triggerType
+        },
+        success: function (res) {
+            if (res.success === true) {
+            	if(triggerType === '2') {layer.msg('重做当前任务成功');}
+            	else{layer.msg('重做后续任务成功');}
+            } else {
+                layer.msg(res.message)
+            }
+        },
+        error: function (err) {
+            layer.msg(err);
+        }
+    });
+    $('#jobLog [name="refreshLog"]').trigger('click');
+}
+
