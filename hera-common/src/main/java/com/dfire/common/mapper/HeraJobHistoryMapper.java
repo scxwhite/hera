@@ -3,6 +3,7 @@ package com.dfire.common.mapper;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.JobLogHistory;
 import com.dfire.common.entity.vo.PageHelper;
+import com.dfire.common.entity.vo.PageHelperTimeRange;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraSelectLangDriver;
 import com.dfire.common.mybatis.HeraUpdateLangDriver;
@@ -85,16 +86,69 @@ public interface HeraJobHistoryMapper {
     @Select("select log,status from hera_action_history where id = #{id}")
     HeraJobHistory selectLogById(Integer id);
 
+    
+    
     @Select("select count(1) from hera_action_history where job_id = #{id}")
     Integer selectCountById(Integer id);
-
-    @Select("select a.id,a.action_id,a.job_id,a.start_time,a.end_time,a.execute_host,a.operator,a.status,a.trigger_type,a.illustrate,a.host_group_id,a.batch_id,a.biz_label,b.description "
+    
+    
+    /**
+     * 获取jobid的时间范围的执行个数
+     * @param pageHelperTimeRange
+     * @return
+     */
+    @Select("select count(1) as cnt "
     		+ "from hera_action_history a "
-    		+ "left join hera_job b on a.job_id=b.id and b.id=#{jobId}  "
-    		+ "where a.job_id = #{jobId} "
+    		+ "where ( a.job_id = #{jobId}  )"
+    		+ "and (a.start_time>=CAST(#{beginDt,jdbcType=VARCHAR} AS date) and  a.start_time< ADDDATE( CAST(#{endDt,jdbcType=VARCHAR} AS date) ,1)  ) "
+    		)
+    Integer selectCountByPageJob(PageHelperTimeRange pageHelperTimeRange);
+    
+    /**
+     * 获取jobid的时间范围的执行历史明细
+     * @param pageHelperTimeRange
+     * @return
+     */
+    @Select("select a.id,a.action_id,a.job_id,a.start_time,a.end_time,a.execute_host,a.operator,a.status,a.trigger_type,a.illustrate,a.host_group_id,a.batch_id,a.biz_label"
+    		+ ",b.name as job_name,b.description ,b.group_id,c.name as group_name "
+    		+ "from hera_action_history a "
+    		+ "inner join hera_job b on a.job_id=b.id  "
+    		+ "inner join hera_group c on b.group_id=c.id  "
+    		+ "where ( a.job_id = #{jobId}  )"
+    		+ "and (a.start_time>=CAST(#{beginDt,jdbcType=VARCHAR} AS date) and  a.start_time< ADDDATE( CAST(#{endDt,jdbcType=VARCHAR} AS date) ,1)  ) "
     		+ "order by a.id desc "
     		+ "limit #{offset,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER} ")
-    List<JobLogHistory> selectByPage(PageHelper pageHelper);
+    List<JobLogHistory> selectByPageJob(PageHelperTimeRange pageHelperTimeRange );
+    
+    
+    /**
+     * 获取groupId下的时间范围的执行历史个数
+     * @param pageHelperTimeRange
+     * @return
+     */
+    @Select("select count(1) as cnt "
+    		+ "from hera_action_history a "
+    		+ "inner join hera_job b on a.job_id=b.id  "
+    		+ "where ( b.group_id = #{jobId} )"
+    		+ "and (a.start_time>=CAST(#{beginDt,jdbcType=VARCHAR} AS date) and  a.start_time< ADDDATE( CAST(#{endDt,jdbcType=VARCHAR} AS date) ,1)  ) "
+    		)
+    Integer selectCountByPageGroup(PageHelperTimeRange pageHelperTimeRange);
+    
+    /**
+     * 获取groupId下的时间范围的执行历史明细
+     * @param pageHelperTimeRange
+     * @return
+     */
+    @Select("select a.id,a.action_id,a.job_id,a.start_time,a.end_time,a.execute_host,a.operator,a.status,a.trigger_type,a.illustrate,a.host_group_id,a.batch_id,a.biz_label"
+    		+ ",b.name as job_name,b.description ,b.group_id,c.name as group_name "
+    		+ "from hera_action_history a "
+    		+ "inner join hera_job b on a.job_id=b.id  "
+    		+ "inner join hera_group c on b.group_id=c.id  "
+    		+ "where ( b.group_id = #{jobId} )"
+    		+ "and (a.start_time>=CAST(#{beginDt,jdbcType=VARCHAR} AS date) and  a.start_time< ADDDATE( CAST(#{endDt,jdbcType=VARCHAR} AS date) ,1)  ) "
+    		+ "order by a.id desc "
+    		+ "limit #{offset,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER} ")
+    List<JobLogHistory> selectByPageGroup(PageHelperTimeRange pageHelperTimeRange );
 
 
     @Select("select job_id,start_time,end_time,status from hera_action_history where left(start_time,10) >= CURDATE()")

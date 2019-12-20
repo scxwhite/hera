@@ -11,6 +11,7 @@ import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.entity.vo.HeraGroupVo;
 import com.dfire.common.entity.vo.HeraJobVo;
 import com.dfire.common.entity.vo.PageHelper;
+import com.dfire.common.entity.vo.PageHelperTimeRange;
 import com.dfire.common.enums.*;
 import com.dfire.common.exception.NoPermissionException;
 import com.dfire.common.service.*;
@@ -290,7 +291,7 @@ public class ScheduleCenterController extends BaseHeraController {
             checkPermission(Integer.parseInt(actionId.substring(actionId.length() - 4)), RunAuthType.JOB);
         }
         TriggerTypeEnum triggerTypeEnum;
-        if (triggerType == 2) {
+        if (triggerType == TriggerTypeEnum.MANUAL_RECOVER.getId()) {
             triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
         } else {
             triggerTypeEnum = TriggerTypeEnum.MANUAL;
@@ -662,8 +663,8 @@ public class ScheduleCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse getJobHistory(PageHelper pageHelper) {
-        return new JsonResponse(true, heraJobHistoryService.findLogByPage(pageHelper));
+    public JsonResponse getJobHistory(PageHelperTimeRange pageHelperTimeRange) {
+        return new JsonResponse(true, heraJobHistoryService.findLogByPage(pageHelperTimeRange));
     }
 
     @RequestMapping(value = "/getHostGroupIds", method = RequestMethod.GET)

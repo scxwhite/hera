@@ -43,18 +43,18 @@ public class JobManageController extends BaseHeraController {
     @Qualifier("heraJobMemoryService")
     private HeraJobService heraJobService;
 
+    
     /**
-     * 今日任务详情
-     *
-     * @param status 任务状态
-     * @param dt     日志
+     * 任务详情
      * @return 历史结果
      */
     @RequestMapping(value = "history", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse findJobHistoryByStatus(@RequestParam("status") String status, String dt) {
-        return jobManageService.findJobHistoryByStatus(status, dt);
+    public JsonResponse findJobHistoryByStatus(@RequestParam("status") String status, @RequestParam("begindt") String begindt, @RequestParam("enddt") String enddt) {
+    	return jobManageService.findJobHistoryByStatus(status, begindt,enddt);
     }
+    
+    
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
     @ResponseBody

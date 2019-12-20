@@ -17,7 +17,7 @@ layui.use(['table'], function () {
                 method: 'get',
                 pagination: true,
                 cache: false,
-                clickToSelect: true,
+                //clickToSelect: true,
                 toolTip: "",
                 striped: false,
                 showRefresh: true,           //是否显示刷新按钮
@@ -70,7 +70,7 @@ layui.use(['table'], function () {
                             if (val == null) {
                                 return val;
                             }
-                            return '<label class="label label-primary" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 6) + '</label>';
+                            return '<label class="label label-primary" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 20) + '</label>';
                         }
                     }, {
                         field: 'status',
@@ -79,15 +79,15 @@ layui.use(['table'], function () {
                         align: 'center',
                         formatter: function (val) {
                             if (val === 'running') {
-                                return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                                return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + '运行中' + '</a>';
                             }
                             if (val === 'success') {
-                                return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
+                                return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + '成功' + '</a>';
                             }
                             if (val === 'wait') {
-                                return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + val + '</a>';
+                                return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + '等待' + '</a>';
                             }
-                            return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
+                            return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + '失败' + '</a>'
                         }
                     }, {
                         field: 'startTime',
@@ -103,6 +103,9 @@ layui.use(['table'], function () {
                         title: '结束时间',
                         halign: 'center',
                         align: 'center',
+                        formatter: function (val) {
+                            return getLocalTime(val);
+                        },
                         sortable: true
                     }, {
                         field: 'times',
@@ -139,7 +142,8 @@ layui.use(['table'], function () {
     function params(params) {
         var temp = {
             status: $('#jobStatus').val(),
-            dt: $('#jobDt').val(),
+            begindt: $('#jobDt').val(),
+            enddt: $('#jobDt_end').val(),
         };
         return temp;
     }
@@ -201,6 +205,9 @@ layui.use(['table'], function () {
                     var tmp = {
                         pageSize: params.limit,
                         offset: params.offset,
+                        beginDt: $('#jobDt').val(),
+                        endDt: $('#jobDt_end').val(),
+                        jobType:'job',
                         jobId: jobId
                     };
                     return tmp;
@@ -217,52 +224,72 @@ layui.use(['table'], function () {
                     {
                         field: "id",
                         title: "ID",
-                        width: "4%",
                         align: 'center',
                         halign: 'center'
                     }, {
+                        field: "groupName",
+                        title: "任务组",
+                        align: 'center',
+                        halign: 'center'
+                    }, {
+                        field: "jobName",
+                        title: "任务名称",
+                        align: 'center',
+                        halign: 'center',
+                        formatter: function (index, row) {
+                        	let backInfo = row['description'] ;
+                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['jobName'] + '</label>';
+
+                        }
+                    },{
                         field: "batchId",
                         title: "批次号",
-                        width: "6%",
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
-                        	let backInfo = "任务ID=" +row['jobId'] +",任务名称=" +row['description'] + ",版本号=" + row['actionId'] ;
+                        	let backInfo = "版本号=" + row['actionId'] ;
                             return '<label class="label label-info" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['batchId'] + '</label>';
 
                         }
                     }, {
                         field: "status",
-                        title: "执行状态",
-                        width: "6%",
+                        title: "状态",
                         halign: 'center',
                         align: 'center',
                         formatter: function (val) {
                             if (val === 'running') {
-                                return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + val + '</a>';
+                                return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + '运行中' + '</a>';
                             }
                             if (val === 'success') {
-                                return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + val + '</a>';
+                                return '<a class="layui-btn layui-btn-xs" style="width: 100%;background-color:#2f8f42" >' + '成功' + '</a>';
                             }
                             if (val === 'wait') {
-                                return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + val + '</a>';
+                                return '<a class="layui-btn layui-btn-xs layui-btn-disabled" style="width: 100%;">' + '等待' + '</a>';
                             }
-                            return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + val + '</a>'
+                            return '<a class="layui-btn layui-btn-xs layui-btn-danger" style="width: 100%;" >' + '失败' + '</a>'
                         }
                     }, {
                         field: "startTime",
                         title: "开始时间",
-                        width: "14%",
                         align: 'center',
-                        halign: 'center'
-
+                        halign: 'center',
+                        formatter: function (val) {
+                            if (val == null) {
+                                return val;
+                            }
+                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(5, 16) + '</label>';
+                        }
                     }, {
                         field: "endTime",
                         title: "结束时间",
-                        width: "14%",
                         align: 'center',
-                        halign: 'center'
-
+                        halign: 'center',
+                        formatter: function (val) {
+                            if (val == null) {
+                                return val;
+                            }
+                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(5, 16) + '</label>';
+                        }
                     }, {
                         field: "durations",
                         title: "时长(分)",
@@ -275,62 +302,58 @@ layui.use(['table'], function () {
                                 let ed = new Date();
                                 return (parseInt(ed - st) / 1000.0 / 60.0).toFixed(1);
                             } else {
-                                let ed = new Date(row['endTime']);
-                                return (parseInt(ed - st) / 1000.0 / 60.0).toFixed(1);
+                            	if(row['startTime'] == null || row['startTime'] == '') {
+                            		return 0;
+                            		}
+                            	else {
+                                    let ed = new Date(row['endTime']);
+                                    return (parseInt(ed - st) / 1000.0 / 60.0).toFixed(1);	
+                            	}
                             }
                         }
                     }, {
                         field: "bizLabel",
                         title: "标签",
-                        width: "8%",
                         align: 'center',
                         halign: 'center'
-                    }
-                    , {
-                        field: "illustrate",
-                        title: "说明",
-                        width: "7%",
-                        halign: 'center',
-                        align: 'center',
-                        formatter: function (val) {
-                            if (val == null) {
-                                return val;
-                            }
-                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 6) + '</label>';
-                        }
-                    },
-                    {
+                    } , {
                         field: "triggerType",
                         title: "触发类型",
-                        width: "5%",
-                        halign: 'center',
-                        align: 'center',
+                        width: "4%",
                         formatter: function (value, row) {
-                            if (row['triggerType'] == 1) {
-                                return "自动调度";
+                        	let tmp=value;
+                        	let t2='label-default';
+                            if (value == 1) {
+                            	tmp="自动调度";
+                            	t2='label-default';
                             }
-                            if (row['triggerType'] == 2) {
-                                return "手动触发";
+                            else if (value == 2) {
+                            	tmp="手动触发";
+                            	t2='label-primary';
                             }
-                            if (row['triggerType'] == 3) {
-                                return "手动恢复";
+                            else if (value == 3) {
+                            	tmp="手动恢复";
+                            	t2='label-info';
                             }
-                            return value;
+                            let re='<label class="label ' + t2 + ' style="width: 100%;" data-toggle="tooltip" title="' + row['illustrate'] + '" >' + tmp + '</label>';
+                            return re;
                         }
                     },
                     {
                         field: "executeHost",
-                        title: "机器|执行人",
-                        width: "14%",
+                        title: "机器",
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
-                            return row['executeHost'] + ' | ' + row['operator'];
+                            //return row['executeHost'] + ' | ' + row['operator'];
+                        	let backInfo = "执行人=" + row['operator'] ;
+                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['executeHost'] + '</label>';
+
                         }
                     }, {
-                        field: "status",
+                        field: "operate",
                         title: "操作",
-                        width: "17%",
+                        width: "10%",
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
@@ -347,10 +370,25 @@ layui.use(['table'], function () {
                             let html_forceOk_click = '<a href ="javascript:manualRecoveryJob(\'' + row['actionId'] + '\',\'' + 2 + '\')  "" >强制成功</a>';
                             let html_forceOk_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >强制成功</a>';
                             
+                            let js_cancelJob_click = '<a href ="javascript:cancelJobFun(\'' + row['id'] + '\',\'' + row['jobId'] + '\')">取消</a>';
+                            let js_cancelJob_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >取消</a>';
+                            
+                            let js_manualJob_click = '<a href ="javascript:manualJobFun(\'' + row['actionId'] + '\')" >重做</a>';
+                            let js_manualJob_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >重做</a>';
+                            
+                            let js_manualForce_click = '<a href ="javascript:manualForceFun(\'' + row['id'] + '\')" >强制</a>';
+                            let js_manualForce_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >强制</a>';
+                            
                             if (row['status'] === 'running') {
-                                return html_cancelJob_click +"&nbsp"+ html_manualCurr_click +"&nbsp"+ html_manualNexts_click+"&nbsp"+ html_forceOk_nonclick;
-                            }else{
-                            	return html_cancelJob_nonclick +"&nbsp"+ html_manualCurr_click +"&nbsp"+ html_manualNexts_click+"&nbsp"+ html_forceOk_nonclick;
+                            	return  js_manualJob_nonclick +"&nbsp"+js_cancelJob_click +"&nbsp"+js_manualForce_nonclick ;
+                            }else if (row['status'] === 'success'){
+                            	return  js_manualJob_click +"&nbsp"+js_cancelJob_nonclick +"&nbsp"+js_manualForce_click ;
+                            }else if (row['status'] === 'failed'){
+                            	return  js_manualJob_click +"&nbsp"+js_cancelJob_nonclick +"&nbsp"+js_manualForce_click ;
+                            }else if (row['status'] === 'wait'){
+                            	return  js_manualJob_nonclick +"&nbsp"+js_cancelJob_click +"&nbsp"+js_manualForce_click ;
+                            }else {
+                            	return  js_manualJob_nonclick +"&nbsp"+js_cancelJob_nonclick +"&nbsp"+js_manualForce_nonclick ;
                             }
                         }
                     }
@@ -388,43 +426,28 @@ function updateTable() {
 //}
 
 
-function cancelJob(historyId, jobId) {
-    $.ajax({
-        url: base_url + "/scheduleCenter/cancelJob.do",
-        type: "get",
-        data: {
-        	historyId: historyId,
-        	jobId: jobId
-        },
-        success: function (res) {
-            if (res.success === true) {
-                layer.msg('取消任务完成');
-            } else {
-                layer.msg(res.message)
-            }
-        },
-        error: function (err) {
-            layer.msg(err);
-        }
-    });
-    $('#jobLog [name="refreshLog"]').trigger('click');
-	
-}
+
 
 
 //重做作业
-function manualRecoveryJob(actionId, triggerType) {        
+function manualJobFun(actionId) {  
+	manualJobFunActionId=actionId
+	$('#myManualJob').modal('show');
+}
+
+
+//重做任务弹出页
+$("#myManualJob .add-btn").click(function () {
     $.ajax({
         url: base_url + "/scheduleCenter/manual.do",
         type: "get",
         data: {
-            actionId: actionId,
-            triggerType: triggerType
+            actionId: manualJobFunActionId,
+            triggerType: $("#myManualJobType").val()
         },
         success: function (res) {
             if (res.success === true) {
-            	if(triggerType === '2') {layer.msg('重做当前任务成功');}
-            	else{layer.msg('重做后续任务成功');}
+                layer.msg('执行成功！'+res.message);
             } else {
                 layer.msg(res.message)
             }
@@ -433,6 +456,72 @@ function manualRecoveryJob(actionId, triggerType) {
             layer.msg(err);
         }
     });
-    $('#jobLog [name="refreshLog"]').trigger('click');
+    $('#myManualJob').modal('hide');
+});
+
+
+
+
+//强制作业
+function manualForceFun(id) {  
+	manualForceFunId=id
+	$('#myManualForce').modal('show');
 }
+
+
+//强制作业弹出页
+$("#myManualForce .add-btn").click(function () {
+    $.ajax({
+        url: base_url + "/scheduleCenter/manual2.do",
+        type: "get",
+        data: {
+            id: manualForceFunId,
+            status: $("#myManualForceType").val()
+        },
+        success: function (res) {
+            if (res.success === true) {
+                layer.msg('执行成功');
+            } else {
+                layer.msg(res.message)
+            }
+        },
+        error: function (err) {
+            layer.msg(err);
+        }
+    });
+    $('#myManualForce').modal('hide');
+});
+
+
+
+//取消任务
+function cancelJobFun(historyId, jobId) {  
+	cancelJobFunhistoryId=historyId
+	cancelJobFunjobId=jobId
+	$('#mycancelJobFun').modal('show');
+}
+
+
+//取消任务弹出页
+$("#mycancelJobFun .add-btn").click(function () {
+  $.ajax({
+      url: base_url + "/scheduleCenter/cancelJob.do",
+      type: "get",
+      data: {
+      	   historyId: cancelJobFunhistoryId,
+    	   jobId: cancelJobFunjobId
+      },
+      success: function (res) {
+          if (res.success === true) {
+        	  layer.msg('执行成功！'+res.message);
+          } else {
+              layer.msg(res.message)
+          }
+      },
+      error: function (err) {
+          layer.msg(err);
+      }
+  });
+  $('#mycancelJobFun').modal('hide');
+});
 

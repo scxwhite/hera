@@ -34,6 +34,12 @@ public class JobLogHistory {
 
     private String bizLabel;
     
+    private String jobName;
+    
     private String description;
+    
+    private String groupId;
+    
+    private String groupName;
 
 }
