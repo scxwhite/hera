@@ -13,7 +13,7 @@ public class JobHistoryVo {
 
     private String jobId;
 
-    private String actionId;
+    //private String actionId;
 
     private String startTime;
 
@@ -28,6 +28,8 @@ public class JobHistoryVo {
     private String description;
 
     private String jobName;
+    
+    private String groupId;
 
     private String groupName;
 

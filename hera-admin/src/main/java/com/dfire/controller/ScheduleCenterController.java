@@ -994,6 +994,39 @@ public class ScheduleCenterController extends BaseHeraController {
             return new JsonResponse(result, result ? "处理成功" : "移动失败");
         }
     }
+    
+    /**
+     * 
+     * @param jobHisId
+     * @param status
+     * @return
+     */
+    @RequestMapping(value = "/forceJobHisStatus", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResponse forceJobHisStatus(Integer jobHisId, String status ){
+    	
+    	String info="";
+    	if(status.equals(StatusEnum.WAIT.toString())){
+    		info="手动强制等待状态";
+    	}else if(status.equals(StatusEnum.FAILED.toString())){
+    		info="手动强制失败状态";
+    	}else if(status.equals(StatusEnum.SUCCESS.toString())){
+    		info="手动强制成功状态";
+    	}else if(status.equals(StatusEnum.RUNNING.toString())){
+    		info="手动强制运行中状态";
+    	}
+    	
+    	
+    	String illustrate=heraJobHistoryService.findById(jobHisId.toString()).getIllustrate();
+    	if(StringUtils.isNotBlank(illustrate)){
+    		illustrate+=";"+info;
+    	}else{
+    		illustrate=info;
+    	}
+    	
+    	heraJobHistoryService.updateStatusAndIllustrate(jobHisId, status, illustrate, new Date());
+    	return null;
+    }
 
 
 }

@@ -42,9 +42,9 @@
                                 <option value="running">运行中</option>
                                 <option value="wait">等待</option>
                             </select>
-                            <label class="name input-group-addon">开始日期</label>
+                            <label class="name input-group-addon" title="任务开始时间≥传入值" >开始日期</label>
                             <input class="form_datetime form-control" id="jobDt" size="8" type="text" readonly placeholder="请选择日期"  onchange="updateTable()">
-                            <label class="name input-group-addon">结束日期</label>
+                            <label class="name input-group-addon" title="任务开始时间<传入值+1天">结束日期</label>
                             <input class="form_datetime form-control" id="jobDt_end" size="8" type="text" readonly placeholder="请结束选择日期" onchange="updateTable()">
                             
                         </div>
@@ -62,8 +62,8 @@
                 <h4 class="modal-title" id="myModalLabel">信息日志</h4>
             </div>
 			
-            <div class="modal-body">
-                <table class="table " id="runningLogDetailTable"></table>
+            <div class="modal-body" style="overflow:scroll;">
+                <table class="table " id="runningLogDetailTable" style="min-width:1800px;"  ></table>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
@@ -113,7 +113,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                     &times;
                 </button>
-                <h4 class="modal-title" id="title">强制任务状态(未实现！！！)</h4>
+                <h4 class="modal-title" id="title">强制任务状态</h4>
             </div>
             
             <div class="modal-body">
@@ -121,8 +121,9 @@
                 <div class="input-group form-inline">
                 	<label for="name">强行设置任务的状态:&nbsp &nbsp</label>
                     <select class="form-control" id="myManualForceType"">
-                        <option value="1" selected>强制成功</option>
-                        <option value="2">强制失败</option>
+                        <option value="success" selected>强制成功</option>
+                        <option value="failed">强制失败</option>
+                        <option value="wait">强制等待</option>
                     </select>
                 </div>
                 <br>

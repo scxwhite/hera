@@ -11,33 +11,54 @@ layui.use(['table'], function () {
     var TableInit = function () {
         var oTableInit = new Object();
         oTableInit.init = function () {
+        	
+        	
             var table = $('#historyJobTable');
             table.bootstrapTable({
                 url: base_url + '/job/history',
                 method: 'get',
                 pagination: true,
                 cache: false,
-                //clickToSelect: true,
+                clickToSelect: true,
                 toolTip: "",
                 striped: false,
                 showRefresh: true,           //是否显示刷新按钮
                 showPaginationSwitch: false,  //是否显示选择分页数按钮
                 pageNumber: 1,              //初始化加载第一页，默认第一页
                 pageSize: 20,                //每页的记录行数（*）
-                pageList: [40, 60, 80],
+                pageList: [40, 60, 80 , 200],
                 queryParams: params,
                 search: true,
                 uniqueId: 'id',
                 sidePagination: "client",
                 searchAlign: 'left',
                 buttonsAlign: 'left',
-                onClickRow: function (row) {
-                    // console.log(row)
-                    $('#runningLogDetailTable').bootstrapTable("destroy");
-                    var tableObject = new JobLogTable(row.jobId);
-                    tableObject.init();
-                    $('#jobLog').modal('show');
+                
+                onClickCell:function(field, value, row, $element){//点击单元格事件
+                	if(field === 'groupName'){//点击作业组
+                        $('#runningLogDetailTable').bootstrapTable("destroy");
+                        var tableObject = new JobLogTable(row.groupId,'group');
+                        tableObject.init();
+                        $('#jobLog').modal('show');
+                	}else if(field === 'jobName'){//点击作业
+//                      // console.log(row)
+                      $('#runningLogDetailTable').bootstrapTable("destroy");
+                      var tableObject = new JobLogTable(row.jobId,'job');
+                      tableObject.init();
+                      $('#jobLog').modal('show');
+                	}
+                	else{
+                		//do nothing
+                	}
                 },
+                
+//                onClickRow: function (row) {
+//                    // console.log(row)
+//                    $('#runningLogDetailTable').bootstrapTable("destroy");
+//                    var tableObject = new JobLogTable(row.jobId);
+//                    tableObject.init();
+//                    $('#jobLog').modal('show');
+//                },
                 columns: [
                     {
                         field: 'groupName',
@@ -45,22 +66,22 @@ layui.use(['table'], function () {
                         halign: 'center',
                         align: 'center',
                         sortable: true,
-                        formatter: function (val) {
-                            if (val == null) {
-                                return val;
-                            }
-                            return '<label class="label label-primary" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 20) + '</label>';
-                        }
+//                        formatter: function (val) {
+//                            if (val == null) {
+//                                return val;
+//                            }
+//                            return '<label class="label label-primary" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(0, 20) + '</label>';
+//                        }
                     }, {
                         field: 'jobName',
                         title: '任务名称',
                         sortable: true,
                         halign: 'center',
                         align: 'center',
-                        formatter: function (val, row, index) {
-                            let val01 = '<a href = "#">' + val.slice(0, 50) + '[' + row['jobId'] + ']' + '</a>';
-                            return val01;
-                        }
+//                        formatter: function (val, row, index) {
+//                            let val01 = '<a href = "javascript:fun_click_job_details(' + row['jobId'] + ')">' + val.slice(0, 50) + '[' + row['jobId'] + ']' + '</a>';
+//                            return val01;
+//                        }
                     }, {
                         field: 'description',
                         halign: 'center',
@@ -77,6 +98,7 @@ layui.use(['table'], function () {
                         title: '状态',
                         halign: 'center',
                         align: 'center',
+                        sortable: true,
                         formatter: function (val) {
                             if (val === 'running') {
                                 return '<a class="layui-btn layui-btn-xs layui-btn-warm" style="width: 100%;">' + '运行中' + '</a>';
@@ -116,6 +138,7 @@ layui.use(['table'], function () {
                         field: 'bizLabel',
                         halign: 'center',
                         align: 'center',
+                        sortable: true,
                         title: '标签'
                     }, {
                         field: "executeHost",
@@ -148,12 +171,12 @@ layui.use(['table'], function () {
         return temp;
     }
 
-    var JobLogTable = function (jobId) {
-        var parameter = {jobId: jobId};
+    var JobLogTable = function (jobId,JobType) {
+        var parameter = {jobId: jobId,JobType:JobType};
         var actionRow;
         var oTableInit = new Object();
         var table = $('#runningLogDetailTable');
-
+        
         function scheduleLog() {
 
             $.ajax({
@@ -207,7 +230,7 @@ layui.use(['table'], function () {
                         offset: params.offset,
                         beginDt: $('#jobDt').val(),
                         endDt: $('#jobDt_end').val(),
-                        jobType:'job',
+                        jobType: JobType,
                         jobId: jobId
                     };
                     return tmp;
@@ -224,6 +247,7 @@ layui.use(['table'], function () {
                     {
                         field: "id",
                         title: "ID",
+                        width: "60px",
                         align: 'center',
                         halign: 'center'
                     }, {
@@ -236,11 +260,11 @@ layui.use(['table'], function () {
                         title: "任务名称",
                         align: 'center',
                         halign: 'center',
-                        formatter: function (index, row) {
-                        	let backInfo = row['description'] ;
-                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['jobName'] + '</label>';
-
-                        }
+//                        formatter: function (index, row) {
+//                        	let backInfo = row['description'] ;
+//                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['jobName'] + '</label>';
+//
+//                        }
                     },{
                         field: "batchId",
                         title: "批次号",
@@ -248,12 +272,13 @@ layui.use(['table'], function () {
                         align: 'center',
                         formatter: function (index, row) {
                         	let backInfo = "版本号=" + row['actionId'] ;
-                            return '<label class="label label-info" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['batchId'] + '</label>';
+                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['batchId'] + '</label>';
 
                         }
                     }, {
                         field: "status",
                         title: "状态",
+                        width: "60px",
                         halign: 'center',
                         align: 'center',
                         formatter: function (val) {
@@ -271,29 +296,31 @@ layui.use(['table'], function () {
                     }, {
                         field: "startTime",
                         title: "开始时间",
+                        width: "160px",
                         align: 'center',
                         halign: 'center',
                         formatter: function (val) {
-                            if (val == null) {
-                                return val;
+                        	if (val == null) {
+                              return val;
+                        		}
+                            return val.slice(0, 19);
                             }
-                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(5, 16) + '</label>';
-                        }
                     }, {
                         field: "endTime",
                         title: "结束时间",
+                        width: "160px",
                         align: 'center',
                         halign: 'center',
                         formatter: function (val) {
-                            if (val == null) {
+                        	if (val == null) {
                                 return val;
+                          		}
+                              return val.slice(0, 19);
                             }
-                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + val + '" >' + val.slice(5, 16) + '</label>';
-                        }
-                    }, {
+                      }, {
                         field: "durations",
                         title: "时长(分)",
-                        width: "4%",
+                        width: "60px",
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
@@ -317,43 +344,9 @@ layui.use(['table'], function () {
                         align: 'center',
                         halign: 'center'
                     } , {
-                        field: "triggerType",
-                        title: "触发类型",
-                        width: "4%",
-                        formatter: function (value, row) {
-                        	let tmp=value;
-                        	let t2='label-default';
-                            if (value == 1) {
-                            	tmp="自动调度";
-                            	t2='label-default';
-                            }
-                            else if (value == 2) {
-                            	tmp="手动触发";
-                            	t2='label-primary';
-                            }
-                            else if (value == 3) {
-                            	tmp="手动恢复";
-                            	t2='label-info';
-                            }
-                            let re='<label class="label ' + t2 + ' style="width: 100%;" data-toggle="tooltip" title="' + row['illustrate'] + '" >' + tmp + '</label>';
-                            return re;
-                        }
-                    },
-                    {
-                        field: "executeHost",
-                        title: "机器",
-                        halign: 'center',
-                        align: 'center',
-                        formatter: function (index, row) {
-                            //return row['executeHost'] + ' | ' + row['operator'];
-                        	let backInfo = "执行人=" + row['operator'] ;
-                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['executeHost'] + '</label>';
-
-                        }
-                    }, {
                         field: "operate",
                         title: "操作",
-                        width: "10%",
+                        width: "120px",
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
@@ -391,6 +384,54 @@ layui.use(['table'], function () {
                             	return  js_manualJob_nonclick +"&nbsp"+js_cancelJob_nonclick +"&nbsp"+js_manualForce_nonclick ;
                             }
                         }
+                    }, {
+                        field: "description",
+                        title: "任务描述",
+                        align: 'center',
+                        halign: 'center'
+                    }, {
+                        field: "triggerType",
+                        title: "触发类型",
+                        width: "60px",
+                        formatter: function (value, row) {
+                        	let tmp=value;
+                        	let t2='label-default';
+                            if (value == 1) {
+                            	tmp="自动调度";
+                            	t2='label-default';
+                            }
+                            else if (value == 2) {
+                            	tmp="手动触发";
+                            	t2='label-primary';
+                            }
+                            else if (value == 3) {
+                            	tmp="手动恢复";
+                            	t2='label-info';
+                            }
+                            let re='<label class="label ' + t2 + ' style="width: 100%;" data-toggle="tooltip"  >' + tmp + '</label>';
+                            return re;
+                        }
+                    }, {
+                        field: "illustrate",
+                        title: "触发说明",
+                        align: 'center',
+                        halign: 'center',
+                      formatter: function (index, row) {
+                    	let backInfo = row['illustrate'] ;
+                        return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['illustrate'].slice(0,8) + '</label>';
+
+                      	}
+                    }, {
+                        field: "executeHost",
+                        title: "机器|执行人",
+                        halign: 'center',
+                        align: 'center',
+                        formatter: function (index, row) {
+                            return row['executeHost'] + ' | ' + row['operator'];
+//                        	let backInfo = "执行人=" + row['operator'] ;
+//                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="' + backInfo + '" >' + row['executeHost'] + '</label>';
+
+                        }
                     }
                 ],
                 detailView: true,
@@ -410,6 +451,12 @@ layui.use(['table'], function () {
     };
 
 });
+
+
+
+
+
+
 
 function updateTable() {
     $('#historyJobTable').bootstrapTable('refresh');
@@ -463,8 +510,8 @@ $("#myManualJob .add-btn").click(function () {
 
 
 //强制作业
-function manualForceFun(id) {  
-	manualForceFunId=id
+function manualForceFun(jobHisId) {  
+	manualJobHisId=jobHisId
 	$('#myManualForce').modal('show');
 }
 
@@ -472,10 +519,10 @@ function manualForceFun(id) {
 //强制作业弹出页
 $("#myManualForce .add-btn").click(function () {
     $.ajax({
-        url: base_url + "/scheduleCenter/manual2.do",
+        url: base_url + "/scheduleCenter/forceJobHisStatus.do",
         type: "get",
         data: {
-            id: manualForceFunId,
+        	jobHisId: manualJobHisId,
             status: $("#myManualForceType").val()
         },
         success: function (res) {
