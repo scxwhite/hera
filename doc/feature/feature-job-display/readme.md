@@ -41,9 +41,8 @@
 
 备注：3个选项的可见性，较为简单，未细分，可进一步优化(如若当前状=成功，则强制成功为不可见，目前就未实现)
 
-![](job-redo.jpg)
-![](job-force.jpg)
-![](job-cancel.jpg)
+![](job-operate.jpg)
+
 
 
 
