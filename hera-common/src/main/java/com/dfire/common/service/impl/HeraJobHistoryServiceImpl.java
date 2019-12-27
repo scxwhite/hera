@@ -2,7 +2,7 @@ package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
-import com.dfire.common.entity.vo.JobLogHistory;
+import com.dfire.common.entity.vo.JobLogHistoryVo;
 import com.dfire.common.entity.vo.PageHelper;
 import com.dfire.common.entity.vo.PageHelperTimeRange;
 import com.dfire.common.mapper.HeraJobHistoryMapper;
@@ -89,7 +89,7 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     public Map<String, Object> findLogByPage(PageHelperTimeRange pageHelperTimeRange) {
         Map<String, Object> res = new HashMap<>(2);
         Integer size = null;
-        List<JobLogHistory> histories = null ;
+        List<JobLogHistoryVo> histories = null ;
         
         if(pageHelperTimeRange.getJobType().equals("job")){
         	size = heraJobHistoryMapper.selectCountByPageJob(pageHelperTimeRange);

@@ -8,7 +8,7 @@ import lombok.Data;
  * @date 2019/1/24
  */
 @Data
-public class JobLogHistory {
+public class JobLogHistoryVo {
 
     private String id;
 
@@ -41,5 +41,9 @@ public class JobLogHistory {
     private String groupId;
     
     private String groupName;
+    
+    private String dur240px;
+    
+    private String begintime240px;
 
 }
