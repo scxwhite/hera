@@ -2,6 +2,7 @@ package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.PageHelper;
+import com.dfire.common.entity.vo.PageHelperTimeRange;
 
 import java.util.Date;
 import java.util.List;
@@ -45,7 +46,7 @@ public interface HeraJobHistoryService {
 
     HeraJobHistory findLogById(Integer id);
 
-    Map<String, Object> findLogByPage(PageHelper pageHelper);
+    Map<String, Object> findLogByPage(PageHelperTimeRange pageHelperTimeRange);
 
     List<HeraJobHistory> findTodayJobHistory();
 
