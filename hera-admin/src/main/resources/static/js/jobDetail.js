@@ -72,6 +72,7 @@ layui.use(['table'], function () {
                         sortable: true,
                         halign: 'center',
                         align: 'center',
+
                     }, {
                         field: 'description',
                         halign: 'center',
@@ -259,6 +260,9 @@ layui.use(['table'], function () {
                         title: "任务名称",
                         align: 'center',
                         halign: 'center',
+                        formatter: function (index, row) {
+                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="任务ID=' + row['jobId'] + '" >' + row['jobName'] + '</label>';
+                        }
                     },{
                         field: "batchId",
                         title: "批次号",
