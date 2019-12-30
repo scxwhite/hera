@@ -897,12 +897,12 @@ layui.use(['table'], function () {
         }
 
         $("#manual").click(function () {
-            triggerType = 1;
+            triggerType = 2;
             setAction();
         });
 
         $("#manualRecovery").click(function () {
-            triggerType = 2;
+            triggerType = 3;
             setAction();
         });
 

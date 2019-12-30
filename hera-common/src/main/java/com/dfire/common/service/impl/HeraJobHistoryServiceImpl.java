@@ -1,8 +1,10 @@
 package com.dfire.common.service.impl;
 
 import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.vo.JobLogHistory;
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.entity.vo.JobLogHistoryVo;
 import com.dfire.common.entity.vo.PageHelper;
+import com.dfire.common.entity.vo.PageHelperTimeRange;
 import com.dfire.common.mapper.HeraJobHistoryMapper;
 import com.dfire.common.service.HeraJobHistoryService;
 import com.dfire.common.util.ActionUtil;
@@ -84,19 +86,29 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     }
 
     @Override
-    public Map<String, Object> findLogByPage(PageHelper pageHelper) {
+    public Map<String, Object> findLogByPage(PageHelperTimeRange pageHelperTimeRange) {
         Map<String, Object> res = new HashMap<>(2);
-        Integer size = heraJobHistoryMapper.selectCountById(pageHelper.getJobId());
-        List<HeraJobHistory> histories = heraJobHistoryMapper.selectByPage(pageHelper);
-        List<JobLogHistory> jobLogHistories = new ArrayList<>();
-        for (HeraJobHistory history : histories) {
-            JobLogHistory logHistory = new JobLogHistory();
-            BeanUtils.copyProperties(history, logHistory);
-            logHistory.setStartTime(ActionUtil.getDefaultFormatterDate(history.getStartTime()));
-            logHistory.setEndTime(ActionUtil.getDefaultFormatterDate(history.getEndTime()));
-            jobLogHistories.add(logHistory);
+        Integer size = null;
+        List<JobLogHistoryVo> histories = null ;
+        
+        if(pageHelperTimeRange.getJobType().equals("job")){
+        	size = heraJobHistoryMapper.selectCountByPageJob(pageHelperTimeRange);
+        	histories=heraJobHistoryMapper.selectByPageJob(  pageHelperTimeRange);
+        }else{
+        	size = heraJobHistoryMapper.selectCountByPageGroup(pageHelperTimeRange);
+        	histories=heraJobHistoryMapper.selectByPageGroup( pageHelperTimeRange);
         }
-        res.put("rows", jobLogHistories);
+        
+//        List<JobLogHistory> jobLogHistories = new ArrayList<>();
+//        for (HeraJobHistoryVo history : histories) {
+//            JobLogHistory logHistory = new JobLogHistory();
+//            BeanUtils.copyProperties(history, logHistory);
+//            logHistory.setStartTime(ActionUtil.getDefaultFormatterDate(history.getStartTime()));
+//            logHistory.setEndTime(ActionUtil.getDefaultFormatterDate(history.getEndTime()));
+//            jobLogHistories.add(logHistory);
+//        }
+//        res.put("rows", jobLogHistories);
+        res.put("rows", histories);
         res.put("total", size);
         return res;
     }

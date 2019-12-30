@@ -86,5 +86,11 @@ public class HeraJob {
     private short repeatRun;
 
     private Integer isValid;
+    
+    private String cronPeriod;
+
+    private int cronInterval;
+    
+    private String bizLabel;
 
 }

@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `hera_action`
   `timezone`             varchar(32)                  DEFAULT NULL,
   `host_group_id`        tinyint(2)                   DEFAULT NULL COMMENT '任务可分配的执行服务器组',
   `down_actions`         varchar(16)                  DEFAULT NULL,
+  `batch_id` varchar(50) DEFAULT NULL COMMENT '批次号',
   PRIMARY KEY (`id`),
   KEY `ind_action_groupid` (`group_id`),
   KEY `ind_actionjobid` (`job_id`)
@@ -65,6 +66,8 @@ CREATE TABLE IF NOT EXISTS `hera_action_history`
   `timezone`           varchar(32)   DEFAULT NULL,
   `trigger_type`       tinyint(4)    DEFAULT NULL COMMENT '任务触发类型(1,自动调度,2,手动触发,3,手动恢复)',
   `host_group_id`      int(11)       DEFAULT NULL COMMENT '任务可分配的执行服务器组',
+  batch_id varchar(50) DEFAULT NULL COMMENT '批次号',
+  biz_label varchar(500) DEFAULT NULL COMMENT '标签',
   PRIMARY KEY (`id`),
   KEY `ind_acthisactionjobid` (`action_id`, `job_id`),
   KEY `idx_job_id` (`job_id`),
@@ -209,6 +212,9 @@ CREATE TABLE IF NOT EXISTS `hera_job`
   `area_id`              varchar(50)   DEFAULT '1' COMMENT '区域ID,多个用,分割',
   `repeat_run`           tinyint(2)    DEFAULT '0' COMMENT '是否允许任务重复执行',
   `is_valid` tinyint(1) DEFAULT '1' COMMENT '任务是否删除',
+  cron_period varchar(100) DEFAULT NULL,
+  cron_interval int(11) DEFAULT NULL,
+  biz_label varchar(500) DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `ind_zeusjobgroupid` (`group_id`)
 ) ENGINE = InnoDB
@@ -331,7 +337,7 @@ VALUES ('1', '0',
         '0 0 3 * * ?', null, '', '输出测试', '2018-12-22 11:14:55', '2019-01-04 11:14:09', '2', null, null, null, null,
         'echoTest', null, 'hera', null, null, null, null, 'shell', '0',
         'echo ${name}\n\necho \"当前时间戳\":${zdt.getTime()}\necho \"     明天\":${zdt.addDay(1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"上个月的今天\": ${zdt.add(2,-1).format(\"yyyy-MM-dd HH:mm:ss\")}\n\necho \"真实的今天\":${zdt.getToday()}\n\n\necho \"如果需要更多时间查看HeraDateTool类,可以自定义时间\"\n\n\necho ${qqGroup}',
-        null, null, null, null, null, null, '1', null, '1', 0,1);
+        null, null, null, null, null, null, '1', null, '1', 0,1 ,'day', -1 ,'数据层,XXX业务');
 INSERT INTO `hera_file`
 VALUES ('1', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, '个人文档', 'hera', null, '1', '0');
 INSERT INTO `hera_file`

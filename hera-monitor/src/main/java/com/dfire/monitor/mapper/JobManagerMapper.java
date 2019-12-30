@@ -32,16 +32,24 @@ public interface JobManagerMapper {
 //            " group by his.job_id,job.name,job.description,his.start_time,his.end_time,his.execute_host,his.status,his.operator" +
 //            " order by job_id")
 
+
+    /**
+     * ADDDATE(CAST(#{dt,jdbcType=VARCHAR} AS date) ,1) )
+     * @param status
+     * @param begindt
+     * @param enddt
+     * @return
+     */
     @Select(
     		"select his.job_id,job.name as job_name,job.description,his.start_time,his.end_time "
-    		+ " ,his.execute_host, his.status ,his.operator "
+    		+ " ,his.execute_host, his.status ,his.operator ,his.biz_label  "
     		+ " ,j.times  "
     		+ " ,CAST(timestampdiff(SECOND, his.start_time,CASE WHEN his.end_time IS NOT NULL THEN his.end_time WHEN his.status='running' THEN NOW() END)/60.0 AS decimal(10,1))  AS durations  "
     		+ " ,job.group_id as groupId,grp.name as groupName"
     		+ " FROM "
     		+ " (SELECT job_id,MAX(`id`) as id_max,count(1) as times   "
     		+ " FROM hera_action_history   "
-    		+ " WHERE (start_time>=CAST(#{dt,jdbcType=VARCHAR} AS date) and  start_time< ADDDATE(CAST(#{dt,jdbcType=VARCHAR} AS date) ,1) ) "
+    		+ " WHERE (start_time>=CAST(#{begindt,jdbcType=VARCHAR} AS date) and  start_time< ADDDATE( CAST(#{enddt,jdbcType=VARCHAR} AS date) ,1)  )"
     		+ " and ( status = #{status,jdbcType=VARCHAR}  or 'all' =  #{status,jdbcType=VARCHAR} ) "
     		+ " GROUP BY job_id ) j   "
     		+ " left join hera_action_history his on j.job_id=his.job_id and j.id_max=his.`id`   "
@@ -49,10 +57,11 @@ public interface JobManagerMapper {
     		+ " left join hera_group grp on job.group_id=grp.`id` "
     		+ " ORDER BY his.start_time DESC, grp.name,job.name"
     		)
-    List<JobHistoryVo> findAllJobHistoryByStatus(@Param("status") String status,@Param("dt") String dt);
+    List<JobHistoryVo> findAllJobHistoryByStatus(@Param("status") String status,@Param("begindt") String begindt,@Param("enddt") String enddt);
+    
 
     /**
-     * 任务运行时长top10
+     * 任务运行时长top10   
      *
      * @param map
      * @return
