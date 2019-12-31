@@ -1573,7 +1573,10 @@ let JobLogTable = function (jobId) {
                 let tmp = {
                     pageSize: params.limit,
                     offset: params.offset,
-                    jobId: jobId
+                    jobId: jobId,
+                    beginDt: "1900-01-01",
+                    endDt: "2999-12-31",
+                    jobType: "job"
                 };
                 return tmp;
             }, onLoadSuccess: function (data) {
