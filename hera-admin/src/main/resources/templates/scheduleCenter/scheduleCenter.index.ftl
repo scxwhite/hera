@@ -645,6 +645,13 @@
                                     </button>
 
                                 </li>
+								<br>
+                                <li>
+                                    <button class="btn  btn-xs btn-primary btn-block" type="button" name="copyJob">
+                                        复制任务
+                                    </button>
+
+                                </li>
                                 <br>
                                 <li>
                                     <button class="btn  btn-xs btn-primary btn-block" type="button" name="addAdmin">
@@ -1013,6 +1020,33 @@
                     <textarea class="label-primary col-lg-2 col-sm-2 col-md-2" style="height: 400px;" id="jobDetail"
                               readonly>任务信息</textarea>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal fade" id="copyJobModal" tabindex="-1" role="dialog" aria-labelledby="copyJobConfig"
+     aria-hidden="true">
+    <div class="modal-dialog" style="height:100px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="title">是否复制一个新的任务!</h4>
+            </div>
+            <div class="modal-body">
+                <div class="input-group form-inline">
+                    <label class="control-label form-inline" for="jobVersion">新任务名称=原名_copy,状态=失效</label>
+                </div>
+                <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-info add-btn">执行</button>
             </div>
         </div>
     </div>

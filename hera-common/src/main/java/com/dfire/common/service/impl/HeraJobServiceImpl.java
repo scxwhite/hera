@@ -272,9 +272,22 @@ public class HeraJobServiceImpl implements HeraJobService {
     public Integer selectMaxId() {
         return heraJobMapper.selectMaxId();
     }
+    
 
+    @Override
+	public HeraJob copyJobFromExistsJob(Integer jobId) {
+    	HeraJob job = heraJobMapper.findById(jobId);
+    	if(job==null)
+    		return null;
+    	Integer maxJobId = heraJobMapper.selectMaxId();
+    	job.setId(maxJobId.intValue()+1);
+    	job.setName(job.getName()+"_copy");
+    	job.setAuto(0);
+    	heraJobMapper.insert(job);
+		return job;
+	}
 
-    /**
+	/**
      * 建立今日任务执行 Map映射 便于获取
      *
      * @return Map
