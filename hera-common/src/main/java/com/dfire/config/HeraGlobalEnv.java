@@ -109,7 +109,8 @@ public class HeraGlobalEnv {
     @Getter
     private static String kerberosPrincipal;
 
-
+    @Getter
+    private static Integer webSessionExpire;
 
 
     @Getter
@@ -404,6 +405,12 @@ public class HeraGlobalEnv {
     @Value("${mail.password}")
     public void setMailPassword(String mailPassword) {
         HeraGlobalEnv.mailPassword = mailPassword;
+    }
+    
+    
+    @Value("${hera.webSessionExpire}")
+    public void setWebSessionExpire(Integer webSessionExpire) {
+        HeraGlobalEnv.webSessionExpire = webSessionExpire;
     }
 
     @Value("${hera.alarmEnv}")
