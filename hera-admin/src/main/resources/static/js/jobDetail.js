@@ -261,7 +261,9 @@ layui.use(['table'], function () {
                         align: 'center',
                         halign: 'center',
                         formatter: function (index, row) {
-                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="任务ID=' + row['jobId'] + '" >' + row['jobName'] + '</label>';
+                        	html='<a title="查看任务配置" href="javascript:toJobPage(' + row['jobId'] + ')" ><u>' + row['jobName']+'['+row['jobId']+']' + '</u></a>';
+                        	return html;
+                            //return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="任务ID=' + row['jobId'] + '" >' + row['jobName'] + '</label>';
                         }
                     },{
                         field: "batchId",
