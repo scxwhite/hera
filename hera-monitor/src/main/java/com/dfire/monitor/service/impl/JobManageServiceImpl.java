@@ -26,15 +26,18 @@ public class JobManageServiceImpl implements JobManageService {
     @Autowired
     JobManagerMapper jobManagerMapper;
 
+    
+    
     @Override
-    public JsonResponse findJobHistoryByStatus(String status,String dt) {
-        List<JobHistoryVo> failedJobs = jobManagerMapper.findAllJobHistoryByStatus(status,dt);
+    public JsonResponse findJobHistoryByStatus(String status,String begindt,String enddt) {
+        List<JobHistoryVo> failedJobs = jobManagerMapper.findAllJobHistoryByStatus(status,begindt,enddt);
         if (failedJobs == null) {
             return new JsonResponse(false, "失败任务查询数据为空");
         }
         List<JobHistoryVo> result = failedJobs.stream().filter(distinctByKey(JobHistoryVo::getJobId)).collect(Collectors.toList());
         return new JsonResponse("查询成功", true, result);
     }
+    
 
     /**
      * 去除jobId相同的记录

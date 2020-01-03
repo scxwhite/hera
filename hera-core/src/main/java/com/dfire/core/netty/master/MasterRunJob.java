@@ -3,6 +3,7 @@ package com.dfire.core.netty.master;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.constants.LogConstant;
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
@@ -218,6 +219,7 @@ public class MasterRunJob implements RunJob {
 
         } else {
             heraAction = masterContext.getHeraJobActionService().findById(actionId);
+            HeraJob heraJob = masterContext.getHeraJobService().findById(heraAction.getJobId());
             heraJobHistory = HeraJobHistory.builder()
                     .illustrate(LogConstant.FAIL_JOB_RETRY)
                     .triggerType(TriggerTypeEnum.SCHEDULE.getId())
@@ -225,6 +227,8 @@ public class MasterRunJob implements RunJob {
                     .actionId(String.valueOf(heraAction.getId()))
                     .operator(heraAction.getOwner())
                     .hostGroupId(heraAction.getHostGroupId())
+                    .batchId(heraAction.getBatchId())
+                    .bizLabel(heraJob.getBizLabel())
                     .build();
 
             if (master.checkJobExists(HeraJobHistoryVo.builder()
