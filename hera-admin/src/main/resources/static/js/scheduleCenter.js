@@ -927,6 +927,37 @@ layui.use(['table'], function () {
             });
             $('#myModal').modal('hide');
         });
+        
+        
+        $('#jobOperate [name="copyJob"]').on('click', function () {
+        	$('#copyJobModal').modal('show');
+        });
+        
+        $("#copyJobModal .add-btn").click(function () {
+            $.ajax({
+                url: base_url + "/scheduleCenter/copyJobFromExistsJob.do",
+                type: "post",
+                data: {
+                	jobId: focusId
+                },
+                success: function (res) {
+                    if (res.success === true) {
+                        window.location.reload();
+                        layer.msg(res.message);
+                    } else {
+                        layer.msg(res.message)
+                    }
+                	
+                },
+                error: function (err) {
+                    layer.msg(err);
+                }
+            });
+            $('#copyJobModal').modal('hide');
+        });
+        
+        
+        
 
         function setAction() {
             //获得版本
