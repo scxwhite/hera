@@ -72,7 +72,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
     }
 
     public void removeListener(ResponseListener listener) {
-        listeners.add(listener);
+        listeners.remove(listener);
     }
 
     public SocketMessage wrapper(Response response) {
