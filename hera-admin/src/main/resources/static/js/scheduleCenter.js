@@ -1407,7 +1407,8 @@ function initDate(data) {
     len = edges.length;
     currIndex = 0;
     g = new dagreD3.graphlib.Graph().setGraph({});
-    g.setNode(headNode.nodeName, {label: headNode.nodeName, style: "fill: #bd16ff" + ";" + headNode.remark})
+    labelname = headNode.descName +"["+ headNode.nodeName +"]";
+    g.setNode(headNode.nodeName, {label: labelname, style: "fill: #bd16ff" + ";" + headNode.remark})
     let nodeName;
     for (let i = 0; i < len; i++) {
         nodeName = edges[i].nodeA.nodeName;
