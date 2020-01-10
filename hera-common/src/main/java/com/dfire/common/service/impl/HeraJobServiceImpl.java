@@ -178,7 +178,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         if (graphNode1 != null) {
             remark = (String) graphNode1.getRemark();
         }
-        GraphNode<Integer> graphNode = new GraphNode<>(nodeJob.getAuto(), nodeJob.getId(), "任务ID：" + jobId + "\n任务名称:" + nodeJob.getName() + remark);
+        GraphNode<Integer> graphNode = new GraphNode<>(nodeJob.getAuto(), nodeJob.getId(), "任务ID:" + jobId + "\n任务名称:" + nodeJob.getName() + remark,  nodeJob.getName());
         return buildCurrJobGraph(historyMap, graphNode, getDirectionGraph(), type);
     }
 
@@ -191,7 +191,7 @@ public class HeraJobServiceImpl implements HeraJobService {
         DirectionGraph<Integer> graph = getDirectionGraph();
 
         Queue<GraphNode<Integer>> nodeQueue = new LinkedList<>();
-        GraphNode<Integer> node = new GraphNode<>(jobId, "");
+        GraphNode<Integer> node = new GraphNode<>(jobId, "","");
         nodeQueue.add(node);
         List<Integer> graphNodes;
         Map<Integer, GraphNode<Integer>> indexMap = graph.getIndexMap();
@@ -308,11 +308,14 @@ public class HeraJobServiceImpl implements HeraJobService {
                     end = sdf.format(actionHistory.getEndTime());
                 }
             }
+            HeraJob job = findById(actionHistory.getJobId());
             GraphNode node = new GraphNode<>(Integer.parseInt(jobId),
-                    "任务状态：" + status + "\n" +
-                            "执行时间：" + start + "\n" +
-                            "结束时间：" + end + "\n" +
-                            "耗时：" + duration + "\n");
+                    "任务状态:" + status + "\n" +
+                            "执行时间:" + start + "\n" +
+                            "结束时间:" + end + "\n" +
+                            "耗时:" + duration + "\n"
+                            ,job.getName()
+                            );
 
             map.put(actionHistory.getJobId() + "", node);
         }
@@ -377,14 +380,14 @@ public class HeraJobServiceImpl implements HeraJobService {
      * @param historyMap 宙斯任务历史运行任务map
      * @param node       当前头节点
      * @param graph      所有任务的关系图
-     * @param type       展示类型  0:任务进度分析   1：影响分析
+     * @param type       展示类型  0:任务进度分析   1:影响分析
      */
     private Map<String, Object> buildCurrJobGraph(Map<String, GraphNode> historyMap, GraphNode<Integer> node, DirectionGraph<Integer> graph, Integer type) {
-        String start = "start_node";
+        String start = "标识节点";
         Map<String, Object> res = new HashMap<>(2);
         List<Edge> edgeList = new ArrayList<>();
         Queue<GraphNode<Integer>> nodeQueue = new LinkedList<>();
-        GraphNode headNode = new GraphNode<>(0, start);
+        GraphNode headNode = new GraphNode<>(0, start,start);
         res.put("headNode", headNode);
         nodeQueue.add(node);
         edgeList.add(new Edge(headNode, node));
@@ -402,9 +405,9 @@ public class HeraJobServiceImpl implements HeraJobService {
                 graphNode = indexMap.get(integer);
                 GraphNode graphNode1 = historyMap.get(graphNode.getNodeName() + "");
                 if (graphNode1 == null) {
-                    graphNode1 = new GraphNode<>(graphNode.getAuto(), graphNode.getNodeName(), "" + graphNode.getRemark());
+                    graphNode1 = new GraphNode<>(graphNode.getAuto(), graphNode.getNodeName(), "" + graphNode.getRemark(),graphNode.getDescName());
                 } else {
-                    graphNode1 = new GraphNode<>(graphNode.getAuto(), graphNode.getNodeName(), "" + graphNode.getRemark() + graphNode1.getRemark());
+                    graphNode1 = new GraphNode<>(graphNode.getAuto(), graphNode.getNodeName(), "" + graphNode.getRemark() + graphNode1.getRemark(),graphNode.getDescName());
                 }
                 edgeList.add(new Edge(node, graphNode1));
                 nodeQueue.add(graphNode1);
@@ -444,8 +447,8 @@ public class HeraJobServiceImpl implements HeraJobService {
                 if (map.get(pid) == null) {
                     continue;
                 }
-                GraphNode<Integer> graphNodeBegin = new GraphNode<>(job.getAuto(), id, "任务ID：" + id + "\n任务名称：" + map.get(id) + "\n");
-                GraphNode<Integer> graphNodeEnd = new GraphNode<>(parentAutoMap.get(pid), pid, "任务ID：" + pid + "\n任务名称：" + map.get(pid) + "\n");
+                GraphNode<Integer> graphNodeBegin = new GraphNode<>(job.getAuto(), id, "任务ID:" + id + "\n任务名称:" + map.get(id) + "\n",job.getName());
+                GraphNode<Integer> graphNodeEnd = new GraphNode<>(parentAutoMap.get(pid), pid, "任务ID:" + pid + "\n任务名称:" + map.get(pid) + "\n",map.get(pid));
                 directionGraph.addNode(graphNodeBegin);
                 directionGraph.addNode(graphNodeEnd);
                 directionGraph.addEdge(graphNodeBegin, graphNodeEnd);
