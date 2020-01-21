@@ -49,7 +49,8 @@ function initDate(data) {
     len = edges.length;
     currIndex = 0;
     g = new dagreD3.graphlib.Graph().setGraph({});
-    g.setNode(headNode.nodeName, {label: headNode.nodeName, style: "fill: #bd16ff" + ";" + headNode.remark})
+    labelname = headNode.descName +"["+ headNode.nodeName +"]";
+    g.setNode(headNode.nodeName, {label: labelname, style: "fill: #bd16ff" + ";" + headNode.remark})
     var nodeName;
     for (var i = 0; i < len; i++) {
         nodeName = edges[i].nodeA.nodeName;
@@ -65,13 +66,25 @@ function redraw() {
     render(inner, g);
 
     $('.node').on("mousemove", function () {
-        var nodeName = $(this).text();
+        var nodeNameNav = $(this).text();
+        var begin = nodeNameNav.indexOf("[");
+        var end = nodeNameNav.indexOf("]");
+        var nodeName;
+        if(begin<0){
+        	nodeName = nodeNameNav ;
+        }else{
+        	nodeName = nodeNameNav.substring(begin+1,end)
+        }
         var str = g.node(nodeName).style || '';
+        
         $('#jobDetail').text(str.substring(str.indexOf(";") + 1));
     })
 
     $('.node').on("click", function () {
-        var nodeName = $(this).text();
+        var nodeNameNav = $(this).text();
+        var begin = nodeNameNav.indexOf("[");
+        var end = nodeNameNav.indexOf("]");
+        var nodeName = nodeNameNav.substring(begin+1,end)
         var currNodeIndex = nodeIndex[nodeName];
         if (currNodeIndex == 0 || currNodeIndex == undefined) {
             $('#jobDetail').text("此任务节点已全部展开^_^");
@@ -128,11 +141,13 @@ function addEdgeToGraph(edge) {
 
     if (g.node(src.nodeName) == undefined) {
         var srcRemarkColor  = getColor(src.auto,src.remark);
-        g.setNode(src.nodeName, {label: src.nodeName, style: srcRemarkColor + ";" + src.remark});
+        var labelname = src.descName +"["+ src.nodeName +"]";
+        g.setNode(src.nodeName, {label: labelname, style: srcRemarkColor + ";" + src.remark});
     }
     if (g.node(target.nodeName) == undefined) {
         var targetRemarkColor  = getColor(target.auto,target.remark);
-        g.setNode(target.nodeName, {label: target.nodeName, style: targetRemarkColor + ";" + target.remark});
+        var labelname = target.descName +"["+ target.nodeName +"]";
+        g.setNode(target.nodeName, {label: labelname, style: targetRemarkColor + ";" + target.remark});
     }
     if (nodeIndex[target.nodeName] == 0) {
         return false;

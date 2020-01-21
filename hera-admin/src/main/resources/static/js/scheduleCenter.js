@@ -927,6 +927,37 @@ layui.use(['table'], function () {
             });
             $('#myModal').modal('hide');
         });
+        
+        
+        $('#jobOperate [name="copyJob"]').on('click', function () {
+        	$('#copyJobModal').modal('show');
+        });
+        
+        $("#copyJobModal .add-btn").click(function () {
+            $.ajax({
+                url: base_url + "/scheduleCenter/copyJobFromExistsJob.do",
+                type: "post",
+                data: {
+                	jobId: focusId
+                },
+                success: function (res) {
+                    if (res.success === true) {
+                        window.location.reload();
+                        layer.msg(res.message);
+                    } else {
+                        layer.msg(res.message)
+                    }
+                	
+                },
+                error: function (err) {
+                    layer.msg(err);
+                }
+            });
+            $('#copyJobModal').modal('hide');
+        });
+        
+        
+        
 
         function setAction() {
             //获得版本
@@ -1376,7 +1407,8 @@ function initDate(data) {
     len = edges.length;
     currIndex = 0;
     g = new dagreD3.graphlib.Graph().setGraph({});
-    g.setNode(headNode.nodeName, {label: headNode.nodeName, style: "fill: #bd16ff" + ";" + headNode.remark})
+    labelname = headNode.descName +"["+ headNode.nodeName +"]";
+    g.setNode(headNode.nodeName, {label: labelname, style: "fill: #bd16ff" + ";" + headNode.remark})
     let nodeName;
     for (let i = 0; i < len; i++) {
         nodeName = edges[i].nodeA.nodeName;

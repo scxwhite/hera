@@ -261,7 +261,9 @@ layui.use(['table'], function () {
                         align: 'center',
                         halign: 'center',
                         formatter: function (index, row) {
-                            return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="任务ID=' + row['jobId'] + '" >' + row['jobName'] + '</label>';
+                        	html='<a title="查看任务配置" href="javascript:toJobPage(' + row['jobId'] + ')" > ' + row['jobName']+'['+row['jobId']+']' + '</a>';
+                        	return html;
+                            //return '<label class="label label-default" style="width: 100%;" data-toggle="tooltip" title="任务ID=' + row['jobId'] + '" >' + row['jobName'] + '</label>';
                         }
                     },{
                         field: "batchId",
@@ -398,7 +400,7 @@ layui.use(['table'], function () {
                     } , {
                         field: "operate",
                         title: "操作",
-                        width: "120px",
+                        width: "160px",
                         halign: 'center',
                         align: 'center',
                         formatter: function (index, row) {
@@ -425,16 +427,20 @@ layui.use(['table'], function () {
                             let js_manualForce_nonclick = '<a href ="javascript:return false;" style="opacity: 0.2" >强制</a>';
                             
                             if (row['status'] === 'running') {
-                            	return  js_manualJob_nonclick +"|"+js_cancelJob_click +"|"+js_manualForce_nonclick ;
+                            	re =  js_manualJob_nonclick +"|"+js_cancelJob_click +"|"+js_manualForce_nonclick ;
                             }else if (row['status'] === 'success'){
-                            	return  js_manualJob_click +"|"+js_cancelJob_nonclick +"|"+js_manualForce_click ;
+                            	re =  js_manualJob_click +"|"+js_cancelJob_nonclick +"|"+js_manualForce_click ;
                             }else if (row['status'] === 'failed'){
-                            	return  js_manualJob_click +"|"+js_cancelJob_nonclick +"|"+js_manualForce_click ;
+                            	re =  js_manualJob_click +"|"+js_cancelJob_nonclick +"|"+js_manualForce_click ;
                             }else if (row['status'] === 'wait'){
-                            	return  js_manualJob_nonclick +"|"+js_cancelJob_click +"|"+js_manualForce_click ;
+                            	re =  js_manualJob_nonclick +"|"+js_cancelJob_click +"|"+js_manualForce_click ;
                             }else {
-                            	return  js_manualJob_nonclick +"|"+js_cancelJob_nonclick +"|"+js_manualForce_nonclick ;
+                            	re =  js_manualJob_nonclick +"|"+js_cancelJob_nonclick +"|"+js_manualForce_nonclick ;
                             }
+                            
+                            logdetail='<a target="_blank" href="jobInstLog?id=' + row['id'] + '&jobId=' + row['jobId']  +'"> 日志</a>'
+                            
+                            return re + "|" + logdetail;
                         }
                     }, {
                         field: "description",
@@ -484,13 +490,13 @@ layui.use(['table'], function () {
                         }
                     }
                 ],
-                detailView: true,
-                detailFormatter: function (index, row) {
-                    var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; word-break: break-all; word-wrap:break-word; height:600px; white-space:pre-line;font-family:Microsoft YaHei" id="log_' + row.id + '">'
-                        + '日志加载中。。' +
-                        '</div>' + '<form role="form">' + '<div class="form-group">';
-                    return html;
-                },
+//                detailView: true,
+//                detailFormatter: function (index, row) {
+//                    var html = '<form role="form">' + '<div class="form-group">' + '<div class="form-control"  style="overflow:scroll; word-break: break-all; word-wrap:break-word; height:600px; white-space:pre-line;font-family:Microsoft YaHei" id="log_' + row.id + '">'
+//                        + '日志加载中。。' +
+//                        '</div>' + '<form role="form">' + '<div class="form-group">';
+//                    return html;
+//                },
                 onExpandRow: function (index, row) {
                     actionRow = row;
                     scheduleLog();

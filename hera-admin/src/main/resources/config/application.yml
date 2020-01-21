@@ -97,6 +97,9 @@ hera:
   keyPath: /home/docker/conf/bigdata.pem #emr登录集群到私钥的绝对路径
   monitorUsers: 00001  #（微信工号，只适用于企业微信告警 ）多个用|分割
   monitorEmails: monitor@qq.com  #群发监控者的邮箱（任务任务失败都会通知到该列表）  多个用;分割
+  webSessionExpire: 4320 # web session失效时间，单位为分钟；3天*24*60=4320
+  webLogHeadCount: 5000 # web端的任务详情日志展示头部行数
+  webLogTailCount: 5000 # web端的任务详情日志展示尾部行数
 aliYun:
   accessKey: xx #阿里云创建集群的ak
   accessSecret: xx #阿里云创建集群的as

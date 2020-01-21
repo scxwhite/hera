@@ -995,6 +995,23 @@ public class ScheduleCenterController extends BaseHeraController {
         }
     }
     
+
+    
+
+    @RequestMapping(value = "/copyJobFromExistsJob", method = RequestMethod.POST)
+    @ResponseBody
+    @RunAuth
+    public JsonResponse copyJobFromExists(Integer jobId) {
+    	HeraJob job = heraJobService.copyJobFromExistsJob(jobId);
+    	if(job==null){
+    		return new JsonResponse(false, "复制任务失败！");
+    	}else{
+    		return new JsonResponse(true, "复制任务成功[新任务位于同目录下,名称="+job.getName()+"_copy]！");
+    	}
+    }
+
+
+
     /**
      * 
      * @param jobHisId
@@ -1027,6 +1044,7 @@ public class ScheduleCenterController extends BaseHeraController {
     	heraJobHistoryService.updateStatusAndIllustrate(jobHisId, status, illustrate, new Date());
     	return null;
     }
+
 
 
 }

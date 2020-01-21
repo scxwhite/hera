@@ -27,20 +27,35 @@ public class GraphNode<T> implements Serializable {
      * 0:关闭
      */
     private Integer auto;
+    
+    private String descName; // 展示名称
 
     public GraphNode() {
     }
 
-    public GraphNode(T nodeName, Object remark) {
-        this.nodeName = nodeName;
-        this.remark = remark;
-    }
+//    public GraphNode(T nodeName, Object remark) {
+//        this.nodeName = nodeName;
+//        this.remark = remark;
+//    }
 
-    public GraphNode(Integer auto,T nodeName, Object remark) {
+//    public GraphNode(Integer auto,T nodeName, Object remark) {
+//        this.nodeName = nodeName;
+//        this.remark = remark;
+//        this.auto = auto;
+//    }
+    
+    public GraphNode(T nodeName, Object remark, String descName) {
         this.nodeName = nodeName;
         this.remark = remark;
-        this.auto = auto;
+        this.descName = descName;
     }
+    
+	public GraphNode(Integer auto,T nodeName, Object remark, String descName) {
+	  this.nodeName = nodeName;
+	  this.remark = remark;
+	  this.auto = auto;
+	  this.descName = descName;
+	}
 
     @Override
     public boolean equals(Object graphNode) {

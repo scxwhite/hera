@@ -64,5 +64,7 @@ public interface HeraJobService {
     Integer updateScript(Integer id, String script);
 
     Integer selectMaxId();
+    
+    HeraJob copyJobFromExistsJob(Integer jobId);
 
 }
