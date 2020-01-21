@@ -5,3 +5,4 @@
 - feature-job-copy：调度中心页面-复制任务
 - feature-job-log与feature-job-log-info：1、在worder机器生成明细所有日志文件；2、web端日志信息使用新页面展示
 - feature-dag-display：依赖关系图展示任务名称
+- feture-web-session-expire：web会话有效期可配置
