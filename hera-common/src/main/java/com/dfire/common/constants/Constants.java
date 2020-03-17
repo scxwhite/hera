@@ -97,7 +97,7 @@ public class Constants {
     public final static String HTML_NEW_LINE = "<br>";
 
 
-    public final static String LOG_SPLIT = "<br><br>";
+    public final static String LOG_SPLIT = "<br>";  //原来是：<br><br>;
 
     public final static String FILE_ALL_NAME = "all";
 

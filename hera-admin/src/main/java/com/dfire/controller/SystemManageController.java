@@ -84,6 +84,11 @@ public class SystemManageController extends BaseHeraController {
     }
 
 
+    @RequestMapping("/jobInstLog")
+    public String jobInstLog() {
+        return "jobManage/jobInstLog.index";
+    }
+    
     @RequestMapping("/jobSearch")
     public String jobSearch() {
         return "jobManage/jobSearch.index";

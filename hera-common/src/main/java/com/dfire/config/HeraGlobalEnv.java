@@ -109,8 +109,14 @@ public class HeraGlobalEnv {
     @Getter
     private static String kerberosPrincipal;
 
-
-
+    @Getter
+    private static Integer webSessionExpire;
+    
+    @Getter
+    private static Integer webLogHeadCount;
+    
+    @Getter
+    private static Integer webLogTailCount;
 
     @Getter
     private static String aliYunAccessKey;
@@ -405,6 +411,24 @@ public class HeraGlobalEnv {
     public void setMailPassword(String mailPassword) {
         HeraGlobalEnv.mailPassword = mailPassword;
     }
+    
+    
+    @Value("${hera.webLogHeadCount}")
+    public void setWebLogHeadCount(Integer webLogHeadCount) {
+        HeraGlobalEnv.webLogHeadCount = webLogHeadCount;
+    }
+    
+    @Value("${hera.webLogTailCount}")
+    public void setWebLogTailCount(Integer webLogTailCount) {
+        HeraGlobalEnv.webLogTailCount = webLogTailCount;
+    }
+    
+    
+    @Value("${hera.webSessionExpire}")
+    public void setWebSessionExpire(Integer webSessionExpire) {
+        HeraGlobalEnv.webSessionExpire = webSessionExpire;
+    }
+    
 
     @Value("${hera.alarmEnv}")
     public void setAlarmEnvSet(String mailEnv) {

@@ -2,6 +2,8 @@ package com.dfire.common.vo;
 
 import com.dfire.common.constants.Constants;
 import com.dfire.common.enums.StatusEnum;
+import com.dfire.config.HeraGlobalEnv;
+
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
@@ -26,9 +28,9 @@ public class LogContent {
     private final String HERA = "<b>HERA#</b> ";
     private StringBuffer content;
 
-    private static final int COUNT = 1000;
+    private static final int HEAD_PRINT_COUNT = HeraGlobalEnv.getWebLogHeadCount();
 
-    private static final int TAIL_PRINT_COUNT = 1000;
+    private static final int TAIL_PRINT_COUNT = HeraGlobalEnv.getWebLogTailCount();
 
     private boolean limit = true;
 
@@ -72,7 +74,7 @@ public class LogContent {
     }
 
     private String tailLog() {
-        if (lines >= COUNT) {
+        if (lines >= HEAD_PRINT_COUNT) {
             StringBuilder sb = new StringBuilder();
             String[] tailLogs;
             try {
@@ -96,7 +98,7 @@ public class LogContent {
         if (StringUtils.isBlank(log)) {
             return;
         }
-        if (lines < COUNT) {
+        if (lines < HEAD_PRINT_COUNT) {
             content.append(CONSOLE).append(redColorMsg(log)).append(Constants.LOG_SPLIT);
             appendLimitLog();
         } else {
@@ -106,16 +108,19 @@ public class LogContent {
 
 
     public void appendHera(String log) {
-        if (lines < COUNT) {
-            content.append(HERA).append(log).append(Constants.LOG_SPLIT);
-            appendLimitLog();
-        } else {
-            queuePushLog(HERA + log + Constants.LOG_SPLIT);
-        }
+    	String[] l = log.split(Constants.NEW_LINE);
+    	for (String s : l) {
+            if (lines < HEAD_PRINT_COUNT) {
+                content.append(HERA).append(s).append(Constants.LOG_SPLIT);
+                appendLimitLog();
+            } else {
+                queuePushLog(HERA + s + Constants.LOG_SPLIT);
+            }
+		}
     }
 
     public void append(String log) {
-        if (lines < COUNT) {
+        if (lines < HEAD_PRINT_COUNT) {
             content.append(log).append(Constants.LOG_SPLIT);
             appendLimitLog();
         } else {
@@ -125,7 +130,7 @@ public class LogContent {
 
 
     private void appendLimitLog() {
-        if (++lines == COUNT) {
+        if (++lines == HEAD_PRINT_COUNT) {
             content.append(HERA).append(limitLog);
             content.append(HERA).append(limitLog);
             content.append(HERA).append(limitLog);

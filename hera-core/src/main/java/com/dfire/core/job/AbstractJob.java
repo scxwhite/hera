@@ -15,6 +15,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.util.UUID;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -91,36 +92,78 @@ public abstract class AbstractJob implements Job {
             //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
             command.append(loginCmd).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
             command.append(Constants.SSH_PREFIX).append(Constants.NEW_LINE);
-            switch (runTypeEnum) {
-                case Spark:
-                    command.append(HeraGlobalEnv.getJobSparkSqlBin()).append(prefix).append(" -f ").append(runPath);
-                    break;
-                case Hive:
-                    command.append(HeraGlobalEnv.getJobHiveBin()).append(" -f ").append(runPath);
-                    break;
-                case Shell:
-                    command.append("bash ").append(runPath);
-                    break;
-                default:
-                    break;
-            }
+            
+            command.append(generateRunCommandBizCore(runTypeEnum,prefix,runPath));
+            
+           
             command.append(Constants.NEW_LINE);
             command.append(Constants.SSH_SUFFIX);
         } else {
-            switch (runTypeEnum) {
-                case Shell:
-                    command.append("bash ").append(jobPath);
-                    break;
-                case Spark:
-                    command.append(HeraGlobalEnv.getJobSparkSqlBin()).append(prefix).append(" -f ").append(jobPath);
-                    break;
-                case Hive:
-                    command.append(HeraGlobalEnv.getJobHiveBin()).append(" -f ").append(jobPath);
-                default:
-                    break;
-            }
+        	
+        	command.append(generateRunCommandBizCore(runTypeEnum,prefix,jobPath));
+
         }
         return command.toString();
+    }
+    
+    /**
+     * 业务核心代码的脚本内容
+     * @param runTypeEnum
+     * @param prefix
+     * @param runPath
+     * @return
+     */
+    public static String generateRunCommandBizCore(JobRunTypeEnum runTypeEnum, String prefix, String runPath){
+    	
+    	String uuid = UUID.randomUUID().toString();
+    	String bizBefore= "curDir=$(cd `dirname $0`; pwd)" + Constants.NEW_LINE
+    					+ "scriptName=`basename $0`" + Constants.NEW_LINE
+    					+ "cd ${curDir}"+ Constants.NEW_LINE
+    					+ "log_file="+uuid+".log" + Constants.NEW_LINE
+    					+ "echo \"调度作业的日志文件:[${curDir}/${log_file}]\"" + Constants.NEW_LINE
+    					+ "runtime=`date '+%Y-%m-%d %H:%M:%S'`" + Constants.NEW_LINE
+    					+ "echo \"作业执行开始,时间[$runtime]\"" + Constants.NEW_LINE
+    					;
+    	
+    	String bizAfter = "if [ ${PIPESTATUS[0]}  != 0 ]" + Constants.NEW_LINE
+    					+ "then" + Constants.NEW_LINE
+    					+ "    runtime=`date '+%Y-%m-%d %H:%M:%S'`" + Constants.NEW_LINE
+    					+ "    echo \"作业执行失败,时间[$runtime]\"" + Constants.NEW_LINE
+    					+ "    exit -1" + Constants.NEW_LINE
+    					+ "else" + Constants.NEW_LINE
+    					+ "    runtime=`date '+%Y-%m-%d %H:%M:%S'`" + Constants.NEW_LINE
+    					+ "    #'此处可设置web或FTP服务,如上传日志文件，以达到网页端可查看完成日志功能' "+ Constants.NEW_LINE
+    					+ "    echo \"作业执行成功,时间[$runtime]\"" + Constants.NEW_LINE
+    					+ "fi" + Constants.NEW_LINE
+    					;
+    	
+    	StringBuilder cmd = new StringBuilder();
+    	cmd.append(bizBefore).append(Constants.NEW_LINE);
+    	
+    	
+    	//以下是业务脚本
+    	switch (runTypeEnum) {
+	        case Spark:
+	            cmd.append(HeraGlobalEnv.getJobSparkSqlBin()).append(prefix).append(" -f ").append(runPath);
+	            cmd.append("  2>&1|tee -a ${log_file} ");
+	            break;
+	        case Hive:
+	            cmd.append(HeraGlobalEnv.getJobHiveBin()).append(" -f ").append(runPath);
+	            cmd.append("  2>&1|tee -a ${log_file} ");
+	            break;
+	        case Shell:
+	            cmd.append("bash ").append(runPath);
+	            cmd.append("  2>&1|tee -a ${log_file} ");
+	            break;
+	        default:
+	        	cmd.append("");
+	            break;
+    	}
+    	
+    	cmd.append(Constants.NEW_LINE).append(bizAfter);
+    	
+    	return cmd.toString();
+    	
     }
 
 
