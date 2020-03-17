@@ -1,7 +1,6 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-use hera;
 
 CREATE TABLE IF NOT EXISTS `hera_action`
 (

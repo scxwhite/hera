@@ -71,7 +71,7 @@ public abstract class AbstractEmr implements EmrJob, Emr {
     /**
      * 最少实例数
      */
-    private int minCapacity = 1;
+    private int minCapacity = 2;
     /**
      * 最大实例数
      */

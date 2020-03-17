@@ -395,7 +395,7 @@ public class Master {
                     HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
                     jobList.add(heraJob);
                     if (heraJob.getScheduleType() == 1) {
-                        jobList.addAll(getParentJob(heraJob.getDependencies()));
+                        jobList.addAll(getParentJob(heraJob.getDependencies(), new HashSet<>()));
                     }
                     actionMap = heraActionMap;
                     List<Long> shouldRemove = new ArrayList<>();
@@ -457,16 +457,19 @@ public class Master {
      * @param dpIdStr
      * @return
      */
-    private List<HeraJob> getParentJob(String dpIdStr) {
-        List<HeraJob> jobList = new ArrayList<>();
+    public Set<HeraJob> getParentJob(String dpIdStr, Set<Integer> jobCheck) {
+        Set<HeraJob> jobSet = new HashSet<>();
         Arrays.stream(dpIdStr.split(Constants.COMMA)).forEach(id -> {
-            HeraJob dpJob = masterContext.getHeraJobService().findById(Integer.parseInt(id));
-            if (dpJob.getScheduleType() == 1) {
-                jobList.addAll(getParentJob(dpJob.getDependencies()));
+            HeraJob dpJob = masterContext.getHeraJobService().findMemById(Integer.parseInt(id));
+            if (dpJob != null && !jobCheck.contains(dpJob.getId())) {
+                jobCheck.add(dpJob.getId());
+                if (dpJob.getScheduleType() == 1) {
+                    jobSet.addAll(getParentJob(dpJob.getDependencies(), jobCheck));
+                }
+                jobSet.add(dpJob);
             }
-            jobList.add(dpJob);
         });
-        return jobList;
+        return jobSet;
     }
 
     /**
@@ -1105,7 +1108,7 @@ public class Master {
     public void printThreadPoolLog() {
         masterRunJob.printThreadPoolLog();
     }
-    
+
     /**
      * 输出批次号
      * @param actionId
@@ -1125,36 +1128,36 @@ public class Master {
     		String outDateStr;
     		SimpleDateFormat outDateFormat = new SimpleDateFormat(TimeFormatConstant.YYYY_MM_DD_HH_MM_SS);
     		if(cronPeriod.equals("year")){
-    			cal.add(Calendar.YEAR, cronInterval);    			
+    			cal.add(Calendar.YEAR, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,4);
     		}else if(cronPeriod.equals("month")){
-    			cal.add(Calendar.MONTH, cronInterval);    			
+    			cal.add(Calendar.MONTH, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,7);
     		}else if(cronPeriod.equals("day")){
-    			cal.add(Calendar.DATE, cronInterval);    			
+    			cal.add(Calendar.DATE, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,10);
     		}else if(cronPeriod.equals("hour")){
-    			cal.add(Calendar.HOUR, cronInterval);    			
+    			cal.add(Calendar.HOUR, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,13);
     		}else if(cronPeriod.equals("minute")){
-    			cal.add(Calendar.MINUTE, cronInterval);    			
+    			cal.add(Calendar.MINUTE, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,16);
     		}else if(cronPeriod.equals("second")){
-    			cal.add(Calendar.SECOND, cronInterval);    			
+    			cal.add(Calendar.SECOND, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,19);
     		}else{//未知，使用秒方案
-    			cal.add(Calendar.SECOND, cronInterval);    			
+    			cal.add(Calendar.SECOND, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,19);
     		}
     	}
     }
-    
-    
+
+
 }
