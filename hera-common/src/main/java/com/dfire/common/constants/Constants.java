@@ -41,7 +41,7 @@ public class Constants {
 
     public final static String RIGHT_BRACKET = ")";
 
-    public final static String ALL_JOB_ID = "-1024";
+    public final static Long ALL_JOB_ID = -1024L;
 
     public final static String CANCEL_JOB_MESSAGE = "任务手动取消";
 
@@ -97,7 +97,7 @@ public class Constants {
     public final static String HTML_NEW_LINE = "<br>";
 
 
-    public final static String LOG_SPLIT = "<br>";  //原来是：<br><br>;
+    public final static String LOG_SPLIT = "<br><br>";
 
     public final static String FILE_ALL_NAME = "all";
 
@@ -162,6 +162,27 @@ public class Constants {
 
     public final static String HERA_SCRIPT_ECHO = "hera.script.echo";
 
+    public final static String KAFKA_TOPIC = "sigmax_han";
+
+    public final static String ACTION_DONE = "action_done";
+
+    public final static String ACTION_PROCESS_NUM = "action_process_num";
+
+    public final static String ACTION_FAILED_NUM = "action_failed_num";
+
+    public final static String ACTION_ALL_NUM = "action_all_num";
+
+    public final static String RERUN_THREAD = "rerun_thread";
+
+    public final static String RERUN_ID = "rerun_id";
+
+    public final static String APP_ID = "applicationId";
+
+    public final static String EMR_ADDRESS = "emr_address";
+
+    public final static String COLON = ":";
+
+    public final static String SECRET_PREFIX = "secret.";
 
 
 }

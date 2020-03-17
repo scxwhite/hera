@@ -23,30 +23,30 @@ import java.util.concurrent.TimeUnit;
  */
 public class WorkerHandleWebRequest {
 
-    public static Future<WebResponse> handleWebExecute(final WorkContext workContext, ExecuteKind kind, String id) {
+    public static Future<WebResponse> handleWebExecute(final WorkContext workContext, ExecuteKind kind, Long id) {
         return buildMessage(WebRequest.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(WebOperate.ExecuteJob)
                 .setEk(kind)
-                .setId(id)
+                .setId(String.valueOf(id))
                 .build(), workContext, "[执行]-任务超出3小时未得到master消息返回:" + id);
     }
 
-    public static Future<WebResponse> handleWebAction(final WorkContext workContext, ExecuteKind kind, String id) {
+    public static Future<WebResponse> handleWebAction(final WorkContext workContext, ExecuteKind kind, Long id) {
         return buildMessage(WebRequest.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(WebOperate.GenerateAction)
                 .setEk(kind)
-                .setId(id)
+                .setId(String.valueOf(id))
                 .build(), workContext, "[更新]-action超出3小时未得到master消息返回:" + id);
     }
 
-    public static Future<WebResponse> handleCancel(final WorkContext workContext, ExecuteKind kind, String id) {
+    public static Future<WebResponse> handleCancel(final WorkContext workContext, ExecuteKind kind, Long id) {
         return buildMessage(WebRequest.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(WebOperate.CancelJob)
                 .setEk(kind)
-                .setId(id)
+                .setId(String.valueOf(id))
                 .build(), workContext, "[取消]-任务超出3小时未得到master消息返回：" + id);
     }
 

@@ -37,7 +37,7 @@ public class HeraJob {
 
     private Integer groupId;
 
-    private String historyId;
+    private Long historyId;
 
     private String host;
 

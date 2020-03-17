@@ -59,7 +59,7 @@ public class StringUtil {
      * @return
      */
     public static Map<String, String> convertStringToMap(String config) throws RuntimeException {
-        if (config == null || "{}".equals(config)) {
+        if (StringUtils.isBlank(config) || "{}".equals(config)) {
             return new HashMap<>(0);
         }
         JSONObject jsonObject;
@@ -91,6 +91,7 @@ public class StringUtil {
         }
         return jsonObject.toString();
     }
+
 
     public static List<Processor> convertProcessorToList(String processor) {
         List<Processor> list = new ArrayList<>();
@@ -126,6 +127,10 @@ public class StringUtil {
         Integer id1 = Integer.valueOf(str);
         Integer id2 = Integer.valueOf(id);
         return id1.equals(id2);
+    }
+
+    public static boolean actionIdToJobId(Long actionId, String id) {
+        return actionIdToJobId(String.valueOf(actionId), id);
     }
 
     /**

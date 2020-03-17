@@ -10,8 +10,8 @@ import lombok.Data;
 @Data
 public class HeraJobLostEvent extends ApplicationEvent {
 
-    private final String jobId;
-    public HeraJobLostEvent(EventType type, String jobId){
+    private final Long jobId;
+    public HeraJobLostEvent(EventType type, Long jobId){
         super(type);
         this.jobId=jobId;
     }

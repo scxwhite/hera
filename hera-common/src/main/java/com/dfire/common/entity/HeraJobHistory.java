@@ -18,9 +18,9 @@ import java.util.Date;
 @NoArgsConstructor
 public class HeraJobHistory {
 
-    private String id;
+    private Long id;
 
-    private String actionId;
+    private Long actionId;
 
     private Integer jobId;
 

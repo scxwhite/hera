@@ -10,9 +10,9 @@ import lombok.Getter;
 public class HeraJobMaintenanceEvent extends ApplicationEvent {
 
     @Getter
-    private final String id;
+    private final Long id;
 
-    public HeraJobMaintenanceEvent(EventType type, String id) {
+    public HeraJobMaintenanceEvent(EventType type, Long id) {
         super(type);
         this.id = id;
     }

@@ -18,7 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class HeraDebugHistory {
 
-    private String id;
+    private Long id;
 
     private Integer fileId;
 

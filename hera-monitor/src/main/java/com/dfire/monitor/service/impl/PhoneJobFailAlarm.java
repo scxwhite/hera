@@ -33,7 +33,7 @@ public class PhoneJobFailAlarm extends AbstractJobFailAlarm {
             return;
         }
         AlarmInfo alarmInfo = new AlarmInfo();
-        alarmInfo.setMessage(buildJobErrorMsg(heraJob, failedEvent.getRunCount(),monitorUser));
+        alarmInfo.setMessage(buildJobErrorMsg(heraJob, failedEvent.getRunCount(), monitorUser));
         Optional.ofNullable(monitorUser).ifPresent(users ->
                 users.forEach(user -> {
                     alarmInfo.setPhone(user.getPhone());
@@ -42,7 +42,7 @@ public class PhoneJobFailAlarm extends AbstractJobFailAlarm {
     }
 
     @Override
-    public void alarm(JobElement element) {
+    public void alarm(JobElement element, Set<HeraSso> monitorUser) {
 
     }
 }

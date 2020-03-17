@@ -22,17 +22,17 @@ public interface HeraJobHistoryService {
 
     int insert(HeraJobHistory heraJobHistory);
 
-    int delete(String id);
+    int delete(Long id);
 
     int update(HeraJobHistory heraJobHistory);
 
-    int updateStatusAndIllustrate(Integer id, String status, String illustrate, Date endTime);
+    int updateStatusAndIllustrate(Long id, String status, String illustrate, Date endTime);
 
     List<HeraJobHistory> getAll();
 
-    HeraJobHistory findById(String id);
+    HeraJobHistory findById(Long id);
 
-    List<HeraJobHistory> findByActionId(String actionId);
+    List<HeraJobHistory> findByActionId(Long actionId);
 
     Integer updateHeraJobHistoryLogAndStatus(HeraJobHistory build);
 
@@ -42,7 +42,7 @@ public interface HeraJobHistoryService {
      * @param jobId
      * @return
      */
-    List<HeraJobHistory> findByJobId(String jobId);
+    List<HeraJobHistory> findByJobId(Long jobId);
 
     HeraJobHistory findLogById(Integer id);
 
@@ -52,5 +52,7 @@ public interface HeraJobHistoryService {
 
     void deleteHistoryRecord(Integer beforeDay);
 
-    HeraJobHistory findNewest(String jobId);
+    HeraJobHistory findNewest(Long jobId);
+
+    HeraJobHistory findPropertiesById(Long id);
 }

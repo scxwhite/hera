@@ -3,6 +3,8 @@ package com.dfire.common.entity.vo;
 import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.processor.Processor;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +25,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class HeraActionVo {
 
-    private String id;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
 
     private Integer jobId;
 

@@ -2,15 +2,14 @@ package com.dfire.core.netty.worker.request;
 
 import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
-import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.core.netty.worker.HistoryPair;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 import com.google.protobuf.InvalidProtocolBufferException;
-import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,12 +27,14 @@ public class WorkHandleCancel {
             RpcCancelMessage.CancelMessage cancelMessage = RpcCancelMessage.CancelMessage.newBuilder()
                     .mergeFrom(request.getBody())
                     .build();
+
+            Long id = Long.parseLong(cancelMessage.getId());
             if (cancelMessage.getEk() == JobExecuteKind.ExecuteKind.DebugKind) {
-                return cancelDebug(workContext, request, cancelMessage.getId());
+                return cancelDebug(workContext, request, id);
             } else if (cancelMessage.getEk() == JobExecuteKind.ExecuteKind.ScheduleKind) {
-                return cancelSchedule(workContext, request, cancelMessage.getId());
+                return cancelSchedule(workContext, request, id);
             } else if (cancelMessage.getEk() == JobExecuteKind.ExecuteKind.ManualKind) {
-                return cancelManual(workContext, request, cancelMessage.getId());
+                return cancelManual(workContext, request, id);
             }
         } catch (InvalidProtocolBufferException e) {
             ErrorLog.error("解析异常", e);
@@ -49,11 +50,12 @@ public class WorkHandleCancel {
      * @param historyId
      * @return
      */
-    private Future<RpcResponse.Response> cancelManual(WorkContext workContext, RpcRequest.Request request, String historyId) {
+    private Future<RpcResponse.Response> cancelManual(WorkContext workContext, RpcRequest.Request request, Long historyId) {
         HeraJobHistory heraJobHistory = workContext.getHeraJobHistoryService().findById(historyId);
-        final String actionId = heraJobHistory.getActionId();
+        final Long actionId = heraJobHistory.getActionId();
         SocketLog.info("worker receive cancel manual job, actionId =" + actionId);
-        if (!workContext.getManualRunning().containsKey(actionId)) {
+        HistoryPair historyPair = new HistoryPair(actionId, historyId);
+        if (!workContext.getManualRunning().containsKey(historyPair)) {
             return workContext.getWorkExecuteThreadPool().submit(() -> RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)
@@ -62,7 +64,7 @@ public class WorkHandleCancel {
                     .build());
         }
         return workContext.getWorkExecuteThreadPool().submit(() -> {
-            workContext.getWorkClient().cancelManualJob(actionId);
+            workContext.getWorkClient().cancelManualJob(historyPair);
             return RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)
@@ -79,11 +81,14 @@ public class WorkHandleCancel {
      * @param historyId
      * @return
      */
-    private Future<RpcResponse.Response> cancelSchedule(WorkContext workContext, RpcRequest.Request request, String historyId) {
+    private Future<RpcResponse.Response> cancelSchedule(WorkContext workContext, RpcRequest.Request request, Long historyId) {
         HeraJobHistory heraJobHistory = workContext.getHeraJobHistoryService().findById(historyId);
-        String actionId = heraJobHistory.getActionId();
+        Long actionId = heraJobHistory.getActionId();
         SocketLog.info("worker receive cancel schedule job, actionId =" + actionId);
-        if (!workContext.getRunning().containsKey(actionId)) {
+
+        HistoryPair historyPair = new HistoryPair(actionId, historyId);
+
+        if (!workContext.getRunning().containsKey(historyPair)) {
             return workContext.getWorkExecuteThreadPool().submit(() -> RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)
@@ -92,7 +97,7 @@ public class WorkHandleCancel {
                     .build());
         }
         return workContext.getWorkExecuteThreadPool().submit(() -> {
-            workContext.getWorkClient().cancelScheduleJob(actionId);
+            workContext.getWorkClient().cancelScheduleJob(historyPair);
             return RpcResponse.Response.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(RpcOperate.Operate.Cancel)
@@ -109,7 +114,7 @@ public class WorkHandleCancel {
      * @param debugId
      * @return
      */
-    private Future<RpcResponse.Response> cancelDebug(WorkContext workContext, RpcRequest.Request request, String debugId) {
+    private Future<RpcResponse.Response> cancelDebug(WorkContext workContext, RpcRequest.Request request, Long debugId) {
         Future<RpcResponse.Response> future;
         if (!workContext.getDebugRunning().containsKey(debugId)) {
             future = workContext.getWorkExecuteThreadPool().submit(() -> RpcResponse.Response.newBuilder()
@@ -118,7 +123,7 @@ public class WorkHandleCancel {
                     .setStatusEnum(ResponseStatus.Status.ERROR)
                     .setErrorText("运行任务中查无此任务")
                     .build());
-            HeraDebugHistoryVo debugHistory = workContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
+            HeraDebugHistoryVo debugHistory = workContext.getHeraDebugHistoryService().findById(debugId);
             debugHistory.setStatus(StatusEnum.FAILED);
             debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));

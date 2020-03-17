@@ -27,21 +27,23 @@ public interface HeraJobActionService {
      */
     List<HeraAction> batchInsert(List<HeraAction> heraActionList, Long nowAction);
 
-    int delete(String id);
+    int delete(Long id);
 
     int update(HeraAction heraAction);
 
     List<HeraAction> getAll();
 
+    HeraAction findById(Long actionId);
+
     HeraAction findById(String actionId);
 
-    HeraAction findLatestByJobId(String jobId);
+    HeraAction findLatestByJobId(Long jobId);
 
-    List<HeraAction> findByJobId(String jobId);
+    List<HeraAction> findByJobId(Long jobId);
 
     int updateStatus(JobStatus jobStatus);
 
-    Tuple<HeraActionVo, JobStatus> findHeraActionVo(String jobId);
+    Tuple<HeraActionVo, JobStatus> findHeraActionVo(Long jobId);
 
     /**
      * 查找当前版本的运行状态
@@ -49,13 +51,13 @@ public interface HeraJobActionService {
      * @param actionId
      * @return
      */
-    JobStatus findJobStatus(String actionId);
+    JobStatus findJobStatus(Long actionId);
 
 
-    JobStatus findJobStatusByJobId(String jobId);
+    JobStatus findJobStatusByJobId(Long jobId);
 
 
-    Integer updateStatus(HeraAction heraAction);
+    Integer updateStatus(Long id, String status);
 
     Integer updateStatusAndReadDependency(HeraAction heraAction);
 
@@ -68,7 +70,7 @@ public interface HeraJobActionService {
      * @param jobId
      * @return
      */
-    List<String> getActionVersionByJobId(Long jobId);
+    List<Long> getActionVersionByJobId(Long jobId);
 
     List<HeraActionVo> getNotRunScheduleJob();
 
@@ -80,4 +82,9 @@ public interface HeraJobActionService {
 
     void deleteAllHistoryRecord(Integer beforeDay);
 
+    List<HeraAction> findByStartAndEnd(Long startAction, Long endAction, Integer jobId,Integer limit);
+
+    boolean deleteAction(long startAction, long endAction, Integer jobId);
+
+    HeraAction findTodaySuccessByJobId(int id);
 }

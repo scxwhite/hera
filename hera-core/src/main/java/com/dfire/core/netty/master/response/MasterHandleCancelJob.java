@@ -21,10 +21,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class MasterHandleCancelJob {
 
-    public Future<RpcResponse.Response> cancel(final MasterContext context, HeraChannel channel, JobExecuteKind.ExecuteKind kind, String jobId) {
+    public Future<RpcResponse.Response> cancel(final MasterContext context, HeraChannel channel, JobExecuteKind.ExecuteKind kind, Long jobId) {
         RpcCancelMessage.CancelMessage cancelMessage = RpcCancelMessage.CancelMessage.newBuilder()
                 .setEk(kind)
-                .setId(jobId)
+                .setId(String.valueOf(jobId))
                 .build();
         final RpcRequest.Request request = RpcRequest.Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())

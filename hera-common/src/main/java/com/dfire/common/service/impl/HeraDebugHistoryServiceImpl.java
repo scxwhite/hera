@@ -4,10 +4,12 @@ import com.dfire.common.entity.HeraDebugHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.mapper.HeraDebugHistoryMapper;
 import com.dfire.common.service.HeraDebugHistoryService;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,13 +24,13 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     HeraDebugHistoryMapper heraDebugHistoryMapper;
 
     @Override
-    public String insert(HeraDebugHistory heraDebugHistory) {
+    public Long insert(HeraDebugHistory heraDebugHistory) {
         heraDebugHistoryMapper.insert(heraDebugHistory);
         return heraDebugHistory.getId();
     }
 
     @Override
-    public int delete(int id) {
+    public int delete(Long id) {
         return heraDebugHistoryMapper.delete(id);
     }
 
@@ -43,13 +45,13 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     }
 
     @Override
-    public HeraDebugHistoryVo findById(Integer id) {
+    public HeraDebugHistoryVo findById(Long id) {
         return BeanConvertUtils.convert(heraDebugHistoryMapper.findById(id));
     }
 
     @Override
     public List<HeraDebugHistory> findByFileId(Integer fileId) {
-        return  heraDebugHistoryMapper.findByFileId(fileId);
+        return heraDebugHistoryMapper.findByFileId(fileId);
     }
 
     @Override
@@ -65,6 +67,11 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     @Override
     public HeraDebugHistory findLogById(Integer id) {
         return heraDebugHistoryMapper.findLogById(id);
+    }
+
+    @Override
+    public void updateStatus(Long id, String msg, String status) {
+        heraDebugHistoryMapper.updateStatusAndLog(id, msg, status, ActionUtil.getTodayString());
     }
 
 

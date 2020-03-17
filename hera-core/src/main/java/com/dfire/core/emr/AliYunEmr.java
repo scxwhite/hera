@@ -89,10 +89,10 @@ public class AliYunEmr extends AbstractEmr {
     }
 
     @Override
-    protected String sendCreateRequest() {
+    protected String sendCreateRequest(String owner) {
         try {
             CreateClusterV2Request request = new CreateClusterV2Request();
-            request.setName(getClusterName());
+            request.setName(getClusterName(owner));
             request.setEmrVer("EMR-3.12.0");
             request.setAutoRenew(false);
             request.setChargeType("PostPaid");
@@ -171,7 +171,7 @@ public class AliYunEmr extends AbstractEmr {
     }
 
     @Override
-    protected String getAliveId() {
+    protected String getAliveId(String owner) {
         ListClustersRequest request = new ListClustersRequest();
         request.setStatusLists(aliveStatus);
         request.setPageNumber(1);

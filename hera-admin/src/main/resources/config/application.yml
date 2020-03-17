@@ -100,6 +100,8 @@ hera:
   webSessionExpire: 4320 # web session失效时间，单位为分钟；3天*24*60=4320
   webLogHeadCount: 5000 # web端的任务详情日志展示头部行数
   webLogTailCount: 5000 # web端的任务详情日志展示尾部行数
+  emr_groups:   #根据hera组来创建集群，达到不同组任务执行集群隔离的效果。值为hera的组比如配置 hera.emr_groups: hera 则此时动态集群会创建两个，一个是hera集群:只供hera组的任务使用，一个是other集群:非hera组的任务执行
+  aws_emr_type: SPOT #emr 动态集群的类型，可选:SPOT,ON_DEMAND 默认使用竞价,最大按需
 aliYun:
   accessKey: xx #阿里云创建集群的ak
   accessSecret: xx #阿里云创建集群的as

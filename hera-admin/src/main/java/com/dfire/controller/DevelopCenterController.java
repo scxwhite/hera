@@ -162,9 +162,9 @@ public class DevelopCenterController extends BaseHeraController {
             return new JsonResponse(false, "暂未支持的后缀名[" + suffix + "],请设置支持的后缀名[.sh .hive .spark]");
         }
         history.setRunType(runType);
-        String newId = debugHistoryService.insert(history);
+        Long newId = debugHistoryService.insert(history);
         String ownerId = getOwnerId();
-        doAsync(() -> addDebugRecord(history.getFileId(), history.getId(), RecordTypeEnum.Execute, ssoName, ownerId));
+        doAsync(() -> addDebugRecord(history.getFileId(), String.valueOf(history.getId()), RecordTypeEnum.Execute, ssoName, ownerId));
         workClient.executeJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, newId);
         Map<String, Object> res = new HashMap<>(2);
         res.put("fileId", history.getFileId());
@@ -192,7 +192,7 @@ public class DevelopCenterController extends BaseHeraController {
      */
     @RequestMapping(value = "/cancelJob", method = RequestMethod.GET)
     @ResponseBody
-    public JsonResponse cancelJob(String id) throws ExecutionException, InterruptedException {
+    public JsonResponse cancelJob(Long id) throws ExecutionException, InterruptedException {
         return new JsonResponse(true, workClient.cancelJobFromWeb(JobExecuteKind.ExecuteKind.DebugKind, id));
     }
 

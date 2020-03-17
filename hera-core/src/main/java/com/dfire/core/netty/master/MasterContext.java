@@ -3,10 +3,10 @@ package com.dfire.core.netty.master;
 import com.dfire.common.entity.vo.HeraHostGroupVo;
 import com.dfire.common.service.*;
 import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.quartz.QuartzSchedulerService;
-import com.dfire.common.vo.JobElement;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.monitor.service.AlarmCenter;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -37,9 +36,13 @@ import java.util.concurrent.*;
 @Order(2)
 public class MasterContext {
 
+    /**
+     * todo 参数可配置
+     */
+
+    protected ScheduledThreadPoolExecutor masterSchedule;
     @Autowired
     private Master master;
-
     private Map<Channel, MasterWorkHolder> workMap = new ConcurrentHashMap<>();
     @Autowired
     private HeraHostGroupService heraHostGroupService;
@@ -70,23 +73,35 @@ public class MasterContext {
     private HeraJobMonitorService heraJobMonitorService;
     @Autowired
     private HeraSsoService heraSsoService;
-
+    @Autowired
+    @Getter
+    private EmailService emailService;
+    @Autowired
+    private HeraRerunService heraRerunService;
     private Dispatcher dispatcher;
     private Map<Integer, HeraHostGroupVo> hostGroupCache;
-    private BlockingQueue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, Comparator.comparing(JobElement::getPriorityLevel).reversed());
+    private BlockingQueue<JobElement> scheduleQueue = new PriorityBlockingQueue<>(10000, (o1, o2) -> {
+        //优先根据任务优先级排列
+        if (o1.getPriorityLevel() > o2.getPriorityLevel()) {
+            return -1;
+        } else if (o1.getPriorityLevel().equals(o2.getPriorityLevel())) {
+            //如果任务优先级相等，根据版本的时间排序，一般来说版本时间越小越优先执行
+            long firstId = o1.getJobId() / 1000000;
+            long secondId = o2.getJobId() / 1000000;
+            if (firstId < secondId) {
+                return -1;
+            } else if (firstId == secondId) {
+                return 0;
+            }
+        }
+        return 1;
+    });
     private BlockingQueue<JobElement> debugQueue = new LinkedBlockingQueue<>(10000);
     private BlockingQueue<JobElement> manualQueue = new LinkedBlockingQueue<>(10000);
-
     private MasterHandler handler;
     private MasterServer masterServer;
     @Getter
     private ExecutorService threadPool;
-
-    /**
-     * todo 参数可配置
-     */
-
-    protected ScheduledThreadPoolExecutor masterSchedule;
 
     public void init() {
         threadPool = new ThreadPoolExecutor(

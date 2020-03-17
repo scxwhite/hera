@@ -34,7 +34,7 @@ public interface HeraJobActionMapper {
     int batchUpdate(@Param("list") List<HeraAction> list);
 
     @Delete("delete from hera_action where id = #{id}")
-    int delete(@Param("id") String id);
+    int delete(@Param("id") Long id);
 
     @Update("update hera_action (#{heraJobHistory}) where id = #{id}")
     @Lang(HeraUpdateLangDriver.class)
@@ -45,17 +45,18 @@ public interface HeraJobActionMapper {
 
     @Select("select * from hera_action where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
-    HeraAction findById(HeraAction heraAction);
+    HeraAction findById(Long id);
 
 
     @Select("select * from hera_action where job_id = #{jobId} order by id desc limit 1")
-    HeraAction findLatestByJobId(String jobId);
+    HeraAction findLatestByJobId(Long jobId);
 
     @Select("select * from hera_action where job_id = #{jobId} order by id")
-    List<HeraAction> findByJobId(String jobId);
+    List<HeraAction> findByJobId(Long jobId);
 
     @Update("update hera_action set status = #{status} where id = #{id}")
-    Integer updateStatus(HeraAction heraAction);
+    Integer updateStatus(@Param("id") Long id,
+                         @Param("status") String status);
 
     @Update("update hera_action set status = #{status},ready_dependency=#{readyDependency} where id = #{id}")
     Integer updateStatusAndReadDependency(HeraAction heraAction);
@@ -70,7 +71,7 @@ public interface HeraJobActionMapper {
      * @return
      */
     @Select("select id from hera_action where job_id = #{jobId} order by id desc limit 24")
-    List<String> getActionVersionByJobId(Long jobId);
+    List<Long> getActionVersionByJobId(Long jobId);
 
     @Select("select id,job_id,owner,auto from hera_action where id <= CURRENT_TIMESTAMP()* 10000 and id >= CURRENT_DATE () * 10000000000 and schedule_type = 0 and auto = 1 and status != 'success' group by job_id")
     List<HeraActionVo> getNotRunScheduleJob();
@@ -99,4 +100,18 @@ public interface HeraJobActionMapper {
     @Delete("delete from hera_action where id < DATE_SUB(CURRENT_DATE(),INTERVAL #{beforeDay} DAY) * 10000000000;")
     Integer deleteHistoryRecord(Integer beforeDay);
 
+    @Select("select * from hera_action where job_id = #{jobId} and id > #{startAction} and id <= #{endAction} limit #{limit}")
+    List<HeraAction> selectByStartAndEnd(@Param("startAction") Long startAction,
+                                         @Param("endAction") Long endAction,
+                                         @Param("jobId") Integer jobId,
+                                         @Param("limit") Integer limit);
+
+
+    @Delete("delete from hera_action where job_id = #{jobId} and id >= #{startAction} and id <=#{endAction} ")
+    Integer deleteAction(@Param("startAction") long startAction,
+                         @Param("endAction") long endAction,
+                         @Param("jobId") Integer jobId);
+
+    @Select("select * from hera_action where job_id = #{jobId} and status = 'success' and id >= CURRENT_DATE () * 10000000000 limit 1")
+    HeraAction selectTodaySuccessByJobId(int jobId);
 }

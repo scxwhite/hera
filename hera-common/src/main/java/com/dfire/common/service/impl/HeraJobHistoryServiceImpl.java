@@ -41,7 +41,7 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     }
 
     @Override
-    public int delete(String id) {
+    public int delete(Long id) {
         return heraJobHistoryMapper.delete(id);
     }
 
@@ -51,7 +51,7 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     }
 
     @Override
-    public int updateStatusAndIllustrate(Integer id, String status, String illustrate, Date endTime) {
+    public int updateStatusAndIllustrate(Long id, String status, String illustrate, Date endTime) {
         return heraJobHistoryMapper.updateStatusAndIllustrate(id, status, illustrate, endTime);
     }
 
@@ -61,12 +61,12 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     }
 
     @Override
-    public HeraJobHistory findById(String id) {
+    public HeraJobHistory findById(Long id) {
         return heraJobHistoryMapper.findById(id);
     }
 
     @Override
-    public List<HeraJobHistory> findByActionId(String actionId) {
+    public List<HeraJobHistory> findByActionId(Long actionId) {
         return heraJobHistoryMapper.findByActionId(actionId);
     }
 
@@ -76,7 +76,7 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     }
 
     @Override
-    public List<HeraJobHistory> findByJobId(String jobId) {
+    public List<HeraJobHistory> findByJobId(Long jobId) {
         return heraJobHistoryMapper.findByJobId(jobId);
     }
 
@@ -90,7 +90,7 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
         Map<String, Object> res = new HashMap<>(2);
         Integer size = null;
         List<JobLogHistoryVo> histories = null ;
-        
+
         if(pageHelperTimeRange.getJobType().equals("job")){
         	size = heraJobHistoryMapper.selectCountByPageJob(pageHelperTimeRange);
         	histories=heraJobHistoryMapper.selectByPageJob(  pageHelperTimeRange);
@@ -98,7 +98,7 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
         	size = heraJobHistoryMapper.selectCountByPageGroup(pageHelperTimeRange);
         	histories=heraJobHistoryMapper.selectByPageGroup( pageHelperTimeRange);
         }
-        
+
 //        List<JobLogHistory> jobLogHistories = new ArrayList<>();
 //        for (HeraJobHistoryVo history : histories) {
 //            JobLogHistory logHistory = new JobLogHistory();
@@ -124,8 +124,13 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     }
 
     @Override
-    public HeraJobHistory findNewest(String jobId) {
+    public HeraJobHistory findNewest(Long jobId) {
         return heraJobHistoryMapper.findNewest(jobId);
+    }
+
+    @Override
+    public HeraJobHistory findPropertiesById(Long id) {
+        return heraJobHistoryMapper.findPropertiesBy(id);
     }
 
 

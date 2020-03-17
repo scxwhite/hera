@@ -1,7 +1,6 @@
 package com.dfire.core.netty.master.response;
 
 import com.dfire.common.enums.TriggerTypeEnum;
-import com.dfire.common.util.ActionUtil;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.listener.MasterResponseListener;
@@ -28,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MasterExecuteJob {
 
-    public Future<Response> executeJob(final MasterContext context, final MasterWorkHolder holder, ExecuteKind kind, final String id) {
+    public Future<Response> executeJob(final MasterContext context, final MasterWorkHolder holder, ExecuteKind kind, final Long id) {
         switch (kind) {
             case ScheduleKind:
                 return executeScheduleJob(context, holder, id);
@@ -47,20 +46,18 @@ public class MasterExecuteJob {
      *
      * @param context    MasterContext
      * @param workHolder MasterWorkHolder
-     * @param actionId   String
      * @return Future
      */
-    private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder workHolder, String actionId) {
-        Integer jobId = ActionUtil.getJobId(actionId);
-        workHolder.getManningRunning().add(jobId);
+    private Future<Response> executeManualJob(MasterContext context, MasterWorkHolder workHolder, Long actionId) {
+        workHolder.getManningRunning().add(actionId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Manual)
                 .setBody(ExecuteMessage
                         .newBuilder()
-                        .setActionId(actionId)
+                        .setActionId(String.valueOf(actionId))
                         .build().toByteString())
-                .build(), workHolder, actionId, TriggerTypeEnum.MANUAL, jobId);
+                .build(), workHolder, actionId, TriggerTypeEnum.MANUAL);
     }
 
 
@@ -72,17 +69,16 @@ public class MasterExecuteJob {
      * @param actionId   String
      * @return Future
      */
-    private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder workHolder, String actionId) {
-        Integer jobId = ActionUtil.getJobId(actionId);
-        workHolder.getRunning().add(jobId);
+    private Future<Response> executeScheduleJob(MasterContext context, MasterWorkHolder workHolder, Long actionId) {
+        workHolder.getRunning().add(actionId);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Schedule)
                 .setBody(ExecuteMessage
                         .newBuilder()
-                        .setActionId(actionId)
+                        .setActionId(String.valueOf(actionId))
                         .build().toByteString())
-                .build(), workHolder, actionId, TriggerTypeEnum.SCHEDULE, jobId);
+                .build(), workHolder, actionId, TriggerTypeEnum.SCHEDULE);
 
     }
 
@@ -95,17 +91,16 @@ public class MasterExecuteJob {
      * @param id         String
      * @return Future
      */
-    private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder workHolder, String id) {
-        Integer debugId = Integer.parseInt(id);
-        workHolder.getDebugRunning().add(debugId);
+    private Future<Response> executeDebugJob(MasterContext context, MasterWorkHolder workHolder, Long id) {
+        workHolder.getDebugRunning().add(id);
         return buildFuture(context, Request.newBuilder()
                 .setRid(AtomicIncrease.getAndIncrement())
                 .setOperate(Operate.Debug)
                 .setBody(DebugMessage
                         .newBuilder()
-                        .setDebugId(id)
+                        .setDebugId(String.valueOf(id))
                         .build().toByteString())
-                .build(), workHolder, id, TriggerTypeEnum.DEBUG, debugId);
+                .build(), workHolder, id, TriggerTypeEnum.DEBUG);
 
     }
 
@@ -117,11 +112,10 @@ public class MasterExecuteJob {
      * @param holder   MasterWorkHolder
      * @param actionId String
      * @param typeEnum TriggerTypeEnum
-     * @param jobId    jobId
      * @return Future
      */
 
-    private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, String actionId, TriggerTypeEnum typeEnum, Integer jobId) {
+    private Future<Response> buildFuture(MasterContext context, Request request, MasterWorkHolder holder, Long actionId, TriggerTypeEnum typeEnum) {
         final CountDownLatch latch = new CountDownLatch(1);
         MasterResponseListener responseListener = new MasterResponseListener(request, false, latch, null);
         context.getHandler().addListener(responseListener);
@@ -135,16 +129,16 @@ public class MasterExecuteJob {
                 context.getHandler().removeListener(responseListener);
                 switch (typeEnum) {
                     case MANUAL:
-                        holder.getManningRunning().remove(jobId);
+                        holder.getManningRunning().remove(actionId);
                         break;
                     case SCHEDULE:
-                        holder.getRunning().remove(jobId);
+                        holder.getRunning().remove(actionId);
                         break;
                     case MANUAL_RECOVER:
-                        holder.getRunning().remove(jobId);
+                        holder.getRunning().remove(actionId);
                         break;
                     case DEBUG:
-                        holder.getDebugRunning().remove(jobId);
+                        holder.getDebugRunning().remove(actionId);
                         break;
                     default:
                         ErrorLog.warn("未识别的任务执行类型{}", typeEnum);

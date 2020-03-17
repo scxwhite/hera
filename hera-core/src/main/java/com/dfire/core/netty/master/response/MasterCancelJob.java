@@ -1,22 +1,17 @@
 package com.dfire.core.netty.master.response;
 
-import com.dfire.common.constants.Constants;
-import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
-import com.dfire.common.util.BeanConvertUtils;
+import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
 import com.dfire.core.netty.master.RunJobThreadPool;
-import com.dfire.common.vo.JobElement;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.SocketLog;
 import com.dfire.protocol.*;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.Future;
@@ -29,207 +24,102 @@ import java.util.concurrent.TimeUnit;
  * @date 2018/11/9
  */
 public class MasterCancelJob {
-    public static RpcWebResponse.WebResponse handleDebugCancel(MasterContext context, RpcWebRequest.WebRequest request) {
+
+    private static final String NOT_FOUNT_MSG = "任务已结束";
+
+    public static RpcWebResponse.WebResponse cancel(JobExecuteKind.ExecuteKind ek, MasterContext context, RpcWebRequest.WebRequest request) {
         RpcWebResponse.WebResponse webResponse = null;
-        Integer debugId = Integer.parseInt(request.getId());
-        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
+        Long historyId = Long.parseLong(request.getId());
+        Long actionId = historyId;
+        Iterator<JobElement> iterator;
+        TriggerTypeEnum typeEnum;
+        HeraJobHistory scheduleHistory = null, manualHistory = null;
+        if (ek == JobExecuteKind.ExecuteKind.ScheduleKind) {
+            scheduleHistory = context.getHeraJobHistoryService().findById(historyId);
+            actionId = scheduleHistory.getActionId();
+            iterator = context.getManualQueue().iterator();
+            typeEnum = TriggerTypeEnum.MANUAL_RECOVER;
+        } else if (ek == JobExecuteKind.ExecuteKind.ManualKind) {
+            manualHistory = context.getHeraJobHistoryService().findById(historyId);
+            actionId = manualHistory.getActionId();
+            iterator = context.getScheduleQueue().iterator();
+            typeEnum = TriggerTypeEnum.MANUAL;
 
+        } else {
+            iterator = context.getDebugQueue().iterator();
+            typeEnum = TriggerTypeEnum.DEBUG;
+        }
 
-        if (RunJobThreadPool.cancelJob(String.valueOf(debugId), TriggerTypeEnum.DEBUG)) {
+        if (RunJobThreadPool.cancelJob(actionId, typeEnum)) {
             webResponse = RpcWebResponse.WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
                     .setStatus(ResponseStatus.Status.OK)
                     .build();
-            SocketLog.info("任务在等待创建集群中，稍等会被取消{}", debugId);
+            SocketLog.info("任务在等待创建集群中,已取消{}", actionId);
         }
-        for (JobElement element : context.getDebugQueue()) {
-            if (element.getJobId().equals(String.valueOf(debugId))) {
-                webResponse = RpcWebResponse.WebResponse.newBuilder()
-                        .setRid(request.getRid())
-                        .setOperate(request.getOperate())
-                        .setStatus(ResponseStatus.Status.OK)
-                        .build();
-                debugHistory.getLog().appendHera("任务取消");
-                context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
-                break;
-
-            }
-        }
-
-        for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
-            if (workHolder.getDebugRunning().contains(debugId)) {
-                Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
-                        workHolder.getChannel(), JobExecuteKind.ExecuteKind.DebugKind, String.valueOf(debugId));
-                workHolder.getDebugRunning().remove(debugId);
-                try {
-                    future.get(10, TimeUnit.SECONDS);
-                } catch (Exception e) {
-                    ErrorLog.error("请求超时 ", e);
-                }
-                webResponse = RpcWebResponse.WebResponse.newBuilder()
-                        .setRid(request.getRid())
-                        .setOperate(request.getOperate())
-                        .setStatus(ResponseStatus.Status.OK)
-                        .build();
-
-                SocketLog.info("send web cancel response, actionId = " + debugId);
-                break;
-            }
-        }
-
-        if (webResponse == null) {
-            webResponse = RpcWebResponse.WebResponse.newBuilder()
-                    .setRid(request.getRid())
-                    .setOperate(request.getOperate())
-                    .setStatus(ResponseStatus.Status.ERROR)
-                    .setErrorText("开发中心任务中找不到匹配的job(" + debugId + ")，无法执行取消命令")
-                    .build();
-        }
-        debugHistory = context.getHeraDebugHistoryService().findById(debugId);
-        debugHistory.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        debugHistory.setStatus(StatusEnum.FAILED);
-        context.getHeraDebugHistoryService().update(BeanConvertUtils.convert(debugHistory));
-        return webResponse;
-
-
-    }
-
-    public static RpcWebResponse.WebResponse handleManualCancel(MasterContext context, RpcWebRequest.WebRequest request) {
-        RpcWebResponse.WebResponse webResponse = null;
-        String historyId = request.getId();
-        HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
-        String actionId = heraJobHistory.getActionId();
-        Integer jobId = heraJobHistory.getJobId();
-
-
-        if (RunJobThreadPool.cancelJob(actionId, TriggerTypeEnum.MANUAL)) {
+        //首先在队列中查找该job是否存在
+        if (remove(iterator, actionId)) {
             webResponse = RpcWebResponse.WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
                     .setStatus(ResponseStatus.Status.OK)
                     .build();
-            SocketLog.info("任务在等待创建集群中，稍等会被取消{}", actionId);
-        }
-        //手动执行队列 查找该job是否存在
-        if (remove(context.getManualQueue().iterator(), actionId)) {
-            webResponse = RpcWebResponse.WebResponse.newBuilder()
-                    .setRid(request.getRid())
-                    .setOperate(request.getOperate())
-                    .setStatus(ResponseStatus.Status.OK)
-                    .build();
-
-            SocketLog.info("任务仍在手动队列中，从队列删除该任务{}", heraJobHistory.getJobId());
+            SocketLog.info("任务仍在手动队列中，从队列删除该任务{}", actionId);
         } else {
             for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
-                if (workHolder.getManningRunning().contains(jobId)) {
+                boolean exists = false;
+                if (ek == JobExecuteKind.ExecuteKind.ScheduleKind && workHolder.getRunning().contains(actionId)) {
+                    exists = true;
+                } else if (ek == JobExecuteKind.ExecuteKind.ManualKind && workHolder.getManningRunning().contains(actionId)) {
+                    exists = true;
+                } else if (ek == JobExecuteKind.ExecuteKind.DebugKind && workHolder.getDebugRunning().contains(actionId)) {
+                    exists = true;
+                }
+                if (exists) {
                     Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
-                            workHolder.getChannel(), JobExecuteKind.ExecuteKind.ManualKind, historyId);
-                    workHolder.getManningRunning().remove(jobId);
+                            workHolder.getChannel(), ek, historyId);
                     try {
                         future.get(HeraGlobalEnv.getRequestTimeout(), TimeUnit.SECONDS);
                     } catch (Exception e) {
                         ErrorLog.error("请求超时 ", e);
+                    } finally {
+                        webResponse = RpcWebResponse.WebResponse.newBuilder()
+                                .setRid(request.getRid())
+                                .setOperate(request.getOperate())
+                                .setStatus(ResponseStatus.Status.OK)
+                                .build();
+                        SocketLog.info("send web cancel response, actionId = " + historyId);
                     }
-                    SocketLog.info("远程从删除该任务{}", heraJobHistory.getJobId());
-                    webResponse = RpcWebResponse.WebResponse.newBuilder()
-                            .setRid(request.getRid())
-                            .setOperate(request.getOperate())
-                            .setStatus(ResponseStatus.Status.OK)
-                            .build();
-                    SocketLog.info("send web cancel response, actionId = " + historyId);
                 }
             }
         }
-
         if (webResponse == null) {
+
+            if (manualHistory != null) {
+                manualHistory.setStatus(StatusEnum.FAILED.toString());
+                manualHistory.setEndTime(new Date());
+                manualHistory.setIllustrate(NOT_FOUNT_MSG);
+                context.getHeraJobHistoryService().update(manualHistory);
+            } else if (scheduleHistory != null) {
+                scheduleHistory.setStatus(StatusEnum.FAILED.toString());
+                scheduleHistory.setEndTime(new Date());
+                scheduleHistory.setIllustrate(NOT_FOUNT_MSG);
+                context.getHeraJobHistoryService().update(scheduleHistory);
+            }
+
             webResponse = RpcWebResponse.WebResponse.newBuilder()
                     .setRid(request.getRid())
                     .setOperate(request.getOperate())
                     .setStatus(ResponseStatus.Status.ERROR)
-                    .setErrorText("手动执行任务中找不到匹配的job(" + heraJobHistory.getJobId() + "," + actionId + ")，无法执行取消命令")
+                    .setErrorText(NOT_FOUNT_MSG)
                     .build();
         }
-        heraJobHistory.setIllustrate(Constants.CANCEL_JOB_MESSAGE);
-        heraJobHistory.setEndTime(new Date());
-        heraJobHistory.setStatus(StatusEnum.FAILED.toString());
-        context.getHeraJobHistoryService().update(heraJobHistory);
-        HeraAction heraAction = context.getMaster().getHeraActionMap().get(Long.parseLong(actionId));
-        if (heraAction != null) {
-            heraAction.setStatus(StatusEnum.FAILED.toString());
-        }
-        context.getHeraJobActionService().updateStatus(HeraAction.builder().id(Long.parseLong(actionId)).status(StatusEnum.FAILED.toString()).build());
-        return webResponse;
-    }
-
-    public static RpcWebResponse.WebResponse handleScheduleCancel(MasterContext context, RpcWebRequest.WebRequest request) {
-        RpcWebResponse.WebResponse webResponse = null;
-        String historyId = request.getId();
-        HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
-        Integer jobId = heraJobHistory.getJobId();
-        String actionId = heraJobHistory.getActionId();
-
-        if (RunJobThreadPool.cancelJob(actionId, TriggerTypeEnum.SCHEDULE, TriggerTypeEnum.MANUAL_RECOVER)) {
-            webResponse = RpcWebResponse.WebResponse.newBuilder()
-                    .setRid(request.getRid())
-                    .setOperate(request.getOperate())
-                    .setStatus(ResponseStatus.Status.OK)
-                    .build();
-            SocketLog.info("任务在等待创建集群中，稍等会被取消{}", actionId);
-        }
-
-        if (remove(context.getScheduleQueue().iterator(), actionId)) {
-            webResponse = RpcWebResponse.WebResponse.newBuilder()
-                    .setRid(request.getRid())
-                    .setOperate(request.getOperate())
-                    .setStatus(ResponseStatus.Status.OK)
-                    .build();
-            SocketLog.info("任务仍在调度队列中，从队列删除该任务{}", actionId);
-
-        } else {
-            for (MasterWorkHolder workHolder : context.getWorkMap().values()) {
-                if (workHolder.getRunning().contains(jobId)) {
-                    Future<RpcResponse.Response> future = new MasterHandleCancelJob().cancel(context,
-                            workHolder.getChannel(), JobExecuteKind.ExecuteKind.ScheduleKind, historyId);
-                    workHolder.getRunning().remove(jobId);
-                    try {
-                        future.get(HeraGlobalEnv.getRequestTimeout(), TimeUnit.SECONDS);
-                    } catch (Exception e) {
-                        ErrorLog.error("请求超时 ", e);
-                    }
-                    SocketLog.info("远程删除该任务{}", actionId);
-                    webResponse = RpcWebResponse.WebResponse.newBuilder()
-                            .setRid(request.getRid())
-                            .setOperate(request.getOperate())
-                            .setStatus(ResponseStatus.Status.OK)
-                            .build();
-                    SocketLog.info("send web cancel response, actionId = " + jobId);
-                }
-            }
-        }
-
-        if (webResponse == null) {
-            webResponse = RpcWebResponse.WebResponse.newBuilder()
-                    .setRid(request.getRid())
-                    .setOperate(request.getOperate())
-                    .setStatus(ResponseStatus.Status.ERROR)
-                    .setErrorText("调度队列中找不到匹配的job(" + heraJobHistory.getJobId() + "," + heraJobHistory.getActionId() + ")，无法执行取消命令")
-                    .build();
-        }
-        heraJobHistory.setEndTime(new Date());
-        heraJobHistory.setStatus(StatusEnum.FAILED.toString());
-        heraJobHistory.setIllustrate(Constants.CANCEL_JOB_MESSAGE);
-        HeraAction heraAction = context.getMaster().getHeraActionMap().get(Long.parseLong(actionId));
-        if (heraAction != null) {
-            heraAction.setStatus(StatusEnum.FAILED.toString());
-        }
-        context.getHeraJobHistoryService().update(heraJobHistory);
-        context.getHeraJobActionService().updateStatus(HeraAction.builder().id(Long.parseLong(actionId)).status(StatusEnum.FAILED.toString()).build());
         return webResponse;
     }
 
 
-    private static boolean remove(Iterator<JobElement> iterator, String id) {
+    private static boolean remove(Iterator<JobElement> iterator, Long id) {
         JobElement jobElement;
         while (iterator.hasNext()) {
             jobElement = iterator.next();

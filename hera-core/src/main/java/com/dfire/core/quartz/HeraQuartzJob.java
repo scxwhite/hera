@@ -15,10 +15,10 @@ public class HeraQuartzJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        String jobId = context.getJobDetail().getJobDataMap().getString(Constants.QUARTZ_ID);
+        Long actionId = context.getJobDetail().getJobDataMap().getLong(Constants.QUARTZ_ID);
         Dispatcher dispatcher = (Dispatcher) context.getJobDetail().getJobDataMap().get(Constants.QUARTZ_DISPATCHER);
-        HeraScheduleTriggerEvent scheduledEvent = HeraScheduleTriggerEvent.builder().jobId(jobId).build();
+        HeraScheduleTriggerEvent scheduledEvent = HeraScheduleTriggerEvent.builder().actionId(actionId).build();
         dispatcher.forwardEvent(scheduledEvent);
-        ScheduleLog.info("execute schedule job {}", jobId);
+        ScheduleLog.info("execute schedule job {}", actionId);
     }
 }

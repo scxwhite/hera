@@ -70,9 +70,9 @@ public class QuartzSchedulerService {
         return scheduler;
     }
 
-    public void deleteJob(String actionId) {
+    public void deleteJob(Long actionId) {
         try {
-            JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
+            JobKey jobKey = new JobKey(String.valueOf(actionId), Constants.HERA_GROUP);
             JobDetail jobDetail = scheduler.getJobDetail(jobKey);
             if (jobDetail != null) {
                 scheduler.deleteJob(jobKey);

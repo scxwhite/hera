@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author xiaosuda
@@ -111,10 +112,10 @@ public class HeraGlobalEnv {
 
     @Getter
     private static Integer webSessionExpire;
-    
+
     @Getter
     private static Integer webLogHeadCount;
-    
+
     @Getter
     private static Integer webLogTailCount;
 
@@ -143,14 +144,36 @@ public class HeraGlobalEnv {
     @Getter
     public static String emrFixedHost;
     @Getter
+    private static Set<String> emrGroups;
+
+    @Getter
+    private static String awsEmrType;
+    @Getter
     public static String monitorUsers;
     @Getter
     public static String monitorEmails;
+
+
 
     @Value("${hera.sudoUser}")
     public void setSudoUser(boolean sudoUser) {
         HeraGlobalEnv.sudoUser = sudoUser;
     }
+
+
+
+    @Value("${hera.emr_groups}")
+    public void setEmrGroups(String groups) {
+        if (StringUtils.isNotBlank(groups)) {
+            HeraGlobalEnv.emrGroups = Arrays.stream(groups.split(Constants.SEMICOLON)).collect(Collectors.toSet());
+        } else {
+            HeraGlobalEnv.emrGroups = new HashSet<>(0);
+        }
+        if (HeraGlobalEnv.emrGroups.size() == 0) {
+            HeraLog.warn("the hera.emr.groups is null, all user will use same emr cluster");
+        }
+    }
+
 
     @Value("${hera.job.script-echo}")
     public void setScriptEcho(boolean scriptEcho) {
@@ -411,24 +434,24 @@ public class HeraGlobalEnv {
     public void setMailPassword(String mailPassword) {
         HeraGlobalEnv.mailPassword = mailPassword;
     }
-    
-    
+
+
     @Value("${hera.webLogHeadCount}")
     public void setWebLogHeadCount(Integer webLogHeadCount) {
         HeraGlobalEnv.webLogHeadCount = webLogHeadCount;
     }
-    
+
     @Value("${hera.webLogTailCount}")
     public void setWebLogTailCount(Integer webLogTailCount) {
         HeraGlobalEnv.webLogTailCount = webLogTailCount;
     }
-    
-    
+
+
     @Value("${hera.webSessionExpire}")
     public void setWebSessionExpire(Integer webSessionExpire) {
         HeraGlobalEnv.webSessionExpire = webSessionExpire;
     }
-    
+
 
     @Value("${hera.alarmEnv}")
     public void setAlarmEnvSet(String mailEnv) {
@@ -442,6 +465,11 @@ public class HeraGlobalEnv {
     @Value("${hera.emr_fixed_host}")
     public void setEmrFixedHost(String emrFixedHost) {
         HeraGlobalEnv.emrFixedHost = emrFixedHost;
+    }
+
+    @Value("${hera.aws_emr_type}")
+    public void setAwsEmrType(String awsEmrType) {
+        HeraGlobalEnv.awsEmrType = awsEmrType;
     }
 
     @Value("${hera.emrJob}")

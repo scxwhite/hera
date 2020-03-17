@@ -5,7 +5,9 @@ import com.dfire.common.entity.HeraJob;
 import com.dfire.common.entity.HeraSso;
 import com.dfire.common.entity.HeraUser;
 import com.dfire.common.enums.AlarmLevel;
+import com.dfire.common.service.HeraJobService;
 import com.dfire.common.service.HeraUserService;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.event.HeraJobFailedEvent;
@@ -33,6 +35,8 @@ public class WeChatJobFailAlarm extends AbstractJobFailAlarm {
     @Autowired
     private HeraUserService heraUserService;
 
+    @Autowired
+    private HeraJobService heraJobService;
 
     @Override
     public void alarm(HeraJobFailedEvent failedEvent, Set<HeraSso> monitorUser) {
@@ -65,7 +69,20 @@ public class WeChatJobFailAlarm extends AbstractJobFailAlarm {
     }
 
     @Override
-    public void alarm(JobElement element) {
-        alarmCenter.sendToWeChat(AlarmInfo.builder().message(buildTimeoutMsg(element)).userId("01160").build());
+    public void alarm(JobElement element, Set<HeraSso> monitorUser) {
+        int id = ActionUtil.getJobId(element.getJobId());
+        HeraJob heraJob = heraJobService.findById(id);
+        String split = "|";
+        StringBuilder noticeIds = new StringBuilder(
+                Optional.ofNullable(heraUserService.findByName(heraJob.getOwner()))
+                        .map(HeraUser::getUid)
+                        .orElse(""));
+        Optional.ofNullable(monitorUser)
+                .ifPresent(users ->
+                        users.forEach(user ->
+                                noticeIds.append(split).append(user.getJobNumber())));
+        alarmCenter.sendToWeChat(AlarmInfo.builder()
+                .message(buildTimeoutMsg(element, monitorUser))
+                .userId(noticeIds.toString()).build());
     }
 }

@@ -50,13 +50,8 @@ public class AmazonEmr extends AbstractEmr {
     private ClusterState[] aliveStatus = {ClusterState.STARTING, ClusterState.BOOTSTRAPPING, ClusterState.RUNNING, ClusterState.WAITING};
 
 
-    public static void main(String[] args) {
-        AmazonEmr emr = new AmazonEmr();
-        emr.createCluster();
-    }
-
     @Override
-    protected String getAliveId() {
+    protected String getAliveId(String owner) {
         String clusterId = null;
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_MONTH, -2);
@@ -65,7 +60,7 @@ public class AmazonEmr extends AbstractEmr {
         List<ClusterSummary> summaries = clusters.getClusters();
         if (summaries != null && summaries.size() > 0) {
             for (ClusterSummary summary : summaries) {
-                if (summary.getName().startsWith(clusterPrefix)) {
+                if (summary.getName().startsWith(buildClusterName(owner))) {
                     clusterId = summary.getId();
                     MonitorLog.info("emr集群已经启动过，无需再次启动 :" + clusterId);
                 }
@@ -81,7 +76,7 @@ public class AmazonEmr extends AbstractEmr {
             return false;
         }
         //60秒检测一次
-        long time = 60000L;
+        long time = 30000L;
         long now = System.currentTimeMillis();
         if (now - lastCheckTime >= time) {
             synchronized (this) {
@@ -125,10 +120,10 @@ public class AmazonEmr extends AbstractEmr {
 
 
     @Override
-    protected String sendCreateRequest() {
+    protected String sendCreateRequest(String owner) {
         try {
             EmrConf emrConf = new EmrConf();
-            emrConf.setClusterName(getClusterName());
+            emrConf.setClusterName(getClusterName(owner));
             emrConf.setMasterInstanceType("m5.4xlarge");
             emrConf.setCoreInstanceType("m5.4xlarge");
             emrConf.setNumCoresNodes(4);
@@ -160,7 +155,7 @@ public class AmazonEmr extends AbstractEmr {
                 //初始化的公钥key
                 emrConf.setKeyPairName("key_ind");
             }
-            RunJobFlowResult result = createClient(emrConf);
+            RunJobFlowResult result = createClient(emrConf, owner);
             int statusCode = result.getSdkHttpMetadata().getHttpStatusCode();
             if (statusCode == SUCCESS_HTTP_CODE) {
                 return result.getJobFlowId();
@@ -218,10 +213,8 @@ public class AmazonEmr extends AbstractEmr {
     protected void terminateCluster(String clusterId) {
         emr.setTerminationProtection(new SetTerminationProtectionRequest().withJobFlowIds(clusterId).withTerminationProtected(false));
         TerminateJobFlowsResult terminateResult = emr.terminateJobFlows(new TerminateJobFlowsRequest().withJobFlowIds(clusterId));
-        if (terminateResult.getSdkHttpMetadata().getHttpStatusCode() == SUCCESS_HTTP_CODE) {
-            destroyCluster();
-        } else {
-            throw new RuntimeException("集群关闭失败" + clusterId);
+        if (terminateResult.getSdkHttpMetadata().getHttpStatusCode() != SUCCESS_HTTP_CODE) {
+            MonitorLog.error("集群关闭失败" + clusterId);
         }
     }
 
@@ -261,7 +254,7 @@ public class AmazonEmr extends AbstractEmr {
         }
     }
 
-    private RunJobFlowResult createClient(EmrConf emrConf) {
+    private RunJobFlowResult createClient(EmrConf emrConf, String owner) {
         RunJobFlowRequest request = new RunJobFlowRequest()
                 .withApplications(getApps())
                 .withReleaseLabel("emr-5.21.0")
@@ -274,7 +267,7 @@ public class AmazonEmr extends AbstractEmr {
                 .withJobFlowRole("EMR_EC2_DefaultRole")
                 .withServiceRole("EMR_DefaultRole")
                 .withBootstrapActions(buildBootstrapActions())
-                .withTags(new Tag("EMR", "hera-schedule"))
+                .withTags(new Tag("EMR", HeraGlobalEnv.getArea() + "-" + HeraGlobalEnv.getEnv() + "-" + owner + "-hera-schedule"))
                 .withScaleDownBehavior("TERMINATE_AT_TASK_COMPLETION");
         MonitorLog.info("准备创建集群...");
         return emr.runJobFlow(request);
@@ -314,8 +307,8 @@ public class AmazonEmr extends AbstractEmr {
                 .withEbsConfiguration(new EbsConfiguration()
                         .withEbsBlockDeviceConfigs(new EbsBlockDeviceConfig()
                                 .withVolumeSpecification(new VolumeSpecification()
-                                        .withSizeInGB(30)
-                                        .withVolumeType("gp2"))
+                                        .withSizeInGB(100)
+                                        .withVolumeType("standard"))
                                 .withVolumesPerInstance(1)))
                 .withInstanceRole("MASTER")
                 .withInstanceType(emrConf.getMasterInstanceType())
@@ -324,11 +317,12 @@ public class AmazonEmr extends AbstractEmr {
 
         InstanceGroupConfig coreInstance = new InstanceGroupConfig()
                 .withInstanceCount(emrConf.getNumCoresNodes())
+                .withMarket(MarketType.fromValue(HeraGlobalEnv.getAwsEmrType()))
                 .withEbsConfiguration(new EbsConfiguration()
                         .withEbsBlockDeviceConfigs(new EbsBlockDeviceConfig()
                                 .withVolumeSpecification(new VolumeSpecification()
-                                        .withSizeInGB(30)
-                                        .withVolumeType("gp2"))
+                                        .withSizeInGB(100)
+                                        .withVolumeType("standard"))
                                 .withVolumesPerInstance(2)))
                 .withInstanceRole("CORE")
                 .withInstanceType(emrConf.getCoreInstanceType())
