@@ -13,3 +13,6 @@ CREATE TABLE `hera_rerun` (
                             PRIMARY KEY (`id`),
                             KEY `idx_job_id` (`job_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='hera重跑任务表';
+
+
+alter table hera_job add column `estimated_end_hour` int(4) NOT NULL DEFAULT '0' COMMENT '预计结束结束时间';

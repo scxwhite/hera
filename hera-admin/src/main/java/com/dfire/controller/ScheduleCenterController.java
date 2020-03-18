@@ -119,6 +119,8 @@ public class ScheduleCenterController extends BaseHeraController {
         heraJobVo.setUIdS(getuIds(jobId, RunAuthType.JOB));
         heraJobVo.setFocusUser(focusUsers.toString());
         heraJobVo.setAlarmLevel(AlarmLevel.getName(job.getOffset()));
+        configDecry(heraJobVo.getConfigs());
+        configDecry(heraJobVo.getInheritConfig());
         //如果无权限，进行变量加密
         if (heraJobVo.getConfigs().keySet().stream().anyMatch(key -> key.toLowerCase().contains(Constants.PASSWORD_WORD))
                 || heraJobVo.getInheritConfig().keySet().stream().anyMatch(key -> key.toLowerCase().contains(Constants.PASSWORD_WORD))) {
@@ -145,6 +147,22 @@ public class ScheduleCenterController extends BaseHeraController {
         return new JsonResponse(true, true);
     }
 
+
+    private void configDecry(Map<String, String> config) {
+        Optional.ofNullable(config)
+                .ifPresent(cxf -> cxf.entrySet()
+                        .stream()
+                        .filter(pair -> pair.getKey().toLowerCase().contains(Constants.SECRET_PREFIX))
+                        .forEach(entry -> entry.setValue(PasswordUtils.aesDecrypt(entry.getValue()))));
+    }
+
+    private void configEncry(Map<String, String> config) {
+        Optional.ofNullable(config)
+                .ifPresent(cxf -> cxf.entrySet()
+                        .stream()
+                        .filter(pair -> pair.getKey().toLowerCase().contains(Constants.SECRET_PREFIX))
+                        .forEach(entry -> entry.setValue(PasswordUtils.aesEncryption(entry.getValue()))));
+    }
 
     private void encryption(Map<String, String> config) {
         Optional.ofNullable(config)
@@ -201,6 +219,8 @@ public class ScheduleCenterController extends BaseHeraController {
         HeraGroupVo groupVo = BeanConvertUtils.convert(group);
         groupVo.setInheritConfig(getInheritConfig(groupVo.getParent()));
         groupVo.setUIdS(getuIds(id, RunAuthType.GROUP));
+        configDecry(groupVo.getConfigs());
+        configDecry(groupVo.getInheritConfig());
         if (groupVo.getConfigs().keySet().stream().anyMatch(key -> key.toLowerCase().contains(Constants.PASSWORD_WORD))
                 || groupVo.getInheritConfig().keySet().stream().anyMatch(key -> key.toLowerCase().contains(Constants.PASSWORD_WORD))) {
             try {
@@ -293,7 +313,7 @@ public class ScheduleCenterController extends BaseHeraController {
             checkPermission(ActionUtil.getJobId(actionId), RunAuthType.JOB);
         }
         TriggerTypeEnum triggerTypeEnum;
-        if (triggerType == TriggerTypeEnum.MANUAL_RECOVER.getId()) {
+        if (triggerType == 2) {
             triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
         } else {
             triggerTypeEnum = TriggerTypeEnum.MANUAL;
@@ -404,9 +424,10 @@ public class ScheduleCenterController extends BaseHeraController {
             return new JsonResponse(false, "无法识别的调度类型");
         }
         HeraJob memJob = heraJobService.findById(heraJobVo.getId());
-
+        Map<String, String> configMap = StringUtil.configsToMap(heraJobVo.getSelfConfigs());
+        configEncry(configMap);
+        heraJobVo.setSelfConfigs(StringUtil.mapToConfigs(configMap));
         HeraJob newJob = BeanConvertUtils.convertToHeraJob(heraJobVo);
-
         if (StringUtils.isNotBlank(newJob.getDependencies())) {
             if (!newJob.getDependencies().equals(memJob.getDependencies())) {
                 List<HeraJob> relation = heraJobService.getAllJobDependencies();
@@ -432,6 +453,7 @@ public class ScheduleCenterController extends BaseHeraController {
                 }
             }
         }
+
 
         Integer update = heraJobService.update(newJob);
 
@@ -468,11 +490,18 @@ public class ScheduleCenterController extends BaseHeraController {
         return new JsonResponse(true, "更新成功");
     }
 
+
     @RequestMapping(value = "/updateGroupMessage", method = RequestMethod.POST)
     @ResponseBody
     @RunAuth(authType = RunAuthType.GROUP, idIndex = 1)
     public JsonResponse updateGroupMessage(HeraGroupVo groupVo, String groupId) {
         groupVo.setId(StringUtil.getGroupId(groupId));
+
+        Map<String, String> configMap = StringUtil.configsToMap(groupVo.getSelfConfigs());
+        configEncry(configMap);
+
+        groupVo.setSelfConfigs(StringUtil.mapToConfigs(configMap));
+
         HeraGroup heraGroup = BeanConvertUtils.convert(groupVo);
         boolean res = heraGroupService.update(heraGroup) > 0;
         return new JsonResponse(res, res ? "更新成功" : "系统异常,请联系管理员");
@@ -657,7 +686,6 @@ public class ScheduleCenterController extends BaseHeraController {
     /**
      * 获取任务历史版本
      *
-     * @param pageHelper
      * @return
      */
     @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
@@ -908,14 +936,14 @@ public class ScheduleCenterController extends BaseHeraController {
         JsonResponse response;
         if ((type == 0 && auto == 1) || (type == 1 && auto != 1)) {
             for (int i = size - 1; i >= 0; i--) {
-                response = this.updateSwitch(jobList.get(i), auto);
+                response = updateSwitch(jobList.get(i), auto);
                 if (!response.isSuccess()) {
                     return response;
                 }
             }
         } else if ((type == 1 && auto == 1) || (type == 0 && auto != 1)) {
             for (int i = 0; i < size; i++) {
-                response = this.updateSwitch(jobList.get(i), auto);
+                response = updateSwitch(jobList.get(i), auto);
                 if (!response.isSuccess()) {
                     return response;
                 }

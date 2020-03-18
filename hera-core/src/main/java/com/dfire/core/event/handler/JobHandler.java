@@ -192,8 +192,8 @@ public class JobHandler extends AbstractHandler {
             heraJobActionService.updateStatus(jobStatus);
         }
         boolean allComplete = true;
-        for (String key : heraActionVo.getDependencies()) {
-            if (jobStatus.getReadyDependency().get(key) == null) {
+        for (Long key : heraActionVo.getDependencies()) {
+            if (jobStatus.getReadyDependency().get(String.valueOf(key)) == null) {
                 allComplete = false;
                 break;
             }

@@ -122,7 +122,7 @@ public abstract class AbstractEmr implements EmrJob, Emr {
         init();
         if (StringUtils.isBlank(ownerCluster.get(owner))) {
             synchronized (ownerLock.get(owner)) {
-                if (StringUtils.isBlank(ownerCluster.get(owner))) {
+                if (notAlive(owner)) {
                     String cacheClusterId = null;
                     //创建集群有可能发生异常
                     while (StringUtils.isBlank(cacheClusterId)) {

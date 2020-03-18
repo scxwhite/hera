@@ -44,4 +44,5 @@ public class HeraDebugHistory {
 
     private int hostGroupId;
 
+    private Integer jobId;
 }

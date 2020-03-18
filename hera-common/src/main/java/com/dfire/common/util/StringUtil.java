@@ -75,6 +75,27 @@ public class StringUtil {
         return map;
     }
 
+
+    public static Map<String, String> configsToMap(String configs) {
+        configs = configs.trim();
+        Map<String, String> configMap = new HashMap<>();
+        String[] split = configs.split("\n");
+        Arrays.stream(split).forEach(x -> {
+            int index = x.indexOf("=");
+            if (index != -1) {
+                configMap.put(x.substring(0, index).trim(), x.substring(index + 1).trim());
+            }
+        });
+        return configMap;
+    }
+
+
+    public static String mapToConfigs(Map<String, String> configMap) {
+        StringBuilder configs = new StringBuilder();
+        configMap.forEach((key, val) -> configs.append(key).append("=").append(val).append("\n"));
+        return configs.toString();
+    }
+
     /**
      * config转成json
      *

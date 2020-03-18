@@ -38,9 +38,9 @@ public class HeraActionVo {
 
     private String cycle;
 
-    private List<String> dependencies;
+    private List<Long> dependencies;
 
-    private List<String> jobDependencies;
+    private List<Long> jobDependencies;
 
     private String description;
 
@@ -97,7 +97,7 @@ public class HeraActionVo {
     //private int cronInterval;
 
     private String batchId;
-    
+
     //private String bizLabel;
 
 }

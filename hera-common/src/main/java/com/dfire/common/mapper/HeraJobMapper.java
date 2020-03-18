@@ -23,12 +23,12 @@ public interface HeraJobMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insert(HeraJob heraJob);
 
-    @Delete("delete from hera_job where id = #{id}")
+    @Delete("update hera_job set is_valid = 0 where id = #{id}")
     int delete(@Param("id") int id);
 
     @Update("update hera_job (#{heraJob}) where id = #{id}")
     @Lang(HeraUpdateLangDriver.class)
-    Integer update(HeraJob heraJob);
+    int update(HeraJob heraJob);
 
     @Select("select * from hera_job")
     @Lang(HeraSelectLangDriver.class)
@@ -76,4 +76,8 @@ public interface HeraJobMapper {
 
     @Select("select must_end_minute from hera_job where id = #{id}")
     Integer findMustEndMinute(int id);
+
+    @Select("select id,name, estimated_end_hour from hera_job where auto > 0 and is_valid > 0 and estimated_end_hour > 0 and estimated_end_hour >= #{startTime} and estimated_end_hour < #{endTime}")
+    List<HeraJob> findEstimatedEndHours(@Param("startTime") int startTime,
+                                        @Param("endTime") int endTime);
 }

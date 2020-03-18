@@ -6,6 +6,8 @@ import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.event.Dispatcher;
+import com.dfire.core.netty.ChoreService;
+import com.dfire.core.netty.master.schedule.*;
 import com.dfire.core.quartz.QuartzSchedulerService;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
@@ -15,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
@@ -68,14 +71,13 @@ public class MasterContext {
     @Autowired
     private HeraJobActionService heraJobActionService;
     @Autowired
+    private EmailService emailService;
+    @Autowired
     private AlarmCenter alarmCenter;
     @Autowired
     private HeraJobMonitorService heraJobMonitorService;
     @Autowired
     private HeraSsoService heraSsoService;
-    @Autowired
-    @Getter
-    private EmailService emailService;
     @Autowired
     private HeraRerunService heraRerunService;
     private Dispatcher dispatcher;
@@ -102,34 +104,74 @@ public class MasterContext {
     private MasterServer masterServer;
     @Getter
     private ExecutorService threadPool;
+    private ChoreService choreService;
+    private RerunJobInit rerunJobInit;
+    private RerunJobLaunch rerunJobLaunch;
+    private LostJobCheck lostJobCheck;
+    private WorkHeartCheck heartCheck;
+    private JobActionInit actionInit;
+    private JobFinishCheck finishCheck;
+    private JobQueueScan queueScan;
+
 
     public void init() {
         threadPool = new ThreadPoolExecutor(
                 0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>(), new NamedThreadFactory("master-wait-response"), new ThreadPoolExecutor.AbortPolicy());
-        masterSchedule = new ScheduledThreadPoolExecutor(5, new NamedThreadFactory("master-schedule", false));
+        masterSchedule = new ScheduledThreadPoolExecutor(2, new NamedThreadFactory("master-schedule", false));
         masterSchedule.setKeepAliveTime(5, TimeUnit.MINUTES);
         masterSchedule.allowCoreThreadTimeOut(true);
-        this.getQuartzSchedulerService().start();
+        getQuartzSchedulerService().start();
         dispatcher = new Dispatcher();
         handler = new MasterHandler(this);
         masterServer = new MasterServer(handler);
         masterServer.start(HeraGlobalEnv.getConnectPort());
         master.init(this);
-        HeraLog.info("end init master content success ");
+
+        choreService = new ChoreService(5, "chore-service");
+        rerunJobInit = new RerunJobInit(master);
+        choreService.scheduledChore(rerunJobInit);
+        rerunJobLaunch = new RerunJobLaunch(master);
+        choreService.scheduledChore(rerunJobLaunch);
+        lostJobCheck = new LostJobCheck(master, new DateTime().getMinuteOfHour());
+        choreService.scheduledChore(lostJobCheck);
+        heartCheck = new WorkHeartCheck(master);
+        choreService.scheduledChore(heartCheck);
+        actionInit = new JobActionInit(master);
+        choreService.scheduledChore(actionInit);
+        finishCheck = new JobFinishCheck(master);
+        choreService.scheduledChore(finishCheck);
+        queueScan = new JobQueueScan(master);
+        choreService.scheduledChoreOnce(queueScan);
+        HeraLog.info("init master content success ");
     }
 
     public void destroy() {
-        threadPool.shutdown();
-        masterSchedule.shutdown();
+        threadPool.shutdownNow();
+        HeraLog.info("shutdown master-wait-response pool success");
+        masterSchedule.shutdownNow();
+        HeraLog.info("shutdown master-schedule pool success");
+
+        if (choreService != null) {
+            choreService.cancelChore(rerunJobInit);
+            choreService.cancelChore(lostJobCheck);
+            choreService.cancelChore(heartCheck);
+            choreService.cancelChore(rerunJobLaunch);
+            choreService.cancelChore(actionInit);
+            choreService.cancelChore(finishCheck);
+            choreService.cancelChore(queueScan);
+            choreService.shutDown();
+            HeraLog.info("shutdown chore-service pool success");
+        }
         if (masterServer != null) {
             masterServer.shutdown();
+            HeraLog.info("shutdown master-server success");
         }
         if (quartzSchedulerService != null) {
             try {
                 quartzSchedulerService.shutdown();
-                HeraLog.info("quartz schedule shutdown success");
+                HeraLog.info("shutdown quartz schedule  success");
             } catch (Exception e) {
-                ErrorLog.error("quartz schedule shutdown error", e);
+                ErrorLog.error("shutdown quartz schedule error", e);
             }
         }
         HeraLog.info("destroy master context success");
