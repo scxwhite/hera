@@ -1,6 +1,7 @@
 package com.dfire.common.mybatis;
 
 import com.dfire.common.config.SkipColumn;
+import com.dfire.common.constants.Constants;
 import com.google.common.base.CaseFormat;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.scripting.LanguageDriver;
@@ -25,26 +26,34 @@ public class HeraInsertLangDriver extends XMLLanguageDriver implements LanguageD
 
         Matcher matcher = inPattern.matcher(script);
         if (matcher.find()) {
-            StringBuilder sb = new StringBuilder();
-            StringBuilder tmp = new StringBuilder();
-            sb.append("(");
+            StringBuilder columns = new StringBuilder();
+            StringBuilder values = new StringBuilder();
+            columns.append("<trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\">");
+            values.append("<trim prefix=\"values (\" suffix=\")\" suffixOverrides=\",\">");
+
+
 
             for (Field field : parameterType.getDeclaredFields()) {
                 SkipColumn skipColumn = field.getAnnotation(SkipColumn.class);
                 if (skipColumn == null) {
-                    sb.append(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName())).append(",");
-                    tmp.append("#{").append(field.getName()).append("},");
+                    columns.append("<if test=\"").append(field.getName()).append("!= null\">");
+                    columns.append(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName())).append(Constants.COMMA);
+                    columns.append("</if>");
+
+
+                    values.append("<if test=\"").append(field.getName()).append("!= null\">");
+                    values.append("#{").append(field.getName()).append("}").append(Constants.COMMA);
+
+                    values.append("</if>");
                 }
             }
+            columns.append("</trim>");
+            values.append("</trim>");
 
-            sb.deleteCharAt(sb.lastIndexOf(","));
-            tmp.deleteCharAt(tmp.lastIndexOf(","));
-            sb.append(") values (").append(tmp.toString()).append(")");
 
-            script = matcher.replaceAll(sb.toString());
+            script = matcher.replaceAll(columns.append(values).toString());
             script = "<script>" + script + "</script>";
         }
-
         return super.createSqlSource(configuration, script, parameterType);
     }
 }

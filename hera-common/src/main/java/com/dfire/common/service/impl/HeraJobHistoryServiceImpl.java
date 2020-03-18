@@ -31,8 +31,8 @@ public class HeraJobHistoryServiceImpl implements HeraJobHistoryService {
     }
 
     @Override
-    public int updateHeraJobHistoryStatus(HeraJobHistory HeraJobHistory) {
-        return heraJobHistoryMapper.updateHeraJobHistoryStatus(HeraJobHistory);
+    public int updateHeraJobHistoryStatus(HeraJobHistory herajobhistory) {
+        return heraJobHistoryMapper.updateHeraJobHistoryStatus(herajobhistory);
     }
 
     @Override

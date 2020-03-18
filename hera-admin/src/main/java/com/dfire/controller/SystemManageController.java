@@ -88,6 +88,11 @@ public class SystemManageController extends BaseHeraController {
         return "jobManage/jobInstLog.index";
     }
 
+    @RequestMapping("/rerun")
+    public String jobRerun() {
+        return "jobManage/rerun.index";
+    }
+
     @RequestMapping("/jobSearch")
     public String jobSearch() {
         return "jobManage/jobSearch.index";

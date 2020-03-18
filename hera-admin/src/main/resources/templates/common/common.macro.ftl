@@ -136,6 +136,9 @@
 
                         <li id="record"><a href="${request.contextPath}/record"><i
                                         class="fa fa-circle-o"></i>日志记录</a></li>
+
+                        <li id="rerun"><a href="${request.contextPath}/rerun"><i
+                                        class="fa fa-circle-o"></i>任务重跑</a></li>
                     </ul>
                 </li>
 
