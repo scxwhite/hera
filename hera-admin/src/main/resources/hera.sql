@@ -214,6 +214,7 @@ CREATE TABLE IF NOT EXISTS `hera_job`
   cron_period varchar(100) DEFAULT NULL,
   cron_interval int(11) DEFAULT NULL,
   biz_label varchar(500) DEFAULT '',
+  `estimated_end_hour` int(4) NOT NULL DEFAULT '0' COMMENT '预计结束结束时间',
   PRIMARY KEY (`id`),
   KEY `ind_zeusjobgroupid` (`group_id`)
 ) ENGINE = InnoDB
