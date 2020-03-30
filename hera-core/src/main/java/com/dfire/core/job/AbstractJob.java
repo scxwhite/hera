@@ -85,6 +85,7 @@ public abstract class AbstractJob implements Job {
 
     protected String generateRunCommand(JobRunTypeEnum runTypeEnum, String prefix, String jobPath) throws Exception {
         StringBuilder command = new StringBuilder();
+        command.append("source /etc/profile\n");
         // emr集群
         if (HeraGlobalEnv.isEmrJob()) {
             File file = new File(jobPath);
