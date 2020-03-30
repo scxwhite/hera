@@ -12,6 +12,7 @@ import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.exception.HeraException;
+import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
 import com.dfire.common.vo.JobElement;
@@ -46,10 +47,13 @@ public class MasterRunJob implements RunJob {
 
     private RunJobThreadPool executeJobPool;
 
+    private int cacheCoreSize;
+
     public MasterRunJob(MasterContext masterContext, Master master) {
         this.master = master;
         this.masterContext = masterContext;
-        executeJobPool = new RunJobThreadPool(masterContext, HeraGlobalEnv.getMaxParallelNum(), HeraGlobalEnv.getMaxParallelNum(), 10L, TimeUnit.MINUTES,
+        this.cacheCoreSize = HeraGlobalEnv.getMaxParallelNum();
+        executeJobPool = new RunJobThreadPool(masterContext, cacheCoreSize, cacheCoreSize, 10L, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<>(Integer.MAX_VALUE), new NamedThreadFactory("master-execute-job"), new ThreadPoolExecutor.AbortPolicy());
         executeJobPool.allowCoreThreadTimeOut(true);
     }
@@ -60,8 +64,8 @@ public class MasterRunJob implements RunJob {
      * @param selectWork 所选机器
      * @param debugId    debugId
      */
-    private void runDebugJob(MasterWorkHolder selectWork, String debugId) {
-        HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
+    private void runDebugJob(MasterWorkHolder selectWork, Long debugId) {
+        HeraDebugHistoryVo history = masterContext.getHeraDebugHistoryService().findById(debugId);
         history.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
         masterContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
         Exception exception = null;
@@ -81,7 +85,7 @@ public class MasterRunJob implements RunJob {
         if (!success) {
             exception = new HeraException(String.format("fileId:%s run failed ", history.getFileId()), exception);
             TaskLog.info("8.Master: debug job error");
-            history = masterContext.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
+            history = masterContext.getHeraDebugHistoryService().findById(debugId);
             HeraDebugFailEvent failEvent = HeraDebugFailEvent.builder()
                     .debugHistory(BeanConvertUtils.convert(history))
                     .throwable(exception)
@@ -104,7 +108,7 @@ public class MasterRunJob implements RunJob {
      * @param selectWork selectWork 所选机器
      * @param actionId   actionId
      */
-    private void runManualJob(MasterWorkHolder selectWork, String actionId) {
+    private void runManualJob(MasterWorkHolder selectWork, Long actionId) {
         SocketLog.info("start run manual job, actionId = {}", actionId);
         HeraAction heraAction = masterContext.getHeraJobActionService().findById(actionId);
         HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(heraAction.getHistoryId());
@@ -112,7 +116,7 @@ public class MasterRunJob implements RunJob {
         historyVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 开始运行");
         heraAction.setStatus(StatusEnum.RUNNING.toString());
         historyVo.setStatusEnum(StatusEnum.RUNNING);
-        HeraAction cacheAction = master.getHeraActionMap().get(Long.parseLong(actionId));
+        HeraAction cacheAction = master.getHeraActionMap().get(actionId);
         if (cacheAction != null) {
             cacheAction.setStatus(StatusEnum.RUNNING.toString());
             cacheAction.setHistoryId(heraAction.getHistoryId());
@@ -154,7 +158,7 @@ public class MasterRunJob implements RunJob {
             }
         } else {
             heraAction.setStatus(StatusEnum.SUCCESS.toString());
-            event = new HeraJobSuccessEvent(history.getActionId(), historyVo.getTriggerType(), history.getId());
+            event = new HeraJobSuccessEvent(history.getActionId(), historyVo.getTriggerType(), historyVo);
         }
         updateCacheAction(actionId, heraAction.getStatus());
         heraAction.setStatisticEndTime(new Date());
@@ -170,7 +174,7 @@ public class MasterRunJob implements RunJob {
      * @param selectWork 所选机器
      * @param actionId   actionId
      */
-    private void runScheduleJob(MasterWorkHolder selectWork, String actionId) {
+    private void runScheduleJob(MasterWorkHolder selectWork, Long actionId) {
         int runCount = 0;
         int retryCount = 0;
         int retryWaitTime = 1;
@@ -192,18 +196,32 @@ public class MasterRunJob implements RunJob {
      * @param retryCount    retryCount
      * @param retryWaitTime retryWaitTime
      */
-    private void runScheduleJobContext(MasterWorkHolder selectWork, String actionId, int runCount, int retryCount, int retryWaitTime) {
+    private void runScheduleJobContext(MasterWorkHolder selectWork, Long actionId, int runCount, int retryCount, int retryWaitTime) {
         DebugLog.info("重试次数：{},重试时间：{},actionId:{}", retryCount, retryWaitTime, actionId);
         runCount++;
         boolean isCancelJob = false;
         if (runCount > 1) {
+            HeraJob memJob = masterContext.getHeraJobService().findMemById(ActionUtil.getJobId(actionId));
+            //如果任务已经关闭，取消执行
+            if (memJob == null || memJob.getAuto() != 1) {
+                ScheduleLog.info("任务{}已关闭，取消重试:{}", actionId, runCount);
+                return;
+            }
+            if (master.checkJobExists(HeraJobHistoryVo.builder()
+                            .actionId(actionId)
+                            .jobId(memJob.getId())
+                            .triggerType(TriggerTypeEnum.SCHEDULE)
+                            .build()
+                    , true)) {
+                ScheduleLog.info("--------------------------{}正在执行，取消重试--------------------------", actionId);
+                return;
+            }
             DebugLog.info("任务重试，睡眠：{}分钟", retryWaitTime);
             try {
                 TimeUnit.MINUTES.sleep(retryWaitTime);
             } catch (InterruptedException e) {
                 ErrorLog.error("sleep interrupted", e);
             }
-
         }
         HeraJobHistoryVo heraJobHistoryVo;
         HeraJobHistory heraJobHistory;
@@ -219,27 +237,17 @@ public class MasterRunJob implements RunJob {
 
         } else {
             heraAction = masterContext.getHeraJobActionService().findById(actionId);
-            HeraJob heraJob = masterContext.getHeraJobService().findById(heraAction.getJobId());
+            HeraJob heraJob = masterContext.getHeraJobService().findMemById(heraAction.getJobId());
             heraJobHistory = HeraJobHistory.builder()
                     .illustrate(LogConstant.FAIL_JOB_RETRY)
                     .triggerType(TriggerTypeEnum.SCHEDULE.getId())
                     .jobId(heraAction.getJobId())
-                    .actionId(String.valueOf(heraAction.getId()))
+                    .actionId(heraAction.getId())
                     .operator(heraAction.getOwner())
                     .hostGroupId(heraAction.getHostGroupId())
                     .batchId(heraAction.getBatchId())
                     .bizLabel(heraJob.getBizLabel())
                     .build();
-
-            if (master.checkJobExists(HeraJobHistoryVo.builder()
-                            .actionId(String.valueOf(heraAction.getId()))
-                            .jobId(heraAction.getJobId())
-                            .triggerType(TriggerTypeEnum.SCHEDULE)
-                            .build()
-                    , true)) {
-                TaskLog.info("--------------------------{}正在执行，取消重试--------------------------", heraAction.getJobId());
-                return;
-            }
             masterContext.getHeraJobHistoryService().insert(heraJobHistory);
             heraAction.setHistoryId(heraJobHistory.getId());
             heraAction.setStatus(StatusEnum.RUNNING.toString());
@@ -248,7 +256,7 @@ public class MasterRunJob implements RunJob {
             heraJobHistoryVo.getLog().append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + " 第" + (runCount - 1) + "次重试运行\n");
             triggerType = heraJobHistoryVo.getTriggerType();
         }
-        HeraAction cacheAction = master.getHeraActionMap().get(Long.parseLong(actionId));
+        HeraAction cacheAction = master.getHeraActionMap().get(actionId);
         if (cacheAction != null) {
             cacheAction.setStatus(StatusEnum.RUNNING.toString());
             cacheAction.setHistoryId(heraJobHistory.getId());
@@ -292,7 +300,7 @@ public class MasterRunJob implements RunJob {
                 heraAction.setReadyDependency("{}");
             }
             heraAction.setStatus(StatusEnum.SUCCESS.toString());
-            HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, triggerType, heraJobHistory.getId());
+            HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, triggerType, heraJobHistoryVo);
             masterContext.getDispatcher().forwardEvent(successEvent);
         }
 
@@ -300,15 +308,14 @@ public class MasterRunJob implements RunJob {
         heraAction.setStatisticEndTime(new Date());
         masterContext.getHeraJobActionService().update(heraAction);
         if (runCount < (retryCount + 1) && !success && !isCancelJob) {
-
             DebugLog.info("--------------------------失败任务，准备重试--------------------------");
             runScheduleJobContext(selectWork, actionId, runCount, retryCount, retryWaitTime);
 
         }
     }
 
-    private void updateCacheAction(String actionId, String status) {
-        HeraAction cacheAction = master.getHeraActionMap().get(Long.parseLong(actionId));
+    private void updateCacheAction(Long actionId, String status) {
+        HeraAction cacheAction = master.getHeraActionMap().get(actionId);
         if (cacheAction != null) {
             cacheAction.setStatus(status);
         }
@@ -320,7 +327,17 @@ public class MasterRunJob implements RunJob {
      * @return
      */
     public boolean isTaskLimit() {
+        //可能会被apollo等配置中心修改，检测limit的时候进行判断
+        setCoreSize(HeraGlobalEnv.getMaxParallelNum());
         return executeJobPool.getActiveCount() >= HeraGlobalEnv.getMaxParallelNum();
+    }
+
+    public void setCoreSize(int size) {
+        if (size > 0 && size != cacheCoreSize) {
+            cacheCoreSize = size;
+            executeJobPool.setMaximumPoolSize(size);
+            executeJobPool.setCorePoolSize(size);
+        }
     }
 
     public void printThreadPoolLog() {

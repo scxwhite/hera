@@ -13,26 +13,22 @@ public class WrapEmr implements Emr, EmrJob {
     private volatile static AbstractEmr emr;
 
     @Override
-    public void addJob() {
+    public void addJob(String owner) {
         checkEmr();
-        emr.addJob();
+        emr.addJob(checkOwner(owner));
     }
 
     @Override
-    public void removeJob() {
-        emr.removeJob();
+    public void removeJob(String owner) {
+        checkEmr();
+        emr.removeJob(checkOwner(owner));
     }
 
-    @Override
-    public String getLogin(String user) {
-        checkEmr();
-        return emr.getLogin(user);
-    }
 
     @Override
-    public String getLogin(String user, String ip) {
+    public String getLogin(String user, String owner) {
         checkEmr();
-        return emr.getLogin(user, ip);
+        return emr.getLogin(user, checkOwner(owner));
     }
 
     @Override
@@ -42,15 +38,16 @@ public class WrapEmr implements Emr, EmrJob {
     }
 
     @Override
-    public String getIp() {
+    public String getIp(String owner) {
         checkEmr();
-        return emr.getIp();
+        return emr.getIp(checkOwner(owner));
     }
 
-    @Override
-    public boolean isAlive() {
-        checkEmr();
-        return emr.isAlive();
+    private String checkOwner(String owner) {
+        if (!HeraGlobalEnv.getEmrGroups().contains(owner)) {
+            return "other";
+        }
+        return owner;
     }
 
     private void checkEmr() {
@@ -63,6 +60,9 @@ public class WrapEmr implements Emr, EmrJob {
                             break;
                         case AliYunEmr.NAME:
                             emr = new AliYunEmr();
+                            break;
+                        case FixedEmr.NAME:
+                            emr = new FixedEmr();
                             break;
                         default:
                             throw new RuntimeException("未识别的emr集群类型:" + HeraGlobalEnv.getEmrCluster());

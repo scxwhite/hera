@@ -23,7 +23,7 @@ public interface HeraDebugHistoryMapper {
     int insert(HeraDebugHistory heraDebugHistory);
 
     @Delete("delete from hera_debug_history where id = #{id}")
-    int delete(@Param("id") int id);
+    int delete(@Param("id") Long id);
 
     @Update("update hera_debug_history (#{heraDebugHistory}) where id = #{id}")
     @Lang(HeraUpdateLangDriver.class)
@@ -35,7 +35,7 @@ public interface HeraDebugHistoryMapper {
 
     @Select("select * from hera_debug_history where id = #{id}")
     @Lang(HeraSelectLangDriver.class)
-    HeraDebugHistory findById(Integer id);
+    HeraDebugHistory findById(Long id);
 
     @Select("select * from hera_debug_history where id in (#{list})")
     @Lang(HeraListInLangDriver.class)
@@ -53,4 +53,10 @@ public interface HeraDebugHistoryMapper {
 
     @Select("select * from hera_debug_history where id = #{id}")
     HeraDebugHistory findLogById(Integer id);
+
+    @Update("update hera_debug_history set status=#{status},log=#{msg},end_time = #{endTime}  where id = #{id} ")
+    void updateStatusAndLog(@Param("id") Long id,
+                            @Param("msg") String msg,
+                            @Param("status") String status,
+                            @Param("endTime") String endTime);
 }

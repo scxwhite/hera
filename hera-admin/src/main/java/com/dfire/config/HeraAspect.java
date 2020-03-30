@@ -118,8 +118,8 @@ public class HeraAspect {
             } else {
                 if (param instanceof Integer) {
                     runId = (Integer) param;
-                } else if (param instanceof String) {
-                    runId = Integer.parseInt((String) param);
+                } else {
+                    runId = Integer.parseInt(String.valueOf(param));
                 }
             }
         }

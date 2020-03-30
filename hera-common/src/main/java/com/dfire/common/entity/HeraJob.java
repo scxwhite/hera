@@ -1,11 +1,13 @@
 package com.dfire.common.entity;
 
+import com.dfire.common.config.SkipColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -37,7 +39,7 @@ public class HeraJob {
 
     private Integer groupId;
 
-    private String historyId;
+    private Long historyId;
 
     private String host;
 
@@ -83,14 +85,33 @@ public class HeraJob {
 
     private int mustEndMinute;
 
+    private int estimatedEndHour;
+
     private short repeatRun;
 
     private Integer isValid;
-    
+
     private String cronPeriod;
 
     private int cronInterval;
-    
+
     private String bizLabel;
 
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        HeraJob job = (HeraJob) o;
+        return id == job.getId();
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

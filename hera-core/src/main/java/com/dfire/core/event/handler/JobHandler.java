@@ -48,7 +48,7 @@ import java.util.Objects;
 public class JobHandler extends AbstractHandler {
 
     @Getter
-    private final String actionId;
+    private final Long actionId;
     private JobGroupCache cache;
     private HeraJobHistoryService jobHistoryService;
     private HeraGroupService heraGroupService;
@@ -57,7 +57,7 @@ public class JobHandler extends AbstractHandler {
     private MasterContext masterContext;
     private HeraUserService heraUserService;
 
-    public JobHandler(String actionId, Master master, MasterContext masterContext) {
+    public JobHandler(Long actionId, Master master, MasterContext masterContext) {
         this.actionId = actionId;
         this.jobHistoryService = masterContext.getHeraJobHistoryService();
         this.heraGroupService = masterContext.getHeraGroupService();
@@ -168,7 +168,7 @@ public class JobHandler extends AbstractHandler {
         if (event.getTriggerType() == TriggerTypeEnum.MANUAL) {
             return;
         }
-        String jobId = event.getJobId();
+        Long jobId = event.getJobId();
         HeraActionVo heraActionVo = cache.getHeraActionVo();
         if (heraActionVo == null) {
             autoRecovery();
@@ -188,12 +188,12 @@ public class JobHandler extends AbstractHandler {
         synchronized (this) {
             jobStatus = heraJobActionService.findJobStatus(actionId);
             ScheduleLog.info(actionId + "received a success dependency job with actionId = " + jobId);
-            jobStatus.getReadyDependency().put(jobId, String.valueOf(System.currentTimeMillis()));
+            jobStatus.getReadyDependency().put(String.valueOf(jobId), String.valueOf(System.currentTimeMillis()));
             heraJobActionService.updateStatus(jobStatus);
         }
         boolean allComplete = true;
-        for (String key : heraActionVo.getDependencies()) {
-            if (jobStatus.getReadyDependency().get(key) == null) {
+        for (Long key : heraActionVo.getDependencies()) {
+            if (jobStatus.getReadyDependency().get(String.valueOf(key)) == null) {
                 allComplete = false;
                 break;
             }
@@ -218,7 +218,7 @@ public class JobHandler extends AbstractHandler {
      * @param event
      */
     public void handleTriggerEvent(HeraScheduleTriggerEvent event) {
-        String jobId = event.getJobId();
+        Long jobId = event.getActionId();
         HeraActionVo heraActionVo = cache.getHeraActionVo();
         if (heraActionVo == null) {
             autoRecovery();
@@ -284,7 +284,7 @@ public class JobHandler extends AbstractHandler {
     }
 
     private void handleMaintenanceEvent(HeraJobMaintenanceEvent event) {
-        if (event.getType() == Events.UpdateJob && Objects.equals(Integer.parseInt(event.getId()), ActionUtil.getJobId(actionId))) {
+        if (event.getType() == Events.UpdateJob && Objects.equals(Integer.parseInt(String.valueOf(event.getId())), ActionUtil.getJobId(actionId))) {
             autoRecovery();
         }
         if (event.getType() == Events.UpdateActions && Objects.equals(actionId, event.getId())) {
@@ -304,7 +304,7 @@ public class JobHandler extends AbstractHandler {
             if (heraActionVo != null) {
                 HeraAction heraAction = heraJobActionService.findById(actionId);
                 if (heraAction != null && StringUtils.isBlank(heraAction.getStatus()) && heraAction.getAuto() == 1) {
-                    if (Long.parseLong(actionId) < Long.parseLong(ActionUtil.getCurrActionVersion())) {
+                    if (actionId < Long.parseLong(ActionUtil.getCurrActionVersion())) {
                         startNewJob(BeanConvertUtils.transform(heraAction), LogConstant.LOST_JOB_LOG);
                         ScheduleLog.info("lost job, start schedule :{}", actionId);
                     }
@@ -324,13 +324,13 @@ public class JobHandler extends AbstractHandler {
         if (!ActionUtil.isCurrActionVersion(actionId)) {
             return;
         }
-        JobKey jobKey = new JobKey(actionId, Constants.HERA_GROUP);
+        JobKey jobKey = new JobKey(String.valueOf(actionId), Constants.HERA_GROUP);
         if (masterContext.getQuartzSchedulerService().getScheduler().getJobDetail(jobKey) == null) {
             JobDetail jobDetail = JobBuilder.newJob(HeraQuartzJob.class).withIdentity(jobKey).build();
             jobDetail.getJobDataMap().put(Constants.QUARTZ_ID, heraActionVo.getId());
             jobDetail.getJobDataMap().put(Constants.QUARTZ_DISPATCHER, dispatcher);
             CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(heraActionVo.getCronExpression().trim());
-            CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(actionId, Constants.HERA_GROUP).withSchedule(scheduleBuilder).build();
+            CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(String.valueOf(actionId), Constants.HERA_GROUP).withSchedule(scheduleBuilder).build();
             masterContext.getQuartzSchedulerService().getScheduler().scheduleJob(jobDetail, trigger);
             ScheduleLog.info("--------------------------- 添加自动调度成功:{}--------------------------", heraActionVo.getId());
         }

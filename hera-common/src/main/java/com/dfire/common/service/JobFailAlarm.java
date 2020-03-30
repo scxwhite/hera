@@ -27,6 +27,5 @@ public interface JobFailAlarm {
      *
      * @param element
      */
-    void alarm(JobElement element);
-
+    void alarm(JobElement element, Set<HeraSso> monitorUser);
 }

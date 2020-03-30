@@ -22,11 +22,22 @@ public enum TriggerTypeEnum {
     /**
      * 开发中心任务
      */
-    DEBUG(4);
+    DEBUG(4),
+
+    AUTO_RERUN(5);
     private Integer id;
 
     TriggerTypeEnum(Integer id) {
         this.id = id;
+    }
+
+    public static TriggerTypeEnum parser(Integer v) {
+        for (TriggerTypeEnum type : TriggerTypeEnum.values()) {
+            if (type.getId().equals(v)) {
+                return type;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -43,17 +54,10 @@ public enum TriggerTypeEnum {
             return "手动恢复";
         } else if (id == 4) {
             return "debug执行";
+        } else if (id == 5) {
+            return "自动重跑";
         }
         return "未知";
-    }
-
-    public static TriggerTypeEnum parser(Integer v) {
-        for (TriggerTypeEnum type : TriggerTypeEnum.values()) {
-            if (type.getId().equals(v)) {
-                return type;
-            }
-        }
-        return null;
     }
 
     public Integer getId() {

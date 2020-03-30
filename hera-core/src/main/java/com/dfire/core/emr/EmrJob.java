@@ -8,11 +8,11 @@ public interface EmrJob {
     /**
      * 添加任务接口
      */
-    void addJob();
+    void addJob(String owner);
 
     /**
      * 移除任务
      */
-    void removeJob();
+    void removeJob(String owner);
 
 }

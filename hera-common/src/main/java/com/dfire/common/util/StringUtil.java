@@ -59,7 +59,7 @@ public class StringUtil {
      * @return
      */
     public static Map<String, String> convertStringToMap(String config) throws RuntimeException {
-        if (config == null || "{}".equals(config)) {
+        if (StringUtils.isBlank(config) || "{}".equals(config)) {
             return new HashMap<>(0);
         }
         JSONObject jsonObject;
@@ -73,6 +73,27 @@ public class StringUtil {
             map.put(key.toString(), jsonObject.getString(key.toString()));
         }
         return map;
+    }
+
+
+    public static Map<String, String> configsToMap(String configs) {
+        configs = configs.trim();
+        Map<String, String> configMap = new HashMap<>();
+        String[] split = configs.split("\n");
+        Arrays.stream(split).forEach(x -> {
+            int index = x.indexOf("=");
+            if (index != -1) {
+                configMap.put(x.substring(0, index).trim(), x.substring(index + 1).trim());
+            }
+        });
+        return configMap;
+    }
+
+
+    public static String mapToConfigs(Map<String, String> configMap) {
+        StringBuilder configs = new StringBuilder();
+        configMap.forEach((key, val) -> configs.append(key).append("=").append(val).append("\n"));
+        return configs.toString();
     }
 
     /**
@@ -91,6 +112,7 @@ public class StringUtil {
         }
         return jsonObject.toString();
     }
+
 
     public static List<Processor> convertProcessorToList(String processor) {
         List<Processor> list = new ArrayList<>();
@@ -126,6 +148,10 @@ public class StringUtil {
         Integer id1 = Integer.valueOf(str);
         Integer id2 = Integer.valueOf(id);
         return id1.equals(id2);
+    }
+
+    public static boolean actionIdToJobId(Long actionId, String id) {
+        return actionIdToJobId(String.valueOf(actionId), id);
     }
 
     /**

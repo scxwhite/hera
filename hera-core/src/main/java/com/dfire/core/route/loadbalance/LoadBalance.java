@@ -1,9 +1,10 @@
 package com.dfire.core.route.loadbalance;
 
 
+import com.dfire.common.exception.HostGroupNotExistsException;
+import com.dfire.common.vo.JobElement;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
-import com.dfire.common.vo.JobElement;
 
 /**
  * 负载均衡器
@@ -17,6 +18,6 @@ public interface LoadBalance {
      * @param masterContext
      * @return
      */
-    MasterWorkHolder select(JobElement jobElement, MasterContext masterContext);
+    MasterWorkHolder select(JobElement jobElement, MasterContext masterContext) throws HostGroupNotExistsException;
 
 }

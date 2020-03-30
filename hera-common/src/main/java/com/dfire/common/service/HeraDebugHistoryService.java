@@ -1,12 +1,7 @@
 package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraDebugHistory;
-import com.dfire.common.entity.HeraJobHistory;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
-import com.dfire.common.mybatis.HeraInsertLangDriver;
-import com.dfire.common.mybatis.HeraSelectLangDriver;
-import com.dfire.common.mybatis.HeraUpdateLangDriver;
-import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -17,15 +12,15 @@ import java.util.List;
  */
 public interface HeraDebugHistoryService {
 
-    String insert(HeraDebugHistory heraDebugHistory);
+    Long insert(HeraDebugHistory heraDebugHistory);
 
-    int delete( int id);
+    int delete(Long id);
 
     int update(HeraDebugHistory heraDebugHistory);
 
     List<HeraDebugHistory> getAll();
 
-    HeraDebugHistoryVo findById(Integer id);
+    HeraDebugHistoryVo findById(Long id);
 
     List<HeraDebugHistory> findByFileId(Integer fileId);
 
@@ -35,4 +30,6 @@ public interface HeraDebugHistoryService {
 
 
     HeraDebugHistory findLogById(Integer id);
+
+    void updateStatus(Long id, String msg, String status);
 }

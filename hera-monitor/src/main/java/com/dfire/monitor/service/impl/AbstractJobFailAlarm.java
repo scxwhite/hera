@@ -40,16 +40,12 @@ public abstract class AbstractJobFailAlarm implements JobFailAlarm {
     }
 
 
-    /**
-     * 任务超时告警消息
-     * @param element   JobElement
-     * @return          消息体
-     */
-    protected String buildTimeoutMsg(JobElement element) {
+    protected String buildTimeoutMsg(JobElement element, Set<HeraSso> monitorUser) {
         return "【警告】任务执行超时\n"
                 + "环境:" + HeraGlobalEnv.getEnv() + "\n"
                 + "区域:" + HeraGlobalEnv.getArea() + "\n"
                 + "任务ID:" + ActionUtil.getJobId(element.getJobId()) + "\n"
-                + "预计时长:" + element.getCostMinute() + "分钟";
+                + "预计时长:" + element.getCostMinute() + "分钟"
+                + "负责人:" + monitorUser.stream().map(HeraSso::getName).collect(Collectors.joining(Constants.SEMICOLON)) + "\n";
     }
 }

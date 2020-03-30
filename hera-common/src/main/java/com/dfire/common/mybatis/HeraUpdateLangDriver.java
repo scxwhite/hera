@@ -1,5 +1,6 @@
 package com.dfire.common.mybatis;
 
+import com.dfire.common.config.SkipColumn;
 import com.google.common.base.CaseFormat;
 import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.scripting.LanguageDriver;
@@ -27,13 +28,17 @@ public class HeraUpdateLangDriver extends XMLLanguageDriver implements LanguageD
             sb.append("<set>");
 
             for (Field field : parameterType.getDeclaredFields()) {
-                String tmp = "<if test=\"_field != null\">_column=#{_field},</if>";
-                if(field.getName().equalsIgnoreCase("id")) {
-                    continue;
+                SkipColumn skipColumn = field.getAnnotation(SkipColumn.class);
+                if (skipColumn == null) {
+                    String tmp = "<if test=\"_field != null\">_column=#{_field},</if>";
+                    if ("id".equalsIgnoreCase(field.getName())) {
+                        continue;
+                    }
+                    sb.append(tmp.replaceAll("_field", field.getName()).replaceAll("_column",
+                            CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName())));
                 }
-                sb.append(tmp.replaceAll("_field", field.getName()).replaceAll("_column",
-                        CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName())));
             }
+
 
             sb.deleteCharAt(sb.lastIndexOf(","));
             sb.append("</set>");

@@ -1,5 +1,6 @@
 package com.dfire.event;
 
+import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.TriggerTypeEnum;
 import lombok.Data;
 
@@ -11,16 +12,18 @@ import lombok.Data;
 @Data
 public class HeraJobSuccessEvent extends ApplicationEvent {
 
-    private String historyId;
-    private String jobId;
+
+    private final HeraJobHistoryVo heraJobHistory;
+
     private String statisticEndTime;
+    private Long jobId;
     private TriggerTypeEnum triggerType;
 
-    public HeraJobSuccessEvent(String jobId, TriggerTypeEnum triggerType, String historyId) {
+    public HeraJobSuccessEvent(Long jobId, TriggerTypeEnum triggerType, HeraJobHistoryVo heraJobHistory) {
         super(Events.JobSucceed);
         this.jobId = jobId;
         this.triggerType = triggerType;
-        this.historyId = historyId;
+        this.heraJobHistory = heraJobHistory;
     }
 
 }

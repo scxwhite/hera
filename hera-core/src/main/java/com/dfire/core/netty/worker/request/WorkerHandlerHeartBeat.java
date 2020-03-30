@@ -3,14 +3,16 @@ package com.dfire.core.netty.worker.request;
 import com.dfire.common.exception.HeraException;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.netty.util.AtomicIncrease;
+import com.dfire.core.netty.worker.HistoryPair;
 import com.dfire.core.netty.worker.WorkContext;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
-import com.dfire.logs.ErrorLog;
 import com.dfire.protocol.RpcHeartBeatMessage;
 import com.dfire.protocol.RpcOperate;
 import com.dfire.protocol.RpcRequest;
 import com.dfire.protocol.RpcSocketMessage;
+
+import java.util.stream.Collectors;
 
 /**
  * @author xiaosuda
@@ -25,15 +27,16 @@ public class WorkerHandlerHeartBeat {
             memUseRateJob.readMemUsed();
             CpuLoadPerCoreJob loadPerCoreJob = new CpuLoadPerCoreJob();
             loadPerCoreJob.run();
+
             RpcHeartBeatMessage.HeartBeatMessage hbm = RpcHeartBeatMessage.HeartBeatMessage.newBuilder()
                     .setHost(WorkContext.host)
                     .setMemTotal(memUseRateJob.getMemTotal())
                     .setMemRate(memUseRateJob.getRate())
                     .setCpuLoadPerCore(loadPerCoreJob.getLoadPerCore())
                     .setTimestamp(System.currentTimeMillis())
-                    .addAllDebugRunnings(context.getDebugRunning().keySet())
-                    .addAllManualRunnings(context.getManualRunning().keySet())
-                    .addAllRunnings(context.getRunning().keySet())
+                    .addAllDebugRunnings(context.getDebugRunning().keySet().stream().map(String::valueOf).collect(Collectors.toList()))
+                    .addAllManualRunnings(context.getManualRunning().keySet().stream().map(HistoryPair::getActionId).map(String::valueOf).collect(Collectors.toList()))
+                    .addAllRunnings(context.getRunning().keySet().stream().map(HistoryPair::getActionId).map(String::valueOf).collect(Collectors.toList()))
                     .setCores(WorkContext.cpuCoreNum)
                     .build();
             context.getServerChannel().writeAndFlush(RpcSocketMessage.SocketMessage.newBuilder().

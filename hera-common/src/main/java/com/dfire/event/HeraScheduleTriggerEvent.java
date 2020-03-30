@@ -12,10 +12,10 @@ import lombok.Data;
 @Data
 public class HeraScheduleTriggerEvent extends ApplicationEvent {
 
-    private final String jobId;
+    private final Long actionId;
 
-    public HeraScheduleTriggerEvent(String jobId) {
+    public HeraScheduleTriggerEvent(Long actionId) {
         super(Events.ScheduleTrigger);
-        this.jobId=jobId;
+        this.actionId = actionId;
     }
 }

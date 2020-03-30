@@ -3,6 +3,8 @@ package com.dfire.common.entity.vo;
 import com.dfire.common.enums.JobRunTypeEnum;
 import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.processor.Processor;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +25,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class HeraActionVo {
 
-    private String id;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long id;
 
     private Integer jobId;
 
@@ -35,9 +38,9 @@ public class HeraActionVo {
 
     private String cycle;
 
-    private List<String> dependencies;
+    private List<Long> dependencies;
 
-    private List<String> jobDependencies;
+    private List<Long> jobDependencies;
 
     private String description;
 
@@ -94,7 +97,7 @@ public class HeraActionVo {
     //private int cronInterval;
 
     private String batchId;
-    
+
     //private String bizLabel;
 
 }

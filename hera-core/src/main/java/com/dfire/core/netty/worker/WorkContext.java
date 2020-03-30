@@ -74,9 +74,9 @@ public class WorkContext {
     @Qualifier("heraJobMemoryService")
     private HeraJobService heraJobService;
     private HeraChannel serverChannel;
-    private Map<String, Job> running = new ConcurrentHashMap<>();
-    private Map<String, Job> manualRunning = new ConcurrentHashMap<>();
-    private Map<String, Job> debugRunning = new ConcurrentHashMap<>();
+    private Map<HistoryPair, Job> running = new ConcurrentHashMap<>();
+    private Map<HistoryPair, Job> manualRunning = new ConcurrentHashMap<>();
+    private Map<Long, Job> debugRunning = new ConcurrentHashMap<>();
     private WorkHandler handler;
     private WorkClient workClient;
     /**

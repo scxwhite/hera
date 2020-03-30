@@ -1,7 +1,6 @@
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
-use hera;
 
 CREATE TABLE IF NOT EXISTS `hera_action`
 (
@@ -215,6 +214,7 @@ CREATE TABLE IF NOT EXISTS `hera_job`
   cron_period varchar(100) DEFAULT NULL,
   cron_interval int(11) DEFAULT NULL,
   biz_label varchar(500) DEFAULT '',
+  `estimated_end_hour` int(4) NOT NULL DEFAULT '0' COMMENT '预计结束结束时间',
   PRIMARY KEY (`id`),
   KEY `ind_zeusjobgroupid` (`group_id`)
 ) ENGINE = InnoDB
@@ -316,6 +316,23 @@ CREATE TABLE IF NOT EXISTS `hera_record`
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 37
   DEFAULT CHARSET = utf8mb4 COMMENT ='日志记录表';
+
+
+CREATE TABLE `hera_rerun` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `name` varchar(256) NOT NULL DEFAULT '' COMMENT '重跑名称',
+  `start_millis` bigint(13) NOT NULL DEFAULT '0' COMMENT '其实跑的日期',
+  `end_millis` bigint(13) NOT NULL COMMENT '结束跑的日期',
+  `sso_name` varchar(16) NOT NULL COMMENT '创建人',
+  `extra` varchar(1000) NOT NULL DEFAULT '' COMMENT '其它配置',
+  `gmt_create` bigint(13) NOT NULL DEFAULT '0' COMMENT '创建时间',
+  `gmt_modified` bigint(13) NOT NULL DEFAULT '0' COMMENT '更新时间',
+  `job_id` int(11) NOT NULL DEFAULT '0' COMMENT '任务ID',
+  `is_end` tinyint(2) NOT NULL DEFAULT '0' COMMENT '是否结束',
+  `action_now` varchar(18) NOT NULL DEFAULT '' COMMENT '当前执行的版本号',
+  PRIMARY KEY (`id`),
+  KEY `idx_job_id` (`job_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='hera重跑任务表';
 
 BEGIN;
 insert into hera_user (email, name, uid, password, user_type, is_effective)

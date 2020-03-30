@@ -6,6 +6,7 @@ import com.dfire.common.enums.LogTypeEnum;
 import com.dfire.common.enums.RecordTypeEnum;
 import com.dfire.common.service.HeraRecordService;
 import com.dfire.common.util.NamedThreadFactory;
+import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,11 +23,10 @@ import java.util.concurrent.TimeUnit;
 public abstract class BaseHeraController {
 
 
+    private static ThreadPoolExecutor poolExecutor;
+    private static ThreadLocal<HttpServletRequest> requestThread = new ThreadLocal<>();
     @Autowired
     protected HeraRecordService recordService;
-
-
-    private static ThreadPoolExecutor poolExecutor;
 
     {
         poolExecutor = new ThreadPoolExecutor(
@@ -34,8 +34,9 @@ public abstract class BaseHeraController {
         poolExecutor.allowCoreThreadTimeOut(true);
     }
 
-    private static ThreadLocal<HttpServletRequest> requestThread = new ThreadLocal<>();
-
+    public static void remove() {
+        requestThread.remove();
+    }
 
     protected String getIp() {
         String unKnow = "unknown";
@@ -79,12 +80,6 @@ public abstract class BaseHeraController {
     protected String getSsoId() {
         return JwtUtils.getObjectFromToken(Constants.TOKEN_NAME, requestThread.get(), Constants.SESSION_SSO_ID);
     }
-
-
-    public static void remove() {
-        requestThread.remove();
-    }
-
 
     protected void addRecord(LogTypeEnum jobType, Integer jobId, String content, RecordTypeEnum typeEnum, String owner, String ownerId) {
         recordService.add(HeraRecord.builder()
@@ -146,5 +141,9 @@ public abstract class BaseHeraController {
 
     protected void doAsync(Runnable runnable) {
         poolExecutor.execute(runnable);
+    }
+
+    protected boolean isAdmin() {
+        return HeraGlobalEnv.getAdmin().equals(getOwner());
     }
 }

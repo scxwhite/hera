@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HeraDebugHistoryVo {
 
-    private String id;
+    private Long id;
 
     private Integer fileId;
 
@@ -49,5 +49,7 @@ public class HeraDebugHistoryVo {
     private String host;
 
     private int hostGroupId;
+
+    private Integer jobId;
 
 }

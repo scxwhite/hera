@@ -9,6 +9,7 @@ import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
+import com.dfire.common.exception.HostGroupNotExistsException;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
@@ -19,17 +20,13 @@ import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.event.handler.AbstractHandler;
 import com.dfire.core.event.handler.JobHandler;
-import com.dfire.core.event.listenter.HeraAddJobListener;
-import com.dfire.core.event.listenter.HeraDebugListener;
-import com.dfire.core.event.listenter.HeraJobFailListener;
-import com.dfire.core.event.listenter.HeraJobSuccessListener;
+import com.dfire.core.event.listenter.*;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.constant.MasterConstant;
 import com.dfire.core.route.loadbalance.LoadBalance;
 import com.dfire.core.route.loadbalance.LoadBalanceFactory;
 import com.dfire.core.util.CronParse;
 import com.dfire.event.Events;
-import com.dfire.event.HeraJobLostEvent;
 import com.dfire.event.HeraJobMaintenanceEvent;
 import com.dfire.event.HeraJobSuccessEvent;
 import com.dfire.logs.*;
@@ -42,6 +39,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import javax.mail.MessagingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,10 +55,10 @@ import java.util.stream.Collectors;
 @Order(1)
 public class Master {
 
+    @Getter
     private MasterContext masterContext;
     @Getter
     private ConcurrentHashMap<Long, HeraAction> heraActionMap;
-
 
     private volatile boolean isGenerateActioning = false;
 
@@ -68,28 +66,31 @@ public class Master {
 
     private MasterRunJob masterRunJob;
 
+
     private Channel lastWork;
 
     public void init(MasterContext masterContext) {
         this.masterContext = masterContext;
         masterRunJob = new MasterRunJob(masterContext, this);
         loadBalance = LoadBalanceFactory.getLoadBalance();
+        heraActionMap = new ConcurrentHashMap<>();
         if (HeraGlobalEnv.getEnv().equalsIgnoreCase(Constants.PRE_ENV)) {
             //可以在此关闭预发环境执行任务
             //masterContext.getDispatcher().addDispatcherListener(new HeraStopScheduleJobListener());
         }
+        //关于为什么异步 因为版本过多时会导致启动时长较长，导致master断线，重新选举出新的work，然后周而复始，进入死循环
         masterContext.getThreadPool().execute(() -> {
             HeraLog.info("-----------------------------init action,time: {}-----------------------------", System.currentTimeMillis());
             masterContext.getDispatcher().addDispatcherListener(new HeraAddJobListener(this, masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraJobFailListener(masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraDebugListener(masterContext));
             masterContext.getDispatcher().addDispatcherListener(new HeraJobSuccessListener(masterContext));
+            masterContext.getDispatcher().addDispatcherListener(new HeraJobFinishListener(masterContext));
             List<HeraAction> allJobList = masterContext.getHeraJobActionService().getAfterAction(getBeforeDayAction());
             HeraLog.info("-----------------------------action size:{}, time {}-----------------------------", allJobList.size(), System.currentTimeMillis());
-            heraActionMap = new ConcurrentHashMap<>(allJobList.size());
             allJobList.forEach(heraAction -> {
                 masterContext.getDispatcher().
-                        addJobHandler(new JobHandler(heraAction.getId().toString(), this, masterContext));
+                        addJobHandler(new JobHandler(heraAction.getId(), this, masterContext));
                 heraActionMap.put(heraAction.getId(), heraAction);
             });
             HeraLog.info("-----------------------------add actions to handler success, time:{}-----------------------------", System.currentTimeMillis());
@@ -97,15 +98,10 @@ public class Master {
             HeraLog.info("-----------------------------dispatcher actions success, time{}-----------------------------", System.currentTimeMillis());
             masterContext.refreshHostGroupCache();
             HeraLog.info("refresh hostGroup cache");
-            // 1.生成版本
-            batchActionCheck();
-            // 2.扫描任务
-            waitingQueueCheck();
-            // 3.心跳检查
-            heartCheck();
-            // 4.漏跑检测
-            lostJobCheck();
         });
+    }
+    public boolean isTaskLimit() {
+        return masterRunJob.isTaskLimit();
     }
 
     private long getBeforeDayAction() {
@@ -114,103 +110,8 @@ public class Master {
         return Long.parseLong(ActionUtil.getActionVersionByDate(calendar.getTime()));
     }
 
-    /**
-     * 版本定时生成
-     */
-    private void batchActionCheck() {
-        //启动的时候生成版本
-        masterContext.masterSchedule.schedule(() -> {
-            try {
-                generateBatchAction();
-                clearInvalidAction();
-            } catch (Exception e) {
-                ErrorLog.error("定时任务异常", e);
-            }
-        }, 30, TimeUnit.SECONDS);
-
-        //只在整点生成版本
-        masterContext.masterSchedule.scheduleAtFixedRate(() -> {
-            try {
-                generateBatchAction();
-                if (DateTime.now().getHourOfDay() == MasterConstant.MORNING_TIME) {
-                    clearInvalidAction();
-                }
-            } catch (Exception e) {
-                ErrorLog.error("定时任务异常", e);
-            }
-        }, 60 - new DateTime().getMinuteOfHour(), 60, TimeUnit.MINUTES);
-    }
-
-
-    /**
-     * 漏泡检测，清理schedule线程，30分钟调度一次
-     * 信号丢失检测
-     * job开始检测15分钟之前的漏跑任务
-     */
-    private void lostJobCheck() {
-        int minute = new DateTime().getMinuteOfHour();
-        masterContext.masterSchedule.scheduleAtFixedRate(() -> {
-            ScheduleLog.info("refresh host group success, start roll back");
-            masterContext.refreshHostGroupCache();
-            String currDate = ActionUtil.getCurrActionVersion();
-            Dispatcher dispatcher = masterContext.getDispatcher();
-            if (dispatcher != null) {
-                Map<Long, HeraAction> actionMapNew = heraActionMap;
-                if (actionMapNew != null && actionMapNew.size() > 0) {
-                    List<Long> actionIdList = new ArrayList<>();
-                    Long tmp = Long.parseLong(currDate) - MasterConstant.PRE_CHECK_MIN;
-                    for (Long actionId : actionMapNew.keySet()) {
-                        if (actionId < tmp) {
-                            rollBackLostJob(actionId, actionMapNew, actionIdList);
-                            checkLostSingle(actionId, actionMapNew);
-                        }
-                    }
-                    ScheduleLog.info("roll back action count:" + actionIdList.size());
-                }
-                ScheduleLog.info("clear job scheduler ok");
-            }
-        }, minute <= 30 ? 40 - minute : 70 - minute, 30, TimeUnit.MINUTES);
-
-    }
-
-    /**
-     * 漏跑检测
-     *
-     * @param actionId     版本id
-     * @param actionMapNew actionMap集合
-     * @param actionIdList 重跑的actionId
-     */
-
-    private void rollBackLostJob(Long actionId, Map<Long, HeraAction> actionMapNew, List<Long> actionIdList) {
-        HeraAction lostJob = actionMapNew.get(actionId);
-        boolean isCheck = lostJob != null
-                && lostJob.getAuto() == 1
-                && lostJob.getStatus() == null;
-        if (isCheck && checkJobRun(masterContext.getHeraJobService().findById(lostJob.getJobId()))) {
-            String dependencies = lostJob.getDependencies();
-            if (StringUtils.isNotBlank(dependencies)) {
-                List<String> jobDependList = Arrays.asList(dependencies.split(Constants.COMMA));
-                boolean isAllComplete = false;
-                HeraAction heraAction;
-                if (jobDependList.size() > 0) {
-                    for (String jobDepend : jobDependList) {
-                        heraAction = actionMapNew.get(Long.parseLong(jobDepend));
-                        if (heraAction == null || !(isAllComplete = StatusEnum.SUCCESS.toString().equals(heraAction.getStatus()))) {
-                            break;
-                        }
-                    }
-                }
-                if (isAllComplete) {
-                    addRollBackJob(actionIdList, actionId);
-                }
-            } else { //独立任务情况
-                addRollBackJob(actionIdList, actionId);
-            }
-        }
-    }
 
     public boolean checkJobRun(HeraJob heraJob) {
-
         if (heraJob == null) {
             ScheduleLog.warn("任务被删除，取消执行");
             return false;
@@ -219,7 +120,6 @@ public class Master {
             ScheduleLog.warn("任务被关闭，取消执行:" + heraJob.getId());
             return false;
         }
-
         return true;
     }
 
@@ -236,137 +136,23 @@ public class Master {
                 .collect(Collectors.toSet());
     }
 
-    /**
-     * 信号丢失处理
-     *
-     * @param actionId     hera_action 表信息id /版本id
-     * @param actionMapNew hera_action 内存信息 /内存保存的今天版本信息
-     */
-    private void checkLostSingle(Long actionId, Map<Long, HeraAction> actionMapNew) {
-        try {
-            HeraAction checkJob = actionMapNew.get(actionId);
-            if (checkJob == null) {
-                return;
-            }
-            if (StatusEnum.RUNNING.toString().equals(checkJob.getStatus())) {
-                HeraJobHistory actionHistory = masterContext.getHeraJobHistoryService().findById(checkJob.getHistoryId());
-                if (actionHistory == null) {
-                    return;
-                }
-                if (actionHistory.getStatus() != null && !actionHistory.getStatus().equals(StatusEnum.RUNNING.toString())) {
-                    masterContext.getMasterSchedule().schedule(() -> {
-                        HeraAction newAction = masterContext.getHeraJobActionService().findById(String.valueOf(actionId));
-                        if (StatusEnum.RUNNING.toString().equals(newAction.getStatus())) {
-                            HeartLog.warn("任务信号丢失actionId:{},historyId:{}", actionId, newAction.getHistoryId());
-                            Integer jobId = ActionUtil.getJobId(String.valueOf(actionId));
-                            boolean scheduleType = actionHistory.getTriggerType().equals(TriggerTypeEnum.SCHEDULE.getId())
-                                    || actionHistory.getTriggerType().equals(TriggerTypeEnum.MANUAL_RECOVER.getId());
-                            //TODO 可以选择重跑 or 广播 + 设置状态 这里偷懒 直接重跑
-                            masterContext.getWorkMap().values().forEach(workHolder -> {
-                                if (scheduleType) {
-                                    workHolder.getRunning().remove(jobId);
-                                } else {
-                                    workHolder.getManningRunning().remove(jobId);
-                                }
-                            });
-                            startNewJob(actionHistory, "任务信号丢失重试");
-                        }
-                    }, 1, TimeUnit.MINUTES);
 
-                }
-            }
-        } catch (Exception e) {
-            ErrorLog.error("信号丢失检测异常", e);
-        }
-
-    }
-
-    private void addRollBackJob(List<Long> actionIdList, Long actionId) {
-        String actionStr = String.valueOf(actionId);
-        if (!actionIdList.contains(actionId) &&
-                !checkJobExists(HeraJobHistoryVo
-                        .builder()
-                        .actionId(actionStr)
-                        .triggerType(TriggerTypeEnum.SCHEDULE)
-                        .jobId((ActionUtil.getJobId(actionStr)))
-                        .build(), true)) {
-            masterContext.getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionStr));
-            actionIdList.add(actionId);
-            ScheduleLog.info("roll back lost actionId :" + actionId);
-        }
-    }
-
-    /**
-     * 扫描任务等待队列，可获得worker的任务将执行
-     * 对于没有可运行机器的时，manual,debug任务重新offer到原队列
-     */
-    private void waitingQueueCheck() {
-
-        masterContext.masterSchedule.schedule(new Runnable() {
-            // scan频率递增的步长
-            private final Integer DELAY_TIME = 100;
-            // 最大scan频率
-            private final Integer MAX_DELAY_TIME = 10 * 1000;
-
-            private Integer nextTime = HeraGlobalEnv.getScanRate();
-
-            @Override
-            public void run() {
-                try {
-                    if (!masterRunJob.isTaskLimit() && scan()) {
-                        nextTime = HeraGlobalEnv.getScanRate();
-                    } else {
-                        nextTime = (nextTime + DELAY_TIME) > MAX_DELAY_TIME ? MAX_DELAY_TIME : nextTime + DELAY_TIME;
-                    }
-                } catch (Exception e) {
-                    ScanLog.error("scan waiting queueTask exception", e);
-                } finally {
-                    masterContext.masterSchedule.schedule(this, nextTime, TimeUnit.MILLISECONDS);
-                }
-            }
-        }, HeraGlobalEnv.getScanRate(), TimeUnit.MILLISECONDS);
-    }
-
-
-    /**
-     * 定时检测work心跳是否超时
-     */
-    private void heartCheck() {
-
-        masterContext.masterSchedule.scheduleAtFixedRate(() -> {
-            Date now = new Date();
-            Map<Channel, MasterWorkHolder> workMap = masterContext.getWorkMap();
-            List<Channel> removeChannel = new ArrayList<>(workMap.size());
-            for (Channel channel : workMap.keySet()) {
-                MasterWorkHolder workHolder = workMap.get(channel);
-                if (workHolder.getHeartBeatInfo() == null) {
-                    continue;
-                }
-                Long workTime = workHolder.getHeartBeatInfo().getTimestamp();
-                if (workTime == null || now.getTime() - workTime > 1000 * 60L) {
-                    workHolder.getChannel().close();
-                    removeChannel.add(channel);
-                }
-            }
-            removeChannel.forEach(workMap::remove);
-        }, 0, 1, TimeUnit.MINUTES);
-    }
 
 
     public boolean generateSingleAction(Integer jobId) {
         ScheduleLog.info("单个任务版本生成：{}", jobId);
-        return generateAction(true, jobId);
+        return generateAction(true, jobId, false);
     }
 
-    public boolean generateBatchAction() {
+    public boolean generateBatchAction(boolean mustExe) {
         ScheduleLog.info("全量任务版本生成");
         long begin = System.currentTimeMillis();
-        boolean flag = generateAction(false, null);
+        boolean flag = generateAction(false, null, mustExe);
         ScheduleLog.info("生成版本时间:" + (System.currentTimeMillis() - begin) + " ms");
         return flag;
     }
 
-    private boolean generateAction(boolean isSingle, Integer jobId) {
+    private boolean generateAction(boolean isSingle, Integer jobId, boolean mustExe) {
         try {
             if (isGenerateActioning) {
                 return true;
@@ -374,8 +160,9 @@ public class Master {
             DateTime dateTime = new DateTime();
             Date now = dateTime.toDate();
             int executeHour = dateTime.getHourOfDay();
-            //凌晨生成版本，早上七点以后开始再次生成版本
-            boolean execute = executeHour == 0 || (executeHour > ActionUtil.ACTION_CREATE_MIN_HOUR && executeHour <= ActionUtil.ACTION_CREATE_MAX_HOUR);
+            //只在凌晨23、0点生成版本
+            //  boolean execute = mustExe || executeHour == 23 || executeHour == 0;
+            boolean execute = mustExe || executeHour == 0 || (executeHour > ActionUtil.ACTION_CREATE_MIN_HOUR && executeHour <= ActionUtil.ACTION_CREATE_MAX_HOUR);
             if (execute || isSingle) {
                 String currString = ActionUtil.getCurrHourVersion();
                 if (executeHour == ActionUtil.ACTION_CREATE_MAX_HOUR) {
@@ -395,7 +182,7 @@ public class Master {
                     HeraJob heraJob = masterContext.getHeraJobService().findById(jobId);
                     jobList.add(heraJob);
                     if (heraJob.getScheduleType() == 1) {
-                        jobList.addAll(getParentJob(heraJob.getDependencies()));
+                        jobList.addAll(getParentJob(heraJob.getDependencies(), new HashSet<>()));
                     }
                     actionMap = heraActionMap;
                     List<Long> shouldRemove = new ArrayList<>();
@@ -430,10 +217,10 @@ public class Master {
                 if (dispatcher != null) {
                     if (actionMap.size() > 0) {
                         for (Long id : actionMap.keySet()) {
-                            dispatcher.addJobHandler(new JobHandler(id.toString(), masterContext.getMaster(), masterContext));
+                            dispatcher.addJobHandler(new JobHandler(id, masterContext.getMaster(), masterContext));
                             //如果是今天的版本 更新缓存
                             if (ActionUtil.isTodayActionVersion(id.toString())) {
-                                dispatcher.forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id.toString()));
+                                dispatcher.forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id));
                             }
                         }
                     }
@@ -457,16 +244,19 @@ public class Master {
      * @param dpIdStr
      * @return
      */
-    private List<HeraJob> getParentJob(String dpIdStr) {
-        List<HeraJob> jobList = new ArrayList<>();
+    public Set<HeraJob> getParentJob(String dpIdStr, Set<Integer> jobCheck) {
+        Set<HeraJob> jobSet = new HashSet<>();
         Arrays.stream(dpIdStr.split(Constants.COMMA)).forEach(id -> {
-            HeraJob dpJob = masterContext.getHeraJobService().findById(Integer.parseInt(id));
-            if (dpJob.getScheduleType() == 1) {
-                jobList.addAll(getParentJob(dpJob.getDependencies()));
+            HeraJob dpJob = masterContext.getHeraJobService().findMemById(Integer.parseInt(id));
+            if (dpJob != null && !jobCheck.contains(dpJob.getId())) {
+                jobCheck.add(dpJob.getId());
+                if (dpJob.getScheduleType() == 1) {
+                    jobSet.addAll(getParentJob(dpJob.getDependencies(), jobCheck));
+                }
+                jobSet.add(dpJob);
             }
-            jobList.add(dpJob);
         });
-        return jobList;
+        return jobSet;
     }
 
     /**
@@ -479,7 +269,9 @@ public class Master {
      * @param idMap     已经遍历过的idMap
      * @param jobMap    依赖任务map映射
      */
-    public void generateScheduleJobAction(List<HeraJob> jobList, String cronDate, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap, Map<Integer, HeraJob> jobMap) {
+    public void generateScheduleJobAction(List<HeraJob> jobList, String
+            cronDate, Map<Long, HeraAction> actionMap, Long
+                                                  nowAction, Map<Integer, List<HeraAction>> idMap, Map<Integer, HeraJob> jobMap) {
         List<HeraAction> insertActionList = new ArrayList<>();
         for (HeraJob heraJob : jobList) {
             if (heraJob.getScheduleType() != null) {
@@ -513,7 +305,8 @@ public class Master {
      *
      * @param insertActionList 要插入/更新的hera_action 集合
      */
-    private void batchInsertList(List<HeraAction> insertActionList, Map<Long, HeraAction> actionMap, Long nowAction) {
+    private void batchInsertList(List<HeraAction> insertActionList, Map<Long, HeraAction> actionMap, Long
+            nowAction) {
         // 每次批量的条数
         int maxSize = insertActionList.size();
         int batchNum = 500;
@@ -571,7 +364,7 @@ public class Master {
     }
 
 
-    private void clearInvalidAction() {
+    public void clearInvalidAction() {
         ScheduleLog.warn("开始进行版本清理");
         Dispatcher dispatcher = masterContext.getDispatcher();
         Long currDate = ActionUtil.getLongCurrActionVersion();
@@ -582,16 +375,16 @@ public class Master {
         //移除未生成的调度
         List<AbstractHandler> handlers = dispatcher.getJobHandlers();
         List<JobHandler> shouldRemove = new ArrayList<>();
-        String dayAction = String.valueOf(getBeforeDayAction());
+        Long dayAction = getBeforeDayAction();
         if (handlers != null && handlers.size() > 0) {
             handlers.forEach(handler -> {
                 JobHandler jobHandler = (JobHandler) handler;
-                String actionId = jobHandler.getActionId();
-                Long aid = Long.parseLong(actionId);
-                if (Long.parseLong(actionId) < preCheckTime) {
+                Long actionId = jobHandler.getActionId();
+                // Long  = Long.parseLong(actionId);
+                if (actionId < preCheckTime) {
                     masterContext.getQuartzSchedulerService().deleteJob(actionId);
-                } else if (aid >= currDate && aid < nextDay) {
-                    if (!actionMapNew.containsKey(aid)) {
+                } else if (actionId >= currDate && actionId < nextDay) {
+                    if (!actionMapNew.containsKey(actionId)) {
                         masterContext.getQuartzSchedulerService().deleteJob(actionId);
                         masterContext.getHeraJobActionService().delete(actionId);
                         shouldRemove.add(jobHandler);
@@ -618,7 +411,8 @@ public class Master {
      * @param nowAction 生成版本时间的action
      * @param idMap     job的id集合  只要已经检测过的id都放入idSet中
      */
-    private void generateDependJobAction(Map<Integer, HeraJob> jobMap, HeraJob heraJob, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap) {
+    public void generateDependJobAction(Map<Integer, HeraJob> jobMap, HeraJob
+            heraJob, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap) {
         if (heraJob == null || idMap.containsKey(heraJob.getId())) {
             return;
         }
@@ -709,42 +503,82 @@ public class Master {
         boolean hasTask = false;
         if (!masterContext.getScheduleQueue().isEmpty()) {
             JobElement jobElement = masterContext.getScheduleQueue().take();
-            MasterWorkHolder selectWork = getRunnableWork(jobElement);
-            if (selectWork == null) {
-                masterContext.getScheduleQueue().put(jobElement);
-                ScheduleLog.warn("can not get work to execute Schedule job in master,job is:{}", jobElement.toString());
-            } else {
-                masterRunJob.run(selectWork, jobElement);
-                hasTask = true;
+            MasterWorkHolder selectWork;
+            try {
+                selectWork = getRunnableWork(jobElement);
+                if (selectWork == null) {
+                    masterContext.getScheduleQueue().put(jobElement);
+                    ScheduleLog.warn("can not get work to execute Schedule job in master,job is:{}", jobElement.toString());
+                } else {
+                    masterRunJob.run(selectWork, jobElement);
+                    hasTask = true;
+                }
+            } catch (HostGroupNotExistsException e) {
+                updateStatus(e.getMessage(), jobElement.getJobId(), TriggerTypeEnum.SCHEDULE);
+                ErrorLog.error("can not get work to execute Schedule job in master", e);
             }
         }
 
         if (!masterContext.getManualQueue().isEmpty()) {
             JobElement jobElement = masterContext.getManualQueue().take();
-            MasterWorkHolder selectWork = getRunnableWork(jobElement);
-            if (selectWork == null) {
-                masterContext.getManualQueue().put(jobElement);
-                ScheduleLog.warn("can not get work to execute ManualQueue job in master,job is:{}", jobElement.toString());
-            } else {
-                masterRunJob.run(selectWork, jobElement);
-                hasTask = true;
+            MasterWorkHolder selectWork;
+            try {
+                selectWork = getRunnableWork(jobElement);
+                if (selectWork == null) {
+                    masterContext.getManualQueue().put(jobElement);
+                    ScheduleLog.warn("can not get work to execute ManualQueue job in master,job is:{}", jobElement.toString());
+                } else {
+                    masterRunJob.run(selectWork, jobElement);
+                    hasTask = true;
+                }
+            } catch (HostGroupNotExistsException e) {
+                updateStatus(e.getMessage(), jobElement.getJobId(), TriggerTypeEnum.MANUAL);
+                ErrorLog.error("can not get work to ManualQueue job in master", e);
             }
         }
 
         if (!masterContext.getDebugQueue().isEmpty()) {
             JobElement jobElement = masterContext.getDebugQueue().take();
-            MasterWorkHolder selectWork = getRunnableWork(jobElement);
-            if (selectWork == null) {
-                masterContext.getDebugQueue().put(jobElement);
-                ScheduleLog.warn("can not get work to execute DebugQueue job in master,job is:{}", jobElement.toString());
-            } else {
-                masterRunJob.run(selectWork, jobElement);
-                hasTask = true;
+            MasterWorkHolder selectWork;
+            try {
+                selectWork = getRunnableWork(jobElement);
+                if (selectWork == null) {
+                    masterContext.getDebugQueue().put(jobElement);
+                    ScheduleLog.warn("can not get work to execute DebugQueue job in master,job is:{}", jobElement.toString());
+                } else {
+                    masterRunJob.run(selectWork, jobElement);
+                    hasTask = true;
+                }
+            } catch (HostGroupNotExistsException e) {
+                updateStatus(e.getMessage(), jobElement.getJobId(), TriggerTypeEnum.DEBUG);
+                ErrorLog.error("can not get work to DebugQueue job in master", e);
             }
-
         }
         return hasTask;
 
+    }
+
+    private void updateStatus(String msg, Long id, TriggerTypeEnum typeEnum) {
+        switch (typeEnum) {
+            case SCHEDULE:
+            case MANUAL_RECOVER:
+            case MANUAL:
+                HeraAction heraAction = masterContext.getHeraJobActionService().findById(id);
+                masterContext.getHeraJobActionService().updateStatus(id, StatusEnum.FAILED.name());
+                masterContext.getHeraJobHistoryService().updateHeraJobHistoryLogAndStatus(HeraJobHistory.builder()
+                        .id(heraAction.getHistoryId())
+                        .log(msg)
+                        .status(StatusEnum.FAILED.name())
+                        .illustrate("自动取消")
+                        .endTime(new Date())
+                        .build());
+                break;
+            case DEBUG:
+                masterContext.getHeraDebugHistoryService().updateStatus(id, msg, StatusEnum.FAILED.name());
+                break;
+            default:
+                break;
+        }
     }
 
 
@@ -754,9 +588,8 @@ public class Master {
      * @param jobElement job 部分信息
      * @return
      */
-    private MasterWorkHolder getRunnableWork(JobElement jobElement) {
+    private MasterWorkHolder getRunnableWork(JobElement jobElement) throws HostGroupNotExistsException {
         //TODO 如果是emr集群 是否可以在这里判断内存信息？
-
         MasterWorkHolder selectWork = loadBalance.select(jobElement, masterContext);
         if (selectWork == null) {
             return null;
@@ -770,7 +603,6 @@ public class Master {
                 TimeUnit.SECONDS.sleep(HeraGlobalEnv.getWarmUpCheck());
             } catch (InterruptedException e) {
                 ErrorLog.error("InterruptedException", e);
-
             }
             lastWork = null;
             return null;
@@ -829,7 +661,7 @@ public class Master {
      * @param heraJobHistory heraJobHistory表信息
      */
     public void run(HeraJobHistoryVo heraJobHistory, HeraJob heraJob) {
-        String actionId = heraJobHistory.getActionId();
+        Long actionId = heraJobHistory.getActionId();
         heraJobHistory.setStatusEnum(StatusEnum.RUNNING);
         //重复job检测
         if (checkJobExists(heraJobHistory, false)) {
@@ -856,7 +688,7 @@ public class Master {
             heraJobHistory.setStartTime(endTime);
             heraJobHistory.setExecuteHost(host);
             masterContext.getHeraJobHistoryService().update(BeanConvertUtils.convert(heraJobHistory));
-            HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, heraJobHistory.getTriggerType(), heraJobHistory.getId());
+            HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, heraJobHistory.getTriggerType(), heraJobHistory);
             masterContext.getDispatcher().forwardEvent(successEvent);
             return;
         }
@@ -892,15 +724,25 @@ public class Master {
                 .priorityLevel(priorityLevel)
                 .historyId(heraJobHistory.getId())
                 .fixedEmr(isFixed)
+                .owner(heraJob.getOwner())
                 .costMinute(endMinute)
                 .build();
         try {
-            if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
-                element.setTriggerType(TriggerTypeEnum.MANUAL);
-                masterContext.getManualQueue().put(element);
-            } else {
-                element.setTriggerType(TriggerTypeEnum.SCHEDULE);
-                masterContext.getScheduleQueue().put(element);
+            switch (heraJobHistory.getTriggerType()) {
+                case MANUAL:
+                case AUTO_RERUN:
+                    element.setTriggerType(TriggerTypeEnum.MANUAL);
+                    masterContext.getManualQueue().put(element);
+                    break;
+                case MANUAL_RECOVER:
+                case SCHEDULE:
+                    //TODO 可以考虑如果是手动恢复、或者调度任务数据部门的任务优先级最高，优先执行:element.setPriorityLevel(Integer.MAX_VALUE);
+                    element.setTriggerType(TriggerTypeEnum.SCHEDULE);
+                    masterContext.getScheduleQueue().put(element);
+                    break;
+                default:
+                    ErrorLog.error("不支持的调度类型:{},id:", heraJobHistory.getTriggerType().toName(), heraJobHistory.getActionId());
+                    break;
             }
         } catch (InterruptedException e) {
             ErrorLog.error("添加任务" + element.getJobId() + "失败", e);
@@ -909,11 +751,11 @@ public class Master {
 
 
     public boolean checkJobExists(HeraJobHistoryVo heraJobHistory, boolean checkOnly) {
-        // 允许重复的话 不检测
-        if (masterContext.getHeraJobService().isRepeat(heraJobHistory.getJobId())) {
+        // 允许重复的话 不检测,重跑任务也不检测
+        if (masterContext.getHeraJobService().isRepeat(heraJobHistory.getJobId()) || heraJobHistory.getTriggerType() == TriggerTypeEnum.AUTO_RERUN) {
             return false;
         }
-        String actionId = heraJobHistory.getActionId();
+        Long actionId = heraJobHistory.getActionId();
         Integer jobId = heraJobHistory.getJobId();
 
         boolean exists = false;
@@ -927,10 +769,16 @@ public class Master {
             }
             // check所有的worker中是否有此任务的id在执行，如果有，不进入队列等待
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
-                if (workHolder.getRunning().contains(jobId)) {
-                    exists = true;
-                    TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
+                if (!exists) {
+                    for (Long aLong : workHolder.getRunning()) {
+                        if (Objects.equals(ActionUtil.getJobId(aLong.toString()), jobId)) {
+                            exists = true;
+                            TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
+                            break;
+                        }
+                    }
                 }
+
             }
         } else if (heraJobHistory.getTriggerType() == TriggerTypeEnum.MANUAL) {
 
@@ -942,10 +790,17 @@ public class Master {
             }
 
             for (MasterWorkHolder workHolder : masterContext.getWorkMap().values()) {
-                if (workHolder.getManningRunning().contains(jobId)) {
-                    exists = true;
-                    TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
+                if (!exists) {
+                    for (Long aLong : workHolder.getManningRunning()) {
+                        if (Objects.equals(ActionUtil.getJobId(aLong.toString()), jobId)) {
+                            exists = true;
+                            TaskLog.warn("该任务正在执行，添加失败 {}", actionId);
+                            break;
+                        }
+                    }
                 }
+
+
             }
         }
         if (exists && !checkOnly) {
@@ -1009,7 +864,8 @@ public class Master {
                         SocketLog.warn("work重连成功:{}", newChannel.remoteAddress());
                         // 判断任务状态 无论是否成功，全部重新广播一遍
 
-                        for (String action : scheduleTask) {
+                        for (String actionStr : scheduleTask) {
+                            Long action = Long.parseLong(actionStr);
                             heraAction = masterContext.getHeraJobActionService().findById(action);
                             //检测action表是否已经更新 如果更新 证明work的成功信号发送给了master已经广播
                             if (StatusEnum.SUCCESS.toString().equals(heraAction.getStatus())) {
@@ -1020,9 +876,9 @@ public class Master {
                             //如果work已经运行成功但是成功信号没有发送给master master做一次广播
                             if (StatusEnum.SUCCESS.toString().equals(heraJobHistory.getStatus())) {
                                 HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(action, TriggerTypeEnum.parser(heraJobHistory.getTriggerType())
-                                        , heraJobHistory.getId());
+                                        , BeanConvertUtils.convert(heraJobHistory));
                                 heraAction.setStatus(heraJobHistory.getStatus());
-                                masterContext.getHeraJobActionService().updateStatus(heraAction);
+                                masterContext.getHeraJobActionService().updateStatus(heraAction.getId(), heraAction.getStatus());
                                 SocketLog.warn("任务{}已经执行完成但是信号未发送给master,手动广播成功事件", action);
                                 //成功时间广播
                                 masterContext.getDispatcher().forwardEvent(successEvent);
@@ -1076,7 +932,7 @@ public class Master {
         }
     }
 
-    private void startNewJob(HeraJobHistory heraJobHistory, String illustrate) {
+    public void startNewJob(HeraJobHistory heraJobHistory, String illustrate) {
         HeraJob heraJob = masterContext.getHeraJobService().findById(heraJobHistory.getJobId());
         if (heraJob == null || heraJob.getAuto() == 0 || !checkJobRun(heraJob)) {
             ScheduleLog.warn("任务已关闭或者删除，取消重跑." + heraJobHistory.getJobId());
@@ -1095,7 +951,7 @@ public class Master {
                 bizLabel(heraJobHistory.getBizLabel()).
                 log(heraJobHistory.getIllustrate()).build();
         masterContext.getHeraJobHistoryService().insert(newHistory);
-        this.run(BeanConvertUtils.convert(newHistory), heraJob);
+        run(BeanConvertUtils.convert(newHistory), heraJob);
     }
 
     private String getIpFromChannel(Channel channel) {
@@ -1105,7 +961,7 @@ public class Master {
     public void printThreadPoolLog() {
         masterRunJob.printThreadPoolLog();
     }
-    
+
     /**
      * 输出批次号
      * @param actionId
@@ -1125,36 +981,36 @@ public class Master {
     		String outDateStr;
     		SimpleDateFormat outDateFormat = new SimpleDateFormat(TimeFormatConstant.YYYY_MM_DD_HH_MM_SS);
     		if(cronPeriod.equals("year")){
-    			cal.add(Calendar.YEAR, cronInterval);    			
+    			cal.add(Calendar.YEAR, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,4);
     		}else if(cronPeriod.equals("month")){
-    			cal.add(Calendar.MONTH, cronInterval);    			
+    			cal.add(Calendar.MONTH, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,7);
     		}else if(cronPeriod.equals("day")){
-    			cal.add(Calendar.DATE, cronInterval);    			
+    			cal.add(Calendar.DATE, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,10);
     		}else if(cronPeriod.equals("hour")){
-    			cal.add(Calendar.HOUR, cronInterval);    			
+    			cal.add(Calendar.HOUR, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,13);
     		}else if(cronPeriod.equals("minute")){
-    			cal.add(Calendar.MINUTE, cronInterval);    			
+    			cal.add(Calendar.MINUTE, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,16);
     		}else if(cronPeriod.equals("second")){
-    			cal.add(Calendar.SECOND, cronInterval);    			
+    			cal.add(Calendar.SECOND, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,19);
     		}else{//未知，使用秒方案
-    			cal.add(Calendar.SECOND, cronInterval);    			
+    			cal.add(Calendar.SECOND, cronInterval);
     			outDateStr = outDateFormat.format(cal.getTime());
     			return outDateStr.substring(0,19);
     		}
     	}
     }
-    
-    
+
+
 }

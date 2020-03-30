@@ -1,13 +1,13 @@
 package com.dfire.core.route.loadbalance;
 
 import com.dfire.common.entity.vo.HeraHostGroupVo;
+import com.dfire.common.exception.HostGroupNotExistsException;
+import com.dfire.common.vo.JobElement;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
-import com.dfire.common.vo.JobElement;
 import com.dfire.core.route.check.ResultReason;
-import com.dfire.logs.HeraLog;
 import com.dfire.logs.MasterLog;
 
 /**
@@ -19,12 +19,14 @@ public abstract class AbstractLoadBalance implements LoadBalance {
 
 
     @Override
-    public MasterWorkHolder select(JobElement jobElement, MasterContext masterContext) {
+    public MasterWorkHolder select(JobElement jobElement, MasterContext masterContext) throws HostGroupNotExistsException {
         if (masterContext.getHostGroupCache() != null) {
             HeraHostGroupVo hostGroup = masterContext.getHostGroupCache().get(jobElement.getHostGroupId());
-            if (hostGroup == null || hostGroup.getHosts() == null || hostGroup.getHosts().size() == 0) {
-                HeraLog.warn("机器组:{},无可执行任务的机器,任务Id:{}", jobElement.getHostGroupId(), jobElement.getJobId());
-                return null;
+            if (hostGroup == null) {
+                throw new HostGroupNotExistsException("机器组ID:" + jobElement.getHostGroupId() + "不存在,任务Id:" + jobElement.getJobId());
+            }
+            if (hostGroup.getHosts() == null || hostGroup.getHosts().size() == 0) {
+                throw new HostGroupNotExistsException("机器组:[" + hostGroup.getName() + "]无存活的work,请在work管理页面配置work,并启动它,任务Id:" + jobElement.getJobId());
             }
             return doSelect(hostGroup, masterContext);
         }

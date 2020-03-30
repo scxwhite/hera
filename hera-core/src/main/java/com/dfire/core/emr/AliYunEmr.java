@@ -89,10 +89,10 @@ public class AliYunEmr extends AbstractEmr {
     }
 
     @Override
-    protected String sendCreateRequest() {
+    protected String sendCreateRequest(String owner) {
         try {
             CreateClusterV2Request request = new CreateClusterV2Request();
-            request.setName(getClusterName());
+            request.setName(getClusterName(owner));
             request.setEmrVer("EMR-3.12.0");
             request.setAutoRenew(false);
             request.setChargeType("PostPaid");
@@ -171,7 +171,7 @@ public class AliYunEmr extends AbstractEmr {
     }
 
     @Override
-    protected String getAliveId() {
+    protected String getAliveId(String owner) {
         ListClustersRequest request = new ListClustersRequest();
         request.setStatusLists(aliveStatus);
         request.setPageNumber(1);
@@ -180,7 +180,7 @@ public class AliYunEmr extends AbstractEmr {
             ListClustersResponse response = client.getAcsResponse(request);
             List<ListClustersResponse.ClusterInfo> clusters = response.getClusters();
             for (ListClustersResponse.ClusterInfo cluster : clusters) {
-                if (cluster.getName().startsWith(clusterPrefix)) {
+                if (cluster.getName().startsWith(buildClusterName(owner))) {
                     return cluster.getId();
                 }
             }
@@ -265,7 +265,7 @@ public class AliYunEmr extends AbstractEmr {
         masterGroup.setHostGroupName("MASTER");
         masterGroup.setHostGroupType("MASTER");
         masterGroup.setInstanceType("ecs.r5.xlarge");
-        masterGroup.setDiskType("CLOUD_SSD");
+        masterGroup.setDiskType("cloud_efficiency");
         masterGroup.setDiskCapacity(80);
         masterGroup.setDiskCount(1);
         hostGroups.add(masterGroup);
@@ -277,7 +277,7 @@ public class AliYunEmr extends AbstractEmr {
             coreGroup.setInstanceType("ecs.r5.xlarge");
         } else {
             if (EnvUtils.isPre()) {
-                coreGroup.setInstanceType("ecs.r5.xlarge");
+                coreGroup.setInstanceType("ecs.r5.2xlarge");
                 coreGroup.setNodeCount(2);
             } else {
                 coreGroup.setInstanceType("ecs.r5.2xlarge");
@@ -286,7 +286,7 @@ public class AliYunEmr extends AbstractEmr {
         }
         coreGroup.setHostGroupName("CORE");
         coreGroup.setHostGroupType("CORE");
-        coreGroup.setDiskType("CLOUD_SSD");
+        coreGroup.setDiskType("cloud_efficiency");
         coreGroup.setDiskCapacity(80);
         coreGroup.setDiskCount(4);
         hostGroups.add(coreGroup);

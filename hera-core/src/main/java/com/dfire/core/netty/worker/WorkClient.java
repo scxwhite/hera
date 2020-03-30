@@ -3,7 +3,6 @@ package com.dfire.core.netty.worker;
 
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
-import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.util.ActionUtil;
 import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.common.util.NamedThreadFactory;
@@ -47,7 +46,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -280,45 +278,39 @@ public class WorkClient {
      *
      * @param debugId
      */
-    public void cancelDebugJob(String debugId) {
-        Job job = workContext.getDebugRunning().get(debugId);
+    public void cancelDebugJob(Long debugId) {
+        Job job = workContext.getDebugRunning().remove(debugId);
+        job.getJobContext().getDebugHistory().getLog().appendHera("任务被取消");
         job.cancel();
-        workContext.getDebugRunning().remove(debugId);
-        HeraDebugHistoryVo history = job.getJobContext().getDebugHistory();
-        history.setEndTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        history.setStatus(StatusEnum.FAILED);
-        history.getLog().appendHera("任务被取消");
-        workContext.getHeraDebugHistoryService().update(BeanConvertUtils.convert(history));
     }
 
     /**
      * 取消手动执行的任务
      *
-     * @param actionId
+     * @param historyPair
      */
-    public void cancelManualJob(String actionId) {
-        cancelJob(workContext.getManualRunning().remove(actionId));
+    public void cancelManualJob(HistoryPair historyPair) {
+        cancelJob(workContext.getManualRunning().remove(historyPair));
     }
 
     private void cancelJob(Job job) {
-        job.cancel();
         HeraJobHistoryVo history = job.getJobContext().getHeraJobHistory();
         String illustrate = history.getIllustrate();
         if (illustrate != null && illustrate.trim().length() > 0) {
-            illustrate += ";手动取消该任务";
+            history.setIllustrate(illustrate + ";手动取消该任务");
         } else {
-            illustrate = "手动取消该任务";
+            history.setIllustrate("手动取消该任务");
         }
-        workContext.getHeraJobHistoryService().updateStatusAndIllustrate(Integer.parseInt(history.getId()), StatusEnum.FAILED.toString(), illustrate, new Date());
+        job.cancel();
     }
 
     /**
      * 取消自动调度执行的任务
      *
-     * @param actionId
+     * @param historyPair
      */
-    public void cancelScheduleJob(String actionId) {
-        cancelJob(workContext.getRunning().remove(actionId));
+    public void cancelScheduleJob(HistoryPair historyPair) {
+        cancelJob(workContext.getRunning().remove(historyPair));
 
     }
 
@@ -331,14 +323,14 @@ public class WorkClient {
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    public void executeJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+    public void executeJobFromWeb(ExecuteKind kind, Long id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.handleWebExecute(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
             ErrorLog.error(response.getErrorText());
         }
     }
 
-    public String cancelJobFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+    public String cancelJobFromWeb(ExecuteKind kind, Long id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse webResponse = WorkerHandleWebRequest.handleCancel(workContext, kind, id).get();
         if (webResponse.getStatus() == ResponseStatus.Status.ERROR) {
             ErrorLog.error(webResponse.getErrorText());
@@ -354,7 +346,7 @@ public class WorkClient {
         }
     }
 
-    public String generateActionFromWeb(ExecuteKind kind, String id) throws ExecutionException, InterruptedException {
+    public String generateActionFromWeb(ExecuteKind kind, Long id) throws ExecutionException, InterruptedException {
         RpcWebResponse.WebResponse response = WorkerHandleWebRequest.handleWebAction(workContext, kind, id).get();
         if (response.getStatus() == ResponseStatus.Status.ERROR) {
             ErrorLog.error("generate action error");

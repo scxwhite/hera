@@ -23,11 +23,11 @@ public class JobStatus {
     /**
      * 版本号id
      */
-    private String actionId;
+    private Long actionId;
 
     private StatusEnum status;
 
-    private String historyId;
+    private Long historyId;
 
     private Date startTime;
 

@@ -120,7 +120,7 @@ public class HeraBaseDaoTest {
         List<HeraAction> list = heraJobActionService.getAll();
         System.out.println(list.get(5).getJobDependencies());
         heraJobActionService.insert(heraAction, Long.parseLong(ActionUtil.getCurrActionVersion()));
-        heraJobActionService.delete("1111111111111111111");
+        heraJobActionService.delete(1L);
 
         HeraAction heraAction = heraJobActionService.findById("201806190000000002");
         System.out.println(heraAction.getJobDependencies());
@@ -147,7 +147,7 @@ public class HeraBaseDaoTest {
 
     @Test
     public void heraDebugHistoryDaoTest() {
-        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById(271);
+        HeraDebugHistoryVo debugHistory = heraDebugHistoryService.findById(271L);
         debugHistory.setStatus(StatusEnum.FAILED);
         heraDebugHistoryService.update(BeanConvertUtils.convert(debugHistory));
         HeraDebugHistory history = BeanConvertUtils.convert(debugHistory);
@@ -309,7 +309,7 @@ public class HeraBaseDaoTest {
                 MasterContext masterContext = (MasterContext) masterContextField.get(heraSchedule);
                 if(masterContext != null) {
                     Master master = masterContext.getMaster();
-                    master.generateBatchAction();
+                    master.generateBatchAction(false);
                 }
             }
         } catch (NoSuchFieldException e) {

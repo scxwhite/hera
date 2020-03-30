@@ -27,6 +27,8 @@ public interface HeraJobService {
 
     Integer findMustEndMinute(int id);
 
+    List<HeraJob> findEstimatedEndHours(int startTime, int endTime);
+
     HeraJob findMemById(int id);
 
     List<HeraJob> findByIds(List<Integer> list);
@@ -49,7 +51,6 @@ public interface HeraJobService {
     List<Integer> findJobImpact(int jobId, Integer type);
 
 
-
     List<HeraJob> findDownStreamJob(Integer jobId);
 
     List<HeraJob> findUpStreamJob(Integer jobId);
@@ -64,7 +65,7 @@ public interface HeraJobService {
     Integer updateScript(Integer id, String script);
 
     Integer selectMaxId();
-    
+
     HeraJob copyJobFromExistsJob(Integer jobId);
 
 }

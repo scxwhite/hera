@@ -6,6 +6,7 @@ import com.dfire.common.enums.OperatorSystemEnum;
 import com.dfire.common.exception.HeraException;
 import com.dfire.common.util.HierarchyProperties;
 import com.dfire.common.util.Pair;
+import com.dfire.common.util.StringUtil;
 import com.dfire.config.HeraGlobalEnv;
 import com.dfire.core.emr.Emr;
 import com.dfire.core.emr.WrapEmr;
@@ -15,7 +16,11 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -92,20 +97,20 @@ public abstract class AbstractJob implements Job {
             //这里的参数使用者可以自行修改，从hera机器上向emr集群分发任务
             command.append(loginCmd).append(Constants.BLANK_SPACE).append("\\").append(Constants.NEW_LINE);
             command.append(Constants.SSH_PREFIX).append(Constants.NEW_LINE);
-            
+
             command.append(generateRunCommandBizCore(runTypeEnum,prefix,runPath));
-            
-           
+
+
             command.append(Constants.NEW_LINE);
             command.append(Constants.SSH_SUFFIX);
         } else {
-        	
+
         	command.append(generateRunCommandBizCore(runTypeEnum,prefix,jobPath));
 
         }
         return command.toString();
     }
-    
+
     /**
      * 业务核心代码的脚本内容
      * @param runTypeEnum
@@ -114,7 +119,7 @@ public abstract class AbstractJob implements Job {
      * @return
      */
     public static String generateRunCommandBizCore(JobRunTypeEnum runTypeEnum, String prefix, String runPath){
-    	
+
     	String uuid = UUID.randomUUID().toString();
     	String bizBefore= "curDir=$(cd `dirname $0`; pwd)" + Constants.NEW_LINE
     					+ "scriptName=`basename $0`" + Constants.NEW_LINE
@@ -124,7 +129,7 @@ public abstract class AbstractJob implements Job {
     					+ "runtime=`date '+%Y-%m-%d %H:%M:%S'`" + Constants.NEW_LINE
     					+ "echo \"作业执行开始,时间[$runtime]\"" + Constants.NEW_LINE
     					;
-    	
+
     	String bizAfter = "if [ ${PIPESTATUS[0]}  != 0 ]" + Constants.NEW_LINE
     					+ "then" + Constants.NEW_LINE
     					+ "    runtime=`date '+%Y-%m-%d %H:%M:%S'`" + Constants.NEW_LINE
@@ -136,11 +141,11 @@ public abstract class AbstractJob implements Job {
     					+ "    echo \"作业执行成功,时间[$runtime]\"" + Constants.NEW_LINE
     					+ "fi" + Constants.NEW_LINE
     					;
-    	
+
     	StringBuilder cmd = new StringBuilder();
     	cmd.append(bizBefore).append(Constants.NEW_LINE);
-    	
-    	
+
+
     	//以下是业务脚本
     	switch (runTypeEnum) {
 	        case Spark:
@@ -159,11 +164,11 @@ public abstract class AbstractJob implements Job {
 	        	cmd.append("");
 	            break;
     	}
-    	
+
     	cmd.append(Constants.NEW_LINE).append(bizAfter);
-    	
+
     	return cmd.toString();
-    	
+
     }
 
 
@@ -172,7 +177,18 @@ public abstract class AbstractJob implements Job {
             return "localhost";
         }
         String host;
-        return isFixedEmrJob() && StringUtils.isNotBlank(host = getFixedHost()) ? emr.getFixLogin(host) : emr.getLogin(getUser());
+        return isFixedEmrJob() && StringUtils.isNotBlank(host = getFixedHost()) ? emr.getFixLogin(host) : emr.getLogin(getUser(), getOwner());
+    }
+
+    protected String getOwner() {
+        return jobContext.getHeraJobHistory().getOperator();
+    }
+
+    protected String getIp(String owner) {
+        if (!HeraGlobalEnv.isEmrJob()) {
+            return "localhost";
+        }
+        return isFixedEmrJob() ? getFixedHost() : emr.getIp(owner);
     }
 
     private void uploadFile(String loginCmd, String targetPath, String parentPath) throws Exception {

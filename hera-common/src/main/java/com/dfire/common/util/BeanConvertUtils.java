@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: <a href="mailto:lingxiao@2dfire.com">凌霄</a>
@@ -74,6 +75,7 @@ public class BeanConvertUtils {
         BeanUtils.copyProperties(heraDebugHistory, heraJobHistoryVo);
         heraJobHistoryVo.setStatus(StatusEnum.parse(heraDebugHistory.getStatus()));
         heraJobHistoryVo.setRunType(JobRunTypeEnum.parser(heraDebugHistory.getRunType()));
+        heraJobHistoryVo.setJobId(heraDebugHistory.getJobId());
 
         if (heraDebugHistory.getStartTime() != null) {
             heraJobHistoryVo.setStartTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(heraDebugHistory.getStartTime()));
@@ -131,6 +133,7 @@ public class BeanConvertUtils {
         heraJobVo.setAuto(heraJob.getAuto() == 1 ? Constants.OPEN_STATUS : heraJob.getAuto() == 0 ? Constants.CLOSE_STATUS : Constants.INVALID_STATUS);
         heraJobVo.setDependencies(heraJob.getDependencies());
         heraJobVo.setRunType(JobRunTypeEnum.parser(heraJob.getRunType()));
+        heraJobVo.setEstimatedEndHour(ActionUtil.intTOHour(heraJob.getEstimatedEndHour()));
         return heraJobVo;
     }
 
@@ -172,7 +175,7 @@ public class BeanConvertUtils {
     public static Tuple<HeraActionVo, JobStatus> convert(HeraAction action) {
         HeraActionVo heraActionVo = transform(action);
         JobStatus jobStatus = JobStatus.builder().build();
-        jobStatus.setActionId(action.getId().toString());
+        jobStatus.setActionId(action.getId());
         jobStatus.setHistoryId(action.getHistoryId());
         jobStatus.setStatus(StatusEnum.parse(action.getStatus()));
         jobStatus.setReadyDependency(StringUtil.convertStringToMap(action.getReadyDependency()));
@@ -191,10 +194,10 @@ public class BeanConvertUtils {
         HeraActionVo heraActionVo = HeraActionVo.builder().build();
         BeanUtils.copyProperties(action, heraActionVo);
         if (action.getDependencies() != null && !StringUtils.isBlank(action.getDependencies())) {
-            heraActionVo.setDependencies(Arrays.asList(action.getDependencies().split(",")));
+            heraActionVo.setDependencies(Arrays.stream(action.getDependencies().split(Constants.COMMA)).map(Long::parseLong).collect(Collectors.toList()));
         }
         if (action.getJobDependencies() != null && !StringUtils.isBlank(action.getJobDependencies())) {
-            heraActionVo.setJobDependencies(Arrays.asList(action.getJobDependencies().split(",")));
+            heraActionVo.setJobDependencies(Arrays.stream(action.getJobDependencies().split(Constants.COMMA)).map(Long::parseLong).collect(Collectors.toList()));
         }
         heraActionVo.setPostProcessors(StringUtil.convertProcessorToList(action.getPostProcessors()));
         heraActionVo.setPreProcessors(StringUtil.convertProcessorToList(action.getPreProcessors()));
@@ -206,7 +209,7 @@ public class BeanConvertUtils {
         }
         heraActionVo.setRunType(JobRunTypeEnum.parser(action.getRunType()));
         heraActionVo.setScheduleType(JobScheduleTypeEnum.parser(action.getScheduleType()));
-        heraActionVo.setId(String.valueOf(action.getId()));
+        heraActionVo.setId(action.getId());
         if (action.getAuto().equals(auto)) {
             heraActionVo.setAuto(true);
         } else {
@@ -222,7 +225,7 @@ public class BeanConvertUtils {
             return heraAction;
         }
 
-        heraAction.setId(Long.parseLong(jobStatus.getActionId()));
+        heraAction.setId(jobStatus.getActionId());
         heraAction.setStatus(jobStatus.getStatus() == null ? null : jobStatus.getStatus().toString());
         heraAction.setHistoryId(jobStatus.getHistoryId());
         heraAction.setStartTime(jobStatus.getStartTime());
@@ -244,6 +247,7 @@ public class BeanConvertUtils {
             stringToMap(s, configs);
             heraJob.setConfigs(StringUtil.convertMapToString(configs));
         });
+        heraJob.setEstimatedEndHour(ActionUtil.hourToInt(heraJobVo.getEstimatedEndHour()));
         heraJob.setRunType(heraJobVo.getRunType().toString());
         return heraJob;
     }

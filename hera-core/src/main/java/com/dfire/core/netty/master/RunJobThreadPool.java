@@ -29,17 +29,24 @@ import java.util.stream.Collectors;
 public class RunJobThreadPool extends ThreadPoolExecutor {
 
 
-    private EmrJob emr;
-
     private static ConcurrentHashMap<Runnable, JobElement> jobEmrType;
-
+    private EmrJob emr;
     private HeraJobHistoryService jobHistoryService;
 
     private HeraDebugHistoryService debugHistoryService;
 
     private boolean emrCluster;
 
-    public static List<String> getWaitClusterJob(TriggerTypeEnum... typeEnum) {
+    public RunJobThreadPool(MasterContext masterContext, int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
+        emr = new WrapEmr();
+        jobHistoryService = masterContext.getHeraJobHistoryService();
+        debugHistoryService = masterContext.getHeraDebugHistoryService();
+        jobEmrType = new ConcurrentHashMap<>(maximumPoolSize);
+        emrCluster = HeraGlobalEnv.isEmrJob();
+    }
+
+    public static List<Long> getWaitClusterJob(TriggerTypeEnum... typeEnum) {
         if (jobEmrType == null) {
             return new ArrayList<>(0);
         }
@@ -51,30 +58,19 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
                 .collect(Collectors.toList());
     }
 
-    public static boolean cancelJob(String id, TriggerTypeEnum... typeEnum) {
+    public static boolean cancelJob(Long id, TriggerTypeEnum... typeEnum) {
         if (jobEmrType == null) {
             return false;
         }
         Set<TriggerTypeEnum> typeSet = new HashSet<>(Arrays.asList(typeEnum));
         Optional<JobElement> jobElement = jobEmrType.values().stream()
                 .filter(element -> element.getStatus().equals(JobStatus.waitCluster) && typeSet.contains(element.getTriggerType()))
-                .filter(element -> element.getJobId().contains(id)).findFirst();
+                .filter(element -> element.getJobId().equals(id)).findFirst();
         if (jobElement.isPresent()) {
             jobElement.get().setCancel(true);
             return true;
         }
         return false;
-
-    }
-
-
-    public RunJobThreadPool(MasterContext masterContext, int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
-        emr = new WrapEmr();
-        jobHistoryService = masterContext.getHeraJobHistoryService();
-        debugHistoryService = masterContext.getHeraDebugHistoryService();
-        jobEmrType = new ConcurrentHashMap<>(maximumPoolSize);
-        emrCluster = HeraGlobalEnv.isEmrJob();
     }
 
     @Override
@@ -91,12 +87,11 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
             } else {
                 if (isEmrDynamicJob(jobElement)) {
                     appendCreateLog(jobElement, "动态集群创建中..");
-                    emr.addJob();
+                    emr.addJob(jobElement.getOwner());
                 } else {
                     appendCreateLog(jobElement, "使用固定集群执行任务");
                 }
             }
-
             jobElement.setStatus(JobStatus.running);
         } catch (Exception e) {
             ErrorLog.error("任务前置执行异常" + e.getMessage(), e);
@@ -109,8 +104,7 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
             //抛出异常打断任务的执行
             throw new IllegalStateException("任务被手动取消:" + jobElement.getJobId());
         }
-         doFilter(FilterType.execute, jobElement);
-
+        doFilter(FilterType.execute, jobElement);
     }
 
     private void doFilter(FilterType filterType, JobElement element) {
@@ -119,12 +113,20 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
             switch (filterType) {
                 case execute:
                     for (ExecuteFilter filter : filters) {
-                        filter.onExecute(element);
+                        try {
+                            filter.onExecute(element);
+                        } catch (Exception e) {
+                            ErrorLog.error("拦截器前置执行异常", e);
+                        }
                     }
                     break;
                 case response:
                     for (ExecuteFilter filter : filters) {
-                        filter.onResponse(element);
+                        try {
+                            filter.onResponse(element);
+                        } catch (Exception e) {
+                            ErrorLog.error("拦截器后置执行异常", e);
+                        }
                     }
                     break;
                 default:
@@ -140,7 +142,7 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
         JobElement jobElement = jobEmrType.get(r);
         try {
             if (isEmrDynamicJob(jobElement)) {
-                emr.removeJob();
+                emr.removeJob(jobElement.getOwner());
             }
         } catch (Exception e) {
             ErrorLog.error("任务后置执行异常" + e.getMessage(), e);
@@ -161,7 +163,7 @@ public class RunJobThreadPool extends ThreadPoolExecutor {
                 jobHistoryService.updateHeraJobHistoryLog(BeanConvertUtils.convert(historyVo));
                 break;
             case DEBUG:
-                HeraDebugHistoryVo heraDebugHistoryVo = debugHistoryService.findById(Integer.parseInt(element.getHistoryId()));
+                HeraDebugHistoryVo heraDebugHistoryVo = debugHistoryService.findById(element.getHistoryId());
                 heraDebugHistoryVo.getLog().appendHera(log);
                 debugHistoryService.updateLog(BeanConvertUtils.convert(heraDebugHistoryVo));
                 break;

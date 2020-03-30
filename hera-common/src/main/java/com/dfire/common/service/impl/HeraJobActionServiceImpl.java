@@ -70,7 +70,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
      * @return
      */
     private boolean isNeedUpdateAction(HeraAction heraAction, Long nowAction) {
-        HeraAction action = heraJobActionMapper.findById(heraAction);
+        HeraAction action = heraJobActionMapper.findById(heraAction.getId());
         if (action != null) {
             //如果该任务不是在运行中
             if (!StatusEnum.RUNNING.toString().equals(action.getStatus())) {
@@ -104,7 +104,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public int delete(String id) {
+    public int delete(Long id) {
         return heraJobActionMapper.delete(id);
     }
 
@@ -119,18 +119,22 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public HeraAction findById(String actionId) {
-        HeraAction heraAction = HeraAction.builder().id(Long.parseLong(actionId)).build();
-        return heraJobActionMapper.findById(heraAction);
+    public HeraAction findById(Long actionId) {
+        return heraJobActionMapper.findById(actionId);
     }
 
     @Override
-    public HeraAction findLatestByJobId(String jobId) {
+    public HeraAction findById(String actionId) {
+        return this.findById(Long.parseLong(actionId));
+    }
+
+    @Override
+    public HeraAction findLatestByJobId(Long jobId) {
         return heraJobActionMapper.findLatestByJobId(jobId);
     }
 
     @Override
-    public List<HeraAction> findByJobId(String jobId) {
+    public List<HeraAction> findByJobId(Long jobId) {
         return heraJobActionMapper.findByJobId(jobId);
     }
 
@@ -146,7 +150,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public Tuple<HeraActionVo, JobStatus> findHeraActionVo(String actionId) {
+    public Tuple<HeraActionVo, JobStatus> findHeraActionVo(Long actionId) {
         HeraAction heraActionTmp = findById(actionId);
         if (heraActionTmp == null) {
             return null;
@@ -155,7 +159,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public JobStatus findJobStatus(String actionId) {
+    public JobStatus findJobStatus(Long actionId) {
         Tuple<HeraActionVo, JobStatus> tuple = findHeraActionVo(actionId);
         return tuple.getTarget();
     }
@@ -167,14 +171,14 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
      * @return
      */
     @Override
-    public JobStatus findJobStatusByJobId(String jobId) {
+    public JobStatus findJobStatusByJobId(Long jobId) {
         HeraAction heraAction = findLatestByJobId(jobId);
-        return findJobStatus(heraAction.getId().toString());
+        return findJobStatus(heraAction.getId());
     }
 
     @Override
-    public Integer updateStatus(HeraAction heraAction) {
-        return heraJobActionMapper.updateStatus(heraAction);
+    public Integer updateStatus(Long id, String status) {
+        return heraJobActionMapper.updateStatus(id, status);
     }
 
     @Override
@@ -188,7 +192,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
-    public List<String> getActionVersionByJobId(Long jobId) {
+    public List<Long> getActionVersionByJobId(Long jobId) {
         return heraJobActionMapper.getActionVersionByJobId(jobId);
     }
 
@@ -244,7 +248,7 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
                 StringBuilder builder = new StringBuilder();
                 HeraAction heraAction;
                 for (String dependency : dependencies) {
-                    heraAction = this.findById(dependency);
+                    heraAction = this.findById(Long.parseLong(dependency));
                     if (heraAction != null) {
                         if (StatusEnum.SUCCESS.toString().equals(heraAction.getStatus())) {
                             builder.append(Constants.HTML_FONT_GREEN_LEFT).append("依赖任务:").append(dependency).append(",结束时间:").append(ActionUtil.getFormatterDate(ActionUtil.MON_MIN, heraAction.getStatisticEndTime()));
@@ -276,6 +280,22 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     public void deleteAllHistoryRecord(Integer beforeDay) {
         this.deleteHistoryRecord(beforeDay);
         heraJobHistoryService.deleteHistoryRecord(beforeDay);
+    }
+
+    @Override
+    public List<HeraAction> findByStartAndEnd(Long startAction, Long endAction, Integer jobId, Integer limit) {
+        return heraJobActionMapper.selectByStartAndEnd(startAction, endAction, jobId, limit);
+    }
+
+    @Override
+    public boolean deleteAction(long startAction, long endAction, Integer jobId) {
+        Integer integer = heraJobActionMapper.deleteAction(startAction, endAction, jobId);
+        return integer != null && integer > 0;
+    }
+
+    @Override
+    public HeraAction findTodaySuccessByJobId(int jobId) {
+        return heraJobActionMapper.selectTodaySuccessByJobId(jobId);
     }
 
     private String buildFont(String str, String type) {

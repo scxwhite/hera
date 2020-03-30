@@ -20,17 +20,17 @@ public class MasterWorkHolder {
     private HeraChannel channel;
 
     /**
-     * 存放的jobId
+     * 存放的actionId
      */
-    private Set<Integer> running = new HashSet<>();
+    private Set<Long> running = new HashSet<>();
     /**
-     * 存放的jobId
+     * 存放的actionId
      */
-    private Set<Integer> manningRunning = new HashSet<>();
+    private Set<Long> manningRunning = new HashSet<>();
     /**
      * 存放的debugId
      */
-    private Set<Integer> debugRunning = new HashSet<>();
+    private Set<Long> debugRunning = new HashSet<>();
 
     private HeartBeatInfo heartBeatInfo;
 

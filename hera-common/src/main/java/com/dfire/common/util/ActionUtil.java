@@ -1,5 +1,6 @@
 package com.dfire.common.util;
 
+import com.dfire.common.constants.Constants;
 import com.dfire.common.kv.Tuple;
 import com.dfire.logs.ErrorLog;
 import org.apache.commons.lang.StringUtils;
@@ -31,7 +32,7 @@ public class ActionUtil {
     /**
      * 当前时刻生成版本格式
      */
-    public static final String ACTION_VERSION_CURR = "yyyyMMddHHmmss0000";
+    public static final String ACTION_VERSION_CURR = "yyyyMMddHHmm000000";
     /**
      * 当前小时版本格式
      */
@@ -97,16 +98,14 @@ public class ActionUtil {
         return Long.parseLong(new DateTime().toString(ACTION_VERSION_CURR));
     }
 
+    public static Long getActionByDateStr(String date) {
+        return Long.parseLong(new DateTime(getDateByDateStr(date, DEFAULT_FORMAT)).toString(ACTION_VERSION_CURR));
+    }
+
     public static String getInitActionVersion() {
         return new DateTime().toString(ACTION_VERSION_INIT);
 
     }
-
-    public static long getMillis() {
-        return System.currentTimeMillis();
-
-    }
-
 
     public static String getActionVersionByDate(Date date) {
         return new DateTime(date).toString(ACTION_VERSION_INIT);
@@ -141,6 +140,14 @@ public class ActionUtil {
         return temp;
     }
 
+    public static long version2timestamp(Long version) throws ParseException {
+        String str = version.toString();
+        String realStr = str.substring(0, str.length() - 4);
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        Date parse = df.parse(realStr);
+        return parse.getTime();
+    }
+
     public static Date longToDate(Long time) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_FORMAT);
         String tmp = simpleDateFormat.format(time);
@@ -153,27 +160,47 @@ public class ActionUtil {
         return result;
     }
 
-    public static boolean isCurrActionVersion(String actionId) {
-        return ActionUtil.getCurrActionVersion().compareTo(actionId) <= 0;
+    public static boolean isCurrActionVersion(Long actionId) {
+        return ActionUtil.getCurrActionVersion().compareTo(String.valueOf(actionId)) <= 0;
     }
 
     public static boolean isTodayActionVersion(String actionId) {
         return ActionUtil.getInitActionVersion().compareTo(actionId) <= 0;
     }
 
-    public static boolean jobEquals(String actionA, String actionB) {
-        if (StringUtils.isBlank(actionA) || StringUtils.isBlank(actionB)) {
+    public static boolean jobEquals(Long first, Long second) {
+        if (first == null || second == null) {
             return false;
         }
+        String actionA = String.valueOf(first);
+        String actionB = String.valueOf(second);
+
+
         int lenA = actionA.length();
         int lenB = actionB.length();
-        int len = 4;
+        int len = 6;
         if (lenA < len || lenB < len) {
             return false;
         }
         return actionA.substring(lenA - len).equals(actionB.substring(lenB - len));
     }
 
+
+    public static Long getMillisFromStrDate(String date) {
+        return getDateByDateStr(date, DEFAULT_FORMAT).getTime();
+    }
+
+    public static Date getDateByDateStr(String date, String format) {
+        try {
+            return new SimpleDateFormat(format).parse(date);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("解析时间异常:" + date, e);
+        }
+    }
+
+    public static Long getCurrentMillis() {
+        return System.currentTimeMillis();
+    }
 
     public static Integer getJobId(String action) {
         if (StringUtils.isBlank(action)) {
@@ -185,6 +212,10 @@ public class ActionUtil {
             return null;
         }
         return Integer.parseInt(action.substring(actionLen - len));
+    }
+
+    public static Integer getJobId(Long action) {
+        return getJobId(String.valueOf(action));
     }
 
     /**
@@ -206,4 +237,25 @@ public class ActionUtil {
     }
 
 
+    public static Long getMillisByAction(String actionId) {
+        return getDateByDateStr(String.valueOf(Long.parseLong(actionId) / 1000000), ACTION_MIN).getTime();
+    }
+
+    public static int hourToInt(String hour) {
+        String[] hours = hour.split(Constants.COLON);
+        if (hours.length != 2) {
+            throw new RuntimeException("时间格式错误:" + hour);
+        }
+        return Integer.parseInt(hours[0]) * 60 + Integer.parseInt(hours[1]);
+    }
+
+    public static String intTOHour(int time) {
+        int hour = time / 60;
+        int minute = time % 60;
+        return (hour <= 9 ? "0" + hour : hour) + ":" + (minute <= 9 ? "0" + minute : minute);
+    }
+
+    public static Long getMillis() {
+        return System.currentTimeMillis();
+    }
 }

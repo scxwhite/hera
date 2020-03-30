@@ -15,7 +15,7 @@ import lombok.Builder;
 public class JobGroupCache {
 
 
-    private final String actionId;
+    private final Long actionId;
     private HeraActionVo heraActionVo;
 
     private HeraJobActionService heraJobActionService;

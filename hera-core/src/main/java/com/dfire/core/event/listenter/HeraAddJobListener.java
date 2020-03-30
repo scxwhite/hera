@@ -31,7 +31,7 @@ public class HeraAddJobListener extends AbstractListener {
         if (mvcEvent.getApplicationEvent() instanceof HeraJobMaintenanceEvent) {
             HeraJobMaintenanceEvent maintenanceEvent = (HeraJobMaintenanceEvent) mvcEvent.getApplicationEvent();
             if (mvcEvent.getType() == Events.UpdateActions) {
-                String actionId = maintenanceEvent.getId();
+                Long actionId = maintenanceEvent.getId();
                 boolean exist = false;
                 for (AbstractHandler handler : masterContext.getDispatcher().getJobHandlers()) {
                     if (handler instanceof JobHandler) {

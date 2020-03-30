@@ -147,7 +147,7 @@
                             <!-- <label class="info-title">作业信息</label> -->
 
                             <form class="form-group-sm form-horizontal">
-                            
+
                                 <label class="info-title">基本信息</label>
                                 <div class="row">
                                     <!-- 第1列 -->
@@ -316,6 +316,13 @@
                                                 <input class="form-control" type="text" name="alarmLevel" readonly>
                                             </div>
                                         </div>
+                                        <div class="form-group">
+                                            <label class="control-label input-sm col-sm-3">预计结束:</label>
+                                            <div class="col-sm-8">
+                                                <input class="form-control" type="text" name="estimatedEndHour"
+                                                       readonly>
+                                            </div>
+                                        </div>
 
                                     </div>
                                 </div>
@@ -358,7 +365,7 @@
                             <form class="form-horizontal form-group-sm" role="form" id="jobMsgEditForm">
 
                                 <label class="info-title">基本信息</label>
-                                
+
                                 <div class="row">
                                     <!-- 第1列 -->
                                     <div class="col-sm-6 col-md-6 col-lg-6">
@@ -431,7 +438,7 @@
 
 
                                 <label class="info-title" >调度信息</label>
-                                
+
                                 <div class="row">
                                     <!-- 第1列 -->
                                     <div class="col-sm-6 col-md-6 col-lg-6">
@@ -522,6 +529,14 @@
                                             <label class="control-label col-sm-4 col-lg-4 col-md-4">参数基准间隔:</label>
                                             <div class="col-sm-8 col-lg-8 col-md-8 ">
                                                 <input class="form-control" type="text" name="cronInterval">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-4 col-lg-4 col-md-4">预计结束:</label>
+                                            <div class="col-sm-8 col-lg-8 col-md-8 ">
+                                                <input class="form_datetime form-control" name="estimatedEndHour"
+                                                       size="12" type="text" readonly placeholder="请选择日期">
+
                                             </div>
                                         </div>
 
@@ -1180,30 +1195,22 @@
 <script src="${request.contextPath}/static/plugins/codemirror/addon/hint/diff_match_patch.js"></script>
 
 <script type="text/javascript">
- $(".form_datetime").datetimepicker({
- format: "yymmdd",
- autoclose: true,
- todayBtn: true,
- todayHighlight: true,
- language: 'zh-CN',//中文，需要引用zh-CN.js包
- startView: 2,//月视图
- minView: 2,//日期时间选择器所能够提供的最精确的时间选择视图
- forceParse:false,
- });
+    $(".form_datetime").datetimepicker({
+        format: "hh:ii",
+        autoclose: true,
+        todayBtn: true,
+        todayHighlight: true,
+        language: 'zh-CN',//中文，需要引用zh-CN.js包
+        startView: 1,
+        minView: 0,
+        maxView: 1,
+        forceParse: false
+    });
 </script>
 <script type="text/html" id="content">
     <div id="view"></div>
 </script>
 
-<script>
-    $(document).ready(function () {
-        var time = new Date();
-        var day = ("0" + time.getDate()).slice(-2);
-        var month = ("0" + (time.getMonth() + 1)).slice(-2);
-        var today = (time.getFullYear()+'').substring(2)   + (month)   + (day);
-        $(".form_datetime").val(today);
-    })
-</script>
 
 </body>
 

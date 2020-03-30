@@ -41,9 +41,6 @@ public class HeraJobServiceImpl implements HeraJobService {
 
     @Override
     public int insert(HeraJob heraJob) {
-        Date date = new Date();
-        heraJob.setGmtCreate(date);
-        heraJob.setGmtModified(date);
         heraJob.setAuto(0);
         heraJob.setIsValid(1);
         return heraJobMapper.insert(heraJob);
@@ -72,6 +69,11 @@ public class HeraJobServiceImpl implements HeraJobService {
     @Override
     public Integer findMustEndMinute(int id) {
         return heraJobMapper.findMustEndMinute(id);
+    }
+
+    @Override
+    public List<HeraJob> findEstimatedEndHours(int startTime, int endTime) {
+        return heraJobMapper.findEstimatedEndHours(startTime, endTime);
     }
 
     @Override
@@ -272,7 +274,7 @@ public class HeraJobServiceImpl implements HeraJobService {
     public Integer selectMaxId() {
         return heraJobMapper.selectMaxId();
     }
-    
+
 
     @Override
 	public HeraJob copyJobFromExistsJob(Integer jobId) {

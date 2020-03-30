@@ -18,7 +18,7 @@ public class JobElement {
     /**
      * 版本号id
      */
-    private String jobId;
+    private Long jobId;
 
     private int hostGroupId;
 
@@ -26,7 +26,7 @@ public class JobElement {
 
     private Integer priorityLevel;
 
-    private String historyId;
+    private Long historyId;
 
     private TriggerTypeEnum triggerType;
 
@@ -34,15 +34,19 @@ public class JobElement {
 
     private boolean isCancel;
 
+    /**
+     * 任务的所属组
+     */
+    private String owner;
+
     private Integer costMinute;
 
 
-
     public boolean equals(JobElement jobElement) {
-        if (!jobElement.getJobId().equals(jobId)) {
+        if (jobElement == null || jobElement.getJobId() == null) {
             return false;
         }
-        return true;
+        return jobElement.getJobId().equals(jobId);
     }
 
     @Override

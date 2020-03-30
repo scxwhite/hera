@@ -6,17 +6,17 @@ import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.BeanConvertUtils;
-import com.dfire.core.netty.master.RunJobThreadPool;
-import com.dfire.event.HeraJobMaintenanceEvent;
-import com.dfire.event.Events;
+import com.dfire.common.vo.JobElement;
 import com.dfire.core.exception.RemotingException;
 import com.dfire.core.message.HeartBeatInfo;
 import com.dfire.core.netty.master.MasterContext;
 import com.dfire.core.netty.master.MasterWorkHolder;
+import com.dfire.core.netty.master.RunJobThreadPool;
 import com.dfire.core.netty.worker.WorkContext;
-import com.dfire.common.vo.JobElement;
 import com.dfire.core.tool.CpuLoadPerCoreJob;
 import com.dfire.core.tool.MemUseRateJob;
+import com.dfire.event.Events;
+import com.dfire.event.HeraJobMaintenanceEvent;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
 import com.dfire.logs.TaskLog;
@@ -32,6 +32,7 @@ import com.dfire.protocol.RpcWebResponse.WebResponse;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * master处理work发起的web请求
@@ -53,7 +54,7 @@ public class MasterHandlerWebResponse {
      */
     public static WebResponse handleWebExecute(MasterContext context, WebRequest request) {
         if (request.getEk() == ExecuteKind.ManualKind || request.getEk() == ExecuteKind.ScheduleKind) {
-            String historyId = request.getId();
+            Long historyId = Long.parseLong(request.getId());
 
             HeraJobHistory heraJobHistory = context.getHeraJobHistoryService().findById(historyId);
             HeraJobHistoryVo history = BeanConvertUtils.convert(heraJobHistory);
@@ -66,7 +67,7 @@ public class MasterHandlerWebResponse {
             TaskLog.info("MasterHandlerWebResponse: send web execute response, actionId = {} ", history.getJobId());
             return webResponse;
         } else if (request.getEk() == ExecuteKind.DebugKind) {
-            Integer debugId = Integer.parseInt(request.getId());
+            Long debugId = Long.parseLong(request.getId());
             HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
             TaskLog.info("2-1.MasterHandlerWebResponse: receive web debug response, debugId = " + debugId);
             context.getMaster().debug(debugHistory);
@@ -94,7 +95,7 @@ public class MasterHandlerWebResponse {
      * @return WebResponse
      */
     public static WebResponse handleWebDebug(MasterContext context, WebRequest request) {
-        String debugId = request.getId();
+        Long debugId = Long.parseLong(request.getId());
         Queue<JobElement> queue = context.getDebugQueue();
         WebResponse response;
         for (JobElement jobElement : queue) {
@@ -108,7 +109,7 @@ public class MasterHandlerWebResponse {
                 return response;
             }
         }
-        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(Integer.parseInt(debugId));
+        HeraDebugHistoryVo debugHistory = context.getHeraDebugHistoryService().findById(debugId);
         context.getMaster().debug(debugHistory);
         return WebResponse.newBuilder()
                 .setRid(request.getRid())
@@ -125,8 +126,8 @@ public class MasterHandlerWebResponse {
      * @return WebResponse
      */
     public static WebResponse handleWebUpdate(MasterContext context, WebRequest request) {
-        String id = request.getId();
-        context.getMaster().generateSingleAction(Integer.parseInt(id));
+        Long id = Long.parseLong(request.getId());
+        context.getMaster().generateSingleAction(Integer.parseInt(request.getId()));
         context.getDispatcher().forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateJob, id));
         return WebResponse.newBuilder()
                 .setRid(request.getRid())
@@ -144,7 +145,7 @@ public class MasterHandlerWebResponse {
      * @return WebResponse
      */
     public static WebResponse generateActionByJobId(MasterContext context, WebRequest request) {
-        boolean result = Constants.ALL_JOB_ID.equals(request.getId()) ? context.getMaster().generateBatchAction() : context.getMaster().generateSingleAction(Integer.parseInt(request.getId()));
+        boolean result = String.valueOf(Constants.ALL_JOB_ID).equals(request.getId()) ? context.getMaster().generateBatchAction(true) : context.getMaster().generateSingleAction(Integer.parseInt(request.getId()));
         return WebResponse.newBuilder()
                 .setRid(request.getRid())
                 .setOperate(WebOperate.ExecuteJob)
@@ -161,19 +162,19 @@ public class MasterHandlerWebResponse {
      * @return WebResponse
      */
     public static WebResponse handleWebCancel(MasterContext context, WebRequest request) {
-        if (request.getEk() == ExecuteKind.ScheduleKind) {
-            return MasterCancelJob.handleScheduleCancel(context, request);
-        } else if (request.getEk() == ExecuteKind.ManualKind) {
-            return MasterCancelJob.handleManualCancel(context, request);
-        } else if (request.getEk() == ExecuteKind.DebugKind) {
-            return MasterCancelJob.handleDebugCancel(context, request);
+        switch (request.getEk()) {
+            case ManualKind:
+            case DebugKind:
+            case ScheduleKind:
+                return MasterCancelJob.cancel(request.getEk(), context, request);
+            default:
+                return WebResponse.newBuilder()
+                        .setRid(request.getRid())
+                        .setOperate(request.getOperate())
+                        .setStatus(ResponseStatus.Status.ERROR)
+                        .setErrorText("无法识别的任务取消类型：" + request.getEk())
+                        .build();
         }
-        return WebResponse.newBuilder()
-                .setRid(request.getRid())
-                .setOperate(request.getOperate())
-                .setStatus(ResponseStatus.Status.ERROR)
-                .setErrorText("无法识别的任务取消类型：" + request.getEk())
-                .build();
     }
 
     /**
@@ -207,20 +208,20 @@ public class MasterHandlerWebResponse {
 
 
         //debug任务队列
-        List<String> waitDebugQueue = RunJobThreadPool.getWaitClusterJob(TriggerTypeEnum.DEBUG);
-        List<String> masterDebugQueue = new ArrayList<>(waitDebugQueue.size() + context.getDebugQueue().size());
+        List<Long> waitDebugQueue = RunJobThreadPool.getWaitClusterJob(TriggerTypeEnum.DEBUG);
+        List<Long> masterDebugQueue = new ArrayList<>(waitDebugQueue.size() + context.getDebugQueue().size());
         context.getDebugQueue().forEach(jobElement -> masterDebugQueue.add(jobElement.getJobId()));
         masterDebugQueue.addAll(waitDebugQueue);
         //自动任务队列
 
-        List<String> waitScheduleQueue = RunJobThreadPool.getWaitClusterJob(TriggerTypeEnum.SCHEDULE, TriggerTypeEnum.MANUAL_RECOVER);
-        List<String> masterScheduleQueue = new ArrayList<>(waitScheduleQueue.size() + context.getScheduleQueue().size());
+        List<Long> waitScheduleQueue = RunJobThreadPool.getWaitClusterJob(TriggerTypeEnum.SCHEDULE, TriggerTypeEnum.MANUAL_RECOVER);
+        List<Long> masterScheduleQueue = new ArrayList<>(waitScheduleQueue.size() + context.getScheduleQueue().size());
         masterScheduleQueue.addAll(waitScheduleQueue);
         context.getScheduleQueue().forEach(jobElement -> masterScheduleQueue.add(jobElement.getJobId()));
 
         //手动任务队列
-        List<String> waitManualQueue = RunJobThreadPool.getWaitClusterJob(TriggerTypeEnum.MANUAL);
-        List<String> masterManualQueue = new ArrayList<>(waitManualQueue.size() + context.getManualQueue().size());
+        List<Long> waitManualQueue = RunJobThreadPool.getWaitClusterJob(TriggerTypeEnum.MANUAL);
+        List<Long> masterManualQueue = new ArrayList<>(waitManualQueue.size() + context.getManualQueue().size());
         masterManualQueue.addAll(waitManualQueue);
         context.getManualQueue().forEach(jobElement -> masterManualQueue.add(jobElement.getJobId()));
 
@@ -231,9 +232,9 @@ public class MasterHandlerWebResponse {
         loadPerCoreJob.run();
 
         allInfo.put(Constants.MASTER_PREFIX + WorkContext.host, HeartBeatMessage.newBuilder()
-                .addAllDebugRunnings(masterDebugQueue)
-                .addAllRunnings(masterScheduleQueue)
-                .addAllManualRunnings(masterManualQueue)
+                .addAllDebugRunnings(masterDebugQueue.stream().map(String::valueOf).collect(Collectors.toList()))
+                .addAllRunnings(masterScheduleQueue.stream().map(String::valueOf).collect(Collectors.toList()))
+                .addAllManualRunnings(masterManualQueue.stream().map(String::valueOf).collect(Collectors.toList()))
                 .setMemRate(memUseRateJob.getRate())
                 .setMemTotal(memUseRateJob.getMemTotal())
                 .setCpuLoadPerCore(loadPerCoreJob.getLoadPerCore())

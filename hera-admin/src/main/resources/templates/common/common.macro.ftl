@@ -136,6 +136,9 @@
 
                         <li id="record"><a href="${request.contextPath}/record"><i
                                         class="fa fa-circle-o"></i>日志记录</a></li>
+
+                        <li id="rerun"><a href="${request.contextPath}/rerun"><i
+                                        class="fa fa-circle-o"></i>任务重跑</a></li>
                     </ul>
                 </li>
 
@@ -240,7 +243,7 @@
 
 <#macro commonFooter >
     <footer class="main-footer">
-        Powered by <b>hera</b> 1.0.0（快照版本）
+        Powered by <b>hera</b> 2.4.2
         <div class="pull-right hidden-xs">
             <strong>Copyright &copy; 2018-${.now?string('yyyy')} &nbsp;
                 <a href="#" target="_blank">基础架构</a>

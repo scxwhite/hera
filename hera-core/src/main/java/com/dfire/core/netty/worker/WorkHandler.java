@@ -43,6 +43,8 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
     private WorkContext workContext;
 
     private ConcurrentHashMap<Channel, HeraChannel> channelMap = new ConcurrentHashMap<>(2);
+    private List<ResponseListener> listeners = new CopyOnWriteArrayList<>();
+
 
     public WorkHandler(final WorkContext workContext) {
         this.workContext = workContext;
@@ -58,14 +60,11 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
                     response.channel.writeAndFlush(wrapper(response.response));
                     TaskLog.info("1.WorkHandler: worker send response,rid={}", response.response.getRid());
                 } catch (InterruptedException | ExecutionException | RemotingException e) {
-                    ErrorLog.error("1.WorkHandler: worker send response timeout,rid={}", response == null ? null : response.response.getRid());
+                    ErrorLog.error("1.WorkHandler: worker send response timeout,rid=" + (response == null ? "" : response.response.getRid()), e);
                 }
             }
         });
     }
-
-
-    private List<ResponseListener> listeners = new CopyOnWriteArrayList<>();
 
     public void addListener(ResponseListener listener) {
         listeners.add(listener);

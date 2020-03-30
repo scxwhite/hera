@@ -59,6 +59,7 @@ public class HeraRunListener implements SpringApplicationRunListener {
         Date endTime = new Date();
         int serverPort = Integer.parseInt(context.getEnvironment().getProperty("server.port"));
         MonitorLog.info("Tomcat started on port(s):" + serverPort);
+        MonitorLog.info("固定集群ip为:" + HeraGlobalEnv.getEmrFixedHost());
         MonitorLog.info("==========启动完成了: " + ActionUtil.getDefaultFormatterDate(endTime) + "; 共花费: " + DateBetween(startTime, endTime));
     }
 

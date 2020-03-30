@@ -109,12 +109,16 @@ public class HeraJobVo {
     private String focusUser;
 
     private short repeatRun;
-    
+
     private String cronPeriod;
 
     private int cronInterval;
-    
+
     private String bizLabel;
+
+    private Integer isValid;
+
+    private String estimatedEndHour;
 
 
 }
