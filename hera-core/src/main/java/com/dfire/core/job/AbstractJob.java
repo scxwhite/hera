@@ -121,7 +121,8 @@ public abstract class AbstractJob implements Job {
     public static String generateRunCommandBizCore(JobRunTypeEnum runTypeEnum, String prefix, String runPath){
 
     	String uuid = UUID.randomUUID().toString();
-    	String bizBefore= "curDir=$(cd `dirname $0`; pwd)" + Constants.NEW_LINE
+    	String bizBefore= "source /etc/profile" + Constants.NEW_LINE
+                        + "curDir=$(cd `dirname $0`; pwd)" + Constants.NEW_LINE
     					+ "scriptName=`basename $0`" + Constants.NEW_LINE
     					+ "cd ${curDir}"+ Constants.NEW_LINE
     					+ "log_file="+uuid+".log" + Constants.NEW_LINE
