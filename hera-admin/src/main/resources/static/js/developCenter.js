@@ -454,7 +454,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             success: function (result) {
                 if (result.success === false) {
                     layer.msg(result.message);
-                    return ;
+                    return;
                 }
                 var data = result.data;
 
@@ -648,7 +648,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                 success: function (result) {
                     if (result.success === false) {
                         layer.msg(result.message);
-                        return ;
+                        return;
                     }
                     var data = result.data;
                     if (data.status !== 'running') {
@@ -681,10 +681,17 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                 showPrevNext(logTabContainer);
                 rightNowLogCon.prepend('<div class=\"right-now-log\" id=\"' + key + '\"></div>');
                 let logArea = $('#' + key);
-                logArea.html(localStorage.getItem(key));
-                if (JSON.parse(localStorage.getItem(key)).success === false) {
-                    $('li[his-id=' + key.slice(3) + ']').css('color', 'orangered');
+                if (logArea !== undefined) {
+                    logArea.html(localStorage.getItem(key));
                 }
+                try {
+                    if (JSON.parse(localStorage.getItem(key)).success === false) {
+                        $('li[his-id=' + key.slice(3) + ']').css('color', 'orangered');
+                    }
+                } catch (e) {
+
+                }
+
             }
         }
         let logArea = $('#' + last);
@@ -721,7 +728,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             success: function (result) {
                 if (result.success === false) {
                     layer.msg(result.message);
-                    return ;
+                    return;
                 }
                 var data = result.data;
                 if (data.status === 'running') {
@@ -1054,7 +1061,7 @@ let TableInit = function (targetId) {
             success: function (result) {
                 if (result.success === false) {
                     layer.msg(result.message);
-                    return ;
+                    return;
                 }
                 var data = result.data;
                 if (data.status != 'running') {
