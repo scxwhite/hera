@@ -42,4 +42,6 @@ public class HeraFile {
 
     private int hostGroupId;
 
+    private Integer jobId;
+
 }
