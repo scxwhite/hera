@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS `hera_debug_history`
   `status`        varchar(32)  DEFAULT NULL COMMENT '脚本运行状态(runnin,success,failed,wait)',
   `owner`         varchar(32)  DEFAULT NULL COMMENT '脚本owner',
   `host_group_id` tinyint(4)   DEFAULT NULL COMMENT '执行机器组id',
+  `job_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '关联调度任务id',
   PRIMARY KEY (`id`),
   KEY `idx_file_id` (`file_id`) USING BTREE
 ) ENGINE = InnoDB
@@ -129,6 +130,7 @@ CREATE TABLE IF NOT EXISTS `hera_file`
   `parent`        int(20)    DEFAULT NULL COMMENT '父目录id',
   `type`          tinyint(4)   NOT NULL COMMENT '文件类型(1,目录,2,文件)',
   `host_group_id` tinyint(2) DEFAULT NULL COMMENT '执行机器组id',
+  `job_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '关联调度任务id',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='开发中心脚本记录表';

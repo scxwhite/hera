@@ -16,3 +16,7 @@ CREATE TABLE `hera_rerun` (
 
 
 alter table hera_job add column `estimated_end_hour` int(4) NOT NULL DEFAULT '0' COMMENT '预计结束结束时间';
+
+alter table hera_file add column `job_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '关联调度任务id';
+
+alter table hera_debug_history add column `job_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '关联调度任务id';
