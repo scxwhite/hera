@@ -14,6 +14,7 @@ import com.dfire.core.netty.master.MasterContext;
 import com.dfire.event.HeraJobFailedEvent;
 import com.dfire.event.HeraJobSuccessEvent;
 import com.dfire.logs.ErrorLog;
+import com.dfire.logs.HeraLog;
 import com.dfire.monitor.domain.AlarmInfo;
 import com.dfire.monitor.service.AlarmCenter;
 
@@ -98,16 +99,18 @@ public class HeraJobFinishListener extends AbstractListener {
                     if (rerunVo.getExtra().get(Constants.ACTION_ALL_NUM).equals(rerunVo.getExtra().get(Constants.ACTION_PROCESS_NUM))) {
                         rerunVo.setIsEnd(1);
                         HeraSso sso = heraSsoService.findSsoByName(rerunVo.getSsoName());
-
+                        String noticeMsg = "【重跑任务执行完成】\n"
+                                + "重跑区域:" + HeraGlobalEnv.getArea() + "\n"
+                                + "任务ID:" + jobId + "\n"
+                                + "重跑名称:" + rerunVo.getName() + "\n"
+                                + "总执行次数:" + processNum + "\n"
+                                + "失败次数:" + failedNum;
                         if (sso != null) {
-                            String noticeMsg = "【重跑任务执行完成】\n"
-                                    + "重跑区域:" + HeraGlobalEnv.getArea() + "\n"
-                                    + "任务ID:" + jobId + "\n"
-                                    + "重跑名称:" + rerunVo.getName() + "\n"
-                                    + "总执行次数:" + processNum + "\n"
-                                    + "失败次数:" + failedNum;
+
                             alarmCenter.sendToWeChat(AlarmInfo.builder().userId(sso.getJobNumber()).message(noticeMsg).build());
                             emailService.sendEmail("hera重跑任务执行完成", noticeMsg, sso.getEmail());
+                        } else {
+                            HeraLog.info(noticeMsg);
                         }
                     }
                 } catch (Exception e) {

@@ -313,7 +313,7 @@ public class ScheduleCenterController extends BaseHeraController {
             checkPermission(ActionUtil.getJobId(actionId), RunAuthType.JOB);
         }
         TriggerTypeEnum triggerTypeEnum;
-        if (triggerType == 2) {
+        if (triggerType == 3) {
             triggerTypeEnum = TriggerTypeEnum.MANUAL_RECOVER;
         } else {
             triggerTypeEnum = TriggerTypeEnum.MANUAL;
@@ -352,8 +352,9 @@ public class ScheduleCenterController extends BaseHeraController {
         String ownerId = getOwnerId();
         if (ownerId == null) {
             ownerId = "0";
-            addJobRecord(heraJob.getId(), String.valueOf(actionId), RecordTypeEnum.Execute, execUser, ownerId);
         }
+        addJobRecord(heraJob.getId(), String.valueOf(actionId), RecordTypeEnum.Execute, execUser, ownerId);
+
         return new JsonResponse(true, actionId);
     }
 
