@@ -246,9 +246,9 @@
         Powered by <b>hera</b> 2.4.2
         <div class="pull-right hidden-xs">
             <strong>Copyright &copy; 2018-${.now?string('yyyy')} &nbsp;
-                <a href="#" target="_blank">基础架构</a>
+                <a href="https://github.com/scxwhite/hera" target="_blank">github/scx_white</a>
                 &nbsp;
-                <a href="" target="_blank">2dfire</a>
+                <a href="" target="_blank"></a>
             </strong><!-- All rights reserved. -->
         </div>
     </footer>
