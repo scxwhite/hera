@@ -125,8 +125,10 @@ public class AmazonEmr extends AbstractEmr {
             EmrConf emrConf = new EmrConf();
             emrConf.setClusterName(getClusterName(owner));
             emrConf.setMasterInstanceType("m5.4xlarge");
-            emrConf.setCoreInstanceType("m5.4xlarge");
-            emrConf.setNumCoresNodes(4);
+            emrConf.setCoreInstanceType("m5.xlarge");
+            emrConf.setTaskInstanceType("m5.4xlarge");
+            emrConf.setNumCoreNodes(3);
+            emrConf.setNumTaskNodes(1);
             if (EnvUtils.isEurope()) {
                 //欧洲区域
                 emrConf.setLoginURl("s3n://xxx");
@@ -315,9 +317,12 @@ public class AmazonEmr extends AbstractEmr {
                 .withName("主实例 - 1");
 
 
+        /**
+         * core节点一般为3个节点
+         */
         InstanceGroupConfig coreInstance = new InstanceGroupConfig()
-                .withInstanceCount(emrConf.getNumCoresNodes())
-                .withMarket(MarketType.fromValue(HeraGlobalEnv.getAwsEmrType()))
+                .withInstanceCount(emrConf.getNumCoreNodes())
+                .withMarket(MarketType.ON_DEMAND)
                 .withEbsConfiguration(new EbsConfiguration()
                         .withEbsBlockDeviceConfigs(new EbsBlockDeviceConfig()
                                 .withVolumeSpecification(new VolumeSpecification()
@@ -326,11 +331,28 @@ public class AmazonEmr extends AbstractEmr {
                                 .withVolumesPerInstance(2)))
                 .withInstanceRole("CORE")
                 .withInstanceType(emrConf.getCoreInstanceType())
+                .withName("核心实例组 - 1");
+
+
+        /**
+         * task节点弹性伸缩
+         */
+        InstanceGroupConfig taskInstance = new InstanceGroupConfig()
+                .withInstanceCount(emrConf.getNumTaskNodes())
+                .withMarket(MarketType.fromValue(HeraGlobalEnv.getAwsEmrType()))
+                .withEbsConfiguration(new EbsConfiguration()
+                        .withEbsBlockDeviceConfigs(new EbsBlockDeviceConfig()
+                                .withVolumeSpecification(new VolumeSpecification()
+                                        .withSizeInGB(100)
+                                        .withVolumeType("standard"))
+                                .withVolumesPerInstance(2)))
+                .withInstanceRole("TASK")
+                .withInstanceType(emrConf.getTaskInstanceType())
                 .withAutoScalingPolicy(buildAutoScalingPolicy())
                 .withName("核心实例组 - 2");
 
         JobFlowInstancesConfig instancesConfig = new JobFlowInstancesConfig()
-                .withInstanceGroups(masterInstance, coreInstance)
+                .withInstanceGroups(masterInstance, coreInstance, taskInstance)
                 .withEc2KeyName(emrConf.getKeyPairName())
                 .withKeepJobFlowAliveWhenNoSteps(true)
                 .withEmrManagedMasterSecurityGroup(emrConf.getEmrManagedMasterSecurityGroup())
@@ -359,13 +381,13 @@ public class AmazonEmr extends AbstractEmr {
 
 
         // yarn 资源可用百分比低于10% 扩容
-        double increaseThreshold = 10d;
-        // yarn 资源可用百分比高于30% 扩容
+        double increaseThreshold = 20d;
+        // yarn 资源可用百分比高于30% 缩容
         double decreaseThreshold = 30d;
 
-        ScalingRule scaleOut = new ScalingRule()
-                .withName("scale-out by yarn resource")
-                .withDescription("scale-out by yarn resources")
+        ScalingRule scaleOutByMemPer = new ScalingRule()
+                .withName("scale-out by yarn resource Per")
+                .withDescription("scale-out by yarn resources Per")
                 .withAction(new ScalingAction()
                         .withSimpleScalingPolicyConfiguration(new SimpleScalingPolicyConfiguration()
                                 .withScalingAdjustment(getScalePercent())
@@ -385,9 +407,32 @@ public class AmazonEmr extends AbstractEmr {
                                         .withKey("JobFlowId")
                                         .withValue("${emr.clusterId}"))));
 
-        ScalingRule scaleIn = new ScalingRule()
-                .withName("scale-in by yarn resource")
-                .withDescription("scale-in by yarn resources")
+
+        ScalingRule scaleOutByMem = new ScalingRule()
+                .withName("scale-out by yarn resource")
+                .withDescription("scale-out by yarn resources")
+                .withAction(new ScalingAction()
+                        .withSimpleScalingPolicyConfiguration(new SimpleScalingPolicyConfiguration()
+                                .withScalingAdjustment(getScalePercent())
+                                .withAdjustmentType("PERCENT_CHANGE_IN_CAPACITY")
+                                .withCoolDown(getCoolDown())))
+                .withTrigger(new ScalingTrigger()
+                        .withCloudWatchAlarmDefinition(new CloudWatchAlarmDefinition()
+                                .withComparisonOperator("LESS_THAN_OR_EQUAL")
+                                .withEvaluationPeriods(1)
+                                .withPeriod(getCoolDown())
+                                .withMetricName("MemoryAvailableMB")
+                                .withNamespace("AWS/ElasticMapReduce")
+                                .withThreshold(increaseThreshold * 2048)
+                                .withStatistic("AVERAGE")
+                                .withUnit("COUNT")
+                                .withDimensions(new MetricDimension()
+                                        .withKey("JobFlowId")
+                                        .withValue("${emr.clusterId}"))));
+
+        ScalingRule scaleInByMemPer = new ScalingRule()
+                .withName("scale-in by yarn resource per")
+                .withDescription("scale-in by yarn resources per")
                 .withAction(new ScalingAction()
                         .withSimpleScalingPolicyConfiguration(new SimpleScalingPolicyConfiguration()
                                 .withScalingAdjustment(-getScalePercent())
@@ -406,11 +451,34 @@ public class AmazonEmr extends AbstractEmr {
                                 .withDimensions(new MetricDimension()
                                         .withKey("JobFlowId")
                                         .withValue("${emr.clusterId}"))));
+
+
+        ScalingRule scaleInByMem = new ScalingRule()
+                .withName("scale-in by yarn resource")
+                .withDescription("scale-in by yarn resources")
+                .withAction(new ScalingAction()
+                        .withSimpleScalingPolicyConfiguration(new SimpleScalingPolicyConfiguration()
+                                .withScalingAdjustment(-getScalePercent())
+                                .withAdjustmentType("PERCENT_CHANGE_IN_CAPACITY")
+                                .withCoolDown(getCoolDown())))
+                .withTrigger(new ScalingTrigger()
+                        .withCloudWatchAlarmDefinition(new CloudWatchAlarmDefinition()
+                                .withComparisonOperator("GREATER_THAN_OR_EQUAL")
+                                .withEvaluationPeriods(1)
+                                .withPeriod(getCoolDown())
+                                .withMetricName("MemoryAvailableMB")
+                                .withNamespace("AWS/ElasticMapReduce")
+                                .withThreshold(decreaseThreshold * 2048)
+                                .withStatistic("AVERAGE")
+                                .withUnit("COUNT")
+                                .withDimensions(new MetricDimension()
+                                        .withKey("JobFlowId")
+                                        .withValue("${emr.clusterId}"))));
         return new AutoScalingPolicy()
                 .withConstraints(new ScalingConstraints()
                         .withMinCapacity(getMinCapacity())
                         .withMaxCapacity(getMaxCapacity()))
-                .withRules(scaleOut, scaleIn);
+                .withRules(scaleInByMem, scaleInByMemPer, scaleOutByMem, scaleOutByMemPer);
     }
 
     /**

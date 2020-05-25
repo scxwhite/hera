@@ -24,9 +24,13 @@ public class EmrConf {
 
     private String masterInstanceType;
 
-    private int numCoresNodes;
+    private int numCoreNodes;
+
+    private int numTaskNodes;
 
     private String coreInstanceType;
+
+    private String taskInstanceType;
 
     private String emrManagedMasterSecurityGroup;
 
