@@ -1,0 +1,346 @@
+spring:
+  profiles:
+    active: @env@
+  http:
+    multipart:
+      max-file-size: 100Mb    #允许上传文件的最大大小
+      max-request-size: 100Mb #允许上传文件的最大大小
+    encoding:
+      charset: utf-8
+  freemarker:
+    allow-request-override: true
+    cache: false
+    check-template-location: true
+    charset: utf-8
+    content-type: text/html
+    expose-request-attributes: false
+    expose-session-attributes: false
+    expose-spring-macro-helpers: false
+    suffix: .ftl
+    template-loader-path: classpath:/templates/
+    request-context-attribute: request
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /static/**
+
+druid:
+  datasource:
+    username: root  #数据库用户名
+    password: moye      #数据库密码
+    driver-class-name: com.mysql.jdbc.Driver  #数据库驱动
+    url: jdbc:mysql://localhost:3306/hera2.4.2?characterEncoding=utf-8&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&autoReconnect=true&allowMultiQueries=true&useSSL=false
+    initial-size: 5    #初始化连接池数量
+    min-idle: 1        #最小生存连接数
+    max-active: 16     #最大连接池数量
+    max-wait: 5000 #获取连接时最大等待时间，单位毫秒。配置了maxWait之后，缺省启用公平锁，并发效率会有所下降，如果需要可以通过配置useUnfairLock属性为true使用非公平锁。
+    time-between-connect-error-millis: 60000  # Destroy线程会检测连接的间隔时间，如果连接空闲时间大于等于minEvictableIdleTimeMillis则关闭物理连接，单位是毫秒
+    min-evictable-idle-time-millis: 300000  # 连接保持空闲而不被驱逐的最长时间，单位是毫秒
+    test-while-idle: true    #申请连接的时候,如果检测到连接空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效
+    test-on-borrow: true    #申请连接时执行validationQuery检测连接是否有效
+    test-on-return: false   # 归还连接时执行validationQuery检测连接是否有效
+    connection-init-sqls: 'set names utf8mb4'
+    validation-query: select 1                #用来检测连接是否有效的sql，要求是一个查询语句。如果validationQuery为null，testOnBorrow、testOnReturn、testWhileIdle都不会其作用。
+    validation-query-timeout: 1                #单位：秒，检测连接是否有效的超时时间。底层调用jdbc Statement对象的void setQueryTimeout(int seconds)方法
+    log-abandoned: true
+    stat-mergeSql: true
+    filters: stat,wall,log4j
+    connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+
+server:
+  port: 8080
+  context-path: /hera
+
+clean:
+  path: ${server.context-path}
+#hera全局配置
+hera:
+  defaultWorkerGroup: 1 #默认worker的host组id
+  preemptionMasterGroup: 1  #抢占master的host组id
+  excludeFile: jar;war
+  maxMemRate: 0.70       #已使用内存占总内存的最大比例,默认0.75
+  maxCpuLoadPerCore: 1.0   #cpu load per core等于最近1分钟系统的平均cpu负载÷cpu核心数量，默认1.0
+  scanRate: 1000        #队列扫描频率(毫秒)
+  systemMemUsed: 4000  # 系统占用内存
+  requestTimeout: 10000 # 异步请求超时时间
+  channelTimeout: 1000 # netty请求超时时间
+  perTaskUseMem: 500          # 每个任务使用内存500M
+  warmUpCheck: 0  # 热身检测 默认10秒,0 表示关闭。在任务连续两次发送到同一台work时 会进行预热检测。#由于任务执行需要经历 发送指令-接受指令-初始化环境-提交任务-开始执行 等阶段， 如果任务分发频率较高时，容易宕机
+  jobCacheDay: 2    # <<该配置很重要>> ，表示action最远可以重跑任务的日期，默认2天。
+  loadBalance: roundrobin  # 负载均衡策略，默认轮训 可选值有roundrobin（轮训）random(随机)
+  heartBeat: 2           # 心跳传递时间频率
+  workDir: /opt/logs/spring-boot  # 工作路径  执行的任务文件/上传的文件都在这里
+  hdfsUploadPath: /hera/hdfs-upload-dir/ #此处必须是hdfs路径，所有的上传附件都会存放在下面路径上.注意:必须保证启动hera项目的用户是此文件夹的所有者，否则会导致上传错误
+  schedule-group: online
+  maxParallelNum: 2000   #master 允许的最大并行任务 当大于此数值 将会放在阻塞队列中
+  connectPort: 9887 #netty通信的端口
+  admin: hera         # admin用户
+  taskTimeout: 12  #单个任务执行的最大时间  单位：小时
+  env: ${spring.profiles.active}
+  alarmEnv: daily,dev,pre,publish # 设置允许哪些环境开启告警，多个用,分开，默认全部环境
+  sudoUser: false  #是否要使用sudo -u 切换账号(即启动多租户功能)
+  version: 2.4.2
+  kerberos:
+    keytabpath:    #kerberos认证keytab文件,如果hadoop 集群无需kerberos授权，则不填
+    principal:     #kerberos认证principal,如果hadoop 集群无需kerberos授权，则不填
+  job:
+    shell:
+      bin: bash
+    hive:
+      bin: hive
+    spark-sql:
+      bin: spark-sql
+    script-echo: true
+  emrJob: false  #是否为emr集群  false 表示为本地hadoop集群，true:amazon 亚马逊emr集群任务 true:aliYun 阿里云集群任务
+  emr_fixed_host: #emr固定集群地址
+  area: all
+  keyPath: /home/docker/conf/bigdata.pem #emr登录集群到私钥的绝对路径
+  monitorUsers: 00001  #（微信工号，只适用于企业微信告警 ）多个用|分割
+  monitorEmails: monitor@qq.com  #群发监控者的邮箱（任务任务失败都会通知到该列表）  多个用;分割
+  webSessionExpire: 4320 # web session失效时间，单位为分钟；3天*24*60=4320
+  webLogHeadCount: 5000 # web端的任务详情日志展示头部行数
+  webLogTailCount: 5000 # web端的任务详情日志展示尾部行数
+  emr_groups:   #根据hera组来创建集群，达到不同组任务执行集群隔离的效果。值为hera的组比如配置 hera.emr_groups: hera 则此时动态集群会创建两个，一个是hera集群:只供hera组的任务使用，一个是other集群:非hera组的任务执行
+  aws_emr_type: SPOT #emr 动态集群的类型，可选:SPOT,ON_DEMAND 默认使用竞价,最大按需
+  rerun:
+    maxParallelNum: 20  #任务重跑允许调度的最大上限。如果当前调度的任务超出此上限，将阻塞重跑任务调度，避免重跑影响了正常的调度
+    timeRange: 0-23   #重跑允许调度的时间范围
+
+aliYun:
+  accessKey: xx #阿里云创建集群的ak
+  accessSecret: xx #阿里云创建集群的as
+
+india:
+  accessKey: xx #印度amazon创建集群的ak
+  accessSecret: xx #印度amazon创建集群的as
+logging:
+  config: classpath:config/logback-spring.xml
+  path: /opt/logs/spring-boot   # 日志路径
+  level:
+    root: INFO
+    org.springframework: ERROR
+    com.dfire.common.mapper: ERROR
+
+
+# 发送配置邮件的发送者
+mail:
+  host: smtp.mxhichina.com
+  protocol: smtp
+  port: 465
+  user: xxx
+  password: xxx
+
+
+
+
+mybatis:
+  configuration:
+    mapUnderscoreToCamelCase: true
+#spark 配置
+spark:
+  address: jdbc:hive2://localhost:10000 #ThriftServer地址
+  driver: org.apache.hive.jdbc.HiveDriver #jdbc driver
+  username: xxx #ThriftServer用户名
+  password: 123456 #ThriftServer密码
+  master: --master yarn
+  driver-memory: --driver-memory 1g
+  driver-cores: --driver-cores 1
+  executor-memory: --executor-memory 2g
+  executor-cores: --executor-cores 1
+
+
+---
+# 中国
+spring:
+  profiles: dev
+hera:
+  admin: hera
+  emrJob: false
+  area: CN
+---
+## 中国开发环境
+spring:
+  profiles: dev_cn
+druid:
+  datasource:
+    url: jdbc:mysql://localhost:3306/hera?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&allowMultiQueries=true
+    username: root
+    password: root
+hera:
+  area: CN
+  emrJob: true:aliYun
+
+server:
+  port: 8121
+  context-path: /
+---
+## 中国日常环境
+spring:
+  profiles: daily_cn
+druid:
+  datasource:
+    url: xx
+    username: xx
+    password: xx
+hera:
+
+  area: CN
+  emrJob: true:aliYun
+  maxParallelNum: 2
+server:
+  port: 8121
+  context-path: /
+
+
+---
+## 中国预发环境
+spring:
+  profiles: pre_cn
+druid:
+  datasource:
+    url: xx
+    username: xx
+    password: xx
+hera:
+
+  area: CN
+  emrJob: true:aliYun
+  emr_fixed_host: xx.xx.xx.xx
+  hdfsUploadPath: oss://xxx/pre/hera/
+server:
+  port: 8121
+  context-path: /
+
+
+---
+## 中国线上环境
+spring:
+  profiles: prod_cn
+druid:
+  datasource:
+    url: xx
+    username: xx
+    password: xx
+hera:
+  area: CN
+  emrJob: true:aliYun
+  emr_fixed_host: xx.xx.xx.xx
+  hdfsUploadPath: oss://xxx/hera/
+server:
+  port: 8121
+  context-path: /
+
+---
+##############################################################################################################################
+##############################################################################################################################
+##############################################################################################################################
+##############################################################################################################################
+#         以下所有环境 如果想根据 maven -P参数指定，请增加文件/Users/scx/work/git/person/hera/pom.xml 中profiles配置                #
+#                                                                                                                            #
+#         以下所有环境 如果想根据 maven -P参数指定，请增加文件/Users/scx/work/git/person/hera/pom.xml 中profiles配置                #
+#                                                                                                                            #
+#         以下所有环境 如果想根据 maven -P参数指定，请增加文件/Users/scx/work/git/person/hera/pom.xml 中profiles配置                #
+#                                                                                                                            #
+#         以下所有环境 如果想根据 maven -P参数指定，请增加文件/Users/scx/work/git/person/hera/pom.xml 中profiles配置                #
+#                                                                                                                            #
+#         以下所有环境 如果想根据 maven -P参数指定，请增加文件/Users/scx/work/git/person/hera/pom.xml 中profiles配置                #
+##############################################################################################################################
+##############################################################################################################################
+##############################################################################################################################
+##############################################################################################################################
+
+## 印度预发环境
+spring:
+  profiles: pre_ind
+hera:
+  emrJob: true:amazon
+  area: IND
+  maxParallelNum: 40
+server:
+  port: 8121
+  context-path: /
+druid:
+  datasource:
+    username: xx
+    password: xx
+    url: xx
+
+
+---
+## 欧州预发环境
+spring:
+  profiles: pre_eu
+hera:
+  emrJob: true:amazon
+  area: EU
+  maxParallelNum: 40
+  emr_fixed_host: xx.xx.xx.xx
+  hdfsUploadPath: s3://xxx/pre/hera/
+
+server:
+  port: 8121
+  context-path: /
+druid:
+  datasource:
+    username: xx
+    password: xx
+    url: xx
+---
+## 欧州线上环境
+spring:
+  profiles: prod_eu
+hera:
+  emrJob: true:amazon
+  area: EU
+  maxParallelNum: 40
+  emr_fixed_host: xx.xx.xx
+  hdfsUploadPath: s3://xxx/hera/
+
+server:
+  port: 8121
+  context-path: /
+druid:
+  datasource:
+    username: xx
+    password: xx
+    url: xx
+---
+## 美国预发环境
+spring:
+  profiles: pre_us
+hera:
+  emrJob: true:amazon
+  area: US
+  maxParallelNum: 40
+  emr_fixed_host: xx.xx.xx.xx
+  hdfsUploadPath: s3://xxx/pre/hera/
+
+server:
+  port: 8121
+  context-path: /
+druid:
+  datasource:
+    username: xx
+    password: xx
+    url: xx
+
+---
+## 美国线上环境
+spring:
+  profiles: prod_us
+hera:
+  emrJob: true:amazon
+  area: US
+  maxParallelNum: 40
+  emr_fixed_host: xx.xx.xx.xx
+  hdfsUploadPath: s3://xxx/hera/
+server:
+  port: 8121
+  context-path: /
+druid:
+  datasource:
+    username: xx
+    password: xx
+    url: xx
+---
+
