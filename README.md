@@ -42,7 +42,12 @@
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20181220170832605.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3N1MjAxNDUxMDQwMDk=,size_16,color_FFFFFF,t_70)
 ## 设计目标
 
+<<<<<<< HEAD
 `hera`分布式任务调度系统的设计目标首先是要完成`zeus`大部分核心功能，并能够根据自己公司的需求进行扩展。大致目标有以下几点
+=======
+## 功能
+![具体功能](https://img-blog.csdnimg.cn/20200922110012179.png)
+>>>>>>> Update README.md
 
  - 支持任务的定时调度、依赖调度、手动调度、手动恢复
  - 支持丰富的任务类型：`shell,hive,python,spark-sql,java`
