@@ -18,7 +18,7 @@
     <description>hera project for Spring Boot</description>
 
     <properties>
-        <quartz.version>2.2.1</quartz.version>
+        <quartz.version>2.3.2</quartz.version>
         <hadoop.version>2.0.0-cdh4.6.0</hadoop.version>
     </properties>
 
