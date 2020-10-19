@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcOperate";
+
+enum Operate {
+
+    //心跳 worker->server
+    HeartBeat = 0;
+
+    //调度执行命令 server->worker
+    Schedule = 1;
+
+    //取消命令 server->worker
+    Cancel = 2;
+
+    //调试命令 server->worker
+    Debug = 3;
+
+    //手动执行命令
+    Manual = 4;
+
+    //获得机器信息
+    GetWorkInfo = 5;
+
+    //设置机器信息
+    SetWorkInfo = 6;
+
+    //执行重跑任务
+    Rerun = 7;
+    //执行超级恢复任务
+    SuperRecovery = 8;
+}

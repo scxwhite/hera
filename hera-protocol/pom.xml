@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>hera</artifactId>
+        <groupId>com.dfire.hera</groupId>
+        <version>2.4.2</version>
+
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <version>${hera.protocol.version}</version>
+    <artifactId>hera-protocol</artifactId>
+
+    <properties>
+        <protobuf.version>3.5.1</protobuf.version>
+        <protobuf-javanano.version>3.1.0</protobuf-javanano.version>
+        <grpc.version>1.22.1</grpc.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty</artifactId>
+            <version>${grpc.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+            <version>${grpc.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
+            <version>${grpc.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>${protobuf.version}</version>
+        </dependency>
+
+
+    </dependencies>
+
+
+    <!-- 如果要新增protoc类型 可去掉以下注释 编译生成protoc类-->
+
+    <!--
+     <build>
+         <extensions>
+             <extension>
+                 <groupId>kr.motd.maven</groupId>
+                 <artifactId>os-maven-plugin</artifactId>
+                 <version>1.6.2</version>
+             </extension>
+         </extensions>
+         <plugins>
+             <plugin>
+                 <groupId>org.xolstice.maven.plugins</groupId>
+                 <artifactId>protobuf-maven-plugin</artifactId>
+                 <version>0.6.1</version>
+                 <configuration>
+                     <pluginId>java</pluginId>
+                     <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}
+                     </protocArtifact>
+                     <pluginId>grpc-java</pluginId>
+                     <pluginArtifact>
+                         io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}
+                     </pluginArtifact>
+
+                     <protoSourceRoot>${project.basedir}/src/main/resources/protos</protoSourceRoot>
+                     <outputDirectory>${project.basedir}/src/main/java</outputDirectory>
+
+                 </configuration>
+                 <executions>
+                     <execution>
+                         <goals>
+                             <goal>compile-custom</goal>
+                         </goals>
+                     </execution>
+                 </executions>
+             </plugin>
+         </plugins>
+     </build>
+     -->
+
+</project>

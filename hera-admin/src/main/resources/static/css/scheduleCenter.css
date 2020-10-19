@@ -1,0 +1,220 @@
+div#rMenu {
+    position: absolute;
+    visibility: hidden;
+    top: 0;
+    background-color: #40a8e4;
+    text-align: left;
+    padding: 2px;
+}
+.layui-table-cell {
+    height: inherit;
+}
+.CodeMirror-selected {
+    background-color: #bebebe !important;
+}
+.CodeMirror-merge, .CodeMirror-merge .CodeMirror {
+    height: 500px;
+}
+body .msg-class .layui-layer-title {
+    background: #202c32;
+    color: #fff;
+    border: none;
+}
+
+body .msg-class .layui-layer-btn {
+    border-top: 1px solid #E9E7E7
+}
+
+body .msg-class .layui-layer-btn a {
+    background: #333;
+}
+
+body .msg-class .layui-layer-btn .layui-layer-btn1 {
+    background: #999;
+}
+
+.box, .content {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+div #rMenu {
+    position: absolute;
+    visibility: hidden;
+    top: 0;
+    background-color: #555;
+    text-align: left;
+    padding: 2px;
+}
+
+div#rMenu ul {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+
+div#rMenu ul li {
+    margin: 1px 0;
+    padding: 0 50px;
+    cursor: pointer;
+    list-style: none outside none;
+    background-color: #DFDFDF;
+}
+
+.colStyle {
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-top: 0px;
+    padding: 0px;
+    background-color: #eee;
+}
+
+.form-control-static {
+    overflow: hidden;
+}
+
+.node rect {
+    stroke: #333;
+    fill: #fff;
+}
+
+.edgePath path {
+    stroke: #333;
+    fill: #333;
+    stroke-width: 1.5px;
+}
+div#rMenu ul {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+
+div#rMenu ul li {
+    margin: 1px 0;
+    padding: 0 50px;
+    cursor: pointer;
+    list-style: none outside none;
+    background-color: #40a8e4;
+}
+
+.devStyle {
+    margin-top: 0px;
+    margin-buttom: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding: 0px;
+    background-color: #eee;
+    border: 1px solid #ddd;
+}
+.tip{
+    color: red;
+}
+#jobDetail{
+    height: 200px;
+}
+#timeline {
+    position: relative;
+    margin-top: 10px;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid dimgray;
+    box-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.75);
+}
+
+#timeline .selected {
+    font-weight: bold;
+    box-shadow: 0px 0px 3px 1px gray;
+}
+
+#timeline-collapse {
+    top: 100px
+}
+
+.styleA {
+    color: darkgreen;
+    background-color: lightgreen;
+}
+
+.styleB {
+    color: darkred;
+    background-color: mistyrose;
+}
+
+.styleC {
+    color: darkblue;
+    background-color: lightblue;
+}
+
+.timeline-unused-phase {
+    background: repeating-linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, 0.85),
+            rgba(255, 255, 255, 0.85) 10px,
+            rgba(235, 235, 235, 0.85) 10px,
+            rgba(235, 235, 235, 0.85) 20px
+    );
+}
+#jobLog .form-control{
+    background: #2c4762;
+    color: #ffffff;
+}
+.nav>li>a {
+    position: relative;
+    display: block;
+    padding: 10px 10px;
+}
+#biggerBtn{
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    cursor: pointer;
+}
+#biggerBtn :hover{
+    color: #888;
+}
+.bigger{
+    width: 100%;
+}
+#searchInfo,#deSearchInfo{
+    margin: 5px;
+    font-size: 12px;
+}
+.btn-con{
+    border: none;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.nav-tabs {
+    background: transparent;
+    border: none;
+}
+.nav-tabs li a {
+    line-height: 1;
+    margin-right: -1px;
+    color: #999;
+    border-radius: 0;
+    border: none;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+#jobMessage input{
+    border: none;
+}
+#infoCon::-webkit-scrollbar {
+    display: none;
+}
+.table { table-layout: fixed;}

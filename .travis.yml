@@ -1,0 +1,6 @@
+language: java
+jdk:
+  - openjdk8
+install: mvn install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true
+#script: mvn test
+script: mvn clean package -Pdev

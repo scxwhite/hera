@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcWebOperate";
+
+//web界面的worker与server交互
+
+enum WebOperate {
+
+    //更新job
+    UpdateJob = 0;
+
+    //手动执行或者手动恢复job
+    ExecuteJob = 1;
+
+    //手动取消任务
+    CancelJob = 2;
+
+    //调试任务
+    ExecuteDebug = 3;
+
+    //生成版本
+    GenerateAction = 4;
+
+    //获得心跳信息
+    GetAllHeartBeatInfo = 5;
+
+    //获得所有机器信息
+    GetAllWorkInfo = 6;
+
+    UpdateConf = 7;
+
+}

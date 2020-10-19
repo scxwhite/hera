@@ -1,0 +1,58 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+.item {
+    width: 266px;
+    max-height: 300px;
+    line-height: 30px;
+}
+
+#container {
+    width: 100%;
+    height: 100%;
+    OVERFLOW-Y: auto;
+    OVERFLOW-X: hidden;
+}
+
+#input {
+    border: 0;
+    border-radius: 5px;
+    display: block;
+    height: 135px;
+    padding: 0 1em;
+    line-height: 30px;
+    width: 100%;
+    font-size: 20px;
+    max-height: 135px;
+    resize: none;
+}
+
+.item h2 {
+    font-family: 'Eater', cursive;
+    font-size: 14px;
+    padding-bottom: 10px;
+    padding-top: 5px;
+    padding-left: 10px;
+}
+
+.item p {
+    font-size: large;
+    padding-left: 10px;
+    padding-right: 10px;
+    max-width: 100%;
+    word-break: break-all;
+    overflow: hidden;
+    line-height: 1.2;
+    display: block;
+}
+
+.item h3 {
+    font-family: 'Eater', cursive;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    padding-left: 10px;
+    color: rgba(33, 33, 33, 0.7);
+    width: 200px;
+}

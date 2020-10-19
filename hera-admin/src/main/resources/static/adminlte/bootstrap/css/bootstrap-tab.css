@@ -1,0 +1,59 @@
+.nav-tabs li .closeable {
+/*     top: 65px; */
+/*     position: fixed; */
+    padding-left: 3px;
+    cursor: pointer;
+}
+
+/*修改tab高度样式*/
+
+.nav-tabs li a{
+    line-height:1px;
+}
+.nav-tabs .active a{
+    border-top: solid 1px #3498db !important;
+}
+
+
+.nav-tabs{
+    background: #fafafa;
+    border-bottom: 1px #3498db solid;
+}
+
+.nav-tabs li a{
+    line-height:1;
+    border:1px #ddd solid;
+    margin-right: -1px;
+    color: #999;
+    border-radius: 0;
+}
+.nav-tabs li a .glyphicon-remove-sign:hover{
+    color:red;
+    cursor: pointer;
+}
+.nav-tabs li a i:first-child{
+    margin-right: 1px;
+}
+.nav-tabs .active a{
+    border-top: solid 1px #3498db !important;
+    background: #3498db !important;
+    color:#fff !important;
+}
+
+.nav-my-tab{
+    padding-left: 0px;
+    margin-bottom: 0px;
+}
+.nav-my-tab .middletab{
+    height: 36px;
+    overflow: hidden;
+    border-bottom: 3px #3498db solid;
+    position: relative;
+    background: #fafafa;
+}
+.nav-my-tab li{
+    list-style-type: none;
+}
+.nav-my-tab li a{
+    padding:5px 10px;
+}

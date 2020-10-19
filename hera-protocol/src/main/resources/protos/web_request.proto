@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "web_operate.proto";
+import "execute_kind.proto";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcWebRequest";
+
+message WebRequest {
+    enum Trigger {
+        MANUAL = 0;
+        MANUAL_RECOVER = 1;
+    }
+    sint32 rid = 1;
+    WebOperate operate = 2;
+    ExecuteKind ek = 3;
+    // update 时 id=actionId  source=ScheduleJob时 id=historyId  source=DebugJob时id=debugId
+    string id = 4;
+    string executor = 5;
+    bytes body = 6;
+}

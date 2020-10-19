@@ -1,0 +1,73 @@
+<!--
+ - Copyright 1999-2011 Alibaba Group.
+ -
+ - Licensed under the Apache License, Version 2.0 (the "License");
+ - you may not use this file except in compliance with the License.
+ - You may obtain a copy of the License at
+ -
+ -      http://www.apache.org/licenses/LICENSE-2.0
+ -
+ - Unless required by applicable law or agreed to in writing, software
+ - distributed under the License is distributed on an "AS IS" BASIS,
+ - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ - See the License for the specific language governing permissions and
+ - limitations under the License.
+-->
+<assembly>
+    <id>assembly</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>${assembly.include.base.directory}</includeBaseDirectory>
+    <fileSets>
+
+        <fileSet>
+            <directory>${basedir}/../bin</directory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <fileMode>700</fileMode>
+            <outputDirectory>/bin</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/../plugins</directory>
+            <includes>
+                <include>*.rpm</include>
+                <include>*.txt</include>
+            </includes>
+            <fileMode>700</fileMode>
+            <outputDirectory>/plugins</outputDirectory>
+        </fileSet>
+        <!-- 文体文体jar包 -->
+        <fileSet>
+            <directory>${basedir}/${project.build.directory}</directory>
+            <includes>
+                <include>${project.build.finalName}.${project.packaging}</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+
+        <!-- resources -->
+        <fileSet>
+            <directory>${basedir}/${project.build.directory}/classes/config</directory>
+            <includes>
+                <include>*.yaml</include>
+                <include>*.yml</include>
+                <include>*.xml</include>
+                <include>*.properties</include>
+            </includes>
+            <fileMode>600</fileMode>
+            <outputDirectory>/config</outputDirectory>
+        </fileSet>
+
+    </fileSets>
+    <dependencySets>
+        <dependencySet>
+            <scope>runtime</scope>
+            <excludes>
+                <exclude>${groupId}:${artifactId}</exclude>
+            </excludes>
+            <outputDirectory>/lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+</assembly>

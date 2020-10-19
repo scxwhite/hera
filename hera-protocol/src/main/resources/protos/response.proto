@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "status.proto";
+import "operate.proto";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcResponse";
+
+//rpc 请求响应体
+message Response {
+
+    //状态码
+    Status statusEnum = 1;
+
+    //request id,响应时原封不动返回,提供给client配对.
+    sint32 rid = 2;
+
+    Operate operate = 3;
+
+    //如果出错,会有出错信息.纯文本形式.client自行包装
+    string errorText = 4;
+
+    //响应体
+    bytes body = 5;
+}

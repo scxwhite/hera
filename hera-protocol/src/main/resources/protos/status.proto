@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "ResponseStatus";
+
+//rpc响应状态
+enum Status {
+    //成功
+    OK = 0;
+    //失败
+    ERROR = 1;
+}

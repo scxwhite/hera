@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "JobExecuteKind";
+
+//任务执行类型
+
+enum ExecuteKind {
+    ScheduleKind = 0;
+    ManualKind = 1;
+    DebugKind = 2;
+    AutoRerunKind = 3;
+    SuperRecoveryKind = 4;
+}

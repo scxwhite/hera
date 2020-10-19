@@ -1,0 +1,171 @@
+.icon-home{
+    font-size: 70px;
+}
+.nav-tabs .active a {
+    border-top: solid 1px #2c4762 !important;
+    background: #2c4762 !important;
+    color: #fff !important;
+}
+.btn-primary {
+    background-color: #2c4762;
+    border-color: #2c4762;
+}
+.label-primary{
+    background-color: #2c4762 !important;
+}
+.box.box-primary {
+    border-top-color: #2c4762;
+}
+.response{
+    width: 140px;
+    height: 60px;
+    box-shadow: 10px 10px 10px rgba(0,0,0,0.2);
+    position: fixed;
+    top: 100px;
+    right: -140px;
+    background: #ffffff;
+    z-index: 9999;
+}
+.response p{
+    text-align: center;
+    line-height: 60px;
+}
+.response-sch{
+    top: 500px;
+}
+
+input:-webkit-autofill,select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white  inset !important;
+}
+
+
+.nav-tabs {
+    background: #fafafa;
+    border-bottom: 1px #2c4762 solid;
+}
+
+.hideBtn {
+    right: 0;
+    top: 0;
+    position: absolute;
+    height: 100vh;
+    width: 4px;
+    background: #ccc;
+    z-index: 2;
+}
+.main-footer {
+    margin-left: 160px;
+}
+.sidebar span{
+    font-weight: bold;
+}
+.content-wrapper{
+    margin-left: 160px;
+}
+.main-sidebar{
+    width: 160px;
+}
+.main-header .logo {
+    width: 160px;
+}
+.main-header .navbar {
+    margin-left: 160px;
+}
+#jobLog .form-control {
+    color: #fff;
+    background-color: #2c4762;
+}
+.fixed-table-container thead th .sortable {
+    background-image: url('../images/sort_sort1.png');
+    cursor: pointer;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+    background-size:20px 20px;
+}
+
+.fixed-table-container thead th .asc {
+    background-image: url('../images/sort_asc1.png');
+    cursor: pointer;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+}
+
+.fixed-table-container thead th .desc {
+    background-image: url('../images/sort_desc1.png');
+    cursor: pointer;
+    background-position: right;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+}
+.left-bar{
+    background: #E9EDF1;;
+}
+.left-bar-head{
+    background: #D8DEE4;
+}
+.info-title{
+    font-size: 20px;
+    margin: 20px 0;
+}
+.my-box{
+    margin: 10px 0;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+.btn-group-xs>.btn, .btn-xs {
+    padding: 1px 5px;
+    font-size: 14px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    z-index: 3;
+    cursor: default;
+    background-color: #D8DEE4;
+    border-color: #D8DEE4;
+}
+.btn-default {
+    background-color: #fff;
+    color: #444;
+    border-color: #ddd;
+}
+.dropdown-menu>.active>a, .dropdown-menu>.active>a:focus, .dropdown-menu>.active>a:hover {
+    text-decoration: none;
+    background-color: #D8DEE4;
+    outline: 0;
+}
+.btn-default.active.focus, .btn-default.active:focus, .btn-default.active:hover, .btn-default:active.focus, .btn-default:active:focus, .btn-default:active:hover, .open>.dropdown-toggle.btn-default.focus, .open>.dropdown-toggle.btn-default:focus, .open>.dropdown-toggle.btn-default:hover {
+    color: #333;
+     background-color: #fff;
+    border-color: #8c8c8c;
+}
+a {
+    color: #6d8aa7;
+}
+:focus {
+    outline: none;
+}
+.pagination {
+    margin: 0;
+}
+.box {
+    padding: 10px;
+}
+#jobDetail{
+    resize: none;
+}
+.big-title{
+    font-size: 24px;
+}
+.h1, .h2, .h3, h1, h2, h3 {
+    margin: 0;
+}
+.scroll-box{
+    height: 80vh;
+    overflow: scroll;
+}
+.scroll-box::-webkit-scrollbar{
+    display: none;
+}

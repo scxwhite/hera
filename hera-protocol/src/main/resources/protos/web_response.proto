@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+import "status.proto";
+import "web_operate.proto";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcWebResponse";
+
+//web请求执行任务响应
+
+message WebResponse {
+    Status status = 1;
+    sint32 rid = 2;
+    WebOperate operate = 3;
+    string errorText = 4;
+    bytes body = 5;
+}

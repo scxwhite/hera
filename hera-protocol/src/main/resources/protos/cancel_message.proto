@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "execute_kind.proto";
+
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcCancelMessage";
+
+message CancelMessage {
+    ExecuteKind ek = 1;
+    string id = 2;
+}
+

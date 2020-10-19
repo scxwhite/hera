@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+import "operate.proto";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcRequest";
+
+//request
+
+message Request {
+
+    //request id 唯一标识一个请求
+    sint32 rid = 1;
+
+    //操作类型
+    Operate operate = 2;
+
+    //请求体
+    bytes body = 3;
+}
+

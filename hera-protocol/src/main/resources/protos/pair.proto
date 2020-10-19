@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcPair";
+
+message Pair {
+    string key = 1;
+    string value = 2;
+    sint32 type = 3;
+}

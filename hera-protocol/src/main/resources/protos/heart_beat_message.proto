@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option optimize_for = SPEED;
+option java_package = "com.dfire.protocol";
+option java_outer_classname = "RpcHeartBeatMessage";
+
+
+message AllHeartBeatInfoMessage {
+    map<string, HeartBeatMessage> values = 1;
+}
+
+
+message HeartBeatMessage {
+
+    //正在运行的自动调度job列表
+    repeated string running = 1;
+
+    //正在运行的文件脚本job列表
+    repeated string debugRunning = 2;
+
+    //正在运行的手动执行job列表
+    repeated string manualRunning = 3;
+    //正在运行的重跑任务列表
+    repeated string rerunRunning = 9;
+    //正在运行的超级恢复任务列表
+    repeated string superRunning = 10;
+
+    //时间戳
+    int64 timestamp = 4;
+
+    //内存占用比例
+    float mem_rate = 5;
+
+    //发送心跳的主机
+    string host = 6;
+
+    //每个核心的cpu负载
+    float cpu_load_per_core = 7;
+
+    //总内存大小，默认4096M
+    float mem_total = 4096;
+
+    int32 cores = 8;
+}

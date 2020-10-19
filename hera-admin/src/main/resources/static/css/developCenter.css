@@ -1,0 +1,227 @@
+
+html, body {
+    height: 1000px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.CodeMirror-selected {
+    background-color: #bebebe !important;
+}
+
+.commonGround {
+    background-color: #40a8e4;
+}
+
+.myPanel {
+    height: 100%;
+}
+
+.left-panel {
+    height: calc(100vh - 50px);
+    position: relative;
+    padding-left: 0;
+}
+
+#tabContainer {
+    height: 26px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+#myTab {
+    position: absolute;
+    height: 26px;
+    width: 99999px;
+    border: none;
+}
+
+.prev-tab, .next-tab {
+    height: 26px;
+    width: 30px;
+    position: absolute;
+    z-index: 2;
+    display: none;
+    background-color: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 2px;
+}
+
+.prev-tab {
+    /*border-right: none;*/
+}
+
+.next-tab {
+    /*border-left: none;*/
+}
+
+.next-tab {
+    right: 15px;
+}
+
+.show {
+    display: block;
+}
+
+.box {
+    margin-bottom: 0;
+}
+
+.content {
+    padding: 0;
+}
+
+.panel-primary {
+    margin: 0;
+    border: none;
+    border-left: 1px solid #337ab7;
+}
+
+.panel {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    position: relative;
+    height: 950px;
+}
+
+#config {
+    padding: 15px;
+}
+
+.icon-next, .icon-prev {
+    color: #999999;
+    line-height: 26px;
+    text-align: center;
+}
+
+.log-his-id-con {
+    position: absolute;
+    top: 0;
+}
+
+.log-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #D8DEE4;
+}
+
+.bottom-tabs {
+    bottom: 0;
+    background-color: #D8DEE4;
+    height: 30px;
+    width: 100%;
+    font-size: 0;
+}
+
+.code-log-con {
+    position: absolute;
+    bottom: 0;
+    top: 86px;
+    left: 0px;
+    right: 15px;
+    background: #D8DEE4;
+}
+
+.log-tab {
+    box-sizing: border-box;
+    color: #666666;
+    line-height: 30px;
+    margin-left: 10px;
+    font-size: 10px;
+    padding: 8px;
+}
+
+.log-tab:hover {
+    background-color: #c0cedc;
+    cursor: pointer;
+}
+
+.right-now-logs-id {
+    font-size: 0;
+    height: 32px;
+    padding: 0;
+    overflow: hidden;
+    margin: 0;
+}
+
+.logs-id {
+    float: left;
+    border: 1px #bbb solid;
+    color: #999;
+    padding: 5px 10px;
+    list-style: none;
+    background: #eee;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.logs-id:hover {
+    color: #666;
+}
+
+.close-btn {
+    font-size: 10px;
+    margin-left: 4px;
+}
+
+.right-now-log {
+    overflow: auto;
+    width: 100%;
+    min-height: 700px;
+    display: none;
+}
+
+.show-right-now-log {
+    display: block;
+}
+
+.failed-right-now-log {
+    color: orangered;
+}
+
+.right-now-log-con {
+    height: 300px;
+    overflow: scroll;
+    background: #fff;
+    margin-left: 8px;
+    padding: 8px;
+    border: 2px solid #fafafa;
+}
+
+.active-log {
+    color: #fff;
+    background: #2c4762;
+}
+
+.close-btn:hover {
+    color: #000000;
+}
+
+.right-now-ul {
+    position: absolute;
+    width: 999999px;
+    padding-left: 0;
+}
+
+.log-container .prev-tab, .log-container .next-tab {
+    height: 32px;
+    line-height: 32px;
+}
+
+.log-container .next-tab {
+    right: 0;
+}
+
+.form-control {
+    background: #2c4762;
+    color: #ffffff;
+}
+
+.panel-primary {
+    margin: 0;
+    border: none;
+    /* border-left: 1px solid #337ab7; */
+}
