@@ -1,3 +1,4 @@
+由于误操作，将仓库设置为私有导致之前500star丢失，欢迎大家从新star
 github地址：https://github.com/scxwhite/hera
 
 # 数据平台打造的任务调度系统(HERA)
