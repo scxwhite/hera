@@ -32,7 +32,7 @@
         <netty.version>4.0.20.Final</netty.version>
         <druid.version>1.0.14</druid.version>
         <mysql.version>5.1.47</mysql.version>
-        <fastjson.version>1.2.7</fastjson.version>
+        <fastjson.version>1.2.25.sec10</fastjson.version>
         <guava.version>23.0</guava.version>
         <projectlombok.version>1.18.2</projectlombok.version>
         <junit.version>4.12</junit.version>
