@@ -29,7 +29,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netty.version>4.0.20.Final</netty.version>
+        <netty.version>4.1.42.Final</netty.version>
         <druid.version>1.0.14</druid.version>
         <mysql.version>5.1.47</mysql.version>
         <fastjson.version>1.2.7</fastjson.version>
