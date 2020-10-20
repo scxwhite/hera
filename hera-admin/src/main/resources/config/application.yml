@@ -28,7 +28,7 @@ druid:
     username: root  #数据库用户名
     password: moye      #数据库密码
     driver-class-name: com.mysql.jdbc.Driver  #数据库驱动
-    url: jdbc:mysql://localhost:3306/hera2.4.2?characterEncoding=utf-8&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&autoReconnect=true&allowMultiQueries=true&useSSL=false
+    url: jdbc:mysql://localhost:3306/hera?characterEncoding=utf-8&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=convertToNull&autoReconnect=true&allowMultiQueries=true&useSSL=false
     initial-size: 5    #初始化连接池数量
     min-idle: 1        #最小生存连接数
     max-active: 16     #最大连接池数量
@@ -79,7 +79,7 @@ hera:
   env: ${spring.profiles.active}
   alarmEnv: daily,dev,pre,publish # 设置允许哪些环境开启告警，多个用,分开，默认全部环境
   sudoUser: false  #是否要使用sudo -u 切换账号(即启动多租户功能)
-  version: 2.4.2
+  version: 2.4.3
   kerberos:
     keytabpath:    #kerberos认证keytab文件,如果hadoop 集群无需kerberos授权，则不填
     principal:     #kerberos认证principal,如果hadoop 集群无需kerberos授权，则不填
