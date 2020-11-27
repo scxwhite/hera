@@ -65,7 +65,7 @@ public class HeraDebugHistoryServiceImpl implements HeraDebugHistoryService {
     }
 
     @Override
-    public HeraDebugHistory findLogById(Integer id) {
+    public HeraDebugHistory findLogById(Long id) {
         return heraDebugHistoryMapper.findLogById(id);
     }
 

@@ -217,7 +217,7 @@ public class DevelopCenterController extends BaseHeraController {
     @RequestMapping(value = "/getLog", method = RequestMethod.GET)
     @ResponseBody
     @ApiOperation("获取日志")
-    public JsonResponse getJobLog(@ApiParam(value = "fileid", required = true) Integer id) {
+    public JsonResponse getJobLog(@ApiParam(value = "fileid", required = true) Long id) {
         return new JsonResponse(true, debugHistoryService.findLogById(id));
     }
 

@@ -19,7 +19,6 @@ import com.dfire.event.Events;
 import com.dfire.event.HeraJobMaintenanceEvent;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.HeraLog;
-import com.dfire.logs.SocketLog;
 import com.dfire.logs.TaskLog;
 import com.dfire.protocol.JobExecuteKind.ExecuteKind;
 import com.dfire.protocol.*;
@@ -29,7 +28,6 @@ import com.dfire.protocol.RpcHeartBeatMessage.HeartBeatMessage;
 import com.dfire.protocol.RpcWebOperate.WebOperate;
 import com.dfire.protocol.RpcWebRequest.WebRequest;
 import com.dfire.protocol.RpcWebResponse.WebResponse;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -168,7 +166,7 @@ public class MasterHandlerWebResponse {
             case DebugKind:
             case ScheduleKind:
             case AutoRerunKind:
-                return MasterCancelJob.cancel(request.getEk(), context, request);
+                return MasterCancelJob.cancel(request.getEk(), context, request.getId(), request.getRid(), request.getOperate());
             default:
                 return WebResponse.newBuilder()
                         .setRid(request.getRid())

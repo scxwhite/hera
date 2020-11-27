@@ -29,7 +29,7 @@ public interface HeraDebugHistoryService {
     int updateLog(HeraDebugHistory heraDebugHistory);
 
 
-    HeraDebugHistory findLogById(Integer id);
+    HeraDebugHistory findLogById(Long id);
 
     void updateStatus(Long id, String msg, String status);
 }
