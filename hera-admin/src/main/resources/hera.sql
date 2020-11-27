@@ -68,10 +68,11 @@ CREATE TABLE IF NOT EXISTS `hera_action_history`
   batch_id varchar(50) DEFAULT NULL COMMENT '批次号',
   biz_label varchar(500) DEFAULT NULL COMMENT '标签',
   PRIMARY KEY (`id`),
-  KEY `ind_acthisactionjobid` (`action_id`, `job_id`),
-  KEY `idx_job_id` (`job_id`),
-  KEY `ind_his_gmtcreate` (`gmt_create`),
-  KEY `ind_end_time` (`end_time`)
+  KEY `ind_action_id_job_id` (`action_id`, `job_id`),
+  KEY `ind_job_id` (`job_id`),
+  KEY `ind_gmt_create` (`gmt_create`),
+  KEY `ind_end_time` (`end_time`),
+  KEY `ind_start_time` (`start_time`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='Job运行日志表';
 CREATE TABLE IF NOT EXISTS `hera_advice`

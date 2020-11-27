@@ -4,7 +4,6 @@ import com.dfire.core.netty.ScheduledChore;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.constant.MasterConstant;
 import com.dfire.logs.ErrorLog;
-
 import org.joda.time.DateTime;
 
 import java.util.concurrent.TimeUnit;
@@ -28,7 +27,8 @@ public class JobActionInit extends ScheduledChore {
             } catch (InterruptedException e) {
                 ErrorLog.error(Thread.currentThread().getName() + "is interrupted", e);
             }
-            master.generateBatchAction(false);
+            //必须生成版本，否则在凌晨重启时可能会有问题
+            master.generateBatchAction(true);
             master.clearInvalidAction();
         });
         thread.setName("first-start-action-init");

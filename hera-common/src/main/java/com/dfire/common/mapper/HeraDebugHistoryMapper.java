@@ -52,7 +52,7 @@ public interface HeraDebugHistoryMapper {
     int updateLog(HeraDebugHistory heraDebugHistory);
 
     @Select("select * from hera_debug_history where id = #{id}")
-    HeraDebugHistory findLogById(Integer id);
+    HeraDebugHistory findLogById(Long id);
 
     @Update("update hera_debug_history set status=#{status},log=#{msg},end_time = #{endTime}  where id = #{id} ")
     void updateStatusAndLog(@Param("id") Long id,

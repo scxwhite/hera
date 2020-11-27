@@ -24,10 +24,12 @@ import com.dfire.core.job.CancelHadoopJob;
 import com.dfire.core.job.JobContext;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.MasterContext;
+import com.dfire.core.netty.master.response.MasterCancelJob;
 import com.dfire.core.quartz.HeraQuartzJob;
 import com.dfire.event.*;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.ScheduleLog;
+import com.dfire.protocol.JobExecuteKind;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -119,21 +121,26 @@ public class JobHandler extends AbstractHandler {
                     if (jobHistory == null) {
                         return;
                     }
-                    // 搜索上一次运行的日志，从日志中提取jobId 进行kill
-                    if (jobHistory.getStatus() == null || !jobHistory.getStatus().equals(StatusEnum.SUCCESS.toString())) {
+                    //如果已经成功，直接广播即可
+                    if (StatusEnum.SUCCESS.toString().equals(jobHistory.getStatus())) {
+                        heraJobActionService.updateStatus(heraAction.getId(), StatusEnum.SUCCESS.toString());
+                        HeraJobHistoryVo historyVo = BeanConvertUtils.convert(jobHistory);
+                        HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, historyVo.getTriggerType(), historyVo);
+                        masterContext.getDispatcher().forwardEvent(successEvent);
+                    } else {
+                        // 搜索上一次运行的日志，从日志中提取jobId 进行kill
                         try {
-                            JobContext tmp = JobContext.getTempJobContext(JobContext.MANUAL_RUN);
-                            tmp.setHeraJobHistory(BeanConvertUtils.convert(jobHistory));
-                            new CancelHadoopJob(tmp).run();
-                            startNewJob(BeanConvertUtils.transform(heraAction), LogConstant.SERVER_START_JOB_LOG, TriggerTypeEnum.SCHEDULE);
+                            MasterCancelJob.cancel(JobExecuteKind.ExecuteKind.ManualKind, masterContext,
+                                    String.valueOf(jobHistory.getId()), 0, null);
                         } catch (Exception e) {
                             ErrorLog.error("取消任务异常", e);
                         }
+                        jobHistory.setStatus(StatusEnum.FAILED.toString());
+                        jobHistory.setIllustrate("任务历史丢失");
+                        jobHistory.setEndTime(new Date());
+                        jobHistoryService.update(jobHistory);
+                        startNewJob(BeanConvertUtils.transform(heraAction), LogConstant.SERVER_START_JOB_LOG, TriggerTypeEnum.SCHEDULE);
                     }
-                    jobHistory.setStatus(StatusEnum.FAILED.toString());
-                    jobHistory.setIllustrate("任务历史丢失");
-                    jobHistory.setEndTime(new Date());
-                    jobHistoryService.update(jobHistory);
                 } else {
                     startNewJob(BeanConvertUtils.transform(heraAction), LogConstant.SERVER_START_JOB_LOG, TriggerTypeEnum.SCHEDULE);
                 }
@@ -190,16 +197,21 @@ public class JobHandler extends AbstractHandler {
 
         //如果是超级恢复
         if (event.getTriggerType() == TriggerTypeEnum.SUPER_RECOVER) {
+            //检测依赖任务是否已经执行成功，如果不是成功状态，则取消下游触发
             List<Long> dependencies = heraActionVo.getDependencies();
-            for (Long depId : dependencies) {
-                HeraAction action = master.getHeraActionMap().get(depId);
-                if (action != null && StatusEnum.RUNNING.toString().equals(action.getStatus())) {
-                    ScheduleLog.info(String.format("{} is running,cancel job {}  super recovery", depId, heraActionVo.getId()));
-                    return;
+            boolean canRun = true;
+            for (Long actionId : dependencies) {
+                HeraAction heraAction = heraJobActionService.findById(actionId);
+                if (heraAction == null || !StatusEnum.SUCCESS.toString().equals(heraAction.getStatus())) {
+                    canRun = false;
+                    ScheduleLog.info(String.format("cancel %s super recovery,job %s not success ", heraActionVo.getId(), actionId));
+                    break;
                 }
             }
-            startNewJob(heraActionVo, LogConstant.SUPER_RECOVER_LOG, TriggerTypeEnum.SUPER_RECOVER);
-
+            if (canRun) {
+                ScheduleLog.info("JobId:" + actionId + " trigger super recovery dependency,run!");
+                startNewJob(heraActionVo, LogConstant.SUPER_RECOVER_LOG, TriggerTypeEnum.SUPER_RECOVER);
+            }
         } else if (event.getTriggerType() == TriggerTypeEnum.SCHEDULE || event.getTriggerType() == TriggerTypeEnum.MANUAL_RECOVER) {
             //必须同步
             synchronized (this) {
