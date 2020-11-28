@@ -24,7 +24,7 @@ github地址：https://github.com/scxwhite/hera
 - 摩比神奇(北京)信息技术有限公司
 - 杭州富聊科技有限公司
 - 来伊份大数据--------新鲜零食 来自上海 全国2800家专卖店
-- 持续更新中。。欢迎大家自荐
+- 持续更新中。。[欢迎大家自荐](https://github.com/scxwhite/hera/issues/24)
 
 # 交流群
 
