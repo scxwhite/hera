@@ -40,7 +40,7 @@
                 <div class="tab-pane active" id="tab-login">
                     <form id="loginForm" method="post">
                         <div class="name" style="margin: 20px 10px">
-                            <label>用户名</label><input type="text" class="text" name="userName" placeholder="邮箱前缀(sucx@tuya.com,前缀为sucx)"/>
+                            <label>用户名</label><input type="text" class="text" name="userName" placeholder="邮箱前缀(sucx@aliyun.com,前缀为sucx)"/>
                         </div>
                         <div class="pwd" style="margin: 20px 10px">
                             <label>密　码</label><input type="password" class="text" name="password" placeholder="密码"/>
