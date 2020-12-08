@@ -402,6 +402,14 @@ public class ScheduleCenterController extends BaseHeraController {
         return new JsonResponse(true, heraJobHistoryService.findLogById(id));
     }
 
+    @RequestMapping(value = "jobInstLog", method = RequestMethod.GET)
+    @ResponseBody
+    @RunAuth()
+    @ApiOperation("获取任务日志接口")
+    public String jobInstLog(@ApiParam(value = "任务ID", required = true) Integer id,Integer hisId) {
+        return  heraJobHistoryService.findLogById(hisId).getLog();
+    }
+
 
     @RequestMapping(value = "/status/{jobId}", method = RequestMethod.GET)
     @ResponseBody

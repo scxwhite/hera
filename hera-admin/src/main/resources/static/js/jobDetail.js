@@ -443,7 +443,7 @@ layui.use(['table'], function () {
                             	re =  js_manualJob_nonclick +"|"+js_cancelJob_nonclick +"|"+js_manualForce_nonclick ;
                             }
 
-                            logdetail='<a target="_blank" href="jobInstLog?id=' + row['id'] + '&jobId=' + row['jobId']  +'"> 日志</a>'
+                            logdetail='<a target="_blank" href="scheduleCenter/jobInstLog?hisId=' + row['id'] + '&id=' + row['jobId']  +'"> 日志</a>'
 
                             return re + "|" + logdetail;
                         }
