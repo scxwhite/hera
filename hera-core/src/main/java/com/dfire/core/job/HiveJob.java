@@ -85,10 +85,10 @@ public class HiveJob extends ProcessJob {
                     }
                 }
             }
-            list.add("chmod -R 777 " + jobContext.getWorkDir());
+            list.add("chmod -R 777 " + tmpFilePath);
             list.add(shellPrefix + " sh " + tmpFilePath);
         } else {
-            list.add("chmod -R 777 " + jobContext.getWorkDir());
+            list.add("chmod -R 777 " + tmpFilePath);
             list.add(shellPrefix + HeraGlobalEnv.getJobHiveBin() + hiveCommand);
         }
         return list;

@@ -3,23 +3,29 @@ package com.dfire.core.netty.master.schedule;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.HeraJobHistory;
-import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.entity.vo.HeraActionMani;
+import com.dfire.common.enums.CycleEnum;
+import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.util.ActionUtil;
+import com.dfire.common.util.BeanConvertUtils;
 import com.dfire.core.event.Dispatcher;
 import com.dfire.core.netty.ScheduledChore;
 import com.dfire.core.netty.master.Master;
 import com.dfire.core.netty.master.constant.MasterConstant;
 import com.dfire.event.Events;
 import com.dfire.event.HeraJobLostEvent;
+import com.dfire.event.HeraJobSuccessEvent;
 import com.dfire.logs.ErrorLog;
-import com.dfire.logs.HeartLog;
+import com.dfire.logs.MonitorLog;
 import com.dfire.logs.ScheduleLog;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * desc:任务信号丢失定时检测backup
@@ -29,7 +35,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class LostJobCheck extends ScheduledChore {
 
-    private Master master;
+    private final Master master;
 
     private LostJobCheck(Master master, long initialDelay, long period, TimeUnit unit) {
         super("LostJobCheck", initialDelay, period, unit);
@@ -40,27 +46,30 @@ public class LostJobCheck extends ScheduledChore {
         this(master, minuteOfHour <= 30 ? 40 - minuteOfHour : 70 - minuteOfHour, 30, TimeUnit.MINUTES);
     }
 
+
     @Override
     protected void chore() {
+        if (master.getMasterContext().isStop()) {
+            ScheduleLog.info("master is on stop status,stop run LostJobCheck");
+            return;
+        }
         //信号丢失检测
         ScheduleLog.info("refresh host group success, start roll back");
         master.getMasterContext().refreshHostGroupCache();
         String currDate = ActionUtil.getCurrActionVersion();
         Dispatcher dispatcher = master.getMasterContext().getDispatcher();
         if (dispatcher != null) {
-            Map<Long, HeraAction> actionMapNew = new HashMap<>(master.getHeraActionMap());
-            if (actionMapNew.size() > 0) {
-                List<Long> actionIdList = new ArrayList<>();
-                Long tmp = Long.parseLong(currDate) - MasterConstant.PRE_CHECK_MIN;
+            Long endAction = Long.parseLong(currDate) - MasterConstant.PRE_CHECK_MIN;
+            List<HeraActionMani> manifest = master.getMasterContext().getHeraJobActionService().getAllManifest(endAction);
+            if (manifest != null && manifest.size() > 0) {
+                Map<Long, HeraActionMani> actionMapNew = manifest.stream().collect(Collectors.toMap(HeraActionMani::getId, heraActionMani -> heraActionMani));
                 for (Long actionId : actionMapNew.keySet()) {
-                    if (actionId < tmp) {
-                        rollBackLostJob(actionId, actionMapNew, actionIdList);
+                    if (actionId <= endAction) {
+                        rollBackLostJob(actionId, actionMapNew);
                         checkLostSingle(actionId, actionMapNew);
                     }
                 }
-                ScheduleLog.info("roll back action count:" + actionIdList.size());
             }
-            ScheduleLog.info("clear job scheduler ok");
         }
     }
 
@@ -70,33 +79,42 @@ public class LostJobCheck extends ScheduledChore {
      *
      * @param actionId     版本id
      * @param actionMapNew actionMap集合
-     * @param actionIdList 重跑的actionId
      */
 
-    private void rollBackLostJob(Long actionId, Map<Long, HeraAction> actionMapNew, List<Long> actionIdList) {
-        HeraAction lostJob = actionMapNew.get(actionId);
+    private void rollBackLostJob(Long actionId, Map<Long, HeraActionMani> actionMapNew) {
+        HeraActionMani lostJob = actionMapNew.get(actionId);
         boolean isCheck = lostJob != null
                 && lostJob.getAuto() == 1
-                && lostJob.getStatus() == null;
+                && (StringUtils.isBlank(lostJob.getStatus()));
         if (isCheck && master.checkJobRun(master.getMasterContext().getHeraJobService().findById(lostJob.getJobId()))) {
-            String dependencies = lostJob.getDependencies();
-            if (StringUtils.isNotBlank(dependencies)) {
-                List<String> jobDependList = Arrays.asList(dependencies.split(Constants.COMMA));
-                boolean isAllComplete = false;
-                HeraAction heraAction;
-                if (jobDependList.size() > 0) {
-                    for (String jobDepend : jobDependList) {
-                        heraAction = actionMapNew.get(Long.parseLong(jobDepend));
-                        if (heraAction == null || !(isAllComplete = StatusEnum.SUCCESS.toString().equals(heraAction.getStatus()))) {
-                            break;
-                        }
+            boolean isAllComplete = true;
+            HeraActionMani heraAction;
+            //依赖任务
+            if (lostJob.getScheduleType().equals(JobScheduleTypeEnum.Dependent.getType())) {
+                String[] jobDependList = lostJob.getDependencies().split(Constants.COMMA);
+                for (String jobDepend : jobDependList) {
+                    heraAction = actionMapNew.get(Long.parseLong(jobDepend));
+                    if (heraAction == null || !StatusEnum.SUCCESS.toString().equals(heraAction.getStatus())) {
+                        isAllComplete = false;
+                        break;
                     }
                 }
-                if (isAllComplete) {
-                    addRollBackJob(actionIdList, actionId);
+            } else if (lostJob.getScheduleType().equals(JobScheduleTypeEnum.Independent.getType()) && CycleEnum.isSelfDep(lostJob.getCycle())) {
+                //定时+自依赖任务
+                String[] jobDependList = lostJob.getDependencies().split(Constants.COMMA);
+                for (String dep : jobDependList) {
+                    if (dep.equals(String.valueOf(lostJob.getId()))) {
+                        continue;
+                    }
+                    heraAction = actionMapNew.get(Long.parseLong(dep));
+                    if (heraAction == null || !StatusEnum.SUCCESS.toString().equals(heraAction.getStatus())) {
+                        isAllComplete = false;
+                        break;
+                    }
                 }
-            } else { //独立任务情况
-                addRollBackJob(actionIdList, actionId);
+            }
+            if (isAllComplete) {
+                addRollBackJob(actionId);
             }
         }
     }
@@ -107,9 +125,9 @@ public class LostJobCheck extends ScheduledChore {
      * @param actionId     hera_action 表信息id /版本id
      * @param actionMapNew hera_action 内存信息 /内存保存的今天版本信息
      */
-    private void checkLostSingle(Long actionId, Map<Long, HeraAction> actionMapNew) {
+    private void checkLostSingle(Long actionId, Map<Long, HeraActionMani> actionMapNew) {
         try {
-            HeraAction checkJob = actionMapNew.get(actionId);
+            HeraActionMani checkJob = actionMapNew.get(actionId);
             if (checkJob == null) {
                 return;
             }
@@ -118,24 +136,32 @@ public class LostJobCheck extends ScheduledChore {
                 if (actionHistory == null) {
                     return;
                 }
-                if (actionHistory.getStatus() != null && !actionHistory.getStatus().equals(StatusEnum.RUNNING.toString())) {
+                if (org.apache.commons.lang3.StringUtils.isNotBlank(actionHistory.getStatus()) && !actionHistory.getStatus().equals(StatusEnum.RUNNING.toString())) {
                     master.getMasterContext().getMasterSchedule().schedule(() -> {
                         HeraAction newAction = master.getMasterContext().getHeraJobActionService().findById(actionId);
-                        if (StatusEnum.RUNNING.toString().equals(newAction.getStatus())) {
-                            HeartLog.warn("任务信号丢失actionId:{},historyId:{}", actionId, newAction.getHistoryId());
-                            boolean scheduleType = actionHistory.getTriggerType().equals(TriggerTypeEnum.SCHEDULE.getId())
-                                    || actionHistory.getTriggerType().equals(TriggerTypeEnum.MANUAL_RECOVER.getId());
-                            //TODO 可以选择重跑 or 广播 + 设置状态 这里偷懒 直接重跑
-                            master.getMasterContext().getWorkMap().values().forEach(workHolder -> {
-                                if (scheduleType) {
+                        if (StatusEnum.RUNNING.toString().equals(newAction.getStatus()) && newAction.getHistoryId().equals(checkJob.getHistoryId())) {
+                            if (actionHistory.getTriggerType().equals(TriggerTypeEnum.SCHEDULE.getId())
+                                    || actionHistory.getTriggerType().equals(TriggerTypeEnum.MANUAL_RECOVER.getId())
+                                    || actionHistory.getTriggerType().equals(TriggerTypeEnum.SUPER_RECOVER.getId())) {
+                                master.getMasterContext().getWorkMap().values().forEach(workHolder -> {
                                     workHolder.getRunning().remove(actionId);
-                                } else {
+                                    workHolder.getSuperRunning().remove(actionId);
+                                    workHolder.getRerunRunning().remove(actionId);
                                     workHolder.getManningRunning().remove(actionId);
+                                });
+                                if (actionHistory.getStatus().equals(StatusEnum.SUCCESS.toString())) {
+                                    MonitorLog.info("history_id:{},action_id:{}信号丢失，但历史执行成功，直接广播并更新状态", newAction.getHistoryId(), actionId);
+                                    HeraJobSuccessEvent successEvent = new HeraJobSuccessEvent(actionId, TriggerTypeEnum.parser(actionHistory.getTriggerType())
+                                            , BeanConvertUtils.convert(actionHistory));
+                                    master.getMasterContext().getDispatcher().forwardEvent(successEvent);
+                                    master.getMasterContext().getHeraJobActionService().updateStatus(actionId, StatusEnum.SUCCESS.toString());
+                                } else {
+                                    MonitorLog.warn("任务信号丢失重试actionId:{},historyId:{}", actionId, newAction.getHistoryId());
+                                    master.startNewJob(actionHistory, "任务信号丢失重试");
                                 }
-                            });
-                            master.startNewJob(actionHistory, "任务信号丢失重试");
+                            }
                         }
-                    }, 1, TimeUnit.MINUTES);
+                    }, 30, TimeUnit.SECONDS);
 
                 }
             }
@@ -145,17 +171,8 @@ public class LostJobCheck extends ScheduledChore {
 
     }
 
-    private void addRollBackJob(List<Long> actionIdList, Long actionId) {
-        if (!actionIdList.contains(actionId) &&
-                !master.checkJobExists(HeraJobHistoryVo
-                        .builder()
-                        .actionId(actionId)
-                        .triggerType(TriggerTypeEnum.SCHEDULE)
-                        .jobId((ActionUtil.getJobId(actionId)))
-                        .build(), true)) {
-            master.getMasterContext().getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId));
-            actionIdList.add(actionId);
-            ScheduleLog.info("roll back lost actionId :" + actionId);
-        }
+    private void addRollBackJob(Long actionId) {
+        master.getMasterContext().getDispatcher().forwardEvent(new HeraJobLostEvent(Events.UpdateJob, actionId));
+        ScheduleLog.info("roll back lost actionId :" + actionId);
     }
 }

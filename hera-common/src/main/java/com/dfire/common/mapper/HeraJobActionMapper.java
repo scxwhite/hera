@@ -1,6 +1,7 @@
 package com.dfire.common.mapper;
 
 import com.dfire.common.entity.HeraAction;
+import com.dfire.common.entity.vo.HeraActionMani;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.mybatis.HeraInsertLangDriver;
 import com.dfire.common.mybatis.HeraListInLangDriver;
@@ -48,7 +49,7 @@ public interface HeraJobActionMapper {
     HeraAction findById(Long id);
 
 
-    @Select("select * from hera_action where job_id = #{jobId} order by id desc limit 1")
+    @Select("select * from hera_action where id =(select max(id) from hera_action where job_id = #{jobId})")
     HeraAction findLatestByJobId(Long jobId);
 
     @Select("select * from hera_action where job_id = #{jobId} order by id")
@@ -70,7 +71,7 @@ public interface HeraJobActionMapper {
      * @param jobId
      * @return
      */
-    @Select("select id from hera_action where job_id = #{jobId} order by id desc limit 24")
+    @Select("select id from hera_action where job_id = #{jobId} AND id < DATE_ADD(CURRENT_DATE (),INTERVAL 1 DAY) * 10000000000 order by id desc limit 72")
     List<Long> getActionVersionByJobId(Long jobId);
 
     @Select("select id,job_id,owner,auto from hera_action where id <= CURRENT_TIMESTAMP()* 10000 and id >= CURRENT_DATE () * 10000000000 and schedule_type = 0 and auto = 1 and status != 'success' group by job_id")
@@ -114,4 +115,14 @@ public interface HeraJobActionMapper {
 
     @Select("select * from hera_action where job_id = #{jobId} and status = 'success' and id >= CURRENT_DATE () * 10000000000 limit 1")
     HeraAction selectTodaySuccessByJobId(int jobId);
+
+
+    @Select("select * from hera_action where id =(select max(id) from hera_action where  id <#{todayAction} and job_id = #{jobId})")
+    HeraAction findLatestByAction(@Param("todayAction") long todayAction,
+                                  @Param("jobId") int jobId);
+
+
+    @Select("select cycle,history_id,id,auto,job_id,status,dependencies,ready_dependency,schedule_type from hera_action where id>=#{start} and id<=#{end} ")
+    List<HeraActionMani> getAllManifest(@Param("start") long todayAction,
+                                        @Param("end") long endAction);
 }
