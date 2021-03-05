@@ -3,6 +3,7 @@ package com.dfire.common.service.impl;
 import com.dfire.common.constants.Constants;
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.model.TablePageForm;
+import com.dfire.common.entity.vo.HeraActionMani;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.kv.Tuple;
@@ -296,6 +297,11 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     @Override
     public HeraAction findTodaySuccessByJobId(int jobId) {
         return heraJobActionMapper.selectTodaySuccessByJobId(jobId);
+    }
+
+    @Override
+    public List<HeraActionMani> getAllManifest(Long endAction) {
+        return heraJobActionMapper.getAllManifest(Long.parseLong(ActionUtil.getTodayAction()), endAction);
     }
 
     private String buildFont(String str, String type) {

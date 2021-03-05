@@ -2,6 +2,7 @@ package com.dfire.common.service;
 
 import com.dfire.common.entity.HeraAction;
 import com.dfire.common.entity.model.TablePageForm;
+import com.dfire.common.entity.vo.HeraActionMani;
 import com.dfire.common.entity.vo.HeraActionVo;
 import com.dfire.common.kv.Tuple;
 import com.dfire.common.vo.GroupTaskVo;
@@ -87,4 +88,6 @@ public interface HeraJobActionService {
     boolean deleteAction(long startAction, long endAction, Integer jobId);
 
     HeraAction findTodaySuccessByJobId(int id);
+
+    List<HeraActionMani> getAllManifest(Long endAction);
 }

@@ -106,7 +106,7 @@ public class ActionUtil {
         return Long.parseLong(new DateTime(getDateByDateStr(date, DEFAULT_FORMAT)).toString(ACTION_VERSION_CURR));
     }
 
-    public static String getInitActionVersion() {
+    public static String getTodayAction() {
         return new DateTime().toString(ACTION_VERSION_INIT);
 
     }
@@ -169,7 +169,7 @@ public class ActionUtil {
     }
 
     public static boolean isTodayActionVersion(String actionId) {
-        return ActionUtil.getInitActionVersion().compareTo(actionId) <= 0;
+        return ActionUtil.getTodayAction().compareTo(actionId) <= 0;
     }
 
     public static boolean jobEquals(Long first, Long second) {
