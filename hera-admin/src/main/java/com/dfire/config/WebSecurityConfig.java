@@ -32,7 +32,7 @@ public class WebSecurityConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry interceptorRegistry) {
         InterceptorRegistration addRegistry = interceptorRegistry.addInterceptor(getSecurityInterceptor());
-        addRegistry.excludePathPatterns("/error").excludePathPatterns("/login/**");
+        addRegistry.excludePathPatterns("/error**").excludePathPatterns("/login/**");
     }
 
     private class SecurityInterceptor extends HandlerInterceptorAdapter {
