@@ -30,6 +30,7 @@ import com.dfire.event.*;
 import com.dfire.logs.ErrorLog;
 import com.dfire.logs.ScheduleLog;
 import com.dfire.protocol.JobExecuteKind;
+import com.dfire.protocol.RpcWebOperate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -131,7 +132,7 @@ public class JobHandler extends AbstractHandler {
                         // 搜索上一次运行的日志，从日志中提取jobId 进行kill
                         try {
                             MasterCancelJob.cancel(JobExecuteKind.ExecuteKind.ManualKind, masterContext,
-                                    String.valueOf(jobHistory.getId()), 0, null);
+                                    String.valueOf(jobHistory.getId()), 0, RpcWebOperate.WebOperate.CancelJob);
                         } catch (Exception e) {
                             ErrorLog.error("取消任务异常", e);
                         }
