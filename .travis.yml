@@ -4,3 +4,7 @@ jdk:
 install: mvn install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true
 #script: mvn test
 script: mvn clean package -Pdev
+
+cache:
+  directories:
+  - $HOME/.m2
