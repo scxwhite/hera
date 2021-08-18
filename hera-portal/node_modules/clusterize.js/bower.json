@@ -1,0 +1,19 @@
+{
+  "name": "clusterize",
+  "description": "Tiny vanilla JS plugin to display large data sets easily",
+  "main": [
+    "clusterize.js", "clusterize.css"
+  ],
+  "ignore": [],
+  "moduleType": [
+    "globals", "amd", "commonjs"
+  ],
+  "keywords": [
+    "large", "table", "list", "scroll", "grid", "cluster"
+  ],
+  "authors": [
+    "Denis Lukov"
+  ],
+  "license": "GPLv3",
+  "homepage": "https://github.com/NeXTs/Clusterize.js"
+}

@@ -243,7 +243,7 @@
 
 <#macro commonFooter >
     <footer class="main-footer">
-        Powered by <b>hera</b> 2.4.3
+        Powered by <b>hera</b> 2.4.4
         <div class="pull-right hidden-xs">
             <strong>Copyright &copy; 2018-${.now?string('yyyy')} &nbsp;
                 <a href="https://github.com/scxwhite/hera" target="_blank">github/scx_white</a>

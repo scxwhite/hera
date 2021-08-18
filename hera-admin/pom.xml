@@ -7,14 +7,13 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>2.4.3</version>
+        <version>2.4.4</version>
     </parent>
 
     <artifactId>hera-admin</artifactId>
-    <version>${hera.admin.version}</version>
     <packaging>jar</packaging>
-    <name>hera-admin</name>
-    <description>hera任务调度系统</description>
+
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -60,15 +59,8 @@
         <dependency>
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
-            <version>5.1.2</version>
         </dependency>
-<!--
-        使用后会影响dubbo的初始化
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>-->
+
 
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -6,6 +6,6 @@ ${AnsiColor.BRIGHT_CYAN}
  |_| |_|\___|_|  \__,_|     create by: 凌霄 小苏打 生煎 火锅
 
 ${AnsiColor.BRIGHT_YELLOW}
-::: Spring-Boot ${spring-boot.version}     ::: Hera (version:${hera.version})
+::: Spring-Boot ${spring-boot.version}     ::: Hera (version:2.4.4)
 
 ${AnsiColor.DEFAULT}

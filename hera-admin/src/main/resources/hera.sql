@@ -40,10 +40,10 @@ CREATE TABLE IF NOT EXISTS `hera_action`
   `down_actions`         varchar(16)                  DEFAULT NULL,
   `batch_id` varchar(50) DEFAULT NULL COMMENT '批次号',
   PRIMARY KEY (`id`),
-  KEY `ind_action_groupid` (`group_id`),
-  KEY `ind_actionjobid` (`job_id`)
+  KEY `idx_group_id` (`group_id`),
+  KEY `idx_job_id` (`job_id`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4 COMMENT ='job版本记录表';
+  DEFAULT CHARSET = utf8mb4 COMMENT ='job实例记录表';
 
 CREATE TABLE IF NOT EXISTS `hera_action_history`
 (
@@ -68,11 +68,11 @@ CREATE TABLE IF NOT EXISTS `hera_action_history`
   batch_id varchar(50) DEFAULT NULL COMMENT '批次号',
   biz_label varchar(500) DEFAULT NULL COMMENT '标签',
   PRIMARY KEY (`id`),
-  KEY `ind_action_id_job_id` (`action_id`, `job_id`),
-  KEY `ind_job_id` (`job_id`),
-  KEY `ind_gmt_create` (`gmt_create`),
-  KEY `ind_end_time` (`end_time`),
-  KEY `ind_start_time` (`start_time`)
+  KEY `idx_action_id_job_id` (`action_id`, `job_id`),
+  KEY `idx_job_id` (`job_id`),
+  KEY `idx_gmt_create` (`gmt_create`),
+  KEY `idx_end_time` (`end_time`),
+  KEY `idx_start_time` (`start_time`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='Job运行日志表';
 CREATE TABLE IF NOT EXISTS `hera_advice`
@@ -150,9 +150,9 @@ CREATE TABLE IF NOT EXISTS `hera_group`
   `resources`    text,
   `existed`      int(11)      NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  KEY `ind_heragroupparent` (`parent`)
+  KEY `idx_parent` (`parent`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4;
+  DEFAULT CHARSET = utf8mb4 COMMENT ='调度中心目录表';
 
 CREATE TABLE IF NOT EXISTS `hera_host_group`
 (
@@ -219,9 +219,9 @@ CREATE TABLE IF NOT EXISTS `hera_job`
   biz_label varchar(500) DEFAULT '',
   `estimated_end_hour` int(4) NOT NULL DEFAULT '0' COMMENT '预计结束结束时间',
   PRIMARY KEY (`id`),
-  KEY `ind_zeusjobgroupid` (`group_id`)
+  KEY `idx_group_id` (`group_id`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4 COMMENT ='hera的job 记录表';
+  DEFAULT CHARSET = utf8mb4 COMMENT ='调度中心任务记录表';
 
 CREATE TABLE IF NOT EXISTS `hera_job_monitor`
 (
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `hera_job_monitor`
   `user_ids` varchar(100) NOT NULL,
   PRIMARY KEY (`job_id`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4;
+  DEFAULT CHARSET = utf8mb4 COMMENT ='任务关注人列表';
 
 CREATE TABLE IF NOT EXISTS `hera_lock`
 (
@@ -256,16 +256,7 @@ CREATE TABLE IF NOT EXISTS `hera_permission`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='任务授权记录表';
 
-CREATE TABLE IF NOT EXISTS `hera_profile`
-(
-  `id`           bigint(20) NOT NULL AUTO_INCREMENT,
-  `gmt_create`   datetime      DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `gmt_modified` datetime      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-  `hadoop_conf`  varchar(2024) DEFAULT NULL COMMENT 'hadoop配置信息',
-  `uid`          varchar(32)   DEFAULT NULL COMMENT '用户名称',
-  PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4 COMMENT ='用户配置表';
+
 
 
 CREATE TABLE IF NOT EXISTS `hera_user`
@@ -284,7 +275,7 @@ CREATE TABLE IF NOT EXISTS `hera_user`
   `description`  varchar(256)  DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4;
+  DEFAULT CHARSET = utf8mb4 comment ='用户组表';
 
 
 CREATE TABLE IF NOT EXISTS `hera_sso`
@@ -317,7 +308,6 @@ CREATE TABLE IF NOT EXISTS `hera_record`
   `gId`          int(11)          NOT NULL DEFAULT '-1' COMMENT '组id',
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 37
   DEFAULT CHARSET = utf8mb4 COMMENT ='日志记录表';
 
 

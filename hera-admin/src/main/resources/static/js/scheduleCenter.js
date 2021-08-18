@@ -1541,7 +1541,7 @@ layui.use(['table'], function () {
                     }, {
                         field: "actionId",
                         title: "版本号",
-                        width: "11%",
+                        width: "14%",
                         halign: 'center',
                         align: 'center',
                         formatter: function (val) {

@@ -7,33 +7,16 @@
     <parent>
         <groupId>com.dfire.hera</groupId>
         <artifactId>hera</artifactId>
-        <version>2.4.3</version>
+        <version>2.4.4</version>
     </parent>
 
     <artifactId>hera-core</artifactId>
     <packaging>jar</packaging>
-    <version>${hera.core.version}</version>
     <name>hera-core</name>
-    <description>hera project for Spring Boot</description>
 
-    <properties>
-        <quartz.version>2.2.1</quartz.version>
-        <jwt.version>3.3.0</jwt.version>
-        <lang3.version>3.4</lang3.version>
-    </properties>
+
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-emr -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-emr</artifactId>
-            <version>1.11.513</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-core</artifactId>
-            <version>1.11.513</version>
-        </dependency>
 
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
@@ -42,12 +25,18 @@
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-core</artifactId>
-            <version>4.3.9</version>
         </dependency>
         <dependency>
             <groupId>com.aliyun</groupId>
             <artifactId>aliyun-java-sdk-emr</artifactId>
-            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-emr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
         </dependency>
 
         <dependency>
@@ -57,9 +46,7 @@
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
-            <version>${jwt.version}</version>
         </dependency>
-        <!-- redisson-->
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -76,7 +63,6 @@
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -86,7 +72,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${lang3.version}</version>
         </dependency>
 
 
@@ -112,7 +97,6 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
 
