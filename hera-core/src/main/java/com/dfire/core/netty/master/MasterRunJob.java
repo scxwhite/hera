@@ -203,6 +203,12 @@ public class MasterRunJob implements RunJob {
         runCount++;
         boolean isCancelJob = false;
         if (runCount > 1) {
+            DebugLog.info("任务重试，睡眠：{}分钟", retryWaitTime);
+            try {
+                TimeUnit.MINUTES.sleep(retryWaitTime);
+            } catch (InterruptedException e) {
+                ErrorLog.error("sleep interrupted", e);
+            }
             HeraJob memJob = masterContext.getHeraJobService().findMemById(ActionUtil.getJobId(actionId));
             //如果任务已经关闭，取消执行
             if (memJob == null || memJob.getAuto() != 1) {
@@ -229,13 +235,6 @@ public class MasterRunJob implements RunJob {
                     ScheduleLog.info(String.format("cancel job  {} retry, there is another task running or success", actionId));
                     return;
                 }
-            }
-
-            DebugLog.info("任务重试，睡眠：{}分钟", retryWaitTime);
-            try {
-                TimeUnit.MINUTES.sleep(retryWaitTime);
-            } catch (InterruptedException e) {
-                ErrorLog.error("sleep interrupted", e);
             }
         }
         HeraJobHistoryVo heraJobHistoryVo;
