@@ -20,9 +20,9 @@ import java.util.Date;
 @AllArgsConstructor
 public class HeraRecord {
 
-    private int id;
+    private Integer id;
 
-    private int type;
+    private Integer type;
 
     private String content;
 
