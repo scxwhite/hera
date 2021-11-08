@@ -39,7 +39,7 @@ github地址：https://github.com/scxwhite/hera
 开源不易，感谢支持
 
 # 介绍文章
-[操作文档](https://github.com/scxwhite/hera/blob/hera-master/hera-admin/src/main/resources/static/help/help.md)
+[操作文档](https://github.com/scxwhite/hera/wiki/%E6%93%8D%E4%BD%9C%E6%96%87%E6%A1%A3)
 
 [赫拉(hera)分布式任务调度系统之操作文档](https://scx-white.blog.csdn.net/article/details/102571798)
 
