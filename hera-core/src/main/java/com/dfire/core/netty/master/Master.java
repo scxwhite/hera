@@ -219,10 +219,11 @@ public class Master {
                 if (dispatcher != null) {
                     if (actionMap.size() > 0) {
                         for (Long id : actionMap.keySet()) {
-                            dispatcher.addJobHandler(new JobHandler(id, masterContext.getMaster(), masterContext));
+                            JobHandler jobHandler = new JobHandler(id, masterContext.getMaster(), masterContext);
+                            dispatcher.addJobHandler(jobHandler);
                             //如果是今天的版本 更新缓存
                             if (ActionUtil.isTodayActionVersion(id.toString())) {
-                                dispatcher.forwardEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id));
+                                jobHandler.handleEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id));
                             }
                         }
                     }
