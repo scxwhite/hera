@@ -36,7 +36,7 @@
         <fastjson.version>1.2.61</fastjson.version>
         <guava.version>23.0</guava.version>
         <projectlombok.version>1.18.2</projectlombok.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <slf4j.version>1.7.9</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <log4j.over.slf4j.version>1.7.9</log4j.over.slf4j.version>
