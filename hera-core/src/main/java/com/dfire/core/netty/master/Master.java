@@ -7,6 +7,7 @@ import com.dfire.common.constants.TimeFormatConstant;
 import com.dfire.common.entity.*;
 import com.dfire.common.entity.vo.HeraDebugHistoryVo;
 import com.dfire.common.entity.vo.HeraJobHistoryVo;
+import com.dfire.common.enums.JobScheduleTypeEnum;
 import com.dfire.common.enums.StatusEnum;
 import com.dfire.common.enums.TriggerTypeEnum;
 import com.dfire.common.exception.HostGroupNotExistsException;
@@ -31,6 +32,11 @@ import com.dfire.event.HeraJobMaintenanceEvent;
 import com.dfire.event.HeraJobSuccessEvent;
 import com.dfire.logs.*;
 import com.dfire.monitor.domain.AlarmInfo;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
@@ -194,7 +200,7 @@ public class Master {
                         }
                     }
                     shouldRemove.forEach(actionMap::remove);
-                    List<AbstractHandler> handlers = new ArrayList<>(masterContext.getDispatcher().getJobHandlers());
+                    List<AbstractHandler> handlers = new ArrayList<>(masterContext.getDispatcher().getJobHandlers().values());
                     if (handlers.size() > 0) {
                         for (AbstractHandler handler : handlers) {
                             JobHandler jobHandler = (JobHandler) handler;
@@ -208,9 +214,12 @@ public class Master {
                 String cronDate = ActionUtil.getActionVersionPrefix(now);
                 Map<Integer, List<HeraAction>> idMap = new HashMap<>(jobList.size());
                 Map<Integer, HeraJob> jobMap = new HashMap<>(jobList.size());
+                // 依赖层级多的情况下，生成依赖任务实例，深度遍历的递归非常耗时，改为广度遍历
+                // 先做一次 拓扑排序 生成依赖任务顺序生成即可
+                jobList = this.topologicalSort(jobList);
                 generateScheduleJobAction(jobList, cronDate, actionMap, nowAction, idMap, jobMap);
                 for (Map.Entry<Integer, HeraJob> entry : jobMap.entrySet()) {
-                    generateDependJobAction(jobMap, entry.getValue(), actionMap, nowAction, idMap);
+                    generateDependJobAction(entry.getValue(), actionMap, nowAction, idMap);
                 }
                 if (executeHour < ActionUtil.ACTION_CREATE_MAX_HOUR) {
                     heraActionMap = actionMap;
@@ -220,7 +229,7 @@ public class Master {
                     if (actionMap.size() > 0) {
                         for (Long id : actionMap.keySet()) {
                             JobHandler jobHandler = new JobHandler(id, masterContext.getMaster(), masterContext);
-                            dispatcher.addJobHandler(jobHandler);
+                            jobHandler = dispatcher.addJobHandler(jobHandler);
                             //如果是今天的版本 更新缓存
                             if (ActionUtil.isTodayActionVersion(id.toString())) {
                                 jobHandler.handleEvent(new HeraJobMaintenanceEvent(Events.UpdateActions, id));
@@ -238,6 +247,83 @@ public class Master {
             isGenerateActioning = false;
         }
         return false;
+    }
+
+    /**
+     * 拓扑排序
+     * @param jobDetails
+     * @return
+     */
+    public List<HeraJob> topologicalSort(List<HeraJob> jobDetails) {
+        Map<Integer, HeraJob> jobInfo = Maps.newHashMap();
+
+        //任务的下游依赖
+        Map<Integer, Set<Integer>> downStreamJobInfo = Maps.newHashMap();
+        for (HeraJob heraJob : jobDetails) {
+            jobInfo.put(heraJob.getId(), heraJob);
+            HashSet<String> depList = Sets.newHashSet(Splitter.on(",").split(heraJob.getDependencies()));
+            for (String dep : depList) {
+                if (!Strings.isNullOrEmpty(dep)) {
+                    Set<Integer> downStreamJobList = downStreamJobInfo.get(Integer.valueOf(dep));
+                    if (downStreamJobList == null) {
+                        downStreamJobList = Sets.newHashSet();
+                    }
+                    downStreamJobList.add(heraJob.getId());
+                    downStreamJobInfo.put(Integer.valueOf(dep), downStreamJobList);
+                }
+            }
+
+            if (!downStreamJobInfo.containsKey(heraJob.getId())) {
+                downStreamJobInfo.put(heraJob.getId(), Sets.newHashSet());
+            }
+        }
+
+        List<HeraJob> newJobDetails = Lists.newArrayList();
+        // 入度不为0 即有上游任务的节点
+        Map<Integer, Integer> notZeroIndegreeMap = Maps.newHashMap();
+        //入度为0 即没有上游任务的节点
+        Queue<Integer> zeroIndegreeQueue = new LinkedList<>();
+        for (HeraJob heraJob : jobDetails) {
+            int jobId = heraJob.getId();
+            String dep = heraJob.getDependencies();
+            if (heraJob.getScheduleType().equals(JobScheduleTypeEnum.Independent.getType())) {
+                zeroIndegreeQueue.add(jobId);
+                newJobDetails.add(heraJob);
+            } else {
+                Set<String> depList = Sets.newHashSet(Splitter.on(",").split(dep));
+                int size = depList.size();
+                //过滤掉依赖了不会生成实例的任务
+                for (String id : depList) {
+                    if (!jobInfo.containsKey(Integer.valueOf(id))) {
+                        size--;
+                    }
+                }
+                if (size == 0) {
+                    zeroIndegreeQueue.add(jobId);
+                    newJobDetails.add(heraJob);
+                } else {
+                    notZeroIndegreeMap.put(jobId, size);
+                }
+            }
+        }
+
+        while (!zeroIndegreeQueue.isEmpty()) {
+            int node = zeroIndegreeQueue.poll();
+            Set<Integer> downStreamJobList = downStreamJobInfo.get(node);
+            for (int downStreamJob : downStreamJobList) {
+                if (notZeroIndegreeMap.containsKey(downStreamJob)) {
+                    int degree = notZeroIndegreeMap.get(downStreamJob);
+                    if (--degree == 0) {
+                        newJobDetails.add(jobInfo.get(downStreamJob));
+                        zeroIndegreeQueue.add(downStreamJob);
+                        notZeroIndegreeMap.remove(downStreamJob);
+                    } else {
+                        notZeroIndegreeMap.put(downStreamJob, degree);
+                    }
+                }
+            }
+        }
+        return newJobDetails;
     }
 
 
@@ -376,10 +462,10 @@ public class Master {
 
         Map<Long, HeraAction> actionMapNew = heraActionMap;
         //移除未生成的调度
-        List<AbstractHandler> handlers = dispatcher.getJobHandlers();
+        List<AbstractHandler> handlers = Lists.newArrayList(dispatcher.getJobHandlers().values());
         List<JobHandler> shouldRemove = new ArrayList<>();
         Long dayAction = getBeforeDayAction();
-        if (handlers != null && handlers.size() > 0) {
+        if (handlers.size() > 0) {
             handlers.forEach(handler -> {
                 JobHandler jobHandler = (JobHandler) handler;
                 Long actionId = jobHandler.getActionId();
@@ -408,14 +494,12 @@ public class Master {
     /**
      * 递归生成任务依赖action
      *
-     * @param jobMap    任务映射map
      * @param heraJob   当前生成版本的任务
      * @param actionMap 版本map
      * @param nowAction 生成版本时间的action
      * @param idMap     job的id集合  只要已经检测过的id都放入idSet中
      */
-    public void generateDependJobAction(Map<Integer, HeraJob> jobMap, HeraJob
-            heraJob, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap) {
+    public void generateDependJobAction(HeraJob heraJob, Map<Long, HeraAction> actionMap, Long nowAction, Map<Integer, List<HeraAction>> idMap) {
         if (heraJob == null || idMap.containsKey(heraJob.getId())) {
             return;
         }
@@ -427,10 +511,6 @@ public class Master {
             boolean noAction = false;
             for (String dependentId : dependencies) {
                 Integer dpId = Integer.parseInt(dependentId);
-                //如果idSet不包含依赖任务dpId  则递归查找
-                if (!idMap.containsKey(dpId)) {
-                    generateDependJobAction(jobMap, jobMap.get(dpId), actionMap, nowAction, idMap);
-                }
                 List<HeraAction> dpActions = idMap.get(dpId);
                 dependenciesMap.put(dependentId, dpActions);
                 if (dpActions == null || dpActions.size() == 0) {

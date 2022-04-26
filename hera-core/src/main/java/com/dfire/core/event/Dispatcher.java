@@ -11,8 +11,9 @@ import com.dfire.logs.ErrorLog;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -27,20 +28,24 @@ public class Dispatcher extends AbstractObservable {
     public static final EventType afterDispatch = new EventType();
 
     @Getter
-    List<AbstractHandler> jobHandlers;
+    Map<Long, AbstractHandler> jobHandlers;
 
     public Dispatcher() {
-        jobHandlers = new ArrayList<>();
+        jobHandlers = new ConcurrentHashMap<>();
     }
 
-    public void addJobHandler(JobHandler jobHandler) {
-        if (!jobHandlers.contains(jobHandler)) {
-            jobHandlers.add(jobHandler);
+    public JobHandler addJobHandler(JobHandler jobHandler) {
+        long jobId = jobHandler.getActionId();
+        if (jobHandlers.containsKey(jobId)) {
+            return (JobHandler) jobHandlers.get(jobId);
+        } else {
+            jobHandlers.put(jobId, jobHandler);
+            return jobHandler;
         }
     }
 
     public void removeJobHandler(JobHandler jobHandler) {
-        jobHandlers.remove(jobHandler);
+        jobHandlers.remove(jobHandler.getActionId());
     }
 
     public void addDispatcherListener(AbstractListener listener) {
@@ -76,7 +81,7 @@ public class Dispatcher extends AbstractObservable {
             MvcEvent mvcEvent = new MvcEvent(this, applicationEvent);
             mvcEvent.setApplicationEvent(applicationEvent);
             if (fireEvent(beforeDispatch, mvcEvent)) {
-                List<AbstractHandler> jobHandlersCopy = Lists.newArrayList(jobHandlers);
+                List<AbstractHandler> jobHandlersCopy = Lists.newArrayList(jobHandlers.values());
                 for (AbstractHandler jobHandler : jobHandlersCopy) {
                     try {
                         if (jobHandler.canHandle(applicationEvent)) {
