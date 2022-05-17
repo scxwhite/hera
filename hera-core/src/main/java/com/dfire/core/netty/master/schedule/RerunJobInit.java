@@ -60,8 +60,9 @@ public class RerunJobInit extends ScheduledChore {
                 Map<Integer, List<HeraAction>> idMap = new HashMap<>(8);
                 Map<Integer, HeraJob> jobMap = new HashMap<>(8);
                 cronDate = ActionUtil.getActionVersionPrefix(startTime.getTime());
+                heraJobs = master.topologicalSort(heraJobs);
                 master.generateScheduleJobAction(heraJobs, cronDate, actionMap, nowAction, idMap, jobMap);
-                jobMap.values().forEach(job -> master.generateDependJobAction(jobMap, job, actionMap, nowAction, idMap));
+                jobMap.values().forEach(job -> master.generateDependJobAction(job, actionMap, nowAction, idMap));
                 startTime.add(Calendar.DAY_OF_YEAR, 1);
                 for (Long aLong : actionMap.keySet()) {
                     if (Objects.equals(ActionUtil.getJobId(String.valueOf(aLong)), rerunVo.getJobId()) && aLong >= startAction && aLong <= endAction) {
