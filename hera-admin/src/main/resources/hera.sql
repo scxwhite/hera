@@ -212,7 +212,7 @@ CREATE TABLE IF NOT EXISTS `hera_job`
   `host_group_id`        tinyint(2)    DEFAULT NULL COMMENT '分发的执行机器组id',
   `must_end_minute`      int(2)        DEFAULT '0',
   `area_id`              varchar(50)   DEFAULT '1' COMMENT '区域ID,多个用,分割',
-  `repeat_run`           tinyint(2)    DEFAULT '0' COMMENT '是否允许任务重复执行',
+  `repeat_run`           tinyint(2)    DEFAULT '1' COMMENT '是否允许任务重复执行',
   `is_valid` tinyint(1) DEFAULT '1' COMMENT '任务是否删除',
   cron_period varchar(100) DEFAULT NULL,
   cron_interval int(11) DEFAULT NULL,
