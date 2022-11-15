@@ -42,9 +42,6 @@ public class DistributeLock {
 
     @PostConstruct
     public void init() {
-
-
-
         workClient.workSchedule.scheduleAtFixedRate(this::checkLock, 10, 60, TimeUnit.SECONDS);
     }
 
@@ -66,8 +63,8 @@ public class DistributeLock {
                     return;
                 }
             }
-
-            if (isMaster = WorkContext.host.equals(heraLock.getHost().trim())) {
+            isMaster = WorkContext.host.equals(heraLock.getHost().trim());
+            if (isMaster) {
                 heraLock.setServerUpdate(new Date());
                 heraLockService.update(heraLock);
                 HeraLog.info("hold lock and update time");

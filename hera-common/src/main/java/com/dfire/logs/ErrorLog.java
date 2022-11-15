@@ -18,7 +18,7 @@ public class ErrorLog {
         log.error(format, arguments);
     }
 
-    public static void error(String msg, Exception e) {
+    public static void error(String msg, Throwable e) {
         log.error(msg, e);
     }
 

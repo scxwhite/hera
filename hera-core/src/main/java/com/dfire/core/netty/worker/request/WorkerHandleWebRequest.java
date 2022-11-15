@@ -85,6 +85,9 @@ public class WorkerHandleWebRequest {
     }
 
     private static Future<WebResponse> buildMessage(WebRequest request, WorkContext workContext, String errorMsg) {
+        if (workContext.getServerChannel() == null) {
+            throw new RuntimeException("未连接到master节点，请确认master服务已启动。");
+        }
         CountDownLatch latch = new CountDownLatch(1);
         WorkResponseListener responseListener = new WorkResponseListener(request, false, latch, null);
         workContext.getHandler().addListener(responseListener);

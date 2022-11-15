@@ -19,6 +19,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -171,7 +172,7 @@ public class WorkHandler extends SimpleChannelInboundHandler<SocketMessage> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        ErrorLog.error("work exception: " + ctx.channel().remoteAddress(), cause.toString());
+        ErrorLog.error("work exception: " + ctx.channel().remoteAddress(), cause);
     }
 
     private class ChannelResponse {

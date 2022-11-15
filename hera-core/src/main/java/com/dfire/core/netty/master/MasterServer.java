@@ -43,7 +43,7 @@ public class MasterServer {
         //服务端接受客户端的连接， Reactor线程组
         bossGroup = new NioEventLoopGroup(1);
         //SocketChannel的网络读写
-        workGroup = new NioEventLoopGroup(1);
+        workGroup = new NioEventLoopGroup(4);
         this.handler = handler;
         serverBootstrap.group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
