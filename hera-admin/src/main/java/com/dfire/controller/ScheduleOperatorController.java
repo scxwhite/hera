@@ -401,7 +401,7 @@ public class ScheduleOperatorController extends BaseHeraController {
         actionHistory.setStatisticEndTime(heraAction.getStatisticEndTime());
         actionHistory.setHostGroupId(heraAction.getHostGroupId());
         heraJobHistoryService.insert(actionHistory);
-        if (triggerTypeEnum.getId() == TriggerTypeEnum.SUPER_RECOVER.getId()) {
+        if (Objects.equals(triggerTypeEnum.getId(), TriggerTypeEnum.SUPER_RECOVER.getId())) {
             // 获取该action的下游actions,并且将其status 设置为 s-recovery-ing 超级恢复中 , 避免超级恢复时，status == success 的误判
             // type 1 下游
             List<Integer> jobList = heraJobService.findJobImpact(heraAction.getJobId(), 1);
