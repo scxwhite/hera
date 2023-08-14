@@ -23,7 +23,13 @@ public enum StatusEnum {
     /**
      * 失败状态
      */
-    FAILED("failed");
+    FAILED("failed"),
+
+    /**
+     * 超级恢复中
+     */
+    SUPER_RECOVER_ING("s_recover_ing");
+
 
     private String status;
 
