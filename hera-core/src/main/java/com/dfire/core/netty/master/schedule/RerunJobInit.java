@@ -28,7 +28,7 @@ public class RerunJobInit extends ScheduledChore {
     }
 
     public RerunJobInit(Master master) {
-        this(master, 60, 300, TimeUnit.SECONDS);
+        this(master, 60, 60, TimeUnit.SECONDS);
     }
 
     @Override

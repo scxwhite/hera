@@ -52,6 +52,9 @@ public interface HeraJobActionMapper {
     @Select("select * from hera_action where id =(select max(id) from hera_action where job_id = #{jobId})")
     HeraAction findLatestByJobId(Long jobId);
 
+    @Select("select * from hera_action where id =(select max(id) from hera_action where job_id = #{jobId} and  batch_id= #{batchId})")
+    HeraAction findLatestByJobIdBatchId(@Param("jobId")Long jobId,@Param("batchId") String batchId);
+
     @Select("select * from hera_action where job_id = #{jobId} order by id")
     List<HeraAction> findByJobId(Long jobId);
 

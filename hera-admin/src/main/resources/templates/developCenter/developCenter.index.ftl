@@ -87,6 +87,7 @@
                         <ul>
                             <li id="addFolder">增加文件夹</li>
                             <li id="addHiveFile">新建Hive</li>
+                            <li id="addMaxComputerFile">新建MaxComputer</li>
                             <li id="addShellFile">新建Shell</li>
                             <li id="addSparkFile">新建Spark</li>
                             <li id="rename">重命名</li>

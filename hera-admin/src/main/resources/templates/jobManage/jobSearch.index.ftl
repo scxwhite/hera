@@ -67,6 +67,7 @@
                                 <option value="shell">shell</option>
                                 <option value="spark">spark</option>
                                 <option value="hive">hive</option>
+                                <option value="maxcomputer">maxcomputer</option>
                                 <option value="">all</option>
                             </select>
                         </div>

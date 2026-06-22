@@ -135,6 +135,11 @@ public class HeraJobActionServiceImpl implements HeraJobActionService {
     }
 
     @Override
+    public HeraAction findLatestByJobIdBatchId(Long jobId,String batchId) {
+        return heraJobActionMapper.findLatestByJobIdBatchId(jobId,batchId);
+    }
+
+    @Override
     public List<HeraAction> findByJobId(Long jobId) {
         return heraJobActionMapper.findByJobId(jobId);
     }

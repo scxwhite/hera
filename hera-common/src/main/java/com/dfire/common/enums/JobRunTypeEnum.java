@@ -15,6 +15,11 @@ public enum JobRunTypeEnum {
      * hive任务
      */
     Hive("hive"),
+
+    /**
+     * MaxComputer任务
+     */
+    MaxComputer("maxcomputer"),
     /**
      * spark任务
      */

@@ -404,11 +404,31 @@ public class ScheduleOperatorController extends BaseHeraController {
         if (Objects.equals(triggerTypeEnum.getId(), TriggerTypeEnum.SUPER_RECOVER.getId())) {
             // 获取该action的下游actions,并且将其status 设置为 s-recovery-ing 超级恢复中 , 避免超级恢复时，status == success 的误判
             // type 1 下游
+            String batchId = heraAction.getBatchId();
             List<Integer> jobList = heraJobService.findJobImpact(heraAction.getJobId(), 1);
             ScheduleLog.info(" 任务版本:{} 的下游Job有:{}", heraAction.getId(), jobList);
             if (jobList.size() >= 1) {
                 for (int i = 0; i < jobList.size(); i++) {
-                    HeraAction latestByJobId = heraJobActionService.findLatestByJobId(Long.valueOf(jobList.get(i)));
+                    HeraAction latestByJobId = heraJobActionService.findLatestByJobIdBatchId(Long.valueOf(jobList.get(i)),batchId);
+                    if (latestByJobId == null ) {
+                        // 如果之前的批次中没有该action,则取最新的action并修改actionId,batchId,dependencies
+                        // master 中的 heraActionMap 仍然缺少对应的 action
+                        latestByJobId = heraJobActionService.findLatestByJobId(Long.valueOf(jobList.get(i)));
+                        Long id = latestByJobId.getId();
+                        String batchIdYYYYMMdd = batchId.replace("-", "");
+                        String concat = batchIdYYYYMMdd.concat(id.toString().substring(8,18));
+                        // 修正 actionId
+                        latestByJobId.setId(Long.valueOf(concat));
+
+                        // 修正 dependencies
+                        String dependencies = latestByJobId.getDependencies();
+                        String lastBatchIdYYYYMMdd = latestByJobId.getBatchId().replace("-","");
+                        latestByJobId.setDependencies(dependencies.replace(lastBatchIdYYYYMMdd,batchIdYYYYMMdd));
+
+                        // 修正 batchId
+                        latestByJobId.setBatchId(batchId);
+                        heraJobActionService.insert(latestByJobId,id);
+                    }
                     latestByJobId.setStatus(StatusEnum.SUPER_RECOVER_ING.toString());
                     heraJobActionService.update(latestByJobId);
                 }

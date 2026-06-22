@@ -18,6 +18,11 @@ public class RunningJobKeyConstant {
     public static final String RUN_HIVE_PATH = "hive.localfile";
 
     /**
+     * 需要执行的 MaxComputer 文件路径
+     */
+    public static final String RUN_MAXCOMPUTER_PATH = "maxcomputer.localfile";
+
+    /**
      * 需要执行的spark文件路径
      */
     public static final String RUN_SPARK_PATH = "spark.localfile";

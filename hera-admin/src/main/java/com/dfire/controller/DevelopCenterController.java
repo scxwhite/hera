@@ -173,6 +173,8 @@ public class DevelopCenterController extends BaseHeraController {
             runType = Constants.SHELL_FILE;
         } else if ((Constants.SPARK_SUFFIX).equalsIgnoreCase(suffix)) {
             runType = Constants.SPARK_FILE;
+        } else if ((Constants.MAXCOMPUTER_SUFFIX).equalsIgnoreCase(suffix)) {
+            runType = Constants.MAXCOMPUTER_FILE;
         } else {
             return new JsonResponse(false, "暂未支持的后缀名[" + suffix + "],请设置支持的后缀名[.sh .hive .spark]");
         }
