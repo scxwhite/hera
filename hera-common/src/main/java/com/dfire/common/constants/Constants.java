@@ -74,6 +74,8 @@ public class Constants {
 
     public final static String HIVE_FILE = "hive";
 
+    public final static String MAXCOMPUTER_FILE = "maxcomputer";
+
     public final static String SHELL_FILE = "shell";
 
 
@@ -87,6 +89,8 @@ public class Constants {
     public final static String SHELL_SUFFIX = POINT + "sh";
 
     public final static String HIVE_SUFFIX = POINT + HIVE_FILE;
+
+    public final static String MAXCOMPUTER_SUFFIX = POINT + MAXCOMPUTER_FILE;
 
     public final static String SPARK_SUFFIX = POINT + SPARK_FILE;
 

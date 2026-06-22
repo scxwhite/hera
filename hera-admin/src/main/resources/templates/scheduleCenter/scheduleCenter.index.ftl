@@ -388,6 +388,7 @@
                                                 <select class="form-control" name="runType">
                                                     <option value="Shell" selected="selected">Shell</option>
                                                     <option value="Hive">Hive</option>
+                                                    <option value="MaxComputer">MaxComputer</option>
                                                     <option value="Spark">Spark</option>
                                                 </select>
                                             </div>
@@ -908,6 +909,7 @@
                                 <div class="col-sm-8 col-lg-8 col-md-8 ">
                                     <select class="form-control" name="jobType">
                                         <option value="shell" selected>shell脚本</option>
+                                        <option value="maxcomputer">maxcomputer脚本</option>
                                         <option value="hive">hive脚本</option>
                                         <option value="spark">spark脚本</option>
                                         <#--没有权限控制，暂时就不开放了<option value="spark2">spark2脚本</option>-->

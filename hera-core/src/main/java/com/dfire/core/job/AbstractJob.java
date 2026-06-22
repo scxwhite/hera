@@ -157,6 +157,10 @@ public abstract class AbstractJob implements Job {
 	            cmd.append(HeraGlobalEnv.getJobHiveBin()).append(" -f ").append(runPath);
 	            cmd.append("  2>&1|tee -a ${log_file} ");
 	            break;
+            case MaxComputer:
+                cmd.append(HeraGlobalEnv.getJobMaxComputerBin()).append(" -f ").append(runPath);
+                cmd.append("  2>&1|tee -a ${log_file} ");
+                break;
 	        case Shell:
 	            cmd.append("bash ").append(runPath);
 	            cmd.append("  2>&1|tee -a ${log_file} ");

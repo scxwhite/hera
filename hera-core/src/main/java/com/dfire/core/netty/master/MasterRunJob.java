@@ -109,7 +109,7 @@ public class MasterRunJob implements RunJob {
      * @param actionId   actionId
      */
     private void runManualJob(MasterWorkHolder selectWork, Long actionId, TriggerTypeEnum triggerType) {
-        SocketLog.info("start run manual job, actionId = {}", actionId);
+        SocketLog.info("start run manual job, actionId = {} , triggerType = {}", actionId, triggerType.getName());
         HeraAction heraAction = masterContext.getHeraJobActionService().findById(actionId);
         HeraJobHistory history = masterContext.getHeraJobHistoryService().findById(heraAction.getHistoryId());
         HeraJobHistoryVo historyVo = BeanConvertUtils.convert(history);
@@ -199,7 +199,7 @@ public class MasterRunJob implements RunJob {
      * @param triggerType
      */
     private void runScheduleJobContext(MasterWorkHolder selectWork, Long actionId, int runCount, int retryCount, int retryWaitTime, TriggerTypeEnum triggerType) {
-        DebugLog.info("重试次数：{},重试时间：{},actionId:{}", retryCount, retryWaitTime, actionId);
+        DebugLog.info("重试次数：{},重试时间：{},actionId:{},TriggerTypeEnum:{}", retryCount, retryWaitTime, actionId,triggerType);
         runCount++;
         boolean isCancelJob = false;
         if (runCount > 1) {
@@ -337,7 +337,7 @@ public class MasterRunJob implements RunJob {
      * @return
      */
     public boolean isTaskLimit() {
-        //可能会被apollo等配置中心修改，检测limit的时候进行判断
+        // 可能会被apollo等配置中心修改，检测limit的时候进行判断
         setCoreSize(HeraGlobalEnv.getMaxParallelNum());
         return executeJobPool.getActiveCount() >= HeraGlobalEnv.getMaxParallelNum();
     }

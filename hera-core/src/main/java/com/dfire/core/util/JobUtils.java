@@ -77,6 +77,9 @@ public class JobUtils {
         } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Hive.toString())) {
             jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Hive.toString());
             core = new HiveJob(jobContext);
+        } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.MaxComputer.toString())) {
+            jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.MaxComputer.toString());
+            core = new MaxComputerJob(jobContext);
         } else if (heraDebugHistory.getRunType().equalsIgnoreCase(JobRunTypeEnum.Spark.toString())) {
             jobContext.putData(RunningJobKeyConstant.JOB_RUN_TYPE, JobRunTypeEnum.Spark.toString());
             core = new SparkJob(jobContext);
@@ -116,6 +119,8 @@ public class JobUtils {
             core = new HadoopShellJob(jobContext);
         } else if (runType == JobRunTypeEnum.Hive) {
             core = new HiveJob(jobContext);
+        } else if (runType == JobRunTypeEnum.MaxComputer) {
+            core = new MaxComputerJob(jobContext);
         } else if (runType == JobRunTypeEnum.Spark) {
             core = new SparkJob(jobContext);
         } else if (runType == JobRunTypeEnum.Spark2) {
@@ -192,7 +197,7 @@ public class JobUtils {
                     break;
                 }
             }
-            //TODO 脚本中不存在 就不用下载了
+            // TODO 脚本中不存在 就不用下载了
             if (!exist) {
                 map.put("uri", uri);
                 map.put("name", name);

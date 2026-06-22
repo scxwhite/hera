@@ -101,6 +101,8 @@ public class HeraGlobalEnv {
     @Getter
     private static String jobHiveBin;
     @Getter
+    private static String jobMaxComputerBin;
+    @Getter
     private static String jobSparkSqlBin;
     @Getter
     private static boolean emrJob;
@@ -413,6 +415,11 @@ public class HeraGlobalEnv {
     @Value("${hera.job.hive.bin}")
     public void setJobHiveBin(String jobHiveBin) {
         HeraGlobalEnv.jobHiveBin = jobHiveBin + Constants.BLANK_SPACE;
+    }
+
+    @Value("${hera.job.maxcomputer.bin}")
+    public void setJobMaxComputerBin(String jobMaxComputerBin) {
+        HeraGlobalEnv.jobMaxComputerBin = jobMaxComputerBin + Constants.BLANK_SPACE;
     }
 
     @Value("${hera.job.spark-sql.bin}")

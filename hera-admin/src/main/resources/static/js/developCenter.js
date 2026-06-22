@@ -162,6 +162,10 @@ layui.use(['layer', 'laytpl', 'form'], function () {
                         //new .spark file
                         name = addCount + ".spark";
                         parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
+                    } else if (e.data.type === 5) {
+                        //new .maxcomputer file
+                        name = addCount + ".maxcomputer";
+                        parameter = "parent=" + id + "&type=" + "2" + "&name=" + name;
                     }
                     $.ajax({
                         url: base_url + "/developCenter/addFile.do",
@@ -531,6 +535,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             $("#addHiveFile").show();
             $("#addShellFile").show();
             $("#addSparkFile").show();
+            $("#addMaxComputerFile").show();
             $("#rename").show();
             $("#removeFile").show();
         } else if (type == "node") {
@@ -538,6 +543,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
             $("#addHiveFile").hide();
             $("#addShellFile").hide();
             $("#addSparkFile").hide();
+            $("#addMaxComputerFile").hide();
         }
 
         y += document.body.scrollTop;
@@ -570,6 +576,7 @@ layui.use(['layer', 'laytpl', 'form'], function () {
     $("#addHiveFile").bind('click', {isParent: false, type: 2}, add);
     $("#addShellFile").bind('click', {isParent: false, type: 3}, add);
     $("#addSparkFile").bind('click', {isParent: false, type: 4}, add);
+    $("#addMaxComputerFile").bind('click', {isParent: false, type: 5}, add);
 
     //重命名
     $("#rename").bind('click', {node: rightClickNode}, function () {

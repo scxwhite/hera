@@ -40,6 +40,8 @@ public interface HeraJobActionService {
 
     HeraAction findLatestByJobId(Long jobId);
 
+    HeraAction findLatestByJobIdBatchId(Long jobId,String batchId);
+
     List<HeraAction> findByJobId(Long jobId);
 
     int updateStatus(JobStatus jobStatus);
